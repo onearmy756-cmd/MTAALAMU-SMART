@@ -1,5 +1,5 @@
 # ============================================================
-# agentic.R — Agentic Vision UI + data/*.json bridge
+# agentic.R — Agentic Vision UI + data/*.json + SOLVE panel
 # ============================================================
 
 load_agentic_data <- function() {
@@ -44,9 +44,8 @@ status_color <- function(st) {
 }
 
 agentic_device_map_svg <- function(components, width = 640, height = 360) {
-  if (is.null(components) || length(components) == 0) {
-    return("<svg width='640' height='80'><text x='20' y='40' fill='#78909c'>Hakuna data ya ramani</text></svg>")
-  }
+  if (is.null(components) || length(components) == 0)
+    return("<svg width='640' height='80'><text x='20' y='40' fill='#78909c'>Hakuna data</text></svg>")
   nodes <- vapply(seq_along(components), function(i) {
     c <- components[[i]]
     x <- c$x %||% (80 + (i %% 6) * 100)
@@ -87,7 +86,7 @@ agentic_topology_svg <- function(topology) {
 
 agentic_processes_el <- function(processes, lang) {
   if (is.null(processes) || length(processes) == 0)
-    return(tags$div(style = "color:var(--dim)", tryCatch(tr("av.no_proc", lang), error = function(e) "—")))
+    return(tags$div(style = "color:var(--dim)", "—"))
   tags$div(class = "proc-list", lapply(processes, function(p) {
     st <- p$status %||% "good"
     tags$div(class = paste("proc-row", if (st == "critical") "danger"),
@@ -100,7 +99,7 @@ agentic_processes_el <- function(processes, lang) {
 
 agentic_issues_el <- function(issues, lang) {
   if (is.null(issues) || length(issues) == 0)
-    return(tags$div(class = "status-banner INFO", tryCatch(tr("av.no_issues", lang), error = function(e) "Hakuna")))
+    return(tags$div(class = "status-banner INFO", "Hakuna issues"))
   tags$div(lapply(issues, function(iss) {
     tags$div(class = "issue warn",
       tags$span(class = "ico", "⚠"),
@@ -147,69 +146,59 @@ view_agentic <- function(lang, data, session_state = NULL) {
   pipe_steps <- (data$pipeline$steps) %||% list()
   greet <- (data$voice$scripts[["agent.receptionist.greet"]]) %||% "Habari. Mimi ni Mtaalamu Smart."
   kb <- data$knowledge
-  lookup <- session_state$knowledge_lookup
 
   tags$div(class = "av-wrap",
-    panel_el(tryCatch(tr("av.qa.title", lang), error = function(e) "Uliza / Anza"),
-             tryCatch(tr("av.qa.meta", lang), error = function(e) "Agentic"),
+    panel_el("Uliza / Anza", "Agentic Vision",
       tags$div(
         tags$div(class = "field",
-          tags$label(tryCatch(tr("av.qa.label", lang), error = function(e) "Tatizo")),
+          tags$label("Tatizo"),
           tags$textarea(id = "av_msg", class = "form-control", rows = 3,
             style = "width:100%;background:#0a1628;color:#e0f7fa;border:1px solid #00e5ff44",
-            placeholder = tryCatch(tr("av.qa.placeholder", lang), error = function(e) "Mf. kompyuta inaenda polepole..."))),
+            placeholder = "Mf. kompyuta inaenda polepole / overheat / virus...")),
         tags$div(style = "display:flex;gap:10px;margin-top:10px;flex-wrap:wrap",
           tags$button(class = "trade-pill active",
-            onclick = "Shiny.setInputValue('av_start', Date.now(), {priority:'event'})",
-            tryCatch(tr("av.btn.start", lang), error = function(e) "ANZA")),
+            onclick = "Shiny.setInputValue('av_start', Date.now(), {priority:'event'})", "ANZA"),
           tags$button(class = "trade-pill",
-            onclick = "Shiny.setInputValue('av_approve', Date.now(), {priority:'event'})",
-            tryCatch(tr("av.btn.approve", lang), error = function(e) "RUHUSU")),
+            onclick = "Shiny.setInputValue('av_approve', Date.now(), {priority:'event'})", "RUHUSU (HITL)"),
           tags$button(class = "trade-pill",
-            onclick = "Shiny.setInputValue('av_scan', Date.now(), {priority:'event'})",
-            tryCatch(tr("av.btn.scan", lang), error = function(e) "SCAN")),
+            onclick = "Shiny.setInputValue('av_scan', Date.now(), {priority:'event'})", "SCAN"),
           tags$button(class = "trade-pill",
-            onclick = "if(window.mtaalamuSpeakLog){mtaalamuSpeakLog('#av_narration_text');}",
-            tryCatch(tr("av.btn.voice", lang), error = function(e) "SAUTI"))),
+            onclick = "if(window.mtaalamuSpeakLog){mtaalamuSpeakLog('#av_narration_text');}", "SAUTI")),
         tags$div(id = "av_voice_text", style = "display:none", greet),
         uiOutput("av_session_status"))),
 
-    # DATA catalog from data/
-    panel_el("📚 DATA / KNOWLEDGE BASE", "problems.json · diagnosis.json · devices_solver · trades",
+    panel_el("🔧 SOLVE (software / hardware)",
+             "Baada ya RUHUSU: software auto · hardware = binadamu",
+      uiOutput("av_solve")),
+
+    panel_el("📚 DATA / KNOWLEDGE BASE", "problems.json · diagnosis.json · devices",
       tags$div(
         knowledge_catalog_summary_el(kb, lang),
         tags$div(style = "margin-top:12px", uiOutput("av_knowledge"))
       )),
 
-    panel_el("⚡ OS PROBE (HALISI)", "CPU · RAM · Disk · Health",
+    panel_el("⚡ OS PROBE (HALISI)", "CPU · RAM · Disk",
       uiOutput("av_sysprobe")),
 
-    panel_el(tryCatch(tr("av.agents.title", lang), error = function(e) "Agents"),
-             tryCatch(tr("av.agents.meta", lang), error = function(e) ""),
+    panel_el("Agents", "Multi-agent",
       agentic_agents_el(data$agents, lang)),
 
-    panel_el(tryCatch(tr("av.pipe.title", lang), error = function(e) "Pipeline"),
-             tryCatch(tr("av.pipe.meta", lang), error = function(e) ""),
+    panel_el("Pipeline", "PIITVD",
       agentic_pipeline_el(pipe_steps, session_state$pipe_idx %||% 0, lang)),
 
     tags$div(class = "grid",
-      panel_el(tryCatch(tr("av.map.title", lang), error = function(e) "Ramani"),
-               tryCatch(tr("av.map.meta", lang), error = function(e) ""),
+      panel_el("Ramani", "OS components",
         HTML(agentic_device_map_svg(components))),
-      panel_el(tryCatch(tr("av.proc.title", lang), error = function(e) "Processes"),
-               tryCatch(tr("av.proc.meta", lang), error = function(e) ""),
+      panel_el("Processes", "Live",
         agentic_processes_el(processes, lang))),
 
     tags$div(class = "grid grid-bottom",
-      panel_el(tryCatch(tr("av.topo.title", lang), error = function(e) "Topology"),
-               tryCatch(tr("av.topo.meta", lang), error = function(e) ""),
+      panel_el("Topology", "",
         HTML(agentic_topology_svg(topology))),
-      panel_el(tryCatch(tr("av.iss.title", lang), error = function(e) "Issues"),
-               tryCatch(tr("av.iss.meta", lang), error = function(e) ""),
+      panel_el("Issues", "",
         agentic_issues_el(issues, lang))),
 
-    panel_el(tryCatch(tr("av.bus.title", lang), error = function(e) "Bus"),
-             tryCatch(tr("av.bus.meta", lang), error = function(e) ""),
+    panel_el("System bus", "",
       tags$div(style = "display:flex;flex-wrap:wrap;gap:8px",
         lapply((data$system_bus$buses) %||% list(), function(b) {
           tags$div(style = "border:1px solid #00e5ff33;border-radius:6px;padding:8px 12px;background:#0a1628",
@@ -217,8 +206,7 @@ view_agentic <- function(lang, data, session_state = NULL) {
             tags$div(style = "font-size:10px;color:var(--dim)", paste((b$path %||% list()), collapse = " → ")))
         }))),
 
-    panel_el(tryCatch(tr("av.report.title", lang), error = function(e) "Ripoti"),
-             tryCatch(tr("av.report.meta", lang), error = function(e) ""),
+    panel_el("Ripoti / Kitabu", "",
       tags$div(
         uiOutput("av_report_out"),
         tags$div(id = "av_narration_text", style = "position:absolute;left:-9999px;height:1px;overflow:hidden",
