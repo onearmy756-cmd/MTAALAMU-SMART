@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -7,17 +7,14 @@
     "level": "country",
     "center": { "lat": -6.3690, "lng": 34.8888 }
   },
-  "levels": ["country", "region", "district", "division", "ward", "village", "vitongoji", "street", "road"],
+  "levels": ["country", "region", "district", "tarafa", "ward", "village", "vitongoji", "mtaa", "road"],
   "stats": {
     "regions": 31,
     "districts": 184,
-    "divisions": null,
-    "wards": null,
-    "villages": null,
-    "vitongoji": null,
-    "streets": null,
-    "roads": null,
-    "note": "Mikoa 31 + Wilaya 184 zimekamilika. Hatua inayofuata: Tarafa, Kata, Vijiji, Vitongoji, Mitaa, Barabara."
+    "tarafa_listed": 42,
+    "vitongoji_listed": 40,
+    "mitaa_listed": 35,
+    "note": "Mikoa + Wilaya kamili. Tarafa/Vitongoji/Mitaa: Dar es Salaam imejaa zaidi, Dodoma + Arusha + Mwanza zimeanza. Inaendelea mkoa mkoa – hakuna kuruka."
   },
   "regions": [
     { "id": "TZ-01", "name_sw": "Arusha", "name_en": "Arusha", "code": "01", "center": { "lat": -3.3869, "lng": 36.6830 } },
@@ -54,12 +51,17 @@
   ],
   "files": {
     "districts": "data/geo/districts.json",
+    "tarafa": "data/geo/tarafa.json",
+    "vitongoji": "data/geo/vitongoji.json",
+    "mitaa": "data/geo/mitaa.json",
     "schema": "data/geo/SCHEMA.md"
   },
   "notes": [
     "✅ Mikoa 31 kamili",
-    "✅ Wilaya 184 kamili (mikoa yote)",
-    "⏳ Inayofuata: Tarafa → Kata → Vijiji → Vitongoji → Mitaa → Barabara",
-    "Kila node ina name_sw (lazima) + name_en"
+    "✅ Wilaya 184 kamili",
+    "🔄 Tarafa 42+ (Dar imejaa zaidi)",
+    "🔄 Vitongoji 40+",
+    "🔄 Mitaa 35+",
+    "Inaendelea mkoa mkoa – hakuna kuruka"
   ]
 }
