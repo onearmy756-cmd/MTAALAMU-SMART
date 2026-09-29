@@ -1,9 +1,11 @@
-//! Agentic full run — Vision HALISI (sysprobe) + Knowledge + Pipeline + Report + Learn
+//! Agentic full run — Vision HALISI (sysprobe) + Knowledge + Pipeline + Solve + Report + Learn
+//! Kanuni: Agent inafanya kazi zote; msimamizi anaruhusu/kusimamia tu (HITL).
 
 use crate::agents::{AgentOrchestrator, AgentSession};
 use crate::knowledge::KnowledgeBase;
 use crate::pipeline::PipelineEngine;
 use crate::report::ReportEngine;
+use crate::solve::{execute_plan, plan_from_problem, solve_message, SolveResult};
 use crate::vision::VisionEngine;
 use serde_json::{json, Value};
 use std::fs;
@@ -17,6 +19,7 @@ pub struct AgenticResult {
     pub pipeline: Value,
     pub report: Value,
     pub report_md: String,
+    pub solve: Option<SolveResult>,
 }
 
 pub fn run_full(
@@ -49,18 +52,50 @@ pub fn run_full(
     let issues_summary: Vec<String> = snap.issues.iter().map(|i| i.title.clone()).collect();
     session.context.insert("issues".into(), json!(issues_summary));
 
+    // Pre-plan software actions from message (agent decides; human only approves)
+    let solve_preview = solve_message(data_root, user_message, false);
+    session.context.insert(
+        "solve_plan".into(),
+        serde_json::to_value(&solve_preview.plan).unwrap_or(Value::Null),
+    );
+
     // Pipeline
     let pipe_path = data_root.join("vision/pipeline.json");
     let pipe = PipelineEngine::load(&pipe_path)?;
     let mut rt = pipe.start(&session.id);
 
     let mut events = Vec::new();
-    for _ in 0..14 {
+    let mut solve_result: Option<SolveResult> = None;
+
+    for _ in 0..16 {
         if approve && !session.hitl_approved {
             let _ = orch.approve_hitl(&mut session);
         }
         match orch.advance(&mut session) {
             Ok(ev) => {
+                // AGENT WORK: when solver step completes and HITL approved → execute real fixes
+                if ev.agent_id == "solver" && session.hitl_approved && solve_result.is_none() {
+                    let executed = solve_message(data_root, user_message, true);
+                    session.context.insert(
+                        "solve_executed".into(),
+                        serde_json::to_value(&executed).unwrap_or(Value::Null),
+                    );
+                    session.context.insert(
+                        "actions_done".into(),
+                        json!(executed.executed.iter().map(|r| &r.action_id).collect::<Vec<_>>()),
+                    );
+                    solve_result = Some(executed);
+                }
+
+                // Tester: re-probe after solve
+                if ev.agent_id == "tester" {
+                    let after = vision_eng.scan_live();
+                    session.context.insert(
+                        "post_fix_vision".into(),
+                        serde_json::to_value(&after).unwrap_or(Value::Null),
+                    );
+                }
+
                 events.push(ev.clone());
                 let _ = pipe.advance(
                     &mut rt,
@@ -82,25 +117,40 @@ pub fn run_full(
         }
     }
 
+    // If approved but solver never ran (edge), still execute
+    if approve && solve_result.is_none() {
+        let executed = solve_message(data_root, user_message, true);
+        session.context.insert(
+            "solve_executed".into(),
+            serde_json::to_value(&executed).unwrap_or(Value::Null),
+        );
+        solve_result = Some(executed);
+    }
+
     // Report
     let report_path = data_root.join("vision/report_template.json");
     let report_eng = ReportEngine::load(&report_path)?;
-    let top_solution = hits
-        .first()
-        .map(|h| h.solution.clone())
+    let top_solution = solve_result
+        .as_ref()
+        .map(|s| s.summary_sw.clone())
+        .or_else(|| hits.first().map(|h| h.solution.clone()))
         .unwrap_or_else(|| {
             snap.issues
                 .first()
                 .map(|i| i.action.clone())
                 .unwrap_or_else(|| "Angalia OS probe na HITL.".into())
         });
+    let actions_n = solve_result
+        .as_ref()
+        .map(|s| s.executed.len())
+        .unwrap_or(0);
     let ctx = json!({
         "user_message": user_message,
         "symptoms": session.symptoms,
         "status": session.state.as_str(),
         "summary_sw": format!(
-            "Chanzo: {}. Biashara: {}. Matatizo: {}. Suluhisho: {}",
-            snap.source, session.trade, issues_summary.len(), top_solution
+            "Chanzo: {}. Biashara: {}. Matatizo: {}. Vitendo vya agent: {}. Suluhisho: {}",
+            snap.source, session.trade, issues_summary.len(), actions_n, top_solution
         ),
         "issues": issues_summary,
         "components_summary": {
@@ -118,6 +168,8 @@ pub fn run_full(
             .unwrap_or("host"),
         "trade": session.trade,
         "vision_source": snap.source,
+        "agent_actions": actions_n,
+        "hitl": session.hitl_approved,
     });
     let report = report_eng.build(&session.id, &ctx, language);
     let report_md = report_eng.to_markdown(&report);
@@ -134,6 +186,7 @@ pub fn run_full(
         &issues_summary,
         session.state.as_str(),
         &snap.source,
+        actions_n,
     );
 
     session.context.insert("events_count".into(), json!(events.len()));
@@ -145,6 +198,7 @@ pub fn run_full(
         pipeline: serde_json::to_value(&rt).unwrap_or(Value::Null),
         report: report_json,
         report_md,
+        solve: solve_result,
     })
 }
 
@@ -155,6 +209,7 @@ fn append_learning_log(
     issues: &[String],
     status: &str,
     source: &str,
+    actions: usize,
 ) -> Result<(), String> {
     let path = data_root.join("learning_log.json");
     let mut arr = if path.exists() {
@@ -173,8 +228,8 @@ fn append_learning_log(
         "issues": issues,
         "status": status,
         "vision_source": source,
+        "agent_actions": actions,
     }));
-    // keep last 200
     if arr.len() > 200 {
         arr = arr.split_off(arr.len() - 200);
     }
@@ -188,4 +243,24 @@ fn chrono_ts() -> u64 {
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0)
+}
+
+/// Public helper: plan only (no execute) — for UI preview before HITL
+pub fn preview_plan(data_root: &Path, user_message: &str) -> SolveResult {
+    solve_message(data_root, user_message, false)
+}
+
+/// Public helper: execute after supervisor approve
+pub fn execute_approved(data_root: &Path, user_message: &str) -> SolveResult {
+    solve_message(data_root, user_message, true)
+}
+
+#[allow(dead_code)]
+fn _plan_from_first_hit(data_root: &Path, problem: &Value) -> crate::solve::SolvePlan {
+    plan_from_problem(data_root, problem)
+}
+
+#[allow(dead_code)]
+fn _execute(data_root: &Path, plan: &crate::solve::SolvePlan, ok: bool) -> SolveResult {
+    execute_plan(data_root, plan, ok)
 }

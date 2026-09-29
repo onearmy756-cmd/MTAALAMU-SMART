@@ -1,4 +1,5 @@
-//! Discover hosts — arp-scan / arp
+//! Discover hosts — arp-scan / arp + lab demo fallback
+//! Agent inagundua; msimamizi anachagua targets pekee.
 
 use regex::Regex;
 use serde::Serialize;
@@ -8,6 +9,8 @@ pub struct Host {
     pub mac: String,
     pub ip: String,
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<String>,
 }
 
 pub fn discover_hosts() -> Vec<Host> {
@@ -16,13 +19,46 @@ pub fn discover_hosts() -> Vec<Host> {
         .output()
     {
         if o.status.success() {
-            return parse_arp_scan(&String::from_utf8_lossy(&o.stdout));
+            let hosts = parse_arp_scan(&String::from_utf8_lossy(&o.stdout));
+            if !hosts.is_empty() {
+                return hosts;
+            }
         }
     }
     if let Ok(o) = std::process::Command::new("arp").args(["-a"]).output() {
-        return parse_arp_a(&String::from_utf8_lossy(&o.stdout));
+        let hosts = parse_arp_a(&String::from_utf8_lossy(&o.stdout));
+        if !hosts.is_empty() {
+            return hosts;
+        }
+    }
+    // Lab / demo: empty LAN → synthetic hosts so supervisor can test HITL flow
+    if std::env::var("FUNDI_DEMO_HOSTS").unwrap_or_else(|_| "1".into()) != "0" {
+        return demo_hosts();
     }
     Vec::new()
+}
+
+fn demo_hosts() -> Vec<Host> {
+    vec![
+        Host {
+            mac: "aa:bb:cc:dd:ee:01".into(),
+            ip: "192.168.1.101".into(),
+            name: "LAB-PC-01".into(),
+            source: Some("demo".into()),
+        },
+        Host {
+            mac: "aa:bb:cc:dd:ee:02".into(),
+            ip: "192.168.1.102".into(),
+            name: "LAB-PC-02".into(),
+            source: Some("demo".into()),
+        },
+        Host {
+            mac: "aa:bb:cc:dd:ee:03".into(),
+            ip: "192.168.1.103".into(),
+            name: "LAB-LAPTOP-03".into(),
+            source: Some("demo".into()),
+        },
+    ]
 }
 
 fn parse_arp_scan(text: &str) -> Vec<Host> {
@@ -34,6 +70,7 @@ fn parse_arp_scan(text: &str) -> Vec<Host> {
                 ip: parts[0].into(),
                 mac: parts[1].to_lowercase(),
                 name: format!("PC-{}", parts[1].replace(':', "")),
+                source: Some("arp-scan".into()),
             });
         }
     }
@@ -59,6 +96,7 @@ fn parse_arp_a(text: &str) -> Vec<Host> {
                     ip,
                     mac: mac.clone(),
                     name: format!("PC-{}", mac.replace(':', "")),
+                    source: Some("arp".into()),
                 });
             }
         }
