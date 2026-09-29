@@ -1,11 +1,12 @@
 //! mtaalamu CLI
-//!   mtaalamu devices
+//!   mtaalamu knowledge --msg "virus polepole"
 //!   mtaalamu device-solve --msg "TV haiwaki"
 
 use mtaalamu_engine::{
     AgentOrchestrator, BayesianDiagnoser, FormulaEngine, auto_diagnose, deep_probe_json,
-    devices_catalog_stats, discover_tools, log_remediation, probe_json, remediation_catalog,
-    run_diagnostic, run_full, run_remediation, search_devices, solve_message,
+    devices_catalog_stats, discover_tools, knowledge_search, knowledge_stats, log_remediation,
+    probe_json, remediation_catalog, run_diagnostic, run_full, run_remediation, search_devices,
+    solve_message,
 };
 use std::path::Path;
 
@@ -95,11 +96,22 @@ fn main() {
                     "session": { "id": r.session.id, "state": r.session.state.as_str(),
                                   "hitl_approved": r.session.hitl_approved },
                     "vision": r.vision,
+                    "knowledge": knowledge_search(Path::new(&data_root()), &msg, 5),
                     "devices": search_devices(Path::new(&data_root()), &msg, 5),
                 }),
                 Err(e) => fail(&e),
             }
         }
+        "knowledge" | "know" => {
+            let msg = parse_flag(&args, "--msg")
+                .unwrap_or_else(|| fail("knowledge --msg \"...\""));
+            let limit: usize = parse_flag(&args, "--limit")
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(8);
+            serde_json::to_value(knowledge_search(Path::new(&data_root()), &msg, limit))
+                .unwrap_or(serde_json::Value::Null)
+        }
+        "knowledge-stats" => knowledge_stats(Path::new(&data_root())),
         "devices" | "device-stats" => devices_catalog_stats(Path::new(&data_root())),
         "device-solve" | "electronic" => {
             let msg = parse_flag(&args, "--msg")
@@ -114,12 +126,10 @@ fn main() {
             let msg = parse_flag(&args, "--msg")
                 .unwrap_or_else(|| fail("solve --msg \"...\" [--approve]"));
             let approve = args.iter().any(|a| a == "--approve");
-            let software = solve_message(Path::new(&data_root()), &msg, approve);
-            let devices = search_devices(Path::new(&data_root()), &msg, 5);
             serde_json::json!({
-                "software_solve": software,
-                "devices": devices,
-                "note_sw": "Software: auto baada ya HITL. Devices/hardware: mwongozo kwa binadamu."
+                "software_solve": solve_message(Path::new(&data_root()), &msg, approve),
+                "knowledge": knowledge_search(Path::new(&data_root()), &msg, 5),
+                "devices": search_devices(Path::new(&data_root()), &msg, 5),
             })
         }
         "sysprobe" | "probe" => {
@@ -149,12 +159,12 @@ fn main() {
         }
         "help" | "--help" | "-h" => serde_json::json!({
             "commands": [
-                "devices — stats za electronic catalog",
-                "device-solve --msg 'TV haiwaki' — search devices_catalog",
-                "solve --msg '...' [--approve] — software + devices",
+                "knowledge --msg '...' — search ALL knowledge (problems, diagnosis, trades, services, professions, devices)",
+                "knowledge-stats",
+                "devices | device-solve --msg '...'",
+                "solve --msg '...' [--approve]",
                 "agentic --msg '...' [--approve]"
-            ],
-            "policy": "Hardware devices = human guide. PC software = HITL allowlist."
+            ]
         }),
         other => fail(&format!("Amri '{}' haipo.", other)),
     };
