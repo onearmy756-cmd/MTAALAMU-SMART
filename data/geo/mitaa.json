@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Mitaa za Tanzania. Inajazwa – hakuna kuruka.",
   "status": "in_progress",
   "mitaa": [
@@ -35,28 +35,36 @@
     {"id":"TZ-01-01-01-001-002","vitongoji_id":"TZ-01-01-01-001","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Mtaa wa Boma","name_en":"Boma Road"},
     {"id":"TZ-01-01-01-002-001","vitongoji_id":"TZ-01-01-01-002","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Mtaa wa Goliondoi","name_en":"Goliondoi Road"},
     {"id":"TZ-01-01-02-001-001","vitongoji_id":"TZ-01-01-02-001","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Mtaa wa Themi","name_en":"Themi Road"},
-
     {"id":"TZ-21-03-01-001-001","vitongoji_id":"TZ-21-03-01-001","district_id":"TZ-21-03","region_id":"TZ-21","name_sw":"Mtaa wa Bagamoyo","name_en":"Bagamoyo Road"},
     {"id":"TZ-21-01-01-001-001","vitongoji_id":"TZ-21-01-01-001","district_id":"TZ-21-01","region_id":"TZ-21","name_sw":"Mtaa wa Kibaha","name_en":"Kibaha Road"},
-
     {"id":"TZ-29-01-01-001-001","vitongoji_id":"TZ-29-01-01-001","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Mtaa wa Independence","name_en":"Independence Avenue"},
     {"id":"TZ-29-01-01-002-001","vitongoji_id":"TZ-29-01-01-002","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Mtaa wa Usagara","name_en":"Usagara Street"},
     {"id":"TZ-29-01-01-003-001","vitongoji_id":"TZ-29-01-01-003","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Mtaa wa Ocean","name_en":"Ocean Road"},
-
     {"id":"TZ-13-01-01-001-001","vitongoji_id":"TZ-13-01-01-001","district_id":"TZ-13-01","region_id":"TZ-13","name_sw":"Mtaa wa Forest","name_en":"Forest Road"},
     {"id":"TZ-13-01-01-002-001","vitongoji_id":"TZ-13-01-01-002","district_id":"TZ-13-01","region_id":"TZ-13","name_sw":"Mtaa wa Mwanjelwa","name_en":"Mwanjelwa Road"},
-
     {"id":"TZ-15-01-01-001-001","vitongoji_id":"TZ-15-01-01-001","district_id":"TZ-15-01","region_id":"TZ-15","name_sw":"Mtaa wa Station","name_en":"Station Road"},
     {"id":"TZ-15-01-01-002-001","vitongoji_id":"TZ-15-01-01-002","district_id":"TZ-15-01","region_id":"TZ-15","name_sw":"Mtaa wa Kichangani","name_en":"Kichangani Road"},
-
     {"id":"TZ-09-01-01-001-001","vitongoji_id":"TZ-09-01-01-001","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Mtaa wa Market","name_en":"Market Street"},
     {"id":"TZ-09-01-01-002-001","vitongoji_id":"TZ-09-01-01-002","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Mtaa wa Rau","name_en":"Rau Road"},
-    {"id":"TZ-09-01-01-003-001","vitongoji_id":"TZ-09-01-01-003","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Mtaa wa Majengo","name_en":"Majengo Street"}
+    {"id":"TZ-09-01-01-003-001","vitongoji_id":"TZ-09-01-01-003","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Mtaa wa Majengo","name_en":"Majengo Street"},
+
+    {"id":"TZ-04-01-01-001-001","vitongoji_id":"TZ-04-01-01-001","district_id":"TZ-04-01","region_id":"TZ-04","name_sw":"Mtaa wa Geita","name_en":"Geita Road"},
+    {"id":"TZ-05-01-01-001-001","vitongoji_id":"TZ-05-01-01-001","district_id":"TZ-05-01","region_id":"TZ-05","name_sw":"Mtaa wa Iringa","name_en":"Iringa Road"},
+    {"id":"TZ-06-01-01-001-001","vitongoji_id":"TZ-06-01-01-001","district_id":"TZ-06-01","region_id":"TZ-06","name_sw":"Mtaa wa Bukoba","name_en":"Bukoba Road"},
+    {"id":"TZ-12-01-01-001-001","vitongoji_id":"TZ-12-01-01-001","district_id":"TZ-12-01","region_id":"TZ-12","name_sw":"Mtaa wa Musoma","name_en":"Musoma Road"},
+    {"id":"TZ-28-01-01-001-001","vitongoji_id":"TZ-28-01-01-001","district_id":"TZ-28-01","region_id":"TZ-28","name_sw":"Mtaa wa Tabora","name_en":"Tabora Road"},
+    {"id":"TZ-24-01-01-001-001","vitongoji_id":"TZ-24-01-01-001","district_id":"TZ-24-01","region_id":"TZ-24","name_sw":"Mtaa wa Shinyanga","name_en":"Shinyanga Road"},
+    {"id":"TZ-24-03-01-001-001","vitongoji_id":"TZ-24-03-01-001","district_id":"TZ-24-03","region_id":"TZ-24","name_sw":"Mtaa wa Kahama","name_en":"Kahama Road"},
+    {"id":"TZ-26-01-01-001-001","vitongoji_id":"TZ-26-01-01-001","district_id":"TZ-26-01","region_id":"TZ-26","name_sw":"Mtaa wa Singida","name_en":"Singida Road"},
+    {"id":"TZ-23-01-01-001-001","vitongoji_id":"TZ-23-01-01-001","district_id":"TZ-23-01","region_id":"TZ-23","name_sw":"Mtaa wa Songea","name_en":"Songea Road"},
+    {"id":"TZ-22-01-01-001-001","vitongoji_id":"TZ-22-01-01-001","district_id":"TZ-22-01","region_id":"TZ-22","name_sw":"Mtaa wa Sumbawanga","name_en":"Sumbawanga Road"},
+    {"id":"TZ-14-01-01-001-001","vitongoji_id":"TZ-14-01-01-001","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Mtaa wa Kenyatta","name_en":"Kenyatta Road"},
+    {"id":"TZ-14-01-01-002-001","vitongoji_id":"TZ-14-01-01-002","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Mtaa wa Malindi","name_en":"Malindi Street"}
   ],
   "stats": {
-    "listed": 48,
-    "regions_started": ["Dar es Salaam", "Dodoma", "Arusha", "Pwani", "Tanga", "Mbeya", "Morogoro", "Kilimanjaro"],
+    "listed": 65,
+    "regions_covered": 18,
     "target": "all mitaa nationwide",
-    "note": "Inaendelea mkoa mkoa – hakuna kuruka."
+    "note": "Mikoa kuu yameanza. Inaendelea – hakuna kuruka."
   }
 }
