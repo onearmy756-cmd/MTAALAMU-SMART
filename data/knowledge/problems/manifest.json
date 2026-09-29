@@ -1,0 +1,26 @@
+{
+  "total": 420,
+  "trades": {
+    "appliance": {"file": "appliance.json", "count": 20},
+    "borehole": {"file": "borehole.json", "count": 20},
+    "cctv": {"file": "cctv.json", "count": 20},
+    "computer": {"file": "computer.json", "count": 20},
+    "gari": {"file": "gari.json", "count": 20},
+    "gas": {"file": "gas.json", "count": 20},
+    "gate_motor": {"file": "gate_motor.json", "count": 20},
+    "hvac": {"file": "hvac.json", "count": 20},
+    "jenereta": {"file": "jenereta.json", "count": 20},
+    "maji": {"file": "maji.json", "count": 20},
+    "pikipiki": {"file": "pikipiki.json", "count": 20},
+    "pump": {"file": "pump.json", "count": 20},
+    "rangi": {"file": "rangi.json", "count": 20},
+    "roofing": {"file": "roofing.json", "count": 20},
+    "simu": {"file": "simu.json", "count": 20},
+    "solar": {"file": "solar.json", "count": 20},
+    "tailor": {"file": "tailor.json", "count": 20},
+    "ujenzi": {"file": "ujenzi.json", "count": 20},
+    "umeme": {"file": "umeme.json", "count": 20},
+    "useremala": {"file": "useremala.json", "count": 20},
+    "welding": {"file": "welding.json", "count": 20}
+  }
+}
