@@ -1,5 +1,5 @@
 {
-  "version": "2.6.0",
+  "version": "2.7.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -7,7 +7,7 @@
     "level": "country",
     "center": { "lat": -6.3690, "lng": 34.8888 }
   },
-  "levels": ["country", "region", "district", "tarafa", "kata", "kijiji", "vitongoji", "mtaa", "road"],
+  "levels": ["country", "region", "district", "tarafa", "kata", "kijiji", "vitongoji", "mtaa", "barabara"],
   "stats": {
     "regions": 31,
     "districts": 184,
@@ -16,7 +16,8 @@
     "vijiji_listed": 25,
     "vitongoji_listed": 80,
     "mitaa_listed": 65,
-    "note": "Mikoa + Wilaya kamili. Tarafa: mikoa yote. Kata 55+. Vijiji zimeanza. Vitongoji + Mitaa zinaendelea. Hakuna kuruka."
+    "barabara_listed": 25,
+    "note": "Hierarkia yote imeanza. Mikoa + Wilaya kamili. Tarafa: mikoa yote. Kata/Vijiji/Vitongoji/Mitaa/Barabara zinaendelea. Hakuna kuruka."
   },
   "files": {
     "districts": "data/geo/districts.json",
@@ -25,6 +26,7 @@
     "vijiji": "data/geo/vijiji.json",
     "vitongoji": "data/geo/vitongoji.json",
     "mitaa": "data/geo/mitaa.json",
+    "barabara": "data/geo/barabara.json",
     "schema": "data/geo/SCHEMA.md"
   },
   "notes": [
@@ -32,10 +34,10 @@
     "✅ Wilaya 184 kamili",
     "✅ Tarafa: mikoa yote 31 (130+)",
     "🔄 Kata 55+",
-    "🔄 Vijiji 25+ (zimeanza)",
+    "🔄 Vijiji 25+",
     "🔄 Vitongoji 80+",
     "🔄 Mitaa 65+",
-    "⏳ Barabara",
+    "🔄 Barabara 25+ (zimeanza)",
     "Inaendelea – hakuna kuruka"
   ]
 }
