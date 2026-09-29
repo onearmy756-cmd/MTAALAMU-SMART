@@ -3,6 +3,7 @@
 # ============================================================
 # Loads complete views from commit bdcc9127 (formula/diag/viz/map),
 # then overrides tabs_el to include AGENTIC VISION.
+# ALWAYS loads views_map.R so MAP tab matches production screenshot.
 
 if (!exists(".MTAALAMU_VIEWS_LOADED", inherits = TRUE)) {
   .url <- "https://raw.githubusercontent.com/onearmy756-cmd/MTAALAMU-SMART/bdcc9127c171882ec12852c182c772d82aa9b5ed/web-r/R/views.R"
@@ -76,11 +77,27 @@ if (!exists("panel_el")) {
       uiOutput("dx_model"), uiOutput("dx_symptoms"), uiOutput("dx_results")))
   }
   view_viz <- function(lang) panel_el("VIZ", NULL, tags$div("Visualization"))
-  view_map <- function(lang, geo, payload) {
-    panel_el("MAP", NULL, tags$div(id = "leaflet-map", style = "height:480px"))
-  }
   status_bar_el <- function(lang, stats, uptime) {
     tags$div(class = "status-bar", paste("UP", uptime, "CPU", stats$cpu))
   }
-  map_payload <- function(...) list()
+}
+
+# FULL LIVE MAP — always override stubs (matches screenshot)
+.views_map <- local({
+  candidates <- c(
+    if (exists("p_app", mode = "function")) p_app("R", "views_map.R") else NA_character_,
+    file.path("R", "views_map.R"),
+    file.path("web-r", "R", "views_map.R"),
+    "views_map.R"
+  )
+  for (f in candidates) {
+    if (!is.na(f) && file.exists(f)) {
+      sys.source(f, envir = globalenv(), keep.source = FALSE)
+      return(TRUE)
+    }
+  }
+  FALSE
+})
+if (!isTRUE(.views_map)) {
+  message("views.R: views_map.R not found — MAP tab may be incomplete")
 }
