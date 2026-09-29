@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "policy_sw": "Software: agent inaweza kutekeleza vitendo salama baada ya HITL. Hardware: onyesha tatizo + mwongozo; binadamu anasolve.",
+  "software_cause_keywords": [
+    "virus", "malware", "software_corrupt", "driver", "update", "cache", "temp",
+    "registry", "service", "process", "memory_leak", "disk_full", "slow_pc",
+    "browser", "permission", "config", "settings", "app_crash"
+  ],
+  "hardware_cause_keywords": [
+    "psu", "hdd_fail", "ssd", "ram_bad", "motherboard", "gpu", "cpu_overheat",
+    "overheat", "fan", "battery", "screen", "keyboard", "port", "cable",
+    "capacitor", "power_button", "no_boot_hardware"
+  ],
+  "software_actions": [
+    {
+      "id": "report_top_cpu",
+      "title_sw": "Ripoti michakato ya CPU juu",
+      "risk": "low",
+      "requires_hitl": false,
+      "matches": ["slow_pc", "slow", "cpu", "process"]
+    },
+    {
+      "id": "list_temp",
+      "title_sw": "Orodhesha faili za muda",
+      "risk": "low",
+      "requires_hitl": false,
+      "matches": ["temp", "cache", "disk_full", "slow"]
+    },
+    {
+      "id": "clear_user_temp",
+      "title_sw": "Safisha temp ya mtumiaji",
+      "risk": "medium",
+      "requires_hitl": true,
+      "matches": ["temp", "cache", "disk_full", "slow_pc", "slow"]
+    },
+    {
+      "id": "sync_disk",
+      "title_sw": "Flush disk buffers",
+      "risk": "low",
+      "requires_hitl": false,
+      "matches": ["disk", "io", "flush"]
+    }
+  ],
+  "hardware_guide_template_sw": "HARDWARE — Agent HAIFANYI ukarabati wa kimwili. Mtaalamu/binadamu: (1) Zima umeme salama (2) Fuata suluhisho la knowledge (3) Badilisha/kagua sehemu (4) Thibitisha."
+}
