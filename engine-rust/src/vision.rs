@@ -1,7 +1,6 @@
-//! Live Vision Engine — ramani ya kifaa, processes, topology, issues
-//! Source of truth: data/agent_data.json + data/vision/device_map.json + system_bus.json
-//! Metrics: kutoka snapshot (production: sysinfo probe baadaye)
+//! Live Vision — ramani + processes + issues kutoka OS probe HALISI
 
+use crate::sysprobe::{probe, SystemProbe};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fs;
@@ -64,12 +63,14 @@ pub struct AgentDataSnapshot {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VisionSnapshot {
     pub timestamp: u64,
+    pub source: String,
     pub components: Vec<Component>,
     pub processes: Vec<ProcessInfo>,
     pub topology: Topology,
     pub issues: Vec<Issue>,
     pub summary: VisionSummary,
     pub bus_status: Vec<BusStatus>,
+    pub probe: Option<Value>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -93,16 +94,28 @@ pub struct BusStatus {
 pub struct VisionEngine {
     snapshot: AgentDataSnapshot,
     bus_defs: Value,
+    #[allow(dead_code)]
     device_map: Value,
 }
 
 impl VisionEngine {
     pub fn load(data_root: &Path) -> Result<Self, String> {
         let agent_path = data_root.join("agent_data.json");
-        let text = fs::read_to_string(&agent_path)
-            .map_err(|e| format!("agent_data.json: {}", e))?;
-        let snapshot: AgentDataSnapshot =
-            serde_json::from_str(&text).map_err(|e| format!("agent_data parse: {}", e))?;
+        let snapshot = if agent_path.exists() {
+            let text = fs::read_to_string(&agent_path)
+                .map_err(|e| format!("agent_data.json: {}", e))?;
+            serde_json::from_str(&text).map_err(|e| format!("agent_data parse: {}", e))?
+        } else {
+            AgentDataSnapshot {
+                components: vec![],
+                processes: vec![],
+                topology: Topology {
+                    nodes: vec![],
+                    edges: vec![],
+                },
+                issues: vec![],
+            }
+        };
 
         let bus_path = data_root.join("vision/system_bus.json");
         let bus_defs = if bus_path.exists() {
@@ -127,56 +140,60 @@ impl VisionEngine {
         })
     }
 
+    /// Snapshot ya JSON tu (legacy / offline)
     pub fn scan(&self) -> VisionSnapshot {
-        let critical = self
-            .snapshot
-            .components
-            .iter()
-            .filter(|c| c.status == "critical")
-            .count();
-        let warning = self
-            .snapshot
-            .components
-            .iter()
-            .filter(|c| c.status == "warning")
-            .count();
-        let good = self
-            .snapshot
-            .components
-            .iter()
-            .filter(|c| c.status == "good")
-            .count();
-        let critical_processes = self
-            .snapshot
+        self.finalize_scan(self.snapshot.clone(), "json-static", None)
+    }
+
+    /// Snapshot HALISI kutoka OS (sysinfo)
+    pub fn scan_live(&self) -> VisionSnapshot {
+        let p = probe(12, 200);
+        let live = build_from_probe(&p);
+        let probe_val = serde_json::to_value(&p).ok();
+        self.finalize_scan(live, "os-sysinfo", probe_val)
+    }
+
+    fn finalize_scan(
+        &self,
+        snap: AgentDataSnapshot,
+        source: &str,
+        probe: Option<Value>,
+    ) -> VisionSnapshot {
+        let critical = snap.components.iter().filter(|c| c.status == "critical").count();
+        let warning = snap.components.iter().filter(|c| c.status == "warning").count();
+        let good = snap.components.iter().filter(|c| c.status == "good").count();
+        let critical_processes = snap
             .processes
             .iter()
             .filter(|p| p.status == "critical")
             .count();
-
-        let bus_status = self.compute_bus_status();
+        let bus_status = self.compute_bus_status(&snap);
 
         VisionSnapshot {
             timestamp: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .map(|d| d.as_secs())
                 .unwrap_or(0),
-            components: self.snapshot.components.clone(),
-            processes: self.snapshot.processes.clone(),
-            topology: self.snapshot.topology.clone(),
-            issues: self.snapshot.issues.clone(),
+            source: source.into(),
+            components: snap.components,
+            processes: snap.processes,
+            topology: snap.topology,
+            issues: snap.issues,
             summary: VisionSummary {
-                total_components: self.snapshot.components.len(),
+                total_components: critical + warning + good,
                 critical,
                 warning,
                 good,
                 critical_processes,
-                open_issues: self.snapshot.issues.len(),
+                open_issues: 0, // set below
             },
             bus_status,
+            probe,
         }
+        .with_issue_count()
     }
 
-    fn compute_bus_status(&self) -> Vec<BusStatus> {
+    fn compute_bus_status(&self, snap: &AgentDataSnapshot) -> Vec<BusStatus> {
         let mut out = Vec::new();
         let buses = self
             .bus_defs
@@ -202,10 +219,9 @@ impl VisionEngine {
                 })
                 .unwrap_or_default();
 
-            // Health from worst component status on path
             let mut health = "good".to_string();
             for pid in &path {
-                if let Some(c) = self.snapshot.components.iter().find(|c| c.id == *pid) {
+                if let Some(c) = snap.components.iter().find(|c| c.id == *pid) {
                     if c.status == "critical" {
                         health = "critical".into();
                         break;
@@ -229,15 +245,245 @@ impl VisionEngine {
         self.snapshot.issues.iter().collect()
     }
 
-    pub fn critical_components(&self) -> Vec<&Component> {
-        self.snapshot
-            .components
-            .iter()
-            .filter(|c| c.status == "critical" || c.status == "warning")
-            .collect()
+    pub fn to_json(&self) -> Value {
+        serde_json::to_value(self.scan_live()).unwrap_or(Value::Null)
+    }
+}
+
+impl VisionSnapshot {
+    fn with_issue_count(mut self) -> Self {
+        self.summary.open_issues = self.issues.len();
+        self
+    }
+}
+
+fn status_pct(pct: f64) -> String {
+    if pct >= 90.0 {
+        "critical".into()
+    } else if pct >= 75.0 {
+        "warning".into()
+    } else {
+        "good".into()
+    }
+}
+
+/// Unda components/processes/topology/issues kutoka SystemProbe — DATA HALISI
+pub fn build_from_probe(p: &SystemProbe) -> AgentDataSnapshot {
+    let cpu_st = status_pct(p.cpu_usage_pct);
+    let ram_st = status_pct(p.ram_usage_pct);
+    let disk_pct = p.disks.first().map(|d| d.used_pct).unwrap_or(0.0);
+    let disk_st = status_pct(disk_pct);
+
+    let components = vec![
+        Component {
+            id: "cpu".into(),
+            name: format!("CPU {:.0}% ({})", p.cpu_usage_pct, p.cpu_brand),
+            icon: "🧠".into(),
+            status: cpu_st.clone(),
+            x: 300.0,
+            y: 180.0,
+        },
+        Component {
+            id: "ram".into(),
+            name: format!("RAM {:.0}% ({:.0}/{:.0} MB)", p.ram_usage_pct, p.ram_used_mb, p.ram_total_mb),
+            icon: "💾".into(),
+            status: ram_st.clone(),
+            x: 180.0,
+            y: 120.0,
+        },
+        Component {
+            id: "disk".into(),
+            name: format!(
+                "Disk {:.0}% ({})",
+                disk_pct,
+                p.disks.first().map(|d| d.mount.as_str()).unwrap_or("?")
+            ),
+            icon: "🗄️".into(),
+            status: disk_st.clone(),
+            x: 180.0,
+            y: 260.0,
+        },
+        Component {
+            id: "os_kernel".into(),
+            name: format!("Kernel {}", p.kernel),
+            icon: "⚙️".into(),
+            status: "good".into(),
+            x: 300.0,
+            y: 80.0,
+        },
+        Component {
+            id: "os_userland".into(),
+            name: format!("{} {}", p.os_name, p.os_version),
+            icon: "📦".into(),
+            status: p.health.clone(),
+            x: 420.0,
+            y: 120.0,
+        },
+        Component {
+            id: "network".into(),
+            name: format!("Net ({} ifaces)", p.networks.len()),
+            icon: "🌐".into(),
+            status: if p.networks.is_empty() {
+                "warning".into()
+            } else {
+                "good".into()
+            },
+            x: 510.0,
+            y: 180.0,
+        },
+        Component {
+            id: "motherboard".into(),
+            name: format!("Host: {}", p.hostname),
+            icon: "🔩".into(),
+            status: "good".into(),
+            x: 300.0,
+            y: 300.0,
+        },
+        Component {
+            id: "swap".into(),
+            name: format!("Swap {:.0}/{:.0} MB", p.swap_used_mb, p.swap_total_mb),
+            icon: "📑".into(),
+            status: if p.swap_total_mb > 0.0 && (p.swap_used_mb / p.swap_total_mb) > 0.8 {
+                "warning".into()
+            } else {
+                "good".into()
+            },
+            x: 420.0,
+            y: 260.0,
+        },
+    ];
+
+    let processes: Vec<ProcessInfo> = p
+        .top_processes
+        .iter()
+        .map(|pr| ProcessInfo {
+            name: format!("{} [{}]", pr.name, pr.pid),
+            cpu: pr.cpu,
+            ram: if p.ram_total_mb > 0.0 {
+                (pr.ram_mb / p.ram_total_mb) * 100.0
+            } else {
+                0.0
+            },
+            status: pr.status.clone(),
+        })
+        .collect();
+
+    // Topology: Host → CPU/RAM/Disk → top processes
+    let mut nodes = vec![
+        TopologyNode {
+            id: "host".into(),
+            label: p.hostname.clone(),
+            x: 300.0,
+            y: 40.0,
+            status: "online".into(),
+        },
+        TopologyNode {
+            id: "cpu_n".into(),
+            label: format!("CPU {:.0}%", p.cpu_usage_pct),
+            x: 120.0,
+            y: 140.0,
+            status: if cpu_st == "critical" {
+                "offline".into()
+            } else {
+                "online".into()
+            },
+        },
+        TopologyNode {
+            id: "ram_n".into(),
+            label: format!("RAM {:.0}%", p.ram_usage_pct),
+            x: 300.0,
+            y: 140.0,
+            status: if ram_st == "critical" {
+                "warning".into()
+            } else {
+                "online".into()
+            },
+        },
+        TopologyNode {
+            id: "disk_n".into(),
+            label: format!("Disk {:.0}%", disk_pct),
+            x: 480.0,
+            y: 140.0,
+            status: if disk_st == "critical" {
+                "warning".into()
+            } else {
+                "online".into()
+            },
+        },
+    ];
+    let mut edges = vec![
+        TopologyEdge {
+            from: "host".into(),
+            to: "cpu_n".into(),
+        },
+        TopologyEdge {
+            from: "host".into(),
+            to: "ram_n".into(),
+        },
+        TopologyEdge {
+            from: "host".into(),
+            to: "disk_n".into(),
+        },
+    ];
+
+    for (i, pr) in p.top_processes.iter().take(6).enumerate() {
+        let id = format!("p{}", i);
+        let x = 80.0 + (i as f64) * 90.0;
+        nodes.push(TopologyNode {
+            id: id.clone(),
+            label: pr.name.chars().take(12).collect(),
+            x,
+            y: 280.0,
+            status: if pr.status == "critical" {
+                "warning".into()
+            } else {
+                "online".into()
+            },
+        });
+        edges.push(TopologyEdge {
+            from: "cpu_n".into(),
+            to: id,
+        });
     }
 
-    pub fn to_json(&self) -> Value {
-        serde_json::to_value(self.scan()).unwrap_or(Value::Null)
+    let mut issues: Vec<Issue> = p
+        .issues
+        .iter()
+        .map(|t| Issue {
+            title: t.clone(),
+            desc: format!(
+                "Imetambuliwa na OS probe @ {} | host={} | os={}",
+                p.timestamp, p.hostname, p.os_name
+            ),
+            action: if t.contains("CPU") {
+                "Angalia michakato yenye CPU juu; funga isiyo muhimu".into()
+            } else if t.contains("RAM") {
+                "Funga programu zinazotumia RAM nyingi".into()
+            } else if t.contains("Diski") || t.contains("Disk") {
+                "Futa faili za muda; ongeza nafasi".into()
+            } else if t.contains("Mchakato") {
+                "Chunguza PID; zima kama siyo ya mfumo".into()
+            } else {
+                "Chunguza metrics za OS".into()
+            },
+        })
+        .collect();
+
+    if issues.is_empty() {
+        issues.push(Issue {
+            title: "Mfumo uko sawa".into(),
+            desc: format!(
+                "CPU {:.1}% · RAM {:.1}% · health={} · uptime {}s",
+                p.cpu_usage_pct, p.ram_usage_pct, p.health, p.uptime_sec
+            ),
+            action: "Hakuna hatua ya dharura".into(),
+        });
+    }
+
+    AgentDataSnapshot {
+        components,
+        processes,
+        topology: Topology { nodes, edges },
+        issues,
     }
 }
