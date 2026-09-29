@@ -1,17 +1,31 @@
 # ============================================================
-# devices_bridge.R — Electronic Devices catalog ↔ Agentic
+# devices_bridge.R — 100% Electronic Devices ↔ Agentic
 # ============================================================
 
 load_devices_catalog <- function() {
+  devices <- list()
+  for (root in .data_roots()) {
+    dir <- file.path(root, "devices")
+    if (!dir.exists(dir)) next
+    files <- list.files(dir, pattern = "\\.json$", full.names = TRUE)
+    for (f in files) {
+      bn <- basename(f)
+      if (bn %in% c("manifest.json", "kanuni_10.json")) next
+      doc <- tryCatch(jsonlite::fromJSON(f, simplifyVector = FALSE), error = function(e) NULL)
+      if (is.null(doc)) next
+      for (d in doc$devices %||% list()) devices[[length(devices) + 1]] <- d
+    }
+    if (length(devices) > 0)
+      return(list(devices = devices, count = length(devices),
+                  jina = "Electronic Devices Solver", source = dir))
+  }
   f <- find_data_file("devices_catalog.json")
   if (is.null(f)) f <- find_data_file("electronic_devices_solver.json")
   if (is.null(f)) return(list(devices = list(), count = 0))
   doc <- tryCatch(jsonlite::fromJSON(f, simplifyVector = FALSE), error = function(e) NULL)
   if (is.null(doc)) return(list(devices = list(), count = 0))
-  if (!is.null(doc$devices)) {
+  if (!is.null(doc$devices))
     return(list(devices = doc$devices, count = length(doc$devices), jina = doc$jina %||% "Devices"))
-  }
-  # full electronic_devices_solver shape
   eds <- doc$electronic_devices_solver %||% doc
   devices <- list()
   for (kundi in names(eds)) {
@@ -23,8 +37,7 @@ load_devices_catalog <- function() {
         kundi = kundi, kifaa = nm,
         aina = dev$aina %||% list(),
         matatizo = dev$matatizo %||% list(),
-        suluhisho = dev$suluhisho %||% list()
-      )
+        suluhisho = dev$suluhisho %||% list())
     }
   }
   list(devices = devices, count = length(devices), jina = eds$jina %||% "Devices")
@@ -55,8 +68,7 @@ match_devices <- function(msg, limit = 6) {
                                function(s) grepl(s, blob, fixed = TRUE)))) "mixed" else "hardware"
       hits[[length(hits) + 1]] <- list(
         kifaa = d$kifaa, kundi = d$kundi, tatizo = tatizo,
-        score = score, suluhisho = as.list(sul), domain = domain
-      )
+        score = score, suluhisho = as.list(sul), domain = domain)
     }
   }
   if (length(hits) == 0) return(list())
@@ -66,16 +78,14 @@ match_devices <- function(msg, limit = 6) {
 
 devices_hits_ui <- function(hits, lang = "sw") {
   if (is.null(hits) || length(hits) == 0)
-    return(tags$div(style = "color:var(--dim)", "Hakuna match ya kifaa — jaribu TV, Fridge, Router…"))
+    return(tags$div(style = "color:var(--dim)", "Hakuna match — jaribu TV, Fridge, Router…"))
   tags$div(lapply(hits, function(h) {
     tags$div(class = "issue warn", style = "margin-bottom:8px",
       tags$span(class = "ico", if (identical(h$domain, "hardware")) "🔧" else "🔀"),
       tags$div(class = "body",
         tags$div(class = "t", paste0(h$kifaa, " · ", h$tatizo, " (", h$domain, ")")),
         tags$div(class = "d", paste0("Kundi: ", h$kundi, " · score=", h$score)),
-        tags$div(class = "ts", paste(
-          "Hatua (binadamu/hardware):",
-          paste(head(unlist(h$suluhisho), 6), collapse = " → ")
-        ))))
+        tags$div(class = "ts", paste("Hatua (binadamu):",
+          paste(head(unlist(h$suluhisho), 6), collapse = " → ")))))
   }))
 }
