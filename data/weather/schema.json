@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "description": "Schema ya utabiri wa hali ya hewa + alerts kwa MTAALAMU SMART",
+  "forecast": {
+    "location": { "lat": 0.0, "lng": 0.0, "name_sw": "", "name_en": "" },
+    "updated_at": "ISO8601",
+    "current": {
+      "temp_c": 0.0,
+      "feels_like_c": 0.0,
+      "humidity": 0,
+      "wind_kmh": 0.0,
+      "condition_sw": "",
+      "condition_en": "",
+      "icon": ""
+    },
+    "hourly": [],
+    "daily": []
+  },
+  "alerts": {
+    "type": "array",
+    "items": {
+      "id": "string",
+      "severity": "low|medium|high|critical",
+      "title_sw": "",
+      "title_en": "",
+      "description_sw": "",
+      "description_en": "",
+      "start": "ISO8601",
+      "end": "ISO8601",
+      "areas": []
+    }
+  },
+  "sources": ["OpenWeatherMap", "offline-cache", "Tanzania Meteorological Authority (baadaye)"],
+  "notes": [
+    "Offline-first: cache ya forecast ihifadhiwe ndani.",
+    "Voice: tumia voice_prompts_sw.json key 'weather_alert'.",
+    "Itaonyeshwa kama overlay kwenye ramani + arifa."
+  ]
+}
