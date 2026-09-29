@@ -1,11 +1,11 @@
 //! mtaalamu CLI
-//!   mtaalamu solve --msg "..." --approve
+//!   mtaalamu devices
+//!   mtaalamu device-solve --msg "TV haiwaki"
 
 use mtaalamu_engine::{
-    AgentOrchestrator, BayesianDiagnoser, FormulaEngine, GeoEngine, PipelineEngine,
-    ReportEngine, VisionEngine, auto_diagnose, deep_probe_json, discover_tools,
-    log_remediation, probe_json, remediation_catalog, run_diagnostic, run_full,
-    run_remediation, solve_message,
+    AgentOrchestrator, BayesianDiagnoser, FormulaEngine, auto_diagnose, deep_probe_json,
+    devices_catalog_stats, discover_tools, log_remediation, probe_json, remediation_catalog,
+    run_diagnostic, run_full, run_remediation, search_devices, solve_message,
 };
 use std::path::Path;
 
@@ -71,9 +71,14 @@ fn main() {
         "diagnose" => {
             let model = args.get(2).unwrap_or_else(|| fail("diagnose <model> --symptoms"));
             let syms = parse_flag(&args, "--symptoms").unwrap_or_default();
-            let ids: Vec<String> = syms.split(',').map(|s| s.trim().into()).filter(|s: &String| !s.is_empty()).collect();
+            let ids: Vec<String> = syms
+                .split(',')
+                .map(|s| s.trim().into())
+                .filter(|s: &String| !s.is_empty())
+                .collect();
             let mut d = BayesianDiagnoser::new();
-            d.load_file(Path::new(&data_path("diagnosis.json"))).unwrap_or_else(|e| fail(&e));
+            d.load_file(Path::new(&data_path("diagnosis.json")))
+                .unwrap_or_else(|e| fail(&e));
             d.diagnose(model, &ids).unwrap_or_else(|e| fail(&e))
         }
         "agents" => {
@@ -90,21 +95,33 @@ fn main() {
                     "session": { "id": r.session.id, "state": r.session.state.as_str(),
                                   "hitl_approved": r.session.hitl_approved },
                     "vision": r.vision,
-                    "report_md_preview": r.report_md.chars().take(400).collect::<String>(),
+                    "devices": search_devices(Path::new(&data_root()), &msg, 5),
                 }),
                 Err(e) => fail(&e),
             }
+        }
+        "devices" | "device-stats" => devices_catalog_stats(Path::new(&data_root())),
+        "device-solve" | "electronic" => {
+            let msg = parse_flag(&args, "--msg")
+                .unwrap_or_else(|| fail("device-solve --msg \"TV haiwaki\""));
+            let limit: usize = parse_flag(&args, "--limit")
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(8);
+            serde_json::to_value(search_devices(Path::new(&data_root()), &msg, limit))
+                .unwrap_or(serde_json::Value::Null)
         }
         "solve" => {
             let msg = parse_flag(&args, "--msg")
                 .unwrap_or_else(|| fail("solve --msg \"...\" [--approve]"));
             let approve = args.iter().any(|a| a == "--approve");
-            let result = solve_message(Path::new(&data_root()), &msg, approve);
-            serde_json::to_value(&result).unwrap_or(serde_json::Value::Null)
+            let software = solve_message(Path::new(&data_root()), &msg, approve);
+            let devices = search_devices(Path::new(&data_root()), &msg, 5);
+            serde_json::json!({
+                "software_solve": software,
+                "devices": devices,
+                "note_sw": "Software: auto baada ya HITL. Devices/hardware: mwongozo kwa binadamu."
+            })
         }
-        "vision" => VisionEngine::load(Path::new(&data_root()))
-            .unwrap_or_else(|e| fail(&e))
-            .to_json(),
         "sysprobe" | "probe" => {
             let top: usize = parse_flag(&args, "--top").and_then(|s| s.parse().ok()).unwrap_or(10);
             probe_json(top)
@@ -132,11 +149,12 @@ fn main() {
         }
         "help" | "--help" | "-h" => serde_json::json!({
             "commands": [
-                "solve --msg '...' [--approve]  — software execute / hardware guide",
-                "agentic --msg '...' [--approve]",
-                "tools | diagnose-os | deep | remediate | sysprobe"
+                "devices — stats za electronic catalog",
+                "device-solve --msg 'TV haiwaki' — search devices_catalog",
+                "solve --msg '...' [--approve] — software + devices",
+                "agentic --msg '...' [--approve]"
             ],
-            "policy": "Software: allowlist after HITL. Hardware: human only."
+            "policy": "Hardware devices = human guide. PC software = HITL allowlist."
         }),
         other => fail(&format!("Amri '{}' haipo.", other)),
     };
@@ -145,7 +163,9 @@ fn main() {
 }
 
 fn parse_flag(args: &[String], flag: &str) -> Option<String> {
-    args.iter().position(|a| a == flag).and_then(|i| args.get(i + 1).cloned())
+    args.iter()
+        .position(|a| a == flag)
+        .and_then(|i| args.get(i + 1).cloned())
 }
 
 fn fail(msg: &str) -> ! {
