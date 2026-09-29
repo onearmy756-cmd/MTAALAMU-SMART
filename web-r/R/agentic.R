@@ -1,15 +1,10 @@
 # ============================================================
 # agentic.R — Agentic Vision UI (Q&A + Automatic + Live Vision)
-# Data-driven kutoka agent_data.json + vision JSON
+# + AV4 Scribe/TTS  + AV5 Digital Book
 # ============================================================
 
-# ---- load agentic data (root data/ au web-r/data) ----
 load_agentic_data <- function() {
-  roots <- c(
-    p_root("data"),
-    p_app("data"),
-    file.path(dirname(APP_DIR), "data")
-  )
+  roots <- c(p_root("data"), p_app("data"), file.path(dirname(APP_DIR), "data"))
   pick <- function(rel) {
     for (r in roots) {
       f <- file.path(r, rel)
@@ -41,7 +36,6 @@ status_color <- function(st) {
     "#90a4ae")
 }
 
-# ---- Device map SVG from components ----
 agentic_device_map_svg <- function(components, width = 640, height = 360) {
   if (is.null(components) || length(components) == 0) {
     return("<svg width='640' height='80'><text x='20' y='40' fill='#78909c'>Hakuna data ya ramani</text></svg>")
@@ -54,13 +48,9 @@ agentic_device_map_svg <- function(components, width = 640, height = 360) {
     name <- c$name %||% c$id %||% "?"
     icon <- c$icon %||% "•"
     sprintf(
-      paste0(
-        "<g transform='translate(%.0f,%.0f)'>",
-        "<circle r='28' fill='#0a1628' stroke='%s' stroke-width='2'/>",
-        "<text text-anchor='middle' y='5' font-size='16'>%s</text>",
-        "<text text-anchor='middle' y='48' fill='%s' font-size='10' font-family='system-ui'>%s</text>",
-        "</g>"
-      ),
+      "<g transform='translate(%.0f,%.0f)'><circle r='28' fill='#0a1628' stroke='%s' stroke-width='2'/>"
+      "<text text-anchor='middle' y='5' font-size='16'>%s</text>"
+      "<text text-anchor='middle' y='48' fill='%s' font-size='10' font-family='system-ui'>%s</text></g>",
       x, y, col, icon, col, htmltools::htmlEscape(name)
     )
   }, character(1))
@@ -70,7 +60,6 @@ agentic_device_map_svg <- function(components, width = 640, height = 360) {
   )
 }
 
-# ---- Topology SVG ----
 agentic_topology_svg <- function(topology) {
   if (is.null(topology) || is.null(topology$nodes)) {
     return("<div style='color:#78909c;padding:12px'>Hakuna topology</div>")
@@ -87,7 +76,8 @@ agentic_topology_svg <- function(topology) {
   node_els <- vapply(nodes, function(n) {
     col <- status_color(n$status %||% "online")
     sprintf(
-      "<g transform='translate(%.0f,%.0f)'><rect x='-40' y='-16' width='80' height='32' rx='6' fill='#0a1628' stroke='%s'/><text text-anchor='middle' y='5' fill='%s' font-size='11'>%s</text></g>",
+      "<g transform='translate(%.0f,%.0f)'><rect x='-40' y='-16' width='80' height='32' rx='6' fill='#0a1628' stroke='%s'/>"
+      "<text text-anchor='middle' y='5' fill='%s' font-size='11'>%s</text></g>",
       n$x, n$y, col, col, htmltools::htmlEscape(n$label %||% n$id)
     )
   }, character(1))
@@ -97,7 +87,6 @@ agentic_topology_svg <- function(topology) {
   )
 }
 
-# ---- Process table ----
 agentic_processes_el <- function(processes, lang) {
   if (is.null(processes) || length(processes) == 0) {
     return(tags$div(style = "color:var(--dim)", tr("av.no_proc", lang)))
@@ -111,12 +100,10 @@ agentic_processes_el <- function(processes, lang) {
           tags$div(class = "proc-pid", paste0("CPU ", p$cpu %||% 0, "% · RAM ", p$ram %||% 0, "%"))),
         tags$div(
           meter_el(p$cpu %||% 0, (p$cpu %||% 0) >= 70),
-          tags$span(class = paste("badge", if (st == "critical") "crit" else if (st == "warning") "warn" else "ok"),
-                    st)))
+          tags$span(class = paste("badge", if (st == "critical") "crit" else if (st == "warning") "warn" else "ok"), st)))
     }))
 }
 
-# ---- Issues ----
 agentic_issues_el <- function(issues, lang) {
   if (is.null(issues) || length(issues) == 0) {
     return(tags$div(class = "status-banner INFO", tr("av.no_issues", lang)))
@@ -132,7 +119,6 @@ agentic_issues_el <- function(issues, lang) {
     }))
 }
 
-# ---- Pipeline steps strip ----
 agentic_pipeline_el <- function(steps, current_idx = 0, lang) {
   if (is.null(steps) || length(steps) == 0) return(NULL)
   tags$div(class = "av-pipeline",
@@ -143,17 +129,13 @@ agentic_pipeline_el <- function(steps, current_idx = 0, lang) {
       done <- (i - 1L) < as.integer(current_idx)
       col <- if (done) "#00e676" else if (active) "#00e5ff" else "#455a64"
       tags$div(
-        style = sprintf(
-          "border:1px solid %s;border-radius:8px;padding:8px 12px;min-width:100px;background:#0a1628",
-          col),
+        style = sprintf("border:1px solid %s;border-radius:8px;padding:8px 12px;min-width:100px;background:#0a1628", col),
         tags$div(style = paste0("color:", col, ";font-weight:700;font-size:12px"),
                  paste0(s$code %||% i, " · ", s$name_sw %||% s$id)),
-        tags$div(style = "font-size:10px;color:var(--dim);margin-top:4px",
-                 s$description_sw %||% ""))
+        tags$div(style = "font-size:10px;color:var(--dim);margin-top:4px", s$description_sw %||% ""))
     }))
 }
 
-# ---- Agents list ----
 agentic_agents_el <- function(agents_file, lang) {
   ags <- agents_file$agents %||% list()
   tags$div(style = "display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px",
@@ -167,7 +149,6 @@ agentic_agents_el <- function(agents_file, lang) {
     }))
 }
 
-# ---- Main Agentic Vision panel ----
 view_agentic <- function(lang, data, session_state = NULL) {
   ad <- data$agent_data
   components <- ad$components %||% list()
@@ -175,47 +156,43 @@ view_agentic <- function(lang, data, session_state = NULL) {
   topology   <- ad$topology %||% list()
   issues     <- ad$issues %||% list()
   pipe_steps <- (data$pipeline$steps) %||% list()
+  greet <- (data$voice$scripts[["agent.receptionist.greet"]]) %||%
+    "Habari. Mimi ni Mtaalamu Smart."
 
   tags$div(class = "av-wrap",
-    # Q&A + controls
     panel_el(tr("av.qa.title", lang), tr("av.qa.meta", lang),
       tags$div(
         tags$div(class = "field",
           tags$label(tr("av.qa.label", lang)),
           tags$textarea(
-            id = "av_msg", class = "form-control",
-            rows = 3, style = "width:100%;background:#0a1628;color:#e0f7fa;border:1px solid #00e5ff44",
+            id = "av_msg", class = "form-control", rows = 3,
+            style = "width:100%;background:#0a1628;color:#e0f7fa;border:1px solid #00e5ff44",
             placeholder = tr("av.qa.placeholder", lang))),
         tags$div(style = "display:flex;gap:10px;margin-top:10px;flex-wrap:wrap",
-          tags$button(
-            class = "trade-pill active",
+          tags$button(class = "trade-pill active",
             onclick = "Shiny.setInputValue('av_start', Date.now(), {priority:'event'})",
             tr("av.btn.start", lang)),
-          tags$button(
-            class = "trade-pill",
+          tags$button(class = "trade-pill",
             onclick = "Shiny.setInputValue('av_approve', Date.now(), {priority:'event'})",
             tr("av.btn.approve", lang)),
-          tags$button(
-            class = "trade-pill",
+          tags$button(class = "trade-pill",
             onclick = "Shiny.setInputValue('av_scan', Date.now(), {priority:'event'})",
             tr("av.btn.scan", lang)),
-          tags$button(
-            class = "trade-pill",
-            onclick = "if(window.speechSynthesis){var u=new SpeechSynthesisUtterance(document.getElementById('av_voice_text')?.innerText||'Habari');u.lang='sw';speechSynthesis.speak(u)}",
-            tr("av.btn.voice", lang))),
-        tags$div(id = "av_voice_text", style = "display:none",
-                 (data$voice$scripts[["agent.receptionist.greet"]]) %||% "Habari. Mimi ni Mtaalamu Smart."),
+          tags$button(class = "trade-pill",
+            onclick = "if(window.mtaalamuSpeakLog){mtaalamuSpeakLog('#av_narration_text')}else if(window.speechSynthesis){var u=new SpeechSynthesisUtterance(document.getElementById('av_narration_text')?.innerText||'Habari');u.lang='sw';speechSynthesis.speak(u)}",
+            tr("av.btn.voice", lang)),
+          tags$button(class = "trade-pill",
+            onclick = "Shiny.setInputValue('av_download_book', Date.now(), {priority:'event'})",
+            if (!is.null(STR[["av.btn.book"]])) tr("av.btn.book", lang) else "📕 KITABU")),
+        tags$div(id = "av_voice_text", style = "display:none", greet),
         uiOutput("av_session_status"))),
 
-    # Multi-agent strip
     panel_el(tr("av.agents.title", lang), tr("av.agents.meta", lang),
       agentic_agents_el(data$agents, lang)),
 
-    # Pipeline
     panel_el(tr("av.pipe.title", lang), tr("av.pipe.meta", lang),
       agentic_pipeline_el(pipe_steps, session_state$pipe_idx %||% 0, lang)),
 
-    # Live Vision grid
     tags$div(class = "grid",
       panel_el(tr("av.map.title", lang), tr("av.map.meta", lang),
         HTML(agentic_device_map_svg(components))),
@@ -228,7 +205,6 @@ view_agentic <- function(lang, data, session_state = NULL) {
       panel_el(tr("av.iss.title", lang), tr("av.iss.meta", lang),
         agentic_issues_el(issues, lang))),
 
-    # Bus status
     panel_el(tr("av.bus.title", lang), tr("av.bus.meta", lang),
       tags$div(style = "display:flex;flex-wrap:wrap;gap:8px",
         lapply((data$system_bus$buses) %||% list(), function(b) {
@@ -239,8 +215,12 @@ view_agentic <- function(lang, data, session_state = NULL) {
                      paste((b$path %||% list()), collapse = " → ")))
         }))),
 
-    # Report / log
     panel_el(tr("av.report.title", lang), tr("av.report.meta", lang),
-      uiOutput("av_report_out"))
+      tags$div(
+        uiOutput("av_report_out"),
+        tags$div(id = "av_narration_text", style = "display:none", uiOutput("av_narration_hidden")),
+        downloadButton("av_book_html", label = if (!is.null(STR[["av.btn.book"]])) tr("av.btn.book", lang) else "Download Kitabu HTML",
+                       class = "trade-pill", style = "margin-top:12px")
+      ))
   )
 }
