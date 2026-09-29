@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "language": "sw",
+  "scripts": {
+    "agent.receptionist.greet": "Habari. Mimi ni Mtaalamu Smart. Niambie tatizo unalokumbana nalo, nitaanza kufanya kazi mara moja.",
+    "agent.vision.scanning": "Ninaangalia kifaa chako sasa.",
+    "hitl.ask_fix": "Nimegundua matatizo. Je, unaniruhusu kuanza kurekebisha kiotomatiki?",
+    "session.complete": "Kazi imekamilika. Ripoti iko tayari."
+  }
+}

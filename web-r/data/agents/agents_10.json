@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "orchestrator": {
+    "modes": ["pipeline"],
+    "default_mode": "pipeline",
+    "pipeline_order": ["receptionist", "vision", "diagnoser", "planner", "solver", "tester", "verifier", "scribe", "reporter", "learner"],
+    "hitl_gates": ["solver", "verifier"],
+    "timeout_sec": 30
+  },
+  "agents": [
+    {"id": "receptionist", "name_sw": "Mpokeaji", "name_en": "Receptionist", "role": "Pokea tatizo", "inputs": ["user_message"], "outputs": ["session_id"], "voice_key": "agent.receptionist.greet", "auto": true},
+    {"id": "vision", "name_sw": "Muono", "name_en": "Vision", "role": "Live scan", "inputs": ["session_id"], "outputs": ["snapshot"], "voice_key": "agent.vision.scanning", "auto": true},
+    {"id": "diagnoser", "name_sw": "Mgunduzi", "name_en": "Diagnoser", "role": "Bayesian + knowledge", "inputs": ["symptoms"], "outputs": ["causes"], "voice_key": "agent.diagnoser.found", "auto": true},
+    {"id": "planner", "name_sw": "Mpangaji", "name_en": "Planner", "role": "PIITVD plan", "inputs": ["causes"], "outputs": ["plan_steps"], "voice_key": "agent.planner.ready", "auto": true},
+    {"id": "solver", "name_sw": "Mtatuzi", "name_en": "Solver", "role": "Tekeleza", "inputs": ["plan_steps"], "outputs": ["actions_done"], "voice_key": "agent.solver.working", "auto": false, "requires_hitl": true},
+    {"id": "tester", "name_sw": "Mjaribu", "name_en": "Tester", "role": "Jaribu", "inputs": ["actions_done"], "outputs": ["test_results"], "voice_key": "agent.tester.running", "auto": true},
+    {"id": "verifier", "name_sw": "Mthibitishaji", "name_en": "Verifier", "role": "Thibitisha", "inputs": ["test_results"], "outputs": ["verified"], "voice_key": "agent.verifier.confirm", "auto": false, "requires_hitl": true},
+    {"id": "scribe", "name_sw": "Mwandishi", "name_en": "Scribe", "role": "Maelezo Kiswahili", "inputs": ["plan_steps"], "outputs": ["narration_sw"], "voice_key": "agent.scribe.narrate", "auto": true},
+    {"id": "reporter", "name_sw": "Mriporti", "name_en": "Reporter", "role": "Kitabu kidigitali", "inputs": ["session"], "outputs": ["report_json"], "voice_key": "agent.reporter.ready", "auto": true},
+    {"id": "learner", "name_sw": "Mwanafunzi", "name_en": "Learner", "role": "Hifadhi maarifa", "inputs": ["session"], "outputs": ["learning_log"], "voice_key": "agent.learner.saved", "auto": true}
+  ]
+}

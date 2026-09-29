@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "buses": [
+    {"id": "power", "name_sw": "Bus ya Umeme", "path": ["psu", "motherboard", "cpu", "ram", "disk"]},
+    {"id": "memory", "name_sw": "Bus ya Kumbukumbu", "path": ["cpu", "ram", "motherboard"]},
+    {"id": "storage", "name_sw": "Bus ya Hifadhi", "path": ["cpu", "motherboard", "disk"]},
+    {"id": "network", "name_sw": "Bus ya Mtandao", "path": ["network", "os_kernel"]},
+    {"id": "thermal", "name_sw": "Bus ya Joto", "path": ["cpu", "gpu", "sensor", "fan"]},
+    {"id": "system", "name_sw": "System / OS Stack", "path": ["os_userland", "os_services", "os_kernel", "cpu"]}
+  ]
+}
