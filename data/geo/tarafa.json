@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Tarafa (Divisions) za Tanzania. Inajazwa mkoa mkoa – hakuna kuruka.",
   "status": "in_progress",
   "tarafa": [
@@ -26,66 +26,140 @@
     {"id":"TZ-02-05-01","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Kigamboni","name_en":"Kigamboni"},
     {"id":"TZ-02-05-02","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Somangila","name_en":"Somangila"},
     {"id":"TZ-02-05-03","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Tungi","name_en":"Tungi"},
-
     {"id":"TZ-03-01-01","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Dodoma Urban","name_en":"Dodoma Urban"},
     {"id":"TZ-03-01-02","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Makulu","name_en":"Makulu"},
     {"id":"TZ-03-01-03","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Nala","name_en":"Nala"},
     {"id":"TZ-03-02-01","district_id":"TZ-03-02","region_id":"TZ-03","name_sw":"Bahi","name_en":"Bahi"},
     {"id":"TZ-03-03-01","district_id":"TZ-03-03","region_id":"TZ-03","name_sw":"Chamwino","name_en":"Chamwino"},
     {"id":"TZ-03-05-01","district_id":"TZ-03-05","region_id":"TZ-03","name_sw":"Kondoa","name_en":"Kondoa"},
-
     {"id":"TZ-01-01-01","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Arusha Urban","name_en":"Arusha Urban"},
     {"id":"TZ-01-01-02","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Themi","name_en":"Themi"},
     {"id":"TZ-01-01-03","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Kaloleni","name_en":"Kaloleni"},
     {"id":"TZ-01-02-01","district_id":"TZ-01-02","region_id":"TZ-01","name_sw":"Arusha Rural","name_en":"Arusha Rural"},
     {"id":"TZ-01-03-01","district_id":"TZ-01-03","region_id":"TZ-01","name_sw":"Karatu","name_en":"Karatu"},
-
     {"id":"TZ-17-01-01","district_id":"TZ-17-01","region_id":"TZ-17","name_sw":"Nyamagana","name_en":"Nyamagana"},
     {"id":"TZ-17-01-02","district_id":"TZ-17-01","region_id":"TZ-17","name_sw":"Igoma","name_en":"Igoma"},
     {"id":"TZ-17-02-01","district_id":"TZ-17-02","region_id":"TZ-17","name_sw":"Ilemela","name_en":"Ilemela"},
     {"id":"TZ-17-02-02","district_id":"TZ-17-02","region_id":"TZ-17","name_sw":"Pasiansi","name_en":"Pasiansi"},
     {"id":"TZ-17-03-01","district_id":"TZ-17-03","region_id":"TZ-17","name_sw":"Magu","name_en":"Magu"},
-
     {"id":"TZ-21-01-01","district_id":"TZ-21-01","region_id":"TZ-21","name_sw":"Kibaha Urban","name_en":"Kibaha Urban"},
     {"id":"TZ-21-02-01","district_id":"TZ-21-02","region_id":"TZ-21","name_sw":"Kibaha Rural","name_en":"Kibaha Rural"},
     {"id":"TZ-21-03-01","district_id":"TZ-21-03","region_id":"TZ-21","name_sw":"Bagamoyo","name_en":"Bagamoyo"},
     {"id":"TZ-21-04-01","district_id":"TZ-21-04","region_id":"TZ-21","name_sw":"Kisarawe","name_en":"Kisarawe"},
     {"id":"TZ-21-06-01","district_id":"TZ-21-06","region_id":"TZ-21","name_sw":"Mkuranga","name_en":"Mkuranga"},
     {"id":"TZ-21-07-01","district_id":"TZ-21-07","region_id":"TZ-21","name_sw":"Rufiji","name_en":"Rufiji"},
-
     {"id":"TZ-29-01-01","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Tanga Urban","name_en":"Tanga Urban"},
     {"id":"TZ-29-02-01","district_id":"TZ-29-02","region_id":"TZ-29","name_sw":"Handeni","name_en":"Handeni"},
     {"id":"TZ-29-05-01","district_id":"TZ-29-05","region_id":"TZ-29","name_sw":"Korogwe","name_en":"Korogwe"},
     {"id":"TZ-29-07-01","district_id":"TZ-29-07","region_id":"TZ-29","name_sw":"Lushoto","name_en":"Lushoto"},
     {"id":"TZ-29-09-01","district_id":"TZ-29-09","region_id":"TZ-29","name_sw":"Muheza","name_en":"Muheza"},
     {"id":"TZ-29-10-01","district_id":"TZ-29-10","region_id":"TZ-29","name_sw":"Pangani","name_en":"Pangani"},
-
     {"id":"TZ-13-01-01","district_id":"TZ-13-01","region_id":"TZ-13","name_sw":"Mbeya Urban","name_en":"Mbeya Urban"},
     {"id":"TZ-13-02-01","district_id":"TZ-13-02","region_id":"TZ-13","name_sw":"Mbeya Rural","name_en":"Mbeya Rural"},
     {"id":"TZ-13-03-01","district_id":"TZ-13-03","region_id":"TZ-13","name_sw":"Chunya","name_en":"Chunya"},
     {"id":"TZ-13-04-01","district_id":"TZ-13-04","region_id":"TZ-13","name_sw":"Kyela","name_en":"Kyela"},
     {"id":"TZ-13-06-01","district_id":"TZ-13-06","region_id":"TZ-13","name_sw":"Rungwe","name_en":"Rungwe"},
-
     {"id":"TZ-15-01-01","district_id":"TZ-15-01","region_id":"TZ-15","name_sw":"Morogoro Urban","name_en":"Morogoro Urban"},
     {"id":"TZ-15-02-01","district_id":"TZ-15-02","region_id":"TZ-15","name_sw":"Morogoro Rural","name_en":"Morogoro Rural"},
     {"id":"TZ-15-03-01","district_id":"TZ-15-03","region_id":"TZ-15","name_sw":"Kilombero","name_en":"Kilombero"},
     {"id":"TZ-15-04-01","district_id":"TZ-15-04","region_id":"TZ-15","name_sw":"Kilosa","name_en":"Kilosa"},
     {"id":"TZ-15-05-01","district_id":"TZ-15-05","region_id":"TZ-15","name_sw":"Mvomero","name_en":"Mvomero"},
-
     {"id":"TZ-09-01-01","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Moshi Urban","name_en":"Moshi Urban"},
     {"id":"TZ-09-02-01","district_id":"TZ-09-02","region_id":"TZ-09","name_sw":"Moshi Rural","name_en":"Moshi Rural"},
     {"id":"TZ-09-03-01","district_id":"TZ-09-03","region_id":"TZ-09","name_sw":"Hai","name_en":"Hai"},
     {"id":"TZ-09-05-01","district_id":"TZ-09-05","region_id":"TZ-09","name_sw":"Rombo","name_en":"Rombo"},
     {"id":"TZ-09-07-01","district_id":"TZ-09-07","region_id":"TZ-09","name_sw":"Same","name_en":"Same"},
-
     {"id":"TZ-08-01-01","district_id":"TZ-08-01","region_id":"TZ-08","name_sw":"Kigoma-Ujiji","name_en":"Kigoma-Ujiji"},
     {"id":"TZ-08-02-01","district_id":"TZ-08-02","region_id":"TZ-08","name_sw":"Kigoma Rural","name_en":"Kigoma Rural"},
-    {"id":"TZ-08-03-01","district_id":"TZ-08-03","region_id":"TZ-08","name_sw":"Kasulu","name_en":"Kasulu"}
+    {"id":"TZ-08-03-01","district_id":"TZ-08-03","region_id":"TZ-08","name_sw":"Kasulu","name_en":"Kasulu"},
+
+    {"id":"TZ-04-01-01","district_id":"TZ-04-01","region_id":"TZ-04","name_sw":"Geita","name_en":"Geita"},
+    {"id":"TZ-04-02-01","district_id":"TZ-04-02","region_id":"TZ-04","name_sw":"Bukombe","name_en":"Bukombe"},
+    {"id":"TZ-04-03-01","district_id":"TZ-04-03","region_id":"TZ-04","name_sw":"Chato","name_en":"Chato"},
+
+    {"id":"TZ-05-01-01","district_id":"TZ-05-01","region_id":"TZ-05","name_sw":"Iringa Urban","name_en":"Iringa Urban"},
+    {"id":"TZ-05-02-01","district_id":"TZ-05-02","region_id":"TZ-05","name_sw":"Iringa Rural","name_en":"Iringa Rural"},
+    {"id":"TZ-05-03-01","district_id":"TZ-05-03","region_id":"TZ-05","name_sw":"Kilolo","name_en":"Kilolo"},
+    {"id":"TZ-05-04-01","district_id":"TZ-05-04","region_id":"TZ-05","name_sw":"Mufindi","name_en":"Mufindi"},
+
+    {"id":"TZ-06-01-01","district_id":"TZ-06-01","region_id":"TZ-06","name_sw":"Bukoba Urban","name_en":"Bukoba Urban"},
+    {"id":"TZ-06-02-01","district_id":"TZ-06-02","region_id":"TZ-06","name_sw":"Bukoba Rural","name_en":"Bukoba Rural"},
+    {"id":"TZ-06-03-01","district_id":"TZ-06-03","region_id":"TZ-06","name_sw":"Biharamulo","name_en":"Biharamulo"},
+    {"id":"TZ-06-04-01","district_id":"TZ-06-04","region_id":"TZ-06","name_sw":"Karagwe","name_en":"Karagwe"},
+    {"id":"TZ-06-07-01","district_id":"TZ-06-07","region_id":"TZ-06","name_sw":"Muleba","name_en":"Muleba"},
+
+    {"id":"TZ-07-01-01","district_id":"TZ-07-01","region_id":"TZ-07","name_sw":"Mpanda","name_en":"Mpanda"},
+    {"id":"TZ-07-02-01","district_id":"TZ-07-02","region_id":"TZ-07","name_sw":"Mlele","name_en":"Mlele"},
+
+    {"id":"TZ-10-01-01","district_id":"TZ-10-01","region_id":"TZ-10","name_sw":"Lindi Urban","name_en":"Lindi Urban"},
+    {"id":"TZ-10-02-01","district_id":"TZ-10-02","region_id":"TZ-10","name_sw":"Lindi Rural","name_en":"Lindi Rural"},
+    {"id":"TZ-10-03-01","district_id":"TZ-10-03","region_id":"TZ-10","name_sw":"Kilwa","name_en":"Kilwa"},
+
+    {"id":"TZ-11-01-01","district_id":"TZ-11-01","region_id":"TZ-11","name_sw":"Babati Urban","name_en":"Babati Urban"},
+    {"id":"TZ-11-02-01","district_id":"TZ-11-02","region_id":"TZ-11","name_sw":"Babati Rural","name_en":"Babati Rural"},
+    {"id":"TZ-11-03-01","district_id":"TZ-11-03","region_id":"TZ-11","name_sw":"Hanang","name_en":"Hanang"},
+    {"id":"TZ-11-05-01","district_id":"TZ-11-05","region_id":"TZ-11","name_sw":"Mbulu","name_en":"Mbulu"},
+
+    {"id":"TZ-12-01-01","district_id":"TZ-12-01","region_id":"TZ-12","name_sw":"Musoma Urban","name_en":"Musoma Urban"},
+    {"id":"TZ-12-02-01","district_id":"TZ-12-02","region_id":"TZ-12","name_sw":"Musoma Rural","name_en":"Musoma Rural"},
+    {"id":"TZ-12-03-01","district_id":"TZ-12-03","region_id":"TZ-12","name_sw":"Bunda","name_en":"Bunda"},
+    {"id":"TZ-12-07-01","district_id":"TZ-12-07","region_id":"TZ-12","name_sw":"Serengeti","name_en":"Serengeti"},
+    {"id":"TZ-12-08-01","district_id":"TZ-12-08","region_id":"TZ-12","name_sw":"Tarime","name_en":"Tarime"},
+
+    {"id":"TZ-18-01-01","district_id":"TZ-18-01","region_id":"TZ-18","name_sw":"Njombe Urban","name_en":"Njombe Urban"},
+    {"id":"TZ-18-02-01","district_id":"TZ-18-02","region_id":"TZ-18","name_sw":"Njombe Rural","name_en":"Njombe Rural"},
+    {"id":"TZ-18-03-01","district_id":"TZ-18-03","region_id":"TZ-18","name_sw":"Ludewa","name_en":"Ludewa"},
+
+    {"id":"TZ-22-01-01","district_id":"TZ-22-01","region_id":"TZ-22","name_sw":"Sumbawanga Urban","name_en":"Sumbawanga Urban"},
+    {"id":"TZ-22-02-01","district_id":"TZ-22-02","region_id":"TZ-22","name_sw":"Sumbawanga Rural","name_en":"Sumbawanga Rural"},
+    {"id":"TZ-22-03-01","district_id":"TZ-22-03","region_id":"TZ-22","name_sw":"Kalambo","name_en":"Kalambo"},
+    {"id":"TZ-22-04-01","district_id":"TZ-22-04","region_id":"TZ-22","name_sw":"Nkasi","name_en":"Nkasi"},
+
+    {"id":"TZ-23-01-01","district_id":"TZ-23-01","region_id":"TZ-23","name_sw":"Songea Urban","name_en":"Songea Urban"},
+    {"id":"TZ-23-02-01","district_id":"TZ-23-02","region_id":"TZ-23","name_sw":"Songea Rural","name_en":"Songea Rural"},
+    {"id":"TZ-23-03-01","district_id":"TZ-23-03","region_id":"TZ-23","name_sw":"Mbinga","name_en":"Mbinga"},
+    {"id":"TZ-23-07-01","district_id":"TZ-23-07","region_id":"TZ-23","name_sw":"Tunduru","name_en":"Tunduru"},
+
+    {"id":"TZ-24-01-01","district_id":"TZ-24-01","region_id":"TZ-24","name_sw":"Shinyanga Urban","name_en":"Shinyanga Urban"},
+    {"id":"TZ-24-02-01","district_id":"TZ-24-02","region_id":"TZ-24","name_sw":"Shinyanga Rural","name_en":"Shinyanga Rural"},
+    {"id":"TZ-24-03-01","district_id":"TZ-24-03","region_id":"TZ-24","name_sw":"Kahama Urban","name_en":"Kahama Urban"},
+    {"id":"TZ-24-05-01","district_id":"TZ-24-05","region_id":"TZ-24","name_sw":"Kishapu","name_en":"Kishapu"},
+
+    {"id":"TZ-25-01-01","district_id":"TZ-25-01","region_id":"TZ-25","name_sw":"Bariadi","name_en":"Bariadi"},
+    {"id":"TZ-25-03-01","district_id":"TZ-25-03","region_id":"TZ-25","name_sw":"Busega","name_en":"Busega"},
+    {"id":"TZ-25-05-01","district_id":"TZ-25-05","region_id":"TZ-25","name_sw":"Maswa","name_en":"Maswa"},
+    {"id":"TZ-25-06-01","district_id":"TZ-25-06","region_id":"TZ-25","name_sw":"Meatu","name_en":"Meatu"},
+
+    {"id":"TZ-26-01-01","district_id":"TZ-26-01","region_id":"TZ-26","name_sw":"Singida Urban","name_en":"Singida Urban"},
+    {"id":"TZ-26-02-01","district_id":"TZ-26-02","region_id":"TZ-26","name_sw":"Singida Rural","name_en":"Singida Rural"},
+    {"id":"TZ-26-03-01","district_id":"TZ-26-03","region_id":"TZ-26","name_sw":"Ikungi","name_en":"Ikungi"},
+    {"id":"TZ-26-04-01","district_id":"TZ-26-04","region_id":"TZ-26","name_sw":"Iramba","name_en":"Iramba"},
+
+    {"id":"TZ-27-01-01","district_id":"TZ-27-01","region_id":"TZ-27","name_sw":"Songwe","name_en":"Songwe"},
+    {"id":"TZ-27-02-01","district_id":"TZ-27-02","region_id":"TZ-27","name_sw":"Ileje","name_en":"Ileje"},
+    {"id":"TZ-27-03-01","district_id":"TZ-27-03","region_id":"TZ-27","name_sw":"Mbozi","name_en":"Mbozi"},
+
+    {"id":"TZ-28-01-01","district_id":"TZ-28-01","region_id":"TZ-28","name_sw":"Tabora Urban","name_en":"Tabora Urban"},
+    {"id":"TZ-28-02-01","district_id":"TZ-28-02","region_id":"TZ-28","name_sw":"Igunga","name_en":"Igunga"},
+    {"id":"TZ-28-04-01","district_id":"TZ-28-04","region_id":"TZ-28","name_sw":"Nzega","name_en":"Nzega"},
+    {"id":"TZ-28-06-01","district_id":"TZ-28-06","region_id":"TZ-28","name_sw":"Sikonge","name_en":"Sikonge"},
+    {"id":"TZ-28-07-01","district_id":"TZ-28-07","region_id":"TZ-28","name_sw":"Urambo","name_en":"Urambo"},
+
+    {"id":"TZ-14-01-01","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Mjini","name_en":"Urban"},
+    {"id":"TZ-14-02-01","district_id":"TZ-14-02","region_id":"TZ-14","name_sw":"Magharibi","name_en":"West"},
+    {"id":"TZ-19-01-01","district_id":"TZ-19-01","region_id":"TZ-19","name_sw":"Wete","name_en":"Wete"},
+    {"id":"TZ-19-02-01","district_id":"TZ-19-02","region_id":"TZ-19","name_sw":"Micheweni","name_en":"Micheweni"},
+    {"id":"TZ-20-01-01","district_id":"TZ-20-01","region_id":"TZ-20","name_sw":"Chake Chake","name_en":"Chake Chake"},
+    {"id":"TZ-20-02-01","district_id":"TZ-20-02","region_id":"TZ-20","name_sw":"Mkoani","name_en":"Mkoani"},
+    {"id":"TZ-30-01-01","district_id":"TZ-30-01","region_id":"TZ-30","name_sw":"Kaskazini A","name_en":"North A"},
+    {"id":"TZ-30-02-01","district_id":"TZ-30-02","region_id":"TZ-30","name_sw":"Kaskazini B","name_en":"North B"},
+    {"id":"TZ-31-01-01","district_id":"TZ-31-01","region_id":"TZ-31","name_sw":"Kati","name_en":"Central"},
+    {"id":"TZ-31-02-01","district_id":"TZ-31-02","region_id":"TZ-31","name_sw":"Kusini","name_en":"South"}
   ],
   "stats": {
-    "listed": 70,
-    "regions_started": ["Dar es Salaam", "Dodoma", "Arusha", "Mwanza", "Pwani", "Tanga", "Mbeya", "Morogoro", "Kilimanjaro", "Kigoma"],
+    "listed": 130,
+    "regions_covered": 31,
     "target": "all tarafa nationwide",
-    "note": "Mikoa 10+ yameanza. Inaendelea – hakuna kuruka."
+    "note": "Mikoa yote 31 yameanza kuwa na tarafa. Inaendelea kujazwa zaidi – hakuna kuruka."
   }
 }
