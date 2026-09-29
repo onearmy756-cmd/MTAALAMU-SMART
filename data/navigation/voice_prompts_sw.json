@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "language": "sw-TZ",
+  "description": "Maneno ya sauti (TTS) kwa mwongozo wa barabara na arifa – Kiswahili",
+  "prompts": {
+    "start_navigation": "Mwongozo umeanza. Fuata maelekezo.",
+    "recalculating": "Ninahesabu njia upya.",
+    "you_have_arrived": "Umefika sehemu uliyochagua. Hongera.",
+    "continue_straight": "Endelea moja kwa moja.",
+    "turn_left": "Geuka kushoto.",
+    "turn_right": "Geuka kulia.",
+    "slight_left": "Geuka kidogo kushoto.",
+    "slight_right": "Geuka kidogo kulia.",
+    "u_turn": "Geuka nyuma.",
+    "roundabout": "Ingia kwenye mzunguko.",
+    "exit_roundabout": "Toka kwenye mzunguko.",
+    "keep_left": "Endelea upande wa kushoto.",
+    "keep_right": "Endelea upande wa kulia.",
+    "in_meters": "Baada ya mita {{distance}}.",
+    "in_kilometers": "Baada ya kilomita {{distance}}.",
+    "destination_on_left": "Sehemu unayoenda iko upande wa kushoto.",
+    "destination_on_right": "Sehemu unayoenda iko upande wa kulia.",
+    "speed_camera": "Tahadhari: kamera ya kasi mbele.",
+    "hazard_ahead": "Tahadhari: hatari mbele.",
+    "flood_warning": "Onyo: mafuriko yanaripotiwa mbele.",
+    "road_closed": "Barabara imefungwa. Ninahesabu njia nyingine.",
+    "traffic_heavy": "Msongamano mkubwa mbele.",
+    "weather_alert": "Onyo la hali ya hewa: {{message}}.",
+    "alarm_general": "Arifa! {{message}}.",
+    "location_detected": "Nimegundua mahali ulipo.",
+    "searching_route": "Ninatafuta njia bora...",
+    "no_route": "Samahani, sijaweza kupata njia. Jaribu tena.",
+    "gps_weak": "Ishara ya GPS ni dhaifu. Subiri kidogo.",
+    "offline_mode": "Unafanya kazi bila mtandao. Data ya ndani inatumika."
+  },
+  "templates": {
+    "distance_turn": "Baada ya {{distance}}, {{action}}.",
+    "street_name": "Kwenye barabara ya {{street}}.",
+    "arrive_in": "Utawasili baada ya {{time}}."
+  },
+  "notes": [
+    "Matumizi: Web Speech API (speechSynthesis) na lang = 'sw-TZ' au 'sw'.",
+    "Variables {{distance}}, {{action}}, {{street}}, {{time}}, {{message}} zinajazwa runtime.",
+    "Ongeza prompts zaidi kulingana na mahitaji."
+  ]
+}
