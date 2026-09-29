@@ -1,1 +1,4 @@
-PLACEHOLDER
+# Deprecated placeholder.
+# Generate all 21 trade files with:
+#   python3 scripts/split_problems_to_knowledge.py
+# Source: data/problems.json (420 problems already in repo)
