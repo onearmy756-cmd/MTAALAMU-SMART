@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>MTAALAMU SMART — Ramani & Navigation</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a; --card: #1e293b; --accent: #22c55e; --danger: #ef4444;
+      --text: #f1f5f9; --muted: #94a3b8; --border: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    #app { display: flex; flex-direction: column; height: 100%; }
+    header {
+      padding: 0.65rem 1rem; background: var(--card); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    }
+    header h1 { font-size: 1rem; font-weight: 700; white-space: nowrap; }
+    .search-wrap { flex: 1; min-width: 180px; position: relative; }
+    #search {
+      width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 0.95rem;
+    }
+    #suggestions {
+      position: absolute; left: 0; right: 0; top: 100%; z-index: 1000;
+      background: var(--card); border: 1px solid var(--border); border-radius: 0 0 8px 8px;
+      max-height: 220px; overflow-y: auto; display: none;
+    }
+    #suggestions div {
+      padding: 0.5rem 0.75rem; cursor: pointer; border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    #suggestions div:hover { background: #334155; }
+    #suggestions .lvl { color: var(--muted); font-size: 0.75rem; }
+    .btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    button {
+      padding: 0.5rem 0.75rem; border-radius: 8px; border: none; cursor: pointer;
+      font-weight: 600; font-size: 0.85rem; background: var(--accent); color: #052e16;
+    }
+    button.sec { background: var(--border); color: var(--text); }
+    button.danger { background: var(--danger); color: #fff; }
+    #map { flex: 1; min-height: 200px; }
+    #panel {
+      background: var(--card); border-top: 1px solid var(--border);
+      padding: 0.75rem 1rem; max-height: 28vh; overflow-y: auto;
+    }
+    #instruction { font-size: 1.05rem; line-height: 1.45; margin-bottom: 0.5rem; }
+    #meta { font-size: 0.8rem; color: var(--muted); }
+    .badge {
+      display: inline-block; padding: 0.15rem 0.45rem; border-radius: 4px;
+      font-size: 0.7rem; background: #334155; margin-right: 0.35rem;
+    }
+    .badge.warn { background: #b45309; }
+    .badge.ok { background: #166534; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🧭 MTAALAMU</h1>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Tafuta mkoa, wilaya, kata, mtaa..." autocomplete="off" />
+      <div id="suggestions"></div>
+    </div>
+    <div class="btns">
+      <button type="button" id="btnGps">📍 GPS</button>
+      <button type="button" id="btnRoute" class="sec">🛣️ Njia</button>
+      <button type="button" id="btnSpeak" class="sec">🔊 Sauti</button>
+      <button type="button" id="btnHazards" class="sec">⚠️ Hatari</button>
+    </div>
+  </header>
+  <div id="map"></div>
+  <div id="panel">
+    <div id="instruction">Chagua sehemu au bonyeza GPS. Navigation kwa Kiswahili.</div>
+    <div id="meta">
+      <span class="badge ok" id="gpsStatus">GPS: —</span>
+      <span class="badge" id="routeStatus">Njia: —</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- Places index (sample from geo hierarchy — expand via API later) ---
+const PLACES = [
+  { id:"TZ-02", name:"Dar es Salaam", level:"mkoa", lat:-6.7924, lng:39.2083 },
+  { id:"TZ-02-01", name:"Ilala", level:"wilaya", lat:-6.8235, lng:39.2695 },
+  { id:"TZ-02-02", name:"Kinondoni", level:"wilaya", lat:-6.7800, lng:39.2500 },
+  { id:"TZ-02-03", name:"Temeke", level:"wilaya", lat:-6.8500, lng:39.2700 },
+  { id:"TZ-02-04", name:"Ubungo", level:"wilaya", lat:-6.7900, lng:39.2100 },
+  { id:"TZ-02-05", name:"Kigamboni", level:"wilaya", lat:-6.8300, lng:39.3200 },
+  { id:"Kariakoo", name:"Kariakoo", level:"kata", lat:-6.8197, lng:39.2792 },
+  { id:"Kawe", name:"Kawe", level:"kata", lat:-6.7400, lng:39.2300 },
+  { id:"Mbagala", name:"Mbagala", level:"kata", lat:-6.8800, lng:39.2700 },
+  { id:"Kimara", name:"Kimara", level:"kata", lat:-6.8000, lng:39.1800 },
+  { id:"TZ-03", name:"Dodoma", level:"mkoa", lat:-6.1630, lng:35.7516 },
+  { id:"TZ-01", name:"Arusha", level:"mkoa", lat:-3.3869, lng:36.6830 },
+  { id:"TZ-17", name:"Mwanza", level:"mkoa", lat:-2.5164, lng:32.9175 },
+  { id:"TZ-29", name:"Tanga", level:"mkoa", lat:-5.0690, lng:39.0988 },
+  { id:"TZ-13", name:"Mbeya", level:"mkoa", lat:-8.9094, lng:33.4608 },
+  { id:"TZ-15", name:"Morogoro", level:"mkoa", lat:-6.8278, lng:37.6591 },
+  { id:"TZ-09", name:"Kilimanjaro / Moshi", level:"mkoa", lat:-3.3349, lng:37.3404 },
+  { id:"TZ-14", name:"Zanzibar Mjini", level:"mkoa", lat:-6.1659, lng:39.2026 },
+  { id:"Bagamoyo", name:"Bagamoyo", level:"wilaya", lat:-6.4330, lng:38.9010 },
+  { id:"Morogoro Rd", name:"Barabara ya Morogoro", level:"barabara", lat:-6.7920, lng:39.2300 }
+];
+
+const HAZARDS_DEMO = [
+  { name:"Shimo kubwa", type:"road_damage", lat:-6.8100, lng:39.2600, voice:"Tahadhari: barabara mbaya mbele" },
+  { name:"Mafuriko (mfano)", type:"flood", lat:-6.8600, lng:39.2800, voice:"Tahadhari: mafuriko mbele" }
+];
+
+const VOICE = {
+  start: "Safari imeanza. Fuata maelekezo.",
+  gps_ok: "Mahali ulipo limetambuliwa.",
+  gps_fail: "Ishara ya GPS imepotea. Subiri kidogo.",
+  route_ok: "Njia iko tayari.",
+  arrive: "Umefika sehemu unayoenda. Hongera.",
+  select: "Chagua sehemu unayoenda."
+};
+
+// --- Map ---
+const map = L.map("map").setView([-6.3690, 34.8888], 6);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap",
+  maxZoom: 19
+}).addTo(map);
+
+let userMarker = null;
+let destMarker = null;
+let routeLine = null;
+let hazardLayer = L.layerGroup().addTo(map);
+let currentPos = null;
+let destination = null;
+let lastInstruction = VOICE.select;
+
+function setInstruction(text) {
+  lastInstruction = text;
+  document.getElementById("instruction").textContent = text;
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "sw-TZ";
+  u.rate = 0.95;
+  const voices = speechSynthesis.getVoices();
+  const sw = voices.find(v => v.lang && v.lang.startsWith("sw"));
+  if (sw) u.voice = sw;
+  speechSynthesis.speak(u);
+}
+if (window.speechSynthesis) speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+
+// --- Search ---
+const searchEl = document.getElementById("search");
+const sugEl = document.getElementById("suggestions");
+
+searchEl.addEventListener("input", () => {
+  const q = searchEl.value.trim().toLowerCase();
+  if (q.length < 1) { sugEl.style.display = "none"; return; }
+  const hits = PLACES.filter(p =>
+    p.name.toLowerCase().includes(q) || p.level.includes(q) || p.id.toLowerCase().includes(q)
+  ).slice(0, 12);
+  if (!hits.length) { sugEl.style.display = "none"; return; }
+  sugEl.innerHTML = hits.map(p =>
+    `<div data-id="${p.id}"><strong>${p.name}</strong> <span class="lvl">${p.level}</span></div>`
+  ).join("");
+  sugEl.style.display = "block";
+  sugEl.querySelectorAll("div").forEach(el => {
+    el.onclick = () => {
+      const p = PLACES.find(x => x.id === el.dataset.id);
+      if (!p) return;
+      selectDestination(p);
+      sugEl.style.display = "none";
+      searchEl.value = p.name;
+    };
+  });
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".search-wrap")) sugEl.style.display = "none";
+});
+
+function selectDestination(p) {
+  destination = p;
+  if (destMarker) map.removeLayer(destMarker);
+  destMarker = L.marker([p.lat, p.lng]).addTo(map).bindPopup(p.name + " (" + p.level + ")").openPopup();
+  map.flyTo([p.lat, p.lng], 13);
+  setInstruction("Sehemu: " + p.name + " (" + p.level + "). Bonyeza Njia au anza GPS.");
+  speak("Sehemu unayoenda: " + p.name);
+}
+
+// --- GPS ---
+document.getElementById("btnGps").onclick = () => {
+  if (!navigator.geolocation) {
+    setInstruction("GPS haipatikani.");
+    speak(VOICE.gps_fail);
+    return;
+  }
+  document.getElementById("gpsStatus").textContent = "GPS: inatafuta...";
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      currentPos = [pos.coords.latitude, pos.coords.longitude];
+      if (userMarker) map.removeLayer(userMarker);
+      userMarker = L.circleMarker(currentPos, {
+        radius: 10, color: "#22c55e", fillColor: "#22c55e", fillOpacity: 0.8
+      }).addTo(map).bindPopup("Mahali ulipo");
+      map.flyTo(currentPos, 14);
+      document.getElementById("gpsStatus").textContent =
+        "GPS: OK (±" + Math.round(pos.coords.accuracy) + "m)";
+      document.getElementById("gpsStatus").className = "badge ok";
+      setInstruction("Mahali ulipo limetambuliwa. Chagua sehemu unayoenda.");
+      speak(VOICE.gps_ok);
+    },
+    () => {
+      document.getElementById("gpsStatus").textContent = "GPS: imeshindwa";
+      document.getElementById("gpsStatus").className = "badge warn";
+      setInstruction("Haikuweza kupata GPS. Ruhusu location.");
+      speak(VOICE.gps_fail);
+    },
+    { enableHighAccuracy: true, timeout: 15000 }
+  );
+};
+
+// --- Route (OSRM public) ---
+document.getElementById("btnRoute").onclick = async () => {
+  if (!destination) {
+    setInstruction("Chagua sehemu kwanza (tafuta juu).");
+    speak(VOICE.select);
+    return;
+  }
+  const start = currentPos || [-6.7924, 39.2083]; // default DSM centre if no GPS
+  if (!currentPos) {
+    setInstruction("Hakuna GPS — kutumia kituo cha Dar kama mwanzo. Bonyeza GPS kwa usahihi.");
+  }
+  const url = `https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${destination.lng},${destination.lat}?overview=full&geometries=geojson&steps=true`;
+  document.getElementById("routeStatus").textContent = "Njia: inahesabu...";
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.code !== "Ok" || !data.routes || !data.routes[0]) throw new Error("Hakuna njia");
+    const route = data.routes[0];
+    const coords = route.geometry.coordinates.map(c => [c[1], c[0]]);
+    if (routeLine) map.removeLayer(routeLine);
+    routeLine = L.polyline(coords, { color: "#22c55e", weight: 5, opacity: 0.85 }).addTo(map);
+    map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+
+    const km = (route.distance / 1000).toFixed(1);
+    const min = Math.round(route.duration / 60);
+    let stepText = "Njia tayari: " + km + " km, dakika ~" + min + ".";
+    if (route.legs && route.legs[0] && route.legs[0].steps && route.legs[0].steps[0]) {
+      const s0 = route.legs[0].steps[0];
+      const dist = Math.round(s0.distance || 0);
+      stepText += " Anza: baada ya mita " + dist + " fuata barabara.";
+    }
+    setInstruction(stepText);
+    document.getElementById("routeStatus").textContent = "Njia: " + km + " km / " + min + " min";
+    document.getElementById("routeStatus").className = "badge ok";
+    speak(VOICE.route_ok + " Umbali kilomita " + km + ".");
+  } catch (e) {
+    setInstruction("Imeshindwa kupata njia. Angalia mtandao au jaribu tena.");
+    document.getElementById("routeStatus").textContent = "Njia: imeshindwa";
+    document.getElementById("routeStatus").className = "badge warn";
+  }
+};
+
+// --- Speak ---
+document.getElementById("btnSpeak").onclick = () => speak(lastInstruction);
+
+// --- Hazards overlay ---
+let hazardsOn = false;
+document.getElementById("btnHazards").onclick = () => {
+  hazardsOn = !hazardsOn;
+  hazardLayer.clearLayers();
+  if (hazardsOn) {
+    HAZARDS_DEMO.forEach(h => {
+      const m = L.circleMarker([h.lat, h.lng], {
+        radius: 12, color: "#ef4444", fillColor: "#f97316", fillOpacity: 0.7
+      }).bindPopup("<b>" + h.name + "</b><br/>" + h.type);
+      m.addTo(hazardLayer);
+      m.on("click", () => speak(h.voice));
+    });
+    setInstruction("Hatari zimeonyeshwa kwenye ramani (mfano). Bofya alama kusikia onyo.");
+    speak("Tahadhari. Kuna hatari kwenye ramani.");
+    document.getElementById("btnHazards").textContent = "⚠️ Ficha";
+  } else {
+    document.getElementById("btnHazards").textContent = "⚠️ Hatari";
+    setInstruction("Hatari zimefichwa.");
+  }
+};
+
+// Map click = set destination
+map.on("click", (e) => {
+  selectDestination({
+    id: "custom",
+    name: "Sehemu uliyochagua",
+    level: "custom",
+    lat: e.latlng.lat,
+    lng: e.latlng.lng
+  });
+  searchEl.value = "Sehemu uliyochagua";
+});
+</script>
+</body>
+</html>
