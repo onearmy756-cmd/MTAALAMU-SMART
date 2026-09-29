@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "language": "sw-TZ",
+  "description": "Templates za maelekezo ya hatua kwa hatua (turn-by-turn) kwa Kiswahili",
+  "instructions": {
+    "depart": "Anza safari kutoka {{origin}}.",
+    "arrive": "Umefika {{destination}}. Hongera!",
+    "turn": "{{modifier}} {{direction}} kwenye {{street}}.",
+    "continue": "Endelea moja kwa moja kwenye {{street}}.",
+    "roundabout": "Ingia kwenye mzunguko, chukua njia ya {{exit}}.",
+    "merge": "Jiunge na {{street}}.",
+    "fork": "Chukua njia ya {{direction}} kwenye {{street}}.",
+    "end_of_road": "Mwisho wa barabara – {{modifier}} {{direction}}.",
+    "new_name": "Barabara inabadilika jina kuwa {{street}}.",
+    "notification": "{{message}}.",
+    "use_lane": "Tumia {{lanes}}.",
+    "ramp": "Chukua exit ya {{street}}."
+  },
+  "modifiers": {
+    "left": "geuka kushoto",
+    "right": "geuka kulia",
+    "sharp left": "geuka sana kushoto",
+    "sharp right": "geuka sana kulia",
+    "slight left": "geuka kidogo kushoto",
+    "slight right": "geuka kidogo kulia",
+    "straight": "endelea moja kwa moja",
+    "uturn": "geuka nyuma"
+  },
+  "distance_phrases": {
+    "meters": "Baada ya mita {{n}}",
+    "kilometers": "Baada ya kilomita {{n}}",
+    "now": "Sasa"
+  },
+  "notes": [
+    "Variables: {{origin}}, {{destination}}, {{street}}, {{direction}}, {{modifier}}, {{exit}}, {{lanes}}, {{message}}, {{n}}",
+    "Inaunganishwa na voice_prompts_sw.json kwa TTS."
+  ]
+}
