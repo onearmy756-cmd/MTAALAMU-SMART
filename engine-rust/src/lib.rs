@@ -1,11 +1,5 @@
 //! MTAALAMU SMART — Math & Inference Engine (Rust)
-//!
-//! KANUNI: LLM haihesabu kamwe. Kila hesabu hapa ni deterministic,
-//! inarudisha formula, hatua (steps), na hali (GOOD/WARNING/FAIL).
-//! JSON ndio format pekee ya interop kati ya Rust, R na React.
-//!
-//! Location & Navigation: geo hierarchy + turn-by-turn + voice Kiswahili + hazards.
-//! Agentic Vision: Multi-Agent 10 + Live Vision + PIITVD pipeline + Digital Report.
+//! Agentic Vision: Multi-Agent + Live Vision + PIITVD + Report + OS Probe
 
 pub mod expr;
 pub mod formula_engine;
@@ -22,6 +16,7 @@ pub mod vision;
 pub mod pipeline;
 pub mod report;
 pub mod agentic_run;
+pub mod sysprobe;
 
 pub use expr::{eval, eval_with, EvalError, Vars};
 pub use formula_engine::{FormulaEngine, CalcResult, Formula};
@@ -38,3 +33,4 @@ pub use vision::{VisionEngine, VisionSnapshot};
 pub use pipeline::{PipelineEngine, PipelineRuntime};
 pub use report::{ReportEngine, DigitalReport};
 pub use agentic_run::{run_full, AgenticResult};
+pub use sysprobe::{probe, probe_json, SystemProbe};
