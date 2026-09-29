@@ -1,5 +1,5 @@
 # ============================================================
-# MTAALAMU SMART — UI + AGENTIC VISION (data HALISI via OS probe)
+# MTAALAMU SMART — UI + AGENTIC VISION + data/*.json
 # ============================================================
 
 .libPaths(c(file.path(Sys.getenv("USERPROFILE"), "Documents", "R", "win-library",
@@ -29,32 +29,46 @@ source(p_app("R", "i18n.R"), local = FALSE)
 source(p_app("R", "eval.R"), local = FALSE)
 source(p_app("R", "charts.R"), local = FALSE)
 source(p_app("R", "views.R"), local = FALSE)
+source(p_app("R", "data_bridge.R"), local = FALSE)
 source(p_app("R", "agentic.R"), local = FALSE)
 source(p_app("R", "agentic_i18n_patch.R"), local = FALSE)
 source(p_app("R", "scribe.R"), local = FALSE)
 source(p_app("R", "sysprobe.R"), local = FALSE)
 
 library(jsonlite)
-FDOC      <- fromJSON(p_app("data", "formulas.json"), simplifyVector = FALSE)
+
+# Prefer repo-root data/ then web-r/data/
+.data_file <- function(name) {
+  for (p in c(p_root("data", name), p_app("data", name))) {
+    if (file.exists(p)) return(p)
+  }
+  p_app("data", name)
+}
+
+FDOC      <- fromJSON(.data_file("formulas.json"), simplifyVector = FALSE)
 FORMULAS  <- FDOC$formulas
 CONSTANTS <- FDOC$constants %||% list()
-DIAGNOSIS <- fromJSON(p_app("data", "diagnosis.json"), simplifyVector = FALSE)
+DIAGNOSIS <- fromJSON(.data_file("diagnosis.json"), simplifyVector = FALSE)
 MODEL_IDS <- names(DIAGNOSIS$models)
 AGENTIC_BASE <- tryCatch(load_agentic_data(), error = function(e) list(
   agent_data = list(), agents = list(), pipeline = list(),
-  device_map = list(), system_bus = list(), voice = list(), report_tpl = list()))
+  device_map = list(), system_bus = list(), voice = list(), report_tpl = list(),
+  knowledge = tryCatch(load_knowledge_bundle(), error = function(e2) NULL)))
 
-# Live agent data from OS (halisi)
 .refresh_agentic_live <- function() {
   live <- tryCatch(build_live_agent_data(), error = function(e) NULL)
   out <- AGENTIC_BASE
   if (!is.null(live)) out$agent_data <- live
+  # refresh knowledge paths occasionally
+  if (is.null(out$knowledge))
+    out$knowledge <- tryCatch(load_knowledge_bundle(), error = function(e) NULL)
   out
 }
 AGENTIC <- .refresh_agentic_live()
 
-GEO     <- fromJSON(p_app("data", "geo.json"), simplifyVector = FALSE)
-GEO_TXT <- paste(readLines(p_app("data", "geo.json"), encoding = "UTF-8", warn = FALSE), collapse = "\n")
+GEO <- tryCatch(fromJSON(p_app("data", "geo.json"), simplifyVector = FALSE), error = function(e) list())
+GEO_TXT <- tryCatch(paste(readLines(p_app("data", "geo.json"), encoding = "UTF-8", warn = FALSE), collapse = "\n"),
+                    error = function(e) "{}")
 bound_src <- p_app("data", "tz_regions.geojson")
 bound_dst <- p_app("www", "tz_regions.geojson")
 if (file.exists(bound_src)) {
@@ -156,15 +170,21 @@ server <- function(input, output, session) {
 
   av_state <- reactiveVal(list(
     pipe_idx = 0L, status = "ready", log = character(0),
-    msg = "", narration = "", session_id = paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
+    msg = "", narration = "", session_id = paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S")),
+    knowledge_lookup = NULL
   ))
 
   output$agentic <- renderUI({
-    tick() # refresh with probe
+    tick()
     view_agentic(lang(), live_agentic(), av_state())
   })
 
   output$av_sysprobe <- renderUI(sysprobe_panel_el(probe_snap(), lang()))
+
+  output$av_knowledge <- renderUI({
+    st <- av_state()
+    agentic_knowledge_panel_el(st$knowledge_lookup, lang())
+  })
 
   observeEvent(input$av_start, {
     msg <- isolate(as.character(input$av_msg %||% ""))
@@ -173,7 +193,20 @@ server <- function(input, output, session) {
     live_agentic(live)
     issues <- live$agent_data$issues %||% list()
     sid <- paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
+
+    # --- DATA bridge: match problems.json + diagnosis.json ---
+    lookup <- tryCatch(agentic_knowledge_lookup(msg, lang = lang()), error = function(e) NULL)
+
     narr <- build_scribe_narration(msg, issues, "hitl")
+    if (!is.null(lookup) && length(lookup$problems_matched) > 0) {
+      top <- lookup$problems_matched[[1]]
+      narr <- paste0(
+        narr, "\n\n--- KUTOKA problems.json ---\n",
+        top$description %||% "", "\n",
+        "Suluhisho: ", top$solution %||% "", "\n",
+        "Muda ~", top$time_min %||% "?", " min · TZS ", top$cost_tzs %||% "?")
+    }
+
     snap <- live$agent_data$probe %||% tryCatch(sysprobe_snapshot(), error = function(e) NULL)
     if (!is.null(snap)) probe_snap(snap)
     probe_lines <- character(0)
@@ -186,15 +219,33 @@ server <- function(input, output, session) {
         if (length(snap$issues) > 0) paste0("! ", unlist(snap$issues)) else "(hakuna tahadhari OS)"
       )
     }
+
+    know_lines <- character(0)
+    if (!is.null(lookup)) {
+      know_lines <- c(
+        paste0("DATA problems total: ", lookup$catalog$problems_total %||% "?"),
+        paste0("Matched problems: ", length(lookup$problems_matched %||% list())),
+        paste0("Matched diagnosis models: ", length(lookup$diagnosis_matched %||% list()))
+      )
+      for (p in head(lookup$problems_matched %||% list(), 3)) {
+        know_lines <- c(know_lines, paste0("  • ", p$id, ": ", substr(p$description %||% "", 1, 80)))
+      }
+    }
+
     lines <- c(
       paste0("Session: ", sid),
       paste0("Ujumbe: ", msg),
       probe_lines,
+      "--- DATA KNOWLEDGE ---",
+      know_lines,
       paste0("Vision issues: ", length(issues)),
       "--- SCRIBE ---", narr, "", "Hali: inasubiri RUHUSU (HITL)"
     )
-    av_state(list(pipe_idx = 1L, status = "hitl", log = as.character(unlist(lines)),
-                  msg = msg, narration = narr, session_id = sid))
+    av_state(list(
+      pipe_idx = 1L, status = "hitl", log = as.character(unlist(lines)),
+      msg = msg, narration = narr, session_id = sid,
+      knowledge_lookup = lookup
+    ))
     session$sendCustomMessage("mtaalamu_speak", list(text = paste(
       av_voice_script(AGENTIC_BASE, "agent.receptionist.greet"),
       av_voice_script(AGENTIC_BASE, "hitl.ask_permission"), sep = " ")))
@@ -206,10 +257,16 @@ server <- function(input, output, session) {
     issues <- live$agent_data$issues %||% list()
     msg <- st$msg %||% "Tatizo"
     narr <- build_scribe_narration(msg, issues, "done")
+    if (!is.null(st$knowledge_lookup) && length(st$knowledge_lookup$problems_matched) > 0) {
+      top <- st$knowledge_lookup$problems_matched[[1]]
+      narr <- paste0(narr, "\n\nSuluhisho (problems.json): ", top$solution %||% "")
+    }
     lines <- c(st$log %||% character(0), "", "=== BAADA YA HITL ===", narr)
-    av_state(list(pipe_idx = 6L, status = "done", log = lines, msg = msg,
-                  narration = narr, session_id = st$session_id %||% "AV-done"))
-    # Hifadhi maarifa HALISI
+    av_state(list(
+      pipe_idx = 6L, status = "done", log = lines, msg = msg,
+      narration = narr, session_id = st$session_id %||% "AV-done",
+      knowledge_lookup = st$knowledge_lookup
+    ))
     iss_titles <- vapply(issues, function(x) as.character(x$title %||% ""), character(1))
     append_learning_log(st$session_id %||% "AV", msg, as.list(iss_titles), "completed")
     session$sendCustomMessage("mtaalamu_speak",
@@ -227,9 +284,7 @@ server <- function(input, output, session) {
       paste0("Scan LIVE @ ", format(Sys.time(), "%H:%M:%S")),
       paste0("source=", live$agent_data$source %||% "live"),
       paste0("Components: ", length(live$agent_data$components %||% list())),
-      paste0("Processes: ", length(live$agent_data$processes %||% list())),
-      paste0("CPU: ", snap$cpu_usage_pct %||% "?", "% RAM: ", snap$ram_usage_pct %||% "?", "%"),
-      paste0("health: ", snap$health %||% "?")
+      paste0("CPU: ", snap$cpu_usage_pct %||% "?", "% RAM: ", snap$ram_usage_pct %||% "?", "%")
     )
     av_state(modifyList(st, list(log = as.character(unlist(lines)))))
     session$sendCustomMessage("mtaalamu_speak",
@@ -276,7 +331,6 @@ server <- function(input, output, session) {
     }
   )
 
-  # ---- FORMULA / DIAG (unchanged condensed) ----
   sel_id <- reactiveVal(NULL)
   filtered_formulas <- reactive({
     tf <- input$fx_trade %||% "all"
