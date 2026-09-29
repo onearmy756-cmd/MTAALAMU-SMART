@@ -21,6 +21,7 @@ pub mod agents;
 pub mod vision;
 pub mod pipeline;
 pub mod report;
+pub mod agentic_run;
 
 pub use expr::{eval, eval_with, EvalError, Vars};
 pub use formula_engine::{FormulaEngine, CalcResult, Formula};
@@ -36,3 +37,4 @@ pub use agents::{AgentOrchestrator, AgentSession, AgentEvent, SessionState};
 pub use vision::{VisionEngine, VisionSnapshot};
 pub use pipeline::{PipelineEngine, PipelineRuntime};
 pub use report::{ReportEngine, DigitalReport};
+pub use agentic_run::{run_full, AgenticResult};
