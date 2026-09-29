@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "description": "Barabara (Roads) za Tanzania. Inajazwa – hakuna kuruka.",
+  "status": "in_progress",
+  "barabara": [
+    {"id":"TZ-ROAD-001","region_id":"TZ-02","name_sw":"Barabara ya Morogoro","name_en":"Morogoro Road","type":"highway"},
+    {"id":"TZ-ROAD-002","region_id":"TZ-02","name_sw":"Barabara ya Bagamoyo","name_en":"Bagamoyo Road","type":"highway"},
+    {"id":"TZ-ROAD-003","region_id":"TZ-02","name_sw":"Barabara ya Nyerere","name_en":"Nyerere Road","type":"arterial"},
+    {"id":"TZ-ROAD-004","region_id":"TZ-02","name_sw":"Barabara ya Sam Nujoma","name_en":"Sam Nujoma Road","type":"arterial"},
+    {"id":"TZ-ROAD-005","region_id":"TZ-02","name_sw":"Barabara ya Kilwa","name_en":"Kilwa Road","type":"highway"},
+    {"id":"TZ-ROAD-006","region_id":"TZ-02","name_sw":"Barabara ya Ali Hassan Mwinyi","name_en":"Ali Hassan Mwinyi Road","type":"arterial"},
+    {"id":"TZ-ROAD-007","region_id":"TZ-02","name_sw":"Barabara ya Uhuru","name_en":"Uhuru Street","type":"street"},
+    {"id":"TZ-ROAD-008","region_id":"TZ-02","name_sw":"Barabara ya Congo","name_en":"Congo Street","type":"street"},
+
+    {"id":"TZ-ROAD-009","region_id":"TZ-03","name_sw":"Barabara ya CDA","name_en":"CDA Road","type":"arterial"},
+    {"id":"TZ-ROAD-010","region_id":"TZ-03","name_sw":"Barabara ya Sixth","name_en":"Sixth Street","type":"street"},
+
+    {"id":"TZ-ROAD-011","region_id":"TZ-01","name_sw":"Barabara ya Sokoine","name_en":"Sokoine Road","type":"arterial"},
+    {"id":"TZ-ROAD-012","region_id":"TZ-01","name_sw":"Barabara ya Boma","name_en":"Boma Road","type":"street"},
+    {"id":"TZ-ROAD-013","region_id":"TZ-01","name_sw":"Barabara ya Nairobi","name_en":"Nairobi Road","type":"highway"},
+
+    {"id":"TZ-ROAD-014","region_id":"TZ-17","name_sw":"Barabara ya Kenyatta","name_en":"Kenyatta Road","type":"arterial"},
+    {"id":"TZ-ROAD-015","region_id":"TZ-17","name_sw":"Barabara ya Nyerere (Mwanza)","name_en":"Nyerere Road Mwanza","type":"arterial"},
+
+    {"id":"TZ-ROAD-016","region_id":"TZ-29","name_sw":"Barabara ya Independence","name_en":"Independence Avenue","type":"arterial"},
+    {"id":"TZ-ROAD-017","region_id":"TZ-29","name_sw":"Barabara ya Ocean","name_en":"Ocean Road","type":"street"},
+
+    {"id":"TZ-ROAD-018","region_id":"TZ-13","name_sw":"Barabara ya Forest","name_en":"Forest Road","type":"arterial"},
+    {"id":"TZ-ROAD-019","region_id":"TZ-15","name_sw":"Barabara ya Station","name_en":"Station Road","type":"arterial"},
+    {"id":"TZ-ROAD-020","region_id":"TZ-09","name_sw":"Barabara ya Market","name_en":"Market Street","type":"street"},
+
+    {"id":"TZ-ROAD-021","region_id":"TZ-21","name_sw":"Barabara ya Bagamoyo (Pwani)","name_en":"Bagamoyo Road Pwani","type":"highway"},
+    {"id":"TZ-ROAD-022","region_id":"TZ-14","name_sw":"Barabara ya Kenyatta (Zanzibar)","name_en":"Kenyatta Road Zanzibar","type":"arterial"},
+
+    {"id":"TZ-ROAD-023","region_id":"TZ-28","name_sw":"Barabara ya Tabora","name_en":"Tabora Road","type":"highway"},
+    {"id":"TZ-ROAD-024","region_id":"TZ-24","name_sw":"Barabara ya Shinyanga","name_en":"Shinyanga Road","type":"highway"},
+    {"id":"TZ-ROAD-025","region_id":"TZ-04","name_sw":"Barabara ya Geita","name_en":"Geita Road","type":"highway"}
+  ],
+  "stats": {
+    "listed": 25,
+    "regions_started": 12,
+    "target": "major roads + local streets nationwide",
+    "note": "Barabara zimeanza. Data kamili itatoka OSM. Hakuna kuruka."
+  }
+}
