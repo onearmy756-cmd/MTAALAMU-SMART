@@ -21,6 +21,7 @@ pub mod remediate;
 pub mod tools;
 pub mod solve;
 pub mod electronic_solver;
+pub mod knowledge_hub;
 
 pub use expr::{eval, eval_with, EvalError, Vars};
 pub use formula_engine::{FormulaEngine, CalcResult, Formula};
@@ -43,3 +44,4 @@ pub use remediate::{catalog as remediation_catalog, run_action as run_remediatio
 pub use tools::{discover as discover_tools, run_diagnostic, auto_diagnose, ToolboxReport};
 pub use solve::{solve_message, plan_from_problem, execute_plan, SolveResult, SolvePlan};
 pub use electronic_solver::{search_devices, catalog_stats as devices_catalog_stats, ElectronicSolveResult};
+pub use knowledge_hub::{search_all as knowledge_search, knowledge_stats, KnowledgeSearchResult};
