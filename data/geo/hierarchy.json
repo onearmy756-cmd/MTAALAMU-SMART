@@ -1,5 +1,5 @@
 {
-  "version": "3.3.0",
+  "version": "4.0.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -16,10 +16,13 @@
     "kata_districts_covered": 184,
     "vijiji_listed": 200,
     "vijiji_districts_covered": 184,
-    "vitongoji_listed": 95,
-    "mitaa_listed": 80,
-    "barabara_listed": 40,
-    "note": "Kata + Vijiji: KILA wilaya 184 imefunikwa. Hakuna iliyorukwa."
+    "vitongoji_listed": 190,
+    "vitongoji_districts_covered": 184,
+    "mitaa_listed": 200,
+    "mitaa_districts_covered": 184,
+    "barabara_listed": 50,
+    "barabara_regions_covered": 31,
+    "note": "Hierarkia yote imeanza na KILA wilaya/mkoa imefunikwa. Data kamili (elfu+) inahitaji NBS/OSM import."
   },
   "files": {
     "districts": "data/geo/districts.json",
@@ -37,9 +40,9 @@
     "✅ Tarafa: mikoa yote",
     "✅ Kata: KILA wilaya (220+)",
     "✅ Vijiji: KILA wilaya (200+)",
-    "🔄 Vitongoji 95+",
-    "🔄 Mitaa 80+",
-    "🔄 Barabara 40+",
-    "Hakuna wilaya iliyorukwa kwenye Kata wala Vijiji"
+    "✅ Vitongoji: KILA wilaya (190+)",
+    "✅ Mitaa: KILA wilaya (200+)",
+    "✅ Barabara: KILA mkoa (50+)",
+    "Hakuna wilaya/mkoa uliorukwa"
   ]
 }
