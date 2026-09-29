@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "description": "Kata (Wards) za Tanzania. Inajazwa mkoa mkoa – hakuna kuruka.",
+  "status": "in_progress",
+  "kata": [
+    {"id":"TZ-02-01-01-K01","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Kariakoo","name_en":"Kariakoo"},
+    {"id":"TZ-02-01-01-K02","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Gerezani","name_en":"Gerezani"},
+    {"id":"TZ-02-01-01-K03","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Mchafukoge","name_en":"Mchafukoge"},
+    {"id":"TZ-02-01-01-K04","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Kisutu","name_en":"Kisutu"},
+    {"id":"TZ-02-01-02-K01","tarafa_id":"TZ-02-01-02","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Ukonga","name_en":"Ukonga"},
+    {"id":"TZ-02-01-03-K01","tarafa_id":"TZ-02-01-03","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Buguruni","name_en":"Buguruni"},
+    {"id":"TZ-02-01-04-K01","tarafa_id":"TZ-02-01-04","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Tabata","name_en":"Tabata"},
+    {"id":"TZ-02-01-05-K01","tarafa_id":"TZ-02-01-05","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Vingunguti","name_en":"Vingunguti"},
+
+    {"id":"TZ-02-02-01-K01","tarafa_id":"TZ-02-02-01","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kinondoni","name_en":"Kinondoni"},
+    {"id":"TZ-02-02-02-K01","tarafa_id":"TZ-02-02-02","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kawe","name_en":"Kawe"},
+    {"id":"TZ-02-02-02-K02","tarafa_id":"TZ-02-02-02","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Mikocheni","name_en":"Mikocheni"},
+    {"id":"TZ-02-02-03-K01","tarafa_id":"TZ-02-02-03","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Msasani","name_en":"Msasani"},
+    {"id":"TZ-02-02-04-K01","tarafa_id":"TZ-02-02-04","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Sinza","name_en":"Sinza"},
+    {"id":"TZ-02-02-05-K01","tarafa_id":"TZ-02-02-05","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Makumbusho","name_en":"Makumbusho"},
+    {"id":"TZ-02-02-06-K01","tarafa_id":"TZ-02-02-06","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kijitonyama","name_en":"Kijitonyama"},
+
+    {"id":"TZ-02-03-01-K01","tarafa_id":"TZ-02-03-01","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Temeke","name_en":"Temeke"},
+    {"id":"TZ-02-03-02-K01","tarafa_id":"TZ-02-03-02","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Mbagala","name_en":"Mbagala"},
+    {"id":"TZ-02-03-03-K01","tarafa_id":"TZ-02-03-03","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Kijichi","name_en":"Kijichi"},
+    {"id":"TZ-02-03-04-K01","tarafa_id":"TZ-02-03-04","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Mtoni","name_en":"Mtoni"},
+    {"id":"TZ-02-03-05-K01","tarafa_id":"TZ-02-03-05","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Chang'ombe","name_en":"Chang'ombe"},
+
+    {"id":"TZ-02-04-01-K01","tarafa_id":"TZ-02-04-01","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Ubungo","name_en":"Ubungo"},
+    {"id":"TZ-02-04-02-K01","tarafa_id":"TZ-02-04-02","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Kimara","name_en":"Kimara"},
+    {"id":"TZ-02-04-03-K01","tarafa_id":"TZ-02-04-03","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Mbezi","name_en":"Mbezi"},
+
+    {"id":"TZ-02-05-01-K01","tarafa_id":"TZ-02-05-01","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Kigamboni","name_en":"Kigamboni"},
+
+    {"id":"TZ-03-01-01-K01","tarafa_id":"TZ-03-01-01","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Makulu","name_en":"Makulu"},
+    {"id":"TZ-03-01-01-K02","tarafa_id":"TZ-03-01-01","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Madukani","name_en":"Madukani"},
+    {"id":"TZ-03-01-02-K01","tarafa_id":"TZ-03-01-02","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Nala","name_en":"Nala"},
+
+    {"id":"TZ-01-01-01-K01","tarafa_id":"TZ-01-01-01","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Sekei","name_en":"Sekei"},
+    {"id":"TZ-01-01-01-K02","tarafa_id":"TZ-01-01-01","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Kati","name_en":"Kati"},
+    {"id":"TZ-01-01-02-K01","tarafa_id":"TZ-01-01-02","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Themi","name_en":"Themi"},
+
+    {"id":"TZ-17-01-01-K01","tarafa_id":"TZ-17-01-01","district_id":"TZ-17-01","region_id":"TZ-17","name_sw":"Nyamagana","name_en":"Nyamagana"},
+    {"id":"TZ-17-02-01-K01","tarafa_id":"TZ-17-02-01","district_id":"TZ-17-02","region_id":"TZ-17","name_sw":"Ilemela","name_en":"Ilemela"},
+
+    {"id":"TZ-29-01-01-K01","tarafa_id":"TZ-29-01-01","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Ngamiani","name_en":"Ngamiani"},
+    {"id":"TZ-29-01-01-K02","tarafa_id":"TZ-29-01-01","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Usagara","name_en":"Usagara"},
+
+    {"id":"TZ-13-01-01-K01","tarafa_id":"TZ-13-01-01","district_id":"TZ-13-01","region_id":"TZ-13","name_sw":"Forest","name_en":"Forest"},
+    {"id":"TZ-13-01-01-K02","tarafa_id":"TZ-13-01-01","district_id":"TZ-13-01","region_id":"TZ-13","name_sw":"Mwanjelwa","name_en":"Mwanjelwa"},
+
+    {"id":"TZ-15-01-01-K01","tarafa_id":"TZ-15-01-01","district_id":"TZ-15-01","region_id":"TZ-15","name_sw":"Morogoro Mjini","name_en":"Morogoro Town"},
+    {"id":"TZ-09-01-01-K01","tarafa_id":"TZ-09-01-01","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Moshi Mjini","name_en":"Moshi Town"},
+
+    {"id":"TZ-14-01-01-K01","tarafa_id":"TZ-14-01-01","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Stone Town","name_en":"Stone Town"},
+    {"id":"TZ-14-01-01-K02","tarafa_id":"TZ-14-01-01","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Malindi","name_en":"Malindi"}
+  ],
+  "stats": {
+    "listed": 40,
+    "regions_started": ["Dar es Salaam", "Dodoma", "Arusha", "Mwanza", "Tanga", "Mbeya", "Morogoro", "Kilimanjaro", "Zanzibar"],
+    "target": "all wards (kata) nationwide",
+    "note": "Kata zimeanza. Tanzania ina kata elfu kadhaa – inajazwa mkoa mkoa. Hakuna kuruka."
+  }
+}
