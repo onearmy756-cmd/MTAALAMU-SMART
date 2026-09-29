@@ -1,0 +1,1947 @@
+{
+  "group": {
+    "id": "ran",
+    "code": "KUNDI 7",
+    "label": {
+      "sw": "Kundi 07: RAN (Radio Access)",
+      "en": "Group 07: Radio Access Network"
+    }
+  },
+  "formulas": [
+    {
+      "id": "ran_01",
+      "group": "ran",
+      "name": {
+        "sw": "Cell Range Maximum",
+        "en": "Cell Range Maximum"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Cell Range Maximum",
+        "en": "Radio Access Network: Cell Range Maximum"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya cell range maximum",
+            "en": "Result: cell range maximum"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_02",
+      "group": "ran",
+      "name": {
+        "sw": "Path Loss Cell",
+        "en": "Path Loss Cell"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Path Loss Cell",
+        "en": "Radio Access Network: Path Loss Cell"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya path loss cell",
+            "en": "Result: path loss cell"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_03",
+      "group": "ran",
+      "name": {
+        "sw": "Link Budget Cell",
+        "en": "Link Budget Cell"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Link Budget Cell",
+        "en": "Radio Access Network: Link Budget Cell"
+      },
+      "inputs": [
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya link budget cell",
+            "en": "Result: link budget cell"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_04",
+      "group": "ran",
+      "name": {
+        "sw": "Site Sectorization",
+        "en": "Site Sectorization"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Site Sectorization",
+        "en": "Radio Access Network: Site Sectorization"
+      },
+      "inputs": [
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya site sectorization",
+            "en": "Result: site sectorization"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_05",
+      "group": "ran",
+      "name": {
+        "sw": "Number Sites Area",
+        "en": "Number Sites Area"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Number Sites Area",
+        "en": "Radio Access Network: Number Sites Area"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya number sites area",
+            "en": "Result: number sites area"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_06",
+      "group": "ran",
+      "name": {
+        "sw": "Frequency Reuse",
+        "en": "Frequency Reuse"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Frequency Reuse",
+        "en": "Radio Access Network: Frequency Reuse"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya frequency reuse",
+            "en": "Result: frequency reuse"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_07",
+      "group": "ran",
+      "name": {
+        "sw": "Interference Margin",
+        "en": "Interference Margin"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Interference Margin",
+        "en": "Radio Access Network: Interference Margin"
+      },
+      "inputs": [
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya interference margin",
+            "en": "Result: interference margin"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_08",
+      "group": "ran",
+      "name": {
+        "sw": "Soft Handover Gain",
+        "en": "Soft Handover Gain"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Soft Handover Gain",
+        "en": "Radio Access Network: Soft Handover Gain"
+      },
+      "inputs": [
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya soft handover gain",
+            "en": "Result: soft handover gain"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_09",
+      "group": "ran",
+      "name": {
+        "sw": "Pilot Pollution",
+        "en": "Pilot Pollution"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Pilot Pollution",
+        "en": "Radio Access Network: Pilot Pollution"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya pilot pollution",
+            "en": "Result: pilot pollution"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_10",
+      "group": "ran",
+      "name": {
+        "sw": "Load Factor Calc",
+        "en": "Load Factor Calc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Load Factor Calc",
+        "en": "Radio Access Network: Load Factor Calc"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya load factor calc",
+            "en": "Result: load factor calc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_11",
+      "group": "ran",
+      "name": {
+        "sw": "Serving Sinr",
+        "en": "Serving Sinr"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Serving Sinr",
+        "en": "Radio Access Network: Serving Sinr"
+      },
+      "inputs": [
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya serving sinr",
+            "en": "Result: serving sinr"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_12",
+      "group": "ran",
+      "name": {
+        "sw": "Hsdpa Throughput",
+        "en": "Hsdpa Throughput"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Hsdpa Throughput",
+        "en": "Radio Access Network: Hsdpa Throughput"
+      },
+      "inputs": [
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya hsdpa throughput",
+            "en": "Result: hsdpa throughput"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_13",
+      "group": "ran",
+      "name": {
+        "sw": "Lte Prb Utilization",
+        "en": "Lte Prb Utilization"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Lte Prb Utilization",
+        "en": "Radio Access Network: Lte Prb Utilization"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya lte prb utilization",
+            "en": "Result: lte prb utilization"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_14",
+      "group": "ran",
+      "name": {
+        "sw": "5g Nr Throughput",
+        "en": "5g Nr Throughput"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): 5g Nr Throughput",
+        "en": "Radio Access Network: 5g Nr Throughput"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya 5g nr throughput",
+            "en": "Result: 5g nr throughput"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "ran_15",
+      "group": "ran",
+      "name": {
+        "sw": "Carrier Aggregation Bw",
+        "en": "Carrier Aggregation Bw"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "RAN (Radio Access): Carrier Aggregation Bw",
+        "en": "Radio Access Network: Carrier Aggregation Bw"
+      },
+      "inputs": [
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya carrier aggregation bw",
+            "en": "Result: carrier aggregation bw"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 7"
+        ],
+        "en": [
+          "KUNDI 7"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

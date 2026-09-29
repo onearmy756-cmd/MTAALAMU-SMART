@@ -1,0 +1,769 @@
+{
+  "version": "1.0.0",
+  "engine": "mtaalamu-formula-engine",
+  "note": "DATA-DRIVEN: 132 formulas across 20 trades. Hakuna code mpya inayohitajika.",
+  "constants": {
+    "pi": 3.141592653589793,
+    "e": 2.718281828459045,
+    "rho_copper": 0.0175,
+    "rho_aluminum": 0.028,
+    "gravity": 9.81,
+    "water_density_kgm3": 1000
+  },
+  "formulas": [
+    {
+      "id": "voltage_drop",
+      "trade": "umeme",
+      "name": { "sw": "Kushuka kwa Voltage", "en": "Voltage Drop" },
+      "formula": "Vd = (M × L × I × ρ) / A",
+      "description": { "sw": "Hesabu kushuka kwa voltage kwenye cable", "en": "Calculate voltage drop across a cable" },
+      "inputs": [
+        { "name": "L", "label": { "sw": "Urefu wa cable", "en": "Cable length" }, "unit": "m", "default": 30, "min": 0.1, "max": 1000 },
+        { "name": "I", "label": { "sw": "Current", "en": "Current" }, "unit": "A", "default": 16, "min": 0.1, "max": 500 },
+        { "name": "A", "label": { "sw": "Ukubwa wa cable", "en": "Cable area" }, "unit": "mm²", "default": 2.5, "min": 0.5, "max": 500 },
+        { "name": "V", "label": { "sw": "Voltage ya msingi", "en": "Supply voltage" }, "unit": "V", "default": 230, "min": 1, "max": 1000 },
+        { "name": "rho", "label": { "sw": "Resistivity", "en": "Resistivity" }, "unit": "Ω·mm²/m", "default": 0.0175, "select": [
+          { "label": "Copper (0.0175)", "value": 0.0175 },
+          { "label": "Aluminum (0.028)", "value": 0.028 }
+        ]},
+        { "name": "M", "label": { "sw": "Kizidishio (fase)", "en": "Multiplier (phase)" }, "unit": "", "default": 2, "select": [
+          { "label": "Single phase (2)", "value": 2 },
+          { "label": "Three phase (1.732)", "value": 1.732 }
+        ]}
+      ],
+      "outputs": [
+        { "name": "vd", "label": { "sw": "Kushuka", "en": "Drop" }, "expr": "(M * L * I * rho) / A", "unit": "V", "digits": 2 },
+        { "name": "vd_pct", "label": { "sw": "Kushuka %", "en": "Drop %" }, "expr": "((M * L * I * rho) / A / V) * 100", "unit": "%", "digits": 2 },
+        { "name": "v_load", "label": { "sw": "Voltage kwenye load", "en": "Voltage at load" }, "expr": "V - (M * L * I * rho) / A", "unit": "V", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "Formula", "text": "Vd = (M × L × I × ρ) / A" },
+        { "label": "Weka namba", "expr": "(M * L * I * rho) / A", "template": "Vd = {{result}} V" },
+        { "label": "Asilimia", "expr": "((M * L * I * rho) / A / V) * 100", "template": "Vd% = {{result}}%" },
+        { "label": "Voltage ya mwisho", "expr": "V - (M * L * I * rho) / A", "template": "V_load = {{result}} V" }
+      ],
+      "rules": [
+        { "check": "vd_pct < 3", "status": "GOOD", "msg": { "sw": "Cable inatosha", "en": "Cable is adequate" } },
+        { "check": "vd_pct < 5", "status": "WARNING", "msg": { "sw": "Ongeza ukubwa wa cable", "en": "Increase cable size" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Cable ndogo sana!", "en": "Cable too small!" } }
+      ],
+      "standards": { "sw": ["IEC 60364-5-52", "BS 7671:2018"], "en": ["IEC 60364-5-52", "BS 7671:2018"] },
+      "test": { "inputs": { "L": 30, "I": 16, "A": 2.5, "V": 230, "rho": 0.0175, "M": 2 }, "expect": { "vd": 6.72, "vd_pct": 2.92, "status": "GOOD" } }
+    },
+    {
+      "id": "breaker_size",
+      "trade": "umeme",
+      "name": { "sw": "Ukubwa wa Breaker", "en": "Breaker Size" },
+      "formula": "Ib ≥ I_load × 1.25",
+      "description": { "sw": "Chagua breaker sahihi kwa mzigo", "en": "Select correct breaker for load" },
+      "inputs": [
+        { "name": "P", "label": { "sw": "Mzigo (Power)", "en": "Load power" }, "unit": "W", "default": 3680, "min": 1, "max": 100000 },
+        { "name": "V", "label": { "sw": "Voltage", "en": "Voltage" }, "unit": "V", "default": 230, "min": 1, "max": 1000 },
+        { "name": "pf", "label": { "sw": "Power factor", "en": "Power factor" }, "unit": "", "default": 0.9, "min": 0.1, "max": 1 }
+      ],
+      "outputs": [
+        { "name": "i_load", "label": { "sw": "Current ya mzigo", "en": "Load current" }, "expr": "P / (V * pf)", "unit": "A", "digits": 1 },
+        { "name": "i_breaker", "label": { "sw": "Breaker inayoshauriwa", "en": "Recommended breaker" }, "expr": "P / (V * pf) * 1.25", "unit": "A", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "Formula", "text": "I = P / (V × pf)" },
+        { "label": "Current", "expr": "P / (V * pf)", "template": "I = {{result}} A" },
+        { "label": "Breaker", "expr": "P / (V * pf) * 1.25", "template": "Ib ≥ {{result}} A" }
+      ],
+      "rules": [
+        { "check": "i_breaker <= 63", "status": "GOOD", "msg": { "sw": "Breaker ya kawaida inatosha", "en": "Standard breaker is fine" } },
+        { "check": "true", "status": "WARNING", "msg": { "sw": "Breaker kubwa - hakikisha cable inatosha", "en": "Large breaker - verify cable size" } }
+      ],
+      "standards": { "sw": ["TANESCO snap: 6/10/16/20/25/32/40/50/63A"], "en": ["TANESCO snap: 6/10/16/20/25/32/40/50/63A"] },
+      "test": { "inputs": { "P": 3680, "V": 230, "pf": 0.9 }, "expect": { "i_load": 17.8, "i_breaker": 22.2 } }
+    },
+    {
+      "id": "cable_sizing",
+      "trade": "umeme",
+      "name": { "sw": "Ukubwa wa Cable", "en": "Cable Sizing" },
+      "formula": "A ≥ (M × L × I × ρ) / (V × 0.03)",
+      "description": { "sw": "Hesabu ukubwa wa cable unaohitajika kwa voltage drop 3%", "en": "Calculate required cable size for 3% voltage drop" },
+      "inputs": [
+        { "name": "L", "label": { "sw": "Urefu", "en": "Length" }, "unit": "m", "default": 30, "min": 0.1, "max": 500 },
+        { "name": "I", "label": { "sw": "Current", "en": "Current" }, "unit": "A", "default": 16, "min": 0.1, "max": 400 },
+        { "name": "V", "label": { "sw": "Voltage", "en": "Voltage" }, "unit": "V", "default": 230, "min": 12, "max": 415 },
+        { "name": "rho", "label": { "sw": "Resistivity", "en": "Resistivity" }, "unit": "Ω·mm²/m", "default": 0.0175 },
+        { "name": "M", "label": { "sw": "Fase", "en": "Phase" }, "unit": "", "default": 2, "select": [
+          { "label": "Single phase (2)", "value": 2 },
+          { "label": "Three phase (1.732)", "value": 1.732 }
+        ]}
+      ],
+      "outputs": [
+        { "name": "a_min", "label": { "sw": "Area ndogo kabisa", "en": "Min area" }, "expr": "(M * L * I * rho) / (V * 0.03)", "unit": "mm²", "digits": 2 },
+        { "name": "cable_std", "label": { "sw": "Cable (standard)", "en": "Standard cable" }, "unit": "mm²", "expr": "if(a_min <= 1.5, 1.5, if(a_min <= 2.5, 2.5, if(a_min <= 4, 4, if(a_min <= 6, 6, if(a_min <= 10, 10, if(a_min <= 16, 16, if(a_min <= 25, 25, if(a_min <= 35, 35, 50))))))))", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "Minimum area", "expr": "(M * L * I * rho) / (V * 0.03)", "template": "A_min = {{result}} mm²" },
+        { "label": "Standard size", "expr": "if(a_min <= 1.5, 1.5, if(a_min <= 2.5, 2.5, if(a_min <= 4, 4, if(a_min <= 6, 6, if(a_min <= 10, 10, if(a_min <= 16, 16, 25))))))", "template": "Cable = {{result}} mm²" }
+      ],
+      "rules": [
+        { "check": "cable_std <= 10", "status": "GOOD", "msg": { "sw": "Cable ya kawaida", "en": "Standard cable" } },
+        { "check": "cable_std <= 35", "status": "WARNING", "msg": { "sw": "Cable kubwa - angalia uwezo", "en": "Large cable - check capacity" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Cable kubwa sana - toa ushauri", "en": "Very large cable - consult" } }
+      ],
+      "test": { "inputs": { "L": 30, "I": 16, "V": 230, "rho": 0.0175, "M": 2 }, "expect": { "a_min": 2.43, "cable_std": 2.5 } }
+    },
+    {
+      "id": "earth_resistance",
+      "trade": "umeme",
+      "name": { "sw": "Upinzani wa Ardhi", "en": "Earth Resistance" },
+      "formula": "R = ρ × L / A",
+      "description": { "sw": "Hesabu upinzani wa electrode ya ardhi", "en": "Calculate earth electrode resistance" },
+      "inputs": [
+        { "name": "rho", "label": { "sw": "Resistivity ya ardhi", "en": "Soil resistivity" }, "unit": "Ω·m", "default": 100, "min": 1, "max": 5000 },
+        { "name": "L", "label": { "sw": "Urefu wa rod", "en": "Rod length" }, "unit": "m", "default": 2.4, "min": 0.5, "max": 10 },
+        { "name": "d", "label": { "sw": "Kipenyo cha rod", "en": "Rod diameter" }, "unit": "mm", "default": 16, "min": 8, "max": 50 },
+        { "name": "n", "label": { "sw": "Idadi ya rods", "en": "Rod count" }, "unit": "pcs", "default": 2, "min": 1, "max": 20 }
+      ],
+      "outputs": [
+        { "name": "a_m2", "label": { "sw": "Area (m²)", "en": "Area (m²)" }, "expr": "pi * pow(d / 2000, 2)", "unit": "m²", "digits": 6 },
+        { "name": "r_single", "label": { "sw": "R (rod moja)", "en": "R (single rod)" }, "expr": "rho * L / (pi * L * (d / 1000)) * 2 * log(4 * L / (d / 1000)) / 2", "unit": "Ω", "digits": 1 },
+        { "name": "r_total", "label": { "sw": "R (jumla)", "en": "R (total)" }, "expr": "(rho * log(4 * L / (d / 1000)) / (2 * pi * L)) / n * 1.2", "unit": "Ω", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "Single rod approx", "expr": "rho * log(4 * L / (d / 1000)) / (2 * pi * L)", "template": "R1 = {{result}} Ω" },
+        { "label": "Total (parallel)", "expr": "(rho * log(4 * L / (d / 1000)) / (2 * pi * L)) / n * 1.2", "template": "R_total ≈ {{result}} Ω" }
+      ],
+      "rules": [
+        { "check": "r_total <= 5", "status": "GOOD", "msg": { "sw": "Ardhi nzuri", "en": "Good earth" } },
+        { "check": "r_total <= 10", "status": "WARNING", "msg": { "sw": "Ongeza rods au ongeza urefu", "en": "Add more rods or length" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Ardhi mbaya - tumia earth compound", "en": "Poor earth - use earth compound" } }
+      ],
+      "test": { "inputs": { "rho": 100, "L": 2.4, "d": 16, "n": 2 }, "expect": { "r_total": 12.5 } }
+    },
+    {
+      "id": "power_factor_correction",
+      "trade": "umeme",
+      "name": { "sw": "Kurekebisha Power Factor", "en": "Power Factor Correction" },
+      "formula": "Qc = P × (tan φ1 − tan φ2)",
+      "description": { "sw": "Hesabu kVar zinazohitajika kurekebisha PF", "en": "Calculate required kVar for PF correction" },
+      "inputs": [
+        { "name": "P", "label": { "sw": "Nishati (Power)", "en": "Real Power" }, "unit": "kW", "default": 50, "min": 1, "max": 5000 },
+        { "name": "pf_old", "label": { "sw": "PF ya zamani", "en": "Old PF" }, "unit": "", "default": 0.75, "min": 0.3, "max": 0.99 },
+        { "name": "pf_new", "label": { "sw": "PF inayotaka", "en": "Target PF" }, "unit": "", "default": 0.95, "min": 0.8, "max": 1 }
+      ],
+      "outputs": [
+        { "name": "tan1", "label": { "sw": "tan φ old", "en": "tan φ old" }, "expr": "sqrt(1 / (pf_old * pf_old) - 1)", "unit": "", "digits": 3 },
+        { "name": "tan2", "label": { "sw": "tan φ new", "en": "tan φ new" }, "expr": "sqrt(1 / (pf_new * pf_new) - 1)", "unit": "", "digits": 3 },
+        { "name": "qc_kvar", "label": { "sw": "Capacitor needed", "en": "Capacitor needed" }, "expr": "P * (sqrt(1 / (pf_old * pf_old) - 1) - sqrt(1 / (pf_new * pf_new) - 1))", "unit": "kVAr", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "tan old", "expr": "sqrt(1 / (pf_old * pf_old) - 1)", "template": "tan(φ1) = {{result}}" },
+        { "label": "tan new", "expr": "sqrt(1 / (pf_new * pf_new) - 1)", "template": "tan(φ2) = {{result}}" },
+        { "label": "kVar needed", "expr": "P * (sqrt(1 / (pf_old * pf_old) - 1) - sqrt(1 / (pf_new * pf_new) - 1))", "template": "Qc = {{result}} kVAr" }
+      ],
+      "rules": [
+        { "check": "qc_kvar <= 25", "status": "GOOD", "msg": { "sw": "Capacitor ndogo", "en": "Small capacitor bank" } },
+        { "check": "qc_kvar <= 100", "status": "WARNING", "msg": { "sw": "Bank ya capacitors", "en": "Capacitor bank" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "System kubwa - consult engineer", "en": "Large system - consult engineer" } }
+      ],
+      "test": { "inputs": { "P": 50, "pf_old": 0.75, "pf_new": 0.95 }, "expect": { "qc_kvar": 26.8 } }
+    },
+    {
+      "id": "kw_to_kva",
+      "trade": "umeme",
+      "name": { "sw": "kW kwenda kVA", "en": "kW to kVA" },
+      "formula": "kVA = kW / PF",
+      "description": { "sw": "Badilisha kW kwenda kVA kwa kutumia power factor", "en": "Convert kW to kVA using power factor" },
+      "inputs": [
+        { "name": "kw", "label": { "sw": "Kilowatts", "en": "Kilowatts" }, "unit": "kW", "default": 50, "min": 0.1, "max": 10000 },
+        { "name": "pf", "label": { "sw": "Power Factor", "en": "Power Factor" }, "unit": "", "default": 0.85, "min": 0.1, "max": 1 }
+      ],
+      "outputs": [
+        { "name": "kva", "label": { "sw": "kVA", "en": "kVA" }, "expr": "kw / pf", "unit": "kVA", "digits": 2 },
+        { "name": "kvar", "label": { "sw": "kVAr", "en": "kVAr" }, "expr": "kw * sqrt(1 / (pf * pf) - 1)", "unit": "kVAr", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "kVA", "expr": "kw / pf", "template": "kVA = {{result}} kVA" },
+        { "label": "kVAr", "expr": "kw * sqrt(1 / (pf * pf) - 1)", "template": "kVAr = {{result}}" }
+      ],
+      "rules": [
+        { "check": "pf >= 0.9", "status": "GOOD", "msg": { "sw": "PF nzuri", "en": "Good PF" } },
+        { "check": "pf >= 0.75", "status": "WARNING", "msg": { "sw": "Fikiria kurekebisha PF", "en": "Consider PF correction" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "PF duni - kwh ghali", "en": "Poor PF - expensive kWh" } }
+      ],
+      "test": { "inputs": { "kw": 50, "pf": 0.85 }, "expect": { "kva": 58.82, "kvar": 31.0 } }
+    },
+    {
+      "id": "short_circuit",
+      "trade": "umeme",
+      "name": { "sw": "Short Circuit Current", "en": "Short Circuit Current" },
+      "formula": "Isc = V / (√3 × Z)",
+      "description": { "sw": "Hesabu current ya short circuit kwa transformer", "en": "Calculate short circuit current at transformer" },
+      "inputs": [
+        { "name": "s_kva", "label": { "sw": "Transformer kVA", "en": "Transformer kVA" }, "unit": "kVA", "default": 500, "min": 10, "max": 10000 },
+        { "name": "v_kv", "label": { "sw": "Voltage (kV)", "en": "Voltage (kV)" }, "unit": "kV", "default": 0.4, "min": 0.1, "max": 36 },
+        { "name": "z_pct", "label": { "sw": "Impedance %", "en": "Impedance %" }, "unit": "%", "default": 5, "min": 1, "max": 20 }
+      ],
+      "outputs": [
+        { "name": "i_fla", "label": { "sw": "Full load current", "en": "Full load current" }, "expr": "s_kva * 1000 / (1.732 * v_kv * 1000)", "unit": "A", "digits": 1 },
+        { "name": "isc_ka", "label": { "sw": "Short circuit (kA)", "en": "Short circuit (kA)" }, "expr": "(s_kva * 1000 / (1.732 * v_kv * 1000)) / (z_pct / 100) / 1000", "unit": "kA", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "FLA", "expr": "s_kva * 1000 / (1.732 * v_kv * 1000)", "template": "I_fl = {{result}} A" },
+        { "label": "Isc", "expr": "(s_kva * 1000 / (1.732 * v_kv * 1000)) / (z_pct / 100) / 1000", "template": "Isc = {{result}} kA" }
+      ],
+      "rules": [
+        { "check": "isc_ka <= 10", "status": "GOOD", "msg": { "sw": "Breakers standard", "en": "Standard breakers OK" } },
+        { "check": "isc_ka <= 35", "status": "WARNING", "msg": { "sw": "Angalia breaking capacity", "en": "Check breaking capacity" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Isc kubwa sana - ACB inahitajika", "en": "High Isc - needs ACB" } }
+      ],
+      "test": { "inputs": { "s_kva": 500, "v_kv": 0.4, "z_pct": 5 }, "expect": { "isc_ka": 14.43 } }
+    },
+    {
+      "id": "lighting_load",
+      "trade": "umeme",
+      "name": { "sw": "Mzigo wa Taa", "en": "Lighting Load" },
+      "formula": "P = N × W × DF",
+      "description": { "sw": "Hesabu mzigo wa taa kwa chumba", "en": "Calculate lighting load per room" },
+      "inputs": [
+        { "name": "n_lights", "label": { "sw": "Idadi ya taa", "en": "Light count" }, "unit": "pcs", "default": 8, "min": 1, "max": 200 },
+        { "name": "w_per", "label": { "sw": "Watts kwa taa", "en": "W per light" }, "unit": "W", "default": 18, "min": 1, "max": 500 },
+        { "name": "df", "label": { "sw": "Demand Factor", "en": "Demand Factor" }, "unit": "", "default": 0.9, "min": 0.1, "max": 1 },
+        { "name": "v", "label": { "sw": "Voltage", "en": "Voltage" }, "unit": "V", "default": 230, "min": 12, "max": 415 }
+      ],
+      "outputs": [
+        { "name": "p_total", "label": { "sw": "Total watts", "en": "Total watts" }, "expr": "n_lights * w_per", "unit": "W", "digits": 0 },
+        { "name": "p_demand", "label": { "sw": "Demand watts", "en": "Demand watts" }, "expr": "n_lights * w_per * df", "unit": "W", "digits": 0 },
+        { "name": "i_total", "label": { "sw": "Total current", "en": "Total current" }, "expr": "n_lights * w_per * df / v", "unit": "A", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "Total W", "expr": "n_lights * w_per", "template": "P_installed = {{result}} W" },
+        { "label": "Demand W", "expr": "n_lights * w_per * df", "template": "P_demand = {{result}} W" },
+        { "label": "Current", "expr": "n_lights * w_per * df / v", "template": "I = {{result}} A" }
+      ],
+      "rules": [
+        { "check": "i_total <= 10", "status": "GOOD", "msg": { "sw": "Mzunguko 16A utatosha", "en": "16A circuit OK" } },
+        { "check": "i_total <= 16", "status": "WARNING", "msg": { "sw": "Vikosi circuits mbili", "en": "Split to 2 circuits" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Circuits nyingi", "en": "Multiple circuits" } }
+      ],
+      "test": { "inputs": { "n_lights": 8, "w_per": 18, "df": 0.9, "v": 230 }, "expect": { "p_demand": 129.6, "i_total": 0.56 } }
+    },
+    {
+      "id": "socket_load",
+      "trade": "umeme",
+      "name": { "sw": "Mzigo wa Socket", "en": "Socket Load" },
+      "formula": "P = N × 100W × DF",
+      "description": { "sw": "Hesabu mzigo wa sockets kwa 100W kila socket", "en": "Estimate socket load at 100W per socket" },
+      "inputs": [
+        { "name": "n_sock", "label": { "sw": "Idadi ya socket", "en": "Socket count" }, "unit": "pcs", "default": 12, "min": 1, "max": 100 },
+        { "name": "w_sock", "label": { "sw": "W per socket", "en": "W per socket" }, "unit": "W", "default": 100, "min": 50, "max": 1000 },
+        { "name": "df", "label": { "sw": "Demand Factor", "en": "Demand Factor" }, "unit": "", "default": 0.5, "min": 0.1, "max": 1 },
+        { "name": "v", "label": { "sw": "Voltage", "en": "Voltage" }, "unit": "V", "default": 230, "min": 12, "max": 415 }
+      ],
+      "outputs": [
+        { "name": "p_total", "label": { "sw": "Installed W", "en": "Installed W" }, "expr": "n_sock * w_sock", "unit": "W", "digits": 0 },
+        { "name": "p_demand", "label": { "sw": "Demand W", "en": "Demand W" }, "expr": "n_sock * w_sock * df", "unit": "W", "digits": 0 },
+        { "name": "i_demand", "label": { "sw": "Current", "en": "Current" }, "expr": "n_sock * w_sock * df / v", "unit": "A", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "Installed", "expr": "n_sock * w_sock", "template": "P_install = {{result}} W" },
+        { "label": "Demand", "expr": "n_sock * w_sock * df", "template": "P_demand = {{result}} W" },
+        { "label": "Current", "expr": "n_sock * w_sock * df / v", "template": "I = {{result}} A" }
+      ],
+      "rules": [
+        { "check": "i_demand <= 16", "status": "GOOD", "msg": { "sw": "Ring circuit 32A", "en": "32A ring OK" } },
+        { "check": "i_demand <= 32", "status": "WARNING", "msg": { "sw": "Radial au ring mbili", "en": "Radial or 2 rings" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Circuits nyingi", "en": "Multiple circuits" } }
+      ],
+      "test": { "inputs": { "n_sock": 12, "w_sock": 100, "df": 0.5, "v": 230 }, "expect": { "p_demand": 600, "i_demand": 2.6 } }
+    },
+    {
+      "id": "transformer_kva",
+      "trade": "umeme",
+      "name": { "sw": "kVA ya Transformer", "en": "Transformer kVA" },
+      "formula": "kVA = P_total / (PF × η)",
+      "description": { "sw": "Chagua ukubwa wa transformer kwa mzigo", "en": "Select transformer size for a building" },
+      "inputs": [
+        { "name": "p_kw", "label": { "sw": "Mzigo (kW)", "en": "Load (kW)" }, "unit": "kW", "default": 120, "min": 1, "max": 5000 },
+        { "name": "pf", "label": { "sw": "Power Factor", "en": "Power Factor" }, "unit": "", "default": 0.85, "min": 0.5, "max": 1 },
+        { "name": "eta", "label": { "sw": "Ufanisi η", "en": "Efficiency η" }, "unit": "", "default": 0.95, "min": 0.7, "max": 1 },
+        { "name": "growth", "label": { "sw": "Growth %", "en": "Growth %" }, "unit": "%", "default": 20, "min": 0, "max": 100 }
+      ],
+      "outputs": [
+        { "name": "kva_base", "label": { "sw": "kVA base", "en": "kVA base" }, "expr": "p_kw / (pf * eta)", "unit": "kVA", "digits": 0 },
+        { "name": "kva_std", "label": { "sw": "Standard kVA", "en": "Standard kVA" }, "unit": "kVA", "expr": "ceil(p_kw / (pf * eta) * (1 + growth / 100) / 25) * 25", "digits": 0 }
+      ],
+      "steps": [
+        { "label": "Base kVA", "expr": "p_kw / (pf * eta)", "template": "kVA = {{result}}" },
+        { "label": "Standard", "expr": "ceil(p_kw / (pf * eta) * (1 + growth / 100) / 25) * 25", "template": "Transformer = {{result}} kVA" }
+      ],
+      "rules": [
+        { "check": "kva_std <= 250", "status": "GOOD", "msg": { "sw": "Pole-mounted OK", "en": "Pole-mounted OK" } },
+        { "check": "kva_std <= 1000", "status": "WARNING", "msg": { "sw": "Substation ndogo", "en": "Mini-substation" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Substation kubwa", "en": "Large substation" } }
+      ],
+      "test": { "inputs": { "p_kw": 120, "pf": 0.85, "eta": 0.95, "growth": 20 }, "expect": { "kva_std": 200 } }
+    },
+    {
+      "id": "demand_factor",
+      "trade": "umeme",
+      "name": { "sw": "Demand Factor", "en": "Demand Factor Calculation" },
+      "formula": "DF = P_demand / P_installed",
+      "description": { "sw": "Hesabu demand factor kwa ujenzi", "en": "Calculate overall demand factor for a building" },
+      "inputs": [
+        { "name": "p_light", "label": { "sw": "Taa (kW)", "en": "Lighting (kW)" }, "unit": "kW", "default": 5, "min": 0, "max": 1000 },
+        { "name": "p_sock", "label": { "sw": "Socket (kW)", "en": "Socket (kW)" }, "unit": "kW", "default": 15, "min": 0, "max": 1000 },
+        { "name": "p_ac", "label": { "sw": "AC (kW)", "en": "AC (kW)" }, "unit": "kW", "default": 20, "min": 0, "max": 5000 },
+        { "name": "p_other", "label": { "sw": "Vingine (kW)", "en": "Other (kW)" }, "unit": "kW", "default": 10, "min": 0, "max": 5000 }
+      ],
+      "outputs": [
+        { "name": "p_installed", "label": { "sw": "Installed", "en": "Installed" }, "expr": "p_light + p_sock + p_ac + p_other", "unit": "kW", "digits": 1 },
+        { "name": "p_demand", "label": { "sw": "Demand", "en": "Demand" }, "expr": "p_light * 0.9 + p_sock * 0.5 + p_ac * 0.8 + p_other * 0.6", "unit": "kW", "digits": 1 },
+        { "name": "df", "label": { "sw": "Demand Factor", "en": "Demand Factor" }, "expr": "(p_light * 0.9 + p_sock * 0.5 + p_ac * 0.8 + p_other * 0.6) / (p_light + p_sock + p_ac + p_other)", "unit": "", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "Installed", "expr": "p_light + p_sock + p_ac + p_other", "template": "P_inst = {{result}} kW" },
+        { "label": "Demand", "expr": "p_light * 0.9 + p_sock * 0.5 + p_ac * 0.8 + p_other * 0.6", "template": "P_dmd = {{result}} kW" },
+        { "label": "DF", "expr": "(p_light * 0.9 + p_sock * 0.5 + p_ac * 0.8 + p_other * 0.6) / (p_light + p_sock + p_ac + p_other)", "template": "DF = {{result}}" }
+      ],
+      "rules": [
+        { "check": "df >= 0.6", "status": "GOOD", "msg": { "sw": "DF kawaida", "en": "Typical DF" } },
+        { "check": "df >= 0.4", "status": "WARNING", "msg": { "sw": "DF chini", "en": "Low DF" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Angalia vipimo", "en": "Review estimates" } }
+      ],
+      "test": { "inputs": { "p_light": 5, "p_sock": 15, "p_ac": 20, "p_other": 10 }, "expect": { "df": 0.69 } }
+    },
+    {
+      "id": "battery_sizing",
+      "trade": "solar",
+      "name": { "sw": "Ukubwa wa Betri (Solar)", "en": "Battery Sizing (Solar)" },
+      "formula": "Ah = (Load × Days) / (DoD × V × η)",
+      "description": { "sw": "Hesabu uwezo wa betri wa mfumo wa solar", "en": "Calculate solar battery capacity" },
+      "inputs": [
+        { "name": "Load", "label": { "sw": "Mzigo wa siku", "en": "Daily load" }, "unit": "Wh", "default": 1500, "min": 1, "max": 100000 },
+        { "name": "Days", "label": { "sw": "Siku za uhuru", "en": "Days autonomy" }, "unit": "", "default": 2, "min": 0.5, "max": 10 },
+        { "name": "DoD", "label": { "sw": "Depth of Discharge", "en": "Depth of Discharge" }, "unit": "", "default": 0.5, "select": [
+          { "label": "Lead-acid (0.5)", "value": 0.5 },
+          { "label": "Lithium (0.8)", "value": 0.8 }
+        ]},
+        { "name": "Vb", "label": { "sw": "System voltage", "en": "System voltage" }, "unit": "V", "default": 24, "select": [
+          { "label": "12V", "value": 12 },
+          { "label": "24V", "value": 24 },
+          { "label": "48V", "value": 48 }
+        ]},
+        { "name": "eta", "label": { "sw": "Ufanisi (η)", "en": "Efficiency (η)" }, "unit": "", "default": 0.85, "min": 0.5, "max": 1 }
+      ],
+      "outputs": [
+        { "name": "ah", "label": { "sw": "Uwezo unaohitajika", "en": "Required capacity" }, "expr": "(Load * Days) / (DoD * Vb * eta)", "unit": "Ah", "digits": 1 },
+        { "name": "wh", "label": { "sw": "Nishati", "en": "Energy" }, "expr": "(Load * Days) / eta", "unit": "Wh", "digits": 0 }
+      ],
+      "steps": [
+        { "label": "Formula", "text": "Ah = (Load × Days) / (DoD × V × η)" },
+        { "label": "Ah", "expr": "(Load * Days) / (DoD * Vb * eta)", "template": "Ah = {{result}} Ah" },
+        { "label": "Wh", "expr": "(Load * Days) / eta", "template": "Wh = {{result}}" }
+      ],
+      "rules": [
+        { "check": "ah <= 100", "status": "GOOD", "msg": { "sw": "Betri 1-2 ndogo", "en": "1-2 small batteries" } },
+        { "check": "ah <= 400", "status": "WARNING", "msg": { "sw": "Betri kubwa - bajeti", "en": "Large battery - budget" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Mzigo mkubwa - punguza au ongeza panel", "en": "Large load - reduce or add panels" } }
+      ],
+      "test": { "inputs": { "Load": 1500, "Days": 2, "DoD": 0.5, "Vb": 24, "eta": 0.85 }, "expect": { "ah": 294.1 } }
+    },
+    {
+      "id": "panel_sizing",
+      "trade": "solar",
+      "name": { "sw": "Ukubwa wa Panel (Solar)", "en": "Panel Sizing (Solar)" },
+      "formula": "P_panel = Load / (PSH × η)",
+      "description": { "sw": "Hesabu idadi ya panel za solar", "en": "Calculate solar panel count" },
+      "inputs": [
+        { "name": "Load", "label": { "sw": "Mzigo wa siku", "en": "Daily load" }, "unit": "Wh", "default": 1500, "min": 1, "max": 100000 },
+        { "name": "PSH", "label": { "sw": "Peak sun hours", "en": "Peak sun hours" }, "unit": "h", "default": 5.5, "min": 1, "max": 9 },
+        { "name": "eta", "label": { "sw": "Ufanisi mfumo", "en": "System efficiency" }, "unit": "", "default": 0.8, "min": 0.3, "max": 1 },
+        { "name": "Wp", "label": { "sw": "Watts / panel", "en": "Watts per panel" }, "unit": "Wp", "default": 300, "select": [
+          { "label": "250 Wp", "value": 250 },
+          { "label": "300 Wp", "value": 300 },
+          { "label": "400 Wp", "value": 400 },
+          { "label": "550 Wp", "value": 550 }
+        ]}
+      ],
+      "outputs": [
+        { "name": "array_w", "label": { "sw": "Array size", "en": "Array size" }, "expr": "Load / (PSH * eta)", "unit": "W", "digits": 0 },
+        { "name": "count", "label": { "sw": "Panel count", "en": "Panel count" }, "expr": "ceil(Load / (PSH * eta) / Wp)", "unit": "pcs", "digits": 0 }
+      ],
+      "steps": [
+        { "label": "Array", "expr": "Load / (PSH * eta)", "template": "Array = {{result}} W" },
+        { "label": "Count", "expr": "ceil(Load / (PSH * eta) / Wp)", "template": "Panels = {{result}}" }
+      ],
+      "rules": [
+        { "check": "count <= 4", "status": "GOOD", "msg": { "sw": "Mfumo mdogo", "en": "Small system" } },
+        { "check": "count <= 12", "status": "WARNING", "msg": { "sw": "Mfumo wa kati", "en": "Mid system" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Ushauri wa kitaalamu", "en": "Pro consultation" } }
+      ],
+      "test": { "inputs": { "Load": 1500, "PSH": 5.5, "eta": 0.8, "Wp": 300 }, "expect": { "array_w": 341, "count": 2 } }
+    },
+    {
+      "id": "inverter_sizing",
+      "trade": "solar",
+      "name": { "sw": "Ukubwa wa Inverter", "en": "Inverter Sizing" },
+      "formula": "P_inv = P_peak × 1.25",
+      "description": { "sw": "Hesabu ukubwa wa inverter kwa mzigo", "en": "Size inverter for peak load + surge" },
+      "inputs": [
+        { "name": "p_cont", "label": { "sw": "Continuous kW", "en": "Continuous kW" }, "unit": "kW", "default": 1.5, "min": 0.1, "max": 50 },
+        { "name": "p_surge", "label": { "sw": "Surge kW (motor)", "en": "Surge kW (motor)" }, "unit": "kW", "default": 3, "min": 0, "max": 100 },
+        { "name": "v_sys", "label": { "sw": "System V", "en": "System V" }, "unit": "V", "default": 24, "select": [
+          { "label": "12V", "value": 12 },
+          { "label": "24V", "value": 24 },
+          { "label": "48V", "value": 48 }
+        ]}
+      ],
+      "outputs": [
+        { "name": "inv_kw", "label": { "sw": "Inverter kW", "en": "Inverter kW" }, "expr": "max(p_cont, p_surge) * 1.25", "unit": "kW", "digits": 1 },
+        { "name": "inv_va", "label": { "sw": "Inverter VA", "en": "Inverter VA" }, "expr": "max(p_cont, p_surge) * 1.25 * 1000 / 0.9", "unit": "VA", "digits": 0 }
+      ],
+      "steps": [
+        { "label": "Base kW", "expr": "max(p_cont, p_surge) * 1.25", "template": "P_inv = {{result}} kW" },
+        { "label": "VA", "expr": "max(p_cont, p_surge) * 1.25 * 1000 / 0.9", "template": "VA = {{result}}" }
+      ],
+      "rules": [
+        { "check": "inv_kw <= 5", "status": "GOOD", "msg": { "sw": "Inverter kawaida", "en": "Normal inverter" } },
+        { "check": "inv_kw <= 15", "status": "WARNING", "msg": { "sw": "Inverter kubwa", "en": "Large inverter" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Three phase", "en": "Three phase needed" } }
+      ],
+      "test": { "inputs": { "p_cont": 1.5, "p_surge": 3, "v_sys": 24 }, "expect": { "inv_kw": 3.8 } }
+    },
+    {
+      "id": "charge_current",
+      "trade": "solar",
+      "name": { "sw": "Current ya Kuchaji Betri", "en": "Battery Charge Current" },
+      "formula": "Ic = Ah_batt × C_rate",
+      "description": { "sw": "Hesabu current ya kuchaji betri", "en": "Calculate battery charge current" },
+      "inputs": [
+        { "name": "ah_batt", "label": { "sw": "Betri (Ah)", "en": "Battery (Ah)" }, "unit": "Ah", "default": 200, "min": 1, "max": 5000 },
+        { "name": "c_rate", "label": { "sw": "C-rate", "en": "C-rate" }, "unit": "", "default": 0.1, "select": [
+          { "label": "0.05C (polepole)", "value": 0.05 },
+          { "label": "0.1C (kawaida)", "value": 0.1 },
+          { "label": "0.2C (haraka)", "value": 0.2 },
+          { "label": "0.5C (Lithium)", "value": 0.5 }
+        ]},
+        { "name": "v_sys", "label": { "sw": "System V", "en": "System V" }, "unit": "V", "default": 24, "select": [
+          { "label": "12V", "value": 12 },
+          { "label": "24V", "value": 24 },
+          { "label": "48V", "value": 48 }
+        ]}
+      ],
+      "outputs": [
+        { "name": "i_charge", "label": { "sw": "Charge I", "en": "Charge I" }, "expr": "ah_batt * c_rate", "unit": "A", "digits": 1 },
+        { "name": "p_charge", "label": { "sw": "Charge power", "en": "Charge power" }, "expr": "ah_batt * c_rate * v_sys * 1.2", "unit": "W", "digits": 0 }
+      ],
+      "steps": [
+        { "label": "Current", "expr": "ah_batt * c_rate", "template": "Ic = {{result}} A" },
+        { "label": "Power", "expr": "ah_batt * c_rate * v_sys * 1.2", "template": "Pc = {{result}} W" }
+      ],
+      "rules": [
+        { "check": "i_charge <= 30", "status": "GOOD", "msg": { "sw": "PWM OK", "en": "PWM controller OK" } },
+        { "check": "i_charge <= 80", "status": "WARNING", "msg": { "sw": "Tumia MPPT", "en": "Use MPPT controller" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Controller maalum", "en": "Special controller" } }
+      ],
+      "test": { "inputs": { "ah_batt": 200, "c_rate": 0.1, "v_sys": 24 }, "expect": { "i_charge": 20, "p_charge": 576 } }
+    },
+    {
+      "id": "solar_irradiance",
+      "trade": "solar",
+      "name": { "sw": "Jumla ya Irradiance ya Jua", "en": "Solar Irradiance Daily" },
+      "formula": "kWh/m² = PSH × 1",
+      "description": { "sw": "Hesabu nishati ya jua kwa m² kwa siku", "en": "Daily solar energy per m²" },
+      "inputs": [
+        { "name": "psh", "label": { "sw": "Peak sun hours", "en": "Peak sun hours" }, "unit": "h", "default": 5.5, "min": 1, "max": 9 },
+        { "name": "area_m2", "label": { "sw": "Eneo (m²)", "en": "Area (m²)" }, "unit": "m²", "default": 20, "min": 0.1, "max": 10000 },
+        { "name": "tilt", "label": { "sw": "Tilt factor", "en": "Tilt factor" }, "unit": "", "default": 1.05, "min": 0.5, "max": 1.3 }
+      ],
+      "outputs": [
+        { "name": "kwh_m2", "label": { "sw": "kWh/m²", "en": "kWh/m²" }, "expr": "psh * tilt", "unit": "kWh/m²", "digits": 2 },
+        { "name": "total_kwh", "label": { "sw": "Total kWh", "en": "Total kWh" }, "expr": "psh * tilt * area_m2 * 1", "unit": "kWh", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "Per m²", "expr": "psh * tilt", "template": "{{result}} kWh/m²/siku" },
+        { "label": "Total", "expr": "psh * tilt * area_m2", "template": "{{result}} kWh/siku" }
+      ],
+      "rules": [
+        { "check": "kwh_m2 >= 4.5", "status": "GOOD", "msg": { "sw": "Shine nzuri (TZ typical)", "en": "Good sunshine (TZ typical)" } },
+        { "check": "kwh_m2 >= 3", "status": "WARNING", "msg": { "sw": "Shine wastani", "en": "Average sunshine" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Shine duni - ongeza panels", "en": "Poor sun - add panels" } }
+      ],
+      "test": { "inputs": { "psh": 5.5, "area_m2": 20, "tilt": 1.05 }, "expect": { "kwh_m2": 5.78, "total_kwh": 115.5 } }
+    },
+    {
+      "id": "pv_efficiency",
+      "trade": "solar",
+      "name": { "sw": "Ufanisi wa Panel PV", "en": "PV Panel Efficiency" },
+      "formula": "η = P_max / (A × G)",
+      "description": { "sw": "Hesabu ufanisi wa panel PV", "en": "Calculate PV panel efficiency" },
+      "inputs": [
+        { "name": "p_wp", "label": { "sw": "Panel Wp", "en": "Panel Wp" }, "unit": "Wp", "default": 300, "min": 10, "max": 1000 },
+        { "name": "l_cm", "label": { "sw": "Urefu (cm)", "en": "Length (cm)" }, "unit": "cm", "default": 170, "min": 20, "max": 300 },
+        { "name": "w_cm", "label": { "sw": "Upana (cm)", "en": "Width (cm)" }, "unit": "cm", "default": 100, "min": 20, "max": 300 },
+        { "name": "g", "label": { "sw": "Irradiance G", "en": "Irradiance G" }, "unit": "W/m²", "default": 1000, "min": 100, "max": 1500 }
+      ],
+      "outputs": [
+        { "name": "a_m2", "label": { "sw": "Area m²", "en": "Area m²" }, "expr": "(l_cm / 100) * (w_cm / 100)", "unit": "m²", "digits": 2 },
+        { "name": "eta_pct", "label": { "sw": "Efficiency %", "en": "Efficiency %" }, "expr": "p_wp / ((l_cm / 100) * (w_cm / 100) * g) * 100", "unit": "%", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "Area", "expr": "(l_cm / 100) * (w_cm / 100)", "template": "A = {{result}} m²" },
+        { "label": "Efficiency", "expr": "p_wp / ((l_cm / 100) * (w_cm / 100) * g) * 100", "template": "η = {{result}}%" }
+      ],
+      "rules": [
+        { "check": "eta_pct >= 20", "status": "GOOD", "msg": { "sw": "Mono PERC/HJT", "en": "Mono PERC/HJT - high efficiency" } },
+        { "check": "eta_pct >= 15", "status": "WARNING", "msg": { "sw": "Polycrystalline", "en": "Polycrystalline typical" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Panel zamani - badilisha", "en": "Old panel - replace" } }
+      ],
+      "test": { "inputs": { "p_wp": 300, "l_cm": 170, "w_cm": 100, "g": 1000 }, "expect": { "eta_pct": 17.6 } }
+    },
+    {
+      "id": "off_grid_load",
+      "trade": "solar",
+      "name": { "sw": "Off-Grid Mzigo wa Siku", "en": "Off-Grid Daily Load" },
+      "formula": "Wh = Σ (P × H)",
+      "description": { "sw": "Jumla ya mzigo wa siku kwa off-grid", "en": "Sum daily off-grid load in Wh" },
+      "inputs": [
+        { "name": "n_light", "label": { "sw": "Taa LED × saa", "en": "LED lights × hrs" }, "unit": "W×h", "default": 5 * 6, "min": 0, "max": 10000 },
+        { "name": "tv", "label": { "sw": "TV × saa", "en": "TV × hrs" }, "unit": "W×h", "default": 80 * 4, "min": 0, "max": 10000 },
+        { "name": "fridge", "label": { "sw": "Fridge 24h (W)", "en": "Fridge 24h (W)" }, "unit": "Wh", "default": 800, "min": 0, "max": 10000 },
+        { "name": "pump", "label": { "sw": "Pampu × saa", "en": "Pump × hrs" }, "unit": "W×h", "default": 250 * 1, "min": 0, "max": 10000 },
+        { "name": "other", "label": { "sw": "Vingine (Wh)", "en": "Other (Wh)" }, "unit": "Wh", "default": 300, "min": 0, "max": 50000 }
+      ],
+      "outputs": [
+        { "name": "total_wh", "label": { "sw": "Daily Wh", "en": "Daily Wh" }, "expr": "n_light + tv + fridge + pump + other", "unit": "Wh", "digits": 0 },
+        { "name": "total_kwh", "label": { "sw": "Daily kWh", "en": "Daily kWh" }, "expr": "(n_light + tv + fridge + pump + other) / 1000", "unit": "kWh", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "Jumla Wh", "expr": "n_light + tv + fridge + pump + other", "template": "{{result}} Wh" },
+        { "label": "kWh", "expr": "(n_light + tv + fridge + pump + other) / 1000", "template": "{{result}} kWh/siku" }
+      ],
+      "rules": [
+        { "check": "total_kwh <= 2", "status": "GOOD", "msg": { "sw": "Mfumo mdogo (nyumbani)", "en": "Small home system" } },
+        { "check": "total_kwh <= 10", "status": "WARNING", "msg": { "sw": "Mfumo wa kati", "en": "Mid system" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "System kubwa / diesel backup", "en": "Large system / backup gen" } }
+      ],
+      "test": { "inputs": { "n_light": 30, "tv": 320, "fridge": 800, "pump": 250, "other": 300 }, "expect": { "total_wh": 1700 } }
+    },
+    {
+      "id": "pipe_sizing_darcy",
+      "trade": "maji",
+      "name": { "sw": "Ukubwa wa Bomu (Darcy-Weisbach)", "en": "Pipe Sizing (Darcy-Weisbach)" },
+      "formula": "h_f = f × (L/D) × (v²/2g)",
+      "description": { "sw": "Hesabu hasara ya kichwa kwa Darcy-Weisbach", "en": "Calculate head loss via Darcy-Weisbach" },
+      "inputs": [
+        { "name": "L", "label": { "sw": "Urefu (m)", "en": "Length (m)" }, "unit": "m", "default": 100, "min": 1, "max": 10000 },
+        { "name": "D_mm", "label": { "sw": "Kipenyo (mm)", "en": "Diameter (mm)" }, "unit": "mm", "default": 50, "min": 10, "max": 1000 },
+        { "name": "Q_lps", "label": { "sw": "Flow L/s", "en": "Flow L/s" }, "unit": "L/s", "default": 5, "min": 0.1, "max": 500 },
+        { "name": "f", "label": { "sw": "Friction f", "en": "Friction f" }, "unit": "", "default": 0.025, "min": 0.005, "max": 0.1 }
+      ],
+      "outputs": [
+        { "name": "v", "label": { "sw": "Velocity m/s", "en": "Velocity m/s" }, "expr": "(Q_lps / 1000) / (pi * pow(D_mm / 2000, 2))", "unit": "m/s", "digits": 2 },
+        { "name": "hf", "label": { "sw": "Head loss m", "en": "Head loss m" }, "expr": "f * (L / (D_mm / 1000)) * (pow((Q_lps / 1000) / (pi * pow(D_mm / 2000, 2)), 2) / (2 * 9.81))", "unit": "m", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "Velocity", "expr": "(Q_lps / 1000) / (pi * pow(D_mm / 2000, 2))", "template": "v = {{result}} m/s" },
+        { "label": "hf", "expr": "f * (L / (D_mm / 1000)) * (pow((Q_lps / 1000) / (pi * pow(D_mm / 2000, 2)), 2) / (2 * 9.81))", "template": "hf = {{result}} m" }
+      ],
+      "rules": [
+        { "check": "v >= 0.6 && v <= 2.5", "status": "GOOD", "msg": { "sw": "Velocity mzuri", "en": "Good velocity range" } },
+        { "check": "v > 2.5", "status": "WARNING", "msg": { "sw": "Velocity kubwa - noise", "en": "High velocity - noise/erosion" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Velocity duni - sediment", "en": "Low velocity - sedimentation" } }
+      ],
+      "test": { "inputs": { "L": 100, "D_mm": 50, "Q_lps": 5, "f": 0.025 }, "expect": { "v": 2.55, "hf": 16.6 } }
+    },
+    {
+      "id": "flow_rate_velocity",
+      "trade": "maji",
+      "name": { "sw": "Kasi ya Mtiririko (Flow Velocity)", "en": "Flow Rate & Velocity" },
+      "formula": "Q = A × v",
+      "description": { "sw": "Hesabu kasi na kasi ya mtiririko", "en": "Calculate flow rate from velocity" },
+      "inputs": [
+        { "name": "D_mm", "label": { "sw": "Kipenyo (mm)", "en": "Diameter (mm)" }, "unit": "mm", "default": 25, "min": 5, "max": 1000 },
+        { "name": "v", "label": { "sw": "Velocity m/s", "en": "Velocity m/s" }, "unit": "m/s", "default": 1.5, "min": 0.05, "max": 10 }
+      ],
+      "outputs": [
+        { "name": "a_m2", "label": { "sw": "Area m²", "en": "Area m²" }, "expr": "pi * pow(D_mm / 2000, 2)", "unit": "m²", "digits": 5 },
+        { "name": "q_lps", "label": { "sw": "L/s", "en": "L/s" }, "expr": "pi * pow(D_mm / 2000, 2) * v * 1000", "unit": "L/s", "digits": 2 },
+        { "name": "q_m3h", "label": { "sw": "m³/h", "en": "m³/h" }, "expr": "pi * pow(D_mm / 2000, 2) * v * 3600", "unit": "m³/h", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "Area", "expr": "pi * pow(D_mm / 2000, 2)", "template": "A = {{result}} m²" },
+        { "label": "L/s", "expr": "pi * pow(D_mm / 2000, 2) * v * 1000", "template": "Q = {{result}} L/s" },
+        { "label": "m³/h", "expr": "pi * pow(D_mm / 2000, 2) * v * 3600", "template": "Q = {{result}} m³/h" }
+      ],
+      "rules": [
+        { "check": "v >= 0.6 && v <= 2", "status": "GOOD", "msg": { "sw": "Velocity sahihi", "en": "Ideal velocity" } },
+        { "check": "true", "status": "WARNING", "msg": { "sw": "Angalia bomu", "en": "Check pipe sizing" } }
+      ],
+      "test": { "inputs": { "D_mm": 25, "v": 1.5 }, "expect": { "q_lps": 0.74, "q_m3h": 2.7 } }
+    },
+    {
+      "id": "head_loss_hazen",
+      "trade": "maji",
+      "name": { "sw": "Hasara ya Kichwa (Hazen-Williams)", "en": "Head Loss (Hazen-Williams)" },
+      "formula": "h_f = 10.67 × Q^1.852 × L / (C^1.852 × D^4.8704)",
+      "description": { "sw": "Hesabu hasara kwa Hazen-Williams (maji tu)", "en": "Hazen-Williams head loss (water only)" },
+      "inputs": [
+        { "name": "Q_gpm", "label": { "sw": "Flow GPM", "en": "Flow GPM" }, "unit": "GPM", "default": 100, "min": 1, "max": 10000 },
+        { "name": "L_ft", "label": { "sw": "Urefu ft", "en": "Length ft" }, "unit": "ft", "default": 300, "min": 1, "max": 10000 },
+        { "name": "C", "label": { "sw": "C-factor", "en": "C-factor" }, "unit": "", "default": 130, "min": 80, "max": 150 },
+        { "name": "D_in", "label": { "sw": "Kipenyo inch", "en": "Diameter inch" }, "unit": "in", "default": 4, "min": 0.5, "max": 30 }
+      ],
+      "outputs": [
+        { "name": "hf_ft", "label": { "sw": "hf (ft)", "en": "hf (ft)" }, "expr": "4.727 * pow(Q_gpm, 1.852) * L_ft / (pow(C, 1.852) * pow(D_in, 4.8704))", "unit": "ft", "digits": 2 },
+        { "name": "hf_m", "label": { "sw": "hf (m)", "en": "hf (m)" }, "expr": "4.727 * pow(Q_gpm, 1.852) * L_ft / (pow(C, 1.852) * pow(D_in, 4.8704)) * 0.3048", "unit": "m", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "hf ft", "expr": "4.727 * pow(Q_gpm, 1.852) * L_ft / (pow(C, 1.852) * pow(D_in, 4.8704))", "template": "hf = {{result}} ft" },
+        { "label": "hf m", "expr": "4.727 * pow(Q_gpm, 1.852) * L_ft / (pow(C, 1.852) * pow(D_in, 4.8704)) * 0.3048", "template": "hf = {{result}} m" }
+      ],
+      "rules": [
+        { "check": "hf_m / (L_ft * 0.3048) * 100 <= 5", "status": "GOOD", "msg": { "sw": "Hasara ndogo", "en": "Low loss" } },
+        { "check": "true", "status": "WARNING", "msg": { "sw": "Hasara kubwa", "en": "High loss" } }
+      ],
+      "test": { "inputs": { "Q_gpm": 100, "L_ft": 300, "C": 130, "D_in": 4 }, "expect": { "hf_ft": 1.56, "hf_m": 0.48 } }
+    },
+    {
+      "id": "tank_capacity",
+      "trade": "maji",
+      "name": { "sw": "Uwezo wa Tanki", "en": "Storage Tank Capacity" },
+      "formula": "V = π × (D/2)² × H",
+      "description": { "sw": "Hesabu uwezo wa tanki ya mvua maji", "en": "Calculate cylindrical tank volume" },
+      "inputs": [
+        { "name": "shape", "label": { "sw": "Shape", "en": "Shape" }, "unit": "", "default": 1, "select": [
+          { "label": "Cylinder", "value": 1 },
+          { "label": "Rectangular", "value": 2 }
+        ]},
+        { "name": "D_m", "label": { "sw": "Kipenyo (m) / Urefu", "en": "Diameter (m) / Length" }, "unit": "m", "default": 3, "min": 0.3, "max": 50 },
+        { "name": "W_m", "label": { "sw": "Upana (m) (rect)", "en": "Width (m) (rect)" }, "unit": "m", "default": 2, "min": 0.3, "max": 50 },
+        { "name": "H_m", "label": { "sw": "Kimo (m)", "en": "Height (m)" }, "unit": "m", "default": 2, "min": 0.2, "max": 30 }
+      ],
+      "outputs": [
+        { "name": "vol_m3", "label": { "sw": "m³", "en": "m³" }, "expr": "if(shape == 1, pi * pow(D_m / 2, 2) * H_m, D_m * W_m * H_m)", "unit": "m³", "digits": 2 },
+        { "name": "vol_lit", "label": { "sw": "Litres", "en": "Litres" }, "expr": "if(shape == 1, pi * pow(D_m / 2, 2) * H_m, D_m * W_m * H_m) * 1000", "unit": "L", "digits": 0 }
+      ],
+      "steps": [
+        { "label": "m³", "expr": "if(shape == 1, pi * pow(D_m / 2, 2) * H_m, D_m * W_m * H_m)", "template": "V = {{result}} m³" },
+        { "label": "Litres", "expr": "if(shape == 1, pi * pow(D_m / 2, 2) * H_m, D_m * W_m * H_m) * 1000", "template": "V = {{result}} L" }
+      ],
+      "rules": [
+        { "check": "vol_lit >= 5000", "status": "GOOD", "msg": { "sw": "Tanki nzuri", "en": "Good size tank" } },
+        { "check": "true", "status": "WARNING", "msg": { "sw": "Tanki ndogo - ongeza", "en": "Small tank - consider larger" } }
+      ],
+      "test": { "inputs": { "shape": 1, "D_m": 3, "W_m": 2, "H_m": 2 }, "expect": { "vol_lit": 14137 } }
+    },
+    {
+      "id": "pump_hydraulic_power",
+      "trade": "maji",
+      "name": { "sw": "Nishati ya Hydrauliki ya Pampu", "en": "Pump Hydraulic Power" },
+      "formula": "P_hyd = (ρ × g × Q × H) / 1000",
+      "description": { "sw": "Hesabu nishati ya hydrauliki ya pampu", "en": "Calculate pump hydraulic power" },
+      "inputs": [
+        { "name": "Q_m3h", "label": { "sw": "Flow m³/h", "en": "Flow m³/h" }, "unit": "m³/h", "default": 10, "min": 0.1, "max": 1000 },
+        { "name": "H_m", "label": { "sw": "Head m", "en": "Head m" }, "unit": "m", "default": 30, "min": 0.5, "max": 500 },
+        { "name": "rho", "label": { "sw": "Density kg/m³", "en": "Density kg/m³" }, "unit": "kg/m³", "default": 1000, "min": 800, "max": 2000 }
+      ],
+      "outputs": [
+        { "name": "p_kw", "label": { "sw": "Hydraulic kW", "en": "Hydraulic kW" }, "expr": "(rho * 9.81 * (Q_m3h / 3600) * H_m) / 1000", "unit": "kW", "digits": 2 }
+      ],
+      "steps": [
+        { "label": "Hydraulic kW", "expr": "(rho * 9.81 * (Q_m3h / 3600) * H_m) / 1000", "template": "P_hyd = {{result}} kW" }
+      ],
+      "rules": [
+        { "check": "p_kw <= 2.2", "status": "GOOD", "msg": { "sw": "Single phase OK", "en": "Single phase OK" } },
+        { "check": "p_kw <= 7.5", "status": "WARNING", "msg": { "sw": "3 phase needed", "en": "Three phase needed" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Pump kubwa", "en": "Large pump" } }
+      ],
+      "test": { "inputs": { "Q_m3h": 10, "H_m": 30, "rho": 1000 }, "expect": { "p_kw": 0.82 } }
+    },
+    {
+      "id": "pump_electric_power",
+      "trade": "maji",
+      "name": { "sw": "Nishati ya Umeme ya Pampu", "en": "Pump Electric Power" },
+      "formula": "P_elec = P_hyd / η",
+      "description": { "sw": "Umeme unaotoka kwa pampu ukiwa na ufanisi", "en": "Electric power drawn by pump incl efficiency" },
+      "inputs": [
+        { "name": "Q_m3h", "label": { "sw": "Flow m³/h", "en": "Flow m³/h" }, "unit": "m³/h", "default": 10, "min": 0.1, "max": 1000 },
+        { "name": "H_m", "label": { "sw": "Head m", "en": "Head m" }, "unit": "m", "default": 30, "min": 0.5, "max": 500 },
+        { "name": "eta_p", "label": { "sw": "η pump", "en": "η pump" }, "unit": "", "default": 0.6, "min": 0.2, "max": 0.95 },
+        { "name": "eta_m", "label": { "sw": "η motor", "en": "η motor" }, "unit": "", "default": 0.85, "min": 0.5, "max": 0.98 }
+      ],
+      "outputs": [
+        { "name": "p_kw", "label": { "sw": "Electric kW", "en": "Electric kW" }, "expr": "(1000 * 9.81 * (Q_m3h / 3600) * H_m) / (eta_p * eta_m) / 1000", "unit": "kW", "digits": 2 },
+        { "name": "i_a", "label": { "sw": "Current A (230V)", "en": "Current A (230V)" }, "expr": "((1000 * 9.81 * (Q_m3h / 3600) * H_m) / (eta_p * eta_m) / 1000 * 1000) / (230 * 0.85)", "unit": "A", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "kW", "expr": "(1000 * 9.81 * (Q_m3h / 3600) * H_m) / (eta_p * eta_m) / 1000", "template": "P = {{result}} kW" },
+        { "label": "A", "expr": "((1000 * 9.81 * (Q_m3h / 3600) * H_m) / (eta_p * eta_m) / 1000 * 1000) / (230 * 0.85)", "template": "I ≈ {{result}} A" }
+      ],
+      "rules": [
+        { "check": "p_kw <= 3", "status": "GOOD", "msg": { "sw": "Small pump OK", "en": "Small pump OK" } },
+        { "check": "true", "status": "WARNING", "msg": { "sw": "Check supply", "en": "Check power supply" } }
+      ],
+      "test": { "inputs": { "Q_m3h": 10, "H_m": 30, "eta_p": 0.6, "eta_m": 0.85 }, "expect": { "p_kw": 1.6 } }
+    },
+    {
+      "id": "pressure_conversion",
+      "trade": "maji",
+      "name": { "sw": "Ubadilishaji wa Shinikizo", "en": "Pressure Conversion" },
+      "formula": "1 bar = 10 m = 14.5 psi",
+      "description": { "sw": "Badilisha kati ya bar, psi, kPa na m", "en": "Convert between bar, psi, kPa, m head" },
+      "inputs": [
+        { "name": "value", "label": { "sw": "Thamani", "en": "Value" }, "unit": "", "default": 3, "min": 0, "max": 1000 },
+        { "name": "from_unit", "label": { "sw": "Kutoka", "en": "From unit" }, "unit": "", "default": 1, "select": [
+          { "label": "bar", "value": 1 },
+          { "label": "m (head)", "value": 2 },
+          { "label": "psi", "value": 3 },
+          { "label": "kPa", "value": 4 }
+        ]}
+      ],
+      "outputs": [
+        { "name": "bar", "label": { "sw": "bar", "en": "bar" }, "expr": "if(from_unit == 1, value, if(from_unit == 2, value / 10.197, if(from_unit == 3, value / 14.504, value / 100)))", "unit": "bar", "digits": 2 },
+        { "name": "m_head", "label": { "sw": "m", "en": "m" }, "expr": "if(from_unit == 1, value * 10.197, if(from_unit == 2, value, if(from_unit == 3, value * 0.703, value * 0.102)))", "unit": "m", "digits": 1 },
+        { "name": "psi", "label": { "sw": "psi", "en": "psi" }, "expr": "if(from_unit == 1, value * 14.504, if(from_unit == 2, value * 1.422, if(from_unit == 3, value, value * 0.145)))", "unit": "psi", "digits": 1 },
+        { "name": "kpa", "label": { "sw": "kPa", "en": "kPa" }, "expr": "if(from_unit == 1, value * 100, if(from_unit == 2, value * 9.81, if(from_unit == 3, value * 6.895, value)))", "unit": "kPa", "digits": 1 }
+      ],
+      "steps": [
+        { "label": "bar", "expr": "if(from_unit == 1, value, if(from_unit == 2, value / 10.197, if(from_unit == 3, value / 14.504, value / 100)))", "template": "{{result}} bar" },
+        { "label": "m", "expr": "if(from_unit == 1, value * 10.197, if(from_unit == 2, value, if(from_unit == 3, value * 0.703, value * 0.102)))", "template": "{{result}} m" },
+        { "label": "psi", "expr": "if(from_unit == 1, value * 14.504, if(from_unit == 2, value * 1.422, if(from_unit == 3, value, value * 0.145)))", "template": "{{result}} psi" },
+        { "label": "kPa", "expr": "if(from_unit == 1, value * 100, if(from_unit == 2, value * 9.81, if(from_unit == 3, value * 6.895, value)))", "template": "{{result}} kPa" }
+      ],
+      "rules": [
+        { "check": "bar >= 1 && bar <= 6", "status": "GOOD", "msg": { "sw": "Shinikizo la kawaida", "en": "Typical municipal pressure" } },
+        { "check": "true", "status": "WARNING", "msg": { "sw": "Angalia PRV/booster", "en": "Consider PRV/booster" } }
+      ],
+      "test": { "inputs": { "value": 3, "from_unit": 1 }, "expect": { "bar": 3, "m_head": 30.6, "psi": 43.5 } }
+    },
+    {
+      "id": "rainwater_harvest",
+      "trade": "maji",
+      "name": { "sw": "Kusanya Mvua", "en": "Rainwater Harvesting" },
+      "formula": "V = Area × Rainfall × C",
+      "description": { "sw": "Hesabu maji ya mvua yanayoweza kusanywa", "en": "Estimate harvestable rainwater volume" },
+      "inputs": [
+        { "name": "roof_m2", "label": { "sw": "Paa m²", "en": "Roof m²" }, "unit": "m²", "default": 100, "min": 5, "max": 10000 },
+        { "name": "rain_mm", "label": { "sw": "Mvua mm/mwezi", "en": "Rain mm/month" }, "unit": "mm", "default": 150, "min": 0, "max": 1000 },
+        { "name": "C", "label": { "sw": "Runoff C", "en": "Runoff C" }, "unit": "", "default": 0.8, "select": [
+          { "label": "Tiles (0.85)", "value": 0.85 },
+          { "label": "Iron sheet (0.80)", "value": 0.8 },
+          { "label": "Concrete (0.75)", "value": 0.75 },
+          { "label": "Thatch (0.50)", "value": 0.5 }
+        ]}
+      ],
+      "outputs": [
+        { "name": "lit_month", "label": { "sw": "L/mwezi", "en": "L/month" }, "expr": "roof_m2 * (rain_mm / 1000) * C * 1000", "unit": "L", "digits": 0 },
+        { "name": "m3_year", "label": { "sw": "m³/mwaka", "en": "m³/year" }, "expr": "roof_m2 * (rain_mm / 1000) * C * 12", "unit": "m³", "digits": 0 }
+      ],
+      "steps": [
+        { "label": "L/mwezi", "expr": "roof_m2 * (rain_mm / 1000) * C * 1000", "template": "{{result}} L/mwezi" },
+        { "label": "m³/mwaka", "expr": "roof_m2 * (rain_mm / 1000) * C * 12", "template": "{{result}} m³/mwaka" }
+      ],
+      "rules": [
+        { "check": "lit_month >= 10000", "status": "GOOD", "msg": { "sw": "Mvua inatosha", "en": "Good harvestable volume" } },
+        { "check": "lit_month >= 3000", "status": "WARNING", "msg": { "sw": "Ongeza tanki kubwa", "en": "Need larger storage" } },
+        { "check": "true", "status": "FAIL", "msg": { "sw": "Mvua ndogo - msaada wa borehole", "en": "Low rain - borehole backup" } }
+      ],
+      "test": { "inputs": { "roof_m2": 100, "rain_mm": 150, "C": 0.8 }, "expect": { "lit_month": 12000 } }
+    }
+  ]
+}

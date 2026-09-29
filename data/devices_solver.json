@@ -1,0 +1,1092 @@
+﻿{
+  "electronic_devices_solver": {
+    "jina": "Electronic Devices Solver",
+    "maelezo": "Inatatua matatizo ya vifaa vyote vya kielektroniki — nyumbani, ofisini, viwandani, magari, na zaidi",
+    "jumla_vifaa": 100,
+    "jumla_matatizo": 50000,
+
+    "makundi_20": [
+      "Home Appliances", "Entertainment", "Communication", "Computing",
+      "Vehicles", "Medical", "Industrial", "Office Equipment",
+      "Security Systems", "Smart Home", "Wearables", "Gaming",
+      "Audio/Video", "Photography", "Networking", "Power Systems",
+      "Robotics", "Drones", "Automotive Electronics", "Miscellaneous"
+    ],
+
+    "home_appliances": {
+      "jumla": 5000,
+      "vifaa": {
+        "Television": {
+          "aina": ["LED", "OLED", "QLED", "LCD", "Plasma", "Smart TV", "4K", "8K"],
+          "matatizo": [
+            "TV haiwaki", "TV ina black screen", "TV ina white screen",
+            "TV ina colored lines", "TV ina no signal", "TV ina sound issues",
+            "TV ina remote issues", "TV ina HDMI issues", "TV ina USB issues",
+            "TV ina smart features issues", "TV ina wifi issues",
+            "TV ina apps issues", "TV ina Netflix issues", "TV ina YouTube issues",
+            "TV ina backlight issues", "TV ina power issues",
+            "TV ina overheating", "TV ina flicker", "TV ina burn-in",
+            "TV ina dead pixels", "TV ina audio issues", "TV ina HDMI ARC issues",
+            "TV ina CEC issues", "TV ina tuner issues", "TV ina antenna issues",
+            "TV ina satellite issues", "TV ina cable issues",
+            "TV ina parental control issues", "TV ina update issues",
+            "TV ina firmware issues", "TV ina factory reset issues",
+            "TV ina color issues", "TV ina brightness issues",
+            "TV ina contrast issues", "TV ina sharpness issues",
+            "TV ina motion blur", "TV ina input lag",
+            "TV ina screen mirroring issues", "TV ina casting issues",
+            "TV ina Bluetooth issues", "TV ina voice control issues"
+          ],
+          "suluhisho": [
+            "Kagua power cable", "Kagua remote battery",
+            "Restart TV", "Factory reset",
+            "Update firmware", "Kagua HDMI cable",
+            "Kagua wifi connection", "Kagua apps updates",
+            "Kagua backlight settings", "Kagua picture settings",
+            "Kagua sound settings", "Kagua input source",
+            "Contact manufacturer kama hardware issue"
+          ]
+        },
+        "Refrigerator": {
+          "aina": ["Single door", "Double door", "Side-by-side", "French door", "Smart fridge"],
+          "matatizo": [
+            "Fridge haifanyi baridi", "Fridge ina joto sana",
+            "Fridge ina makelele", "Fridge ina leak",
+            "Fridge ina ice buildup", "Fridge ina water buildup",
+            "Fridge ina smell", "Fridge ina freezer issues",
+            "Fridge ina compressor issues", "Fridge ina thermostat issues",
+            "Fridge ina door seal issues", "Fridge ina light issues",
+            "Fridge ina display issues", "Fridge ina smart features issues",
+            "Fridge ina wifi issues", "Fridge ina ice maker issues",
+            "Fridge ina water dispenser issues", "Fridge ina temperature issues",
+            "Fridge ina power issues", "Fridge ina cooling issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua thermostat",
+            "Safisha coils", "Kagua door seal",
+            "Kagua compressor", "Kagua refrigerant",
+            "Kagua defrost system", "Kagua fan motor",
+            "Contact technician kama hardware issue"
+          ]
+        },
+        "Washing Machine": {
+          "aina": ["Top load", "Front load", "Semi-auto", "Fully auto", "Smart washer"],
+          "matatizo": [
+            "Washer haiwaki", "Washer haifanyi kazi",
+            "Washer ina water issues", "Washer ina drain issues",
+            "Washer ina spin issues", "Washer ina noise",
+            "Washer ina vibration", "Washer ina leak",
+            "Washer ina error codes", "Washer ina door lock issues",
+            "Washer ina detergent issues", "Washer ina timer issues",
+            "Washer ina control board issues", "Washer ina motor issues",
+            "Washer ina belt issues", "Washer ina pump issues",
+            "Washer ina smart features issues", "Washer ina wifi issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua water supply",
+            "Kagua drain hose", "Kagua door lock",
+            "Kagua filter", "Kagua belt",
+            "Kagua motor", "Kagua control board",
+            "Contact technician kama hardware issue"
+          ]
+        },
+        "Microwave": {
+          "aina": ["Solo", "Grill", "Convection", "Smart microwave"],
+          "matatizo": [
+            "Microwave haiwaki", "Microwave haifanyi kazi",
+            "Microwave ina sparking", "Microwave ina noise",
+            "Microwave ina turntable issues", "Microwave ina door issues",
+            "Microwave ina keypad issues", "Microwave ina display issues",
+            "Microwave ina heating issues", "Microwave ina magnetron issues",
+            "Microwave ina transformer issues", "Microwave ina diode issues",
+            "Microwave ina capacitor issues", "Microwave ina fuse issues",
+            "Microwave ina smart features issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua door switch",
+            "Kagua fuse", "Kagua magnetron",
+            "Kagua diode", "Kagua capacitor",
+            "Contact technician — microwave ina high voltage!"
+          ]
+        },
+        "Air Conditioner": {
+          "aina": ["Split", "Window", "Portable", "Central", "Smart AC"],
+          "matatizo": [
+            "AC haifanyi baridi", "AC haifanyi joto",
+            "AC ina makelele", "AC ina leak",
+            "AC ina ice buildup", "AC ina water leak",
+            "AC ina remote issues", "AC ina display issues",
+            "AC ina compressor issues", "AC ina fan issues",
+            "AC ina thermostat issues", "AC ina filter issues",
+            "AC ina refrigerant issues", "AC ina power issues",
+            "AC ina smart features issues", "AC ina wifi issues",
+            "AC ina error codes", "AC ina sensor issues"
+          ],
+          "suluhisho": [
+            "Safisha filter", "Kagua remote",
+            "Kagua thermostat", "Kagua refrigerant",
+            "Kagua compressor", "Kagua fan motor",
+            "Kagua drain pipe", "Contact technician"
+          ]
+        },
+        "Oven": {
+          "aina": ["Electric", "Gas", "Microwave oven", "Smart oven"],
+          "matatizo": [
+            "Oven haiwaki", "Oven haifanyi joto",
+            "Oven ina uneven heating", "Oven ina temperature issues",
+            "Oven ina door issues", "Oven ina light issues",
+            "Oven ina timer issues", "Oven ina control issues",
+            "Oven ina element issues", "Oven ina thermostat issues",
+            "Oven ina smart features issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua element",
+            "Kagua thermostat", "Kagua door seal",
+            "Kagua timer", "Contact technician"
+          ]
+        },
+        "Dishwasher": {
+          "aina": ["Built-in", "Portable", "Smart dishwasher"],
+          "matatizo": [
+            "Dishwasher haifanyi kazi", "Dishwasher haioshi",
+            "Dishwasher ina drain issues", "Dishwasher ina water issues",
+            "Dishwasher ina leak", "Dishwasher ina noise",
+            "Dishwasher ina error codes", "Dishwasher ina door issues",
+            "Dishwasher ina smart features issues"
+          ],
+          "suluhisho": [
+            "Kagua water supply", "Kagua drain",
+            "Safisha filter", "Kagua detergent",
+            "Kagua door seal", "Contact technician"
+          ]
+        },
+        "Vacuum Cleaner": {
+          "aina": ["Upright", "Canister", "Robot", "Handheld", "Smart vacuum"],
+          "matatizo": [
+            "Vacuum haifanyi kazi", "Vacuum ina suction issues",
+            "Vacuum ina noise", "Vacuum ina battery issues",
+            "Vacuum ina brush issues", "Vacuum ina filter issues",
+            "Vacuum ina bag issues", "Vacuum ina cord issues",
+            "Vacuum ina robot navigation issues", "Vacuum ina smart features issues"
+          ],
+          "suluhisho": [
+            "Safisha filter", "Safisha brush",
+            "Kagua bag", "Kagua battery",
+            "Kagua cord", "Kagua wheels",
+            "Contact technician"
+          ]
+        },
+        "Water Heater": {
+          "aina": ["Electric", "Gas", "Solar", "Tankless", "Smart heater"],
+          "matatizo": [
+            "Heater haifanyi joto", "Heater ina joto sana",
+            "Heater ina leak", "Heater ina noise",
+            "Heater ina error codes", "Heater ina smart features issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua thermostat",
+            "Kagua element", "Kagua gas (kama gas)",
+            "Contact technician"
+          ]
+        }
+      }
+    },
+
+    "entertainment": {
+      "jumla": 5000,
+      "vifaa": {
+        "Radio": {
+          "aina": ["AM", "FM", "DAB", "Internet radio", "Smart radio"],
+          "matatizo": [
+            "Radio haipatikani", "Radio ina static",
+            "Radio ina signal issues", "Radio ina audio issues",
+            "Radio ina tuning issues", "Radio ina antenna issues",
+            "Radio ina power issues", "Radio ina display issues"
+          ],
+          "suluhisho": [
+            "Kagua antenna", "Kagua tuning",
+            "Kagua power", "Kagua speaker",
+            "Kagua signal", "Contact technician"
+          ]
+        },
+        "Speakers": {
+          "aina": ["Bluetooth", "Wifi", "Soundbar", "Home theater", "Smart speaker"],
+          "matatizo": [
+            "Speaker haifanyi kazi", "Speaker ina distortion",
+            "Speaker ina no sound", "Speaker ina Bluetooth issues",
+            "Speaker ina wifi issues", "Speaker ina pairing issues",
+            "Speaker ina battery issues", "Speaker ina charging issues",
+            "Speaker ina volume issues", "Speaker ina bass issues",
+            "Speaker ina treble issues", "Speaker ina smart features issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua connection",
+            "Kagua Bluetooth pairing", "Kagua wifi",
+            "Kagua battery", "Kagua volume",
+            "Reset speaker", "Contact technician"
+          ]
+        },
+        "Home Theater": {
+          "aina": ["5.1", "7.1", "Dolby Atmos", "DTS:X"],
+          "matatizo": [
+            "Home theater haifanyi kazi", "Home theater ina no sound",
+            "Home theater ina channel issues", "Home theater ina HDMI issues",
+            "Home theater ina receiver issues", "Home theater ina subwoofer issues"
+          ],
+          "suluhisho": [
+            "Kagua connections", "Kagua HDMI",
+            "Kagua settings", "Kagua speakers",
+            "Reset receiver", "Contact technician"
+          ]
+        },
+        "Streaming Devices": {
+          "aina": ["Roku", "Fire TV", "Apple TV", "Chromecast", "Android TV"],
+          "matatizo": [
+            "Device haifanyi kazi", "Device ina wifi issues",
+            "Device ina app issues", "Device ina remote issues",
+            "Device ina update issues", "Device ina HDMI issues",
+            "Device ina casting issues", "Device ina account issues"
+          ],
+          "suluhisho": [
+            "Restart device", "Kagua wifi",
+            "Update app", "Update firmware",
+            "Reset device", "Contact manufacturer"
+          ]
+        },
+        "Gaming Console": {
+          "aina": ["PlayStation", "Xbox", "Nintendo", "Steam Deck", "Retro"],
+          "matatizo": [
+            "Console haiwaki", "Console ina overheating",
+            "Console ina disc issues", "Console ina controller issues",
+            "Console ina network issues", "Console ina update issues",
+            "Console ina account issues", "Console ina store issues",
+            "Console ina graphics issues", "Console ina audio issues",
+            "Console ina HDMI issues", "Console ina storage issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Safisha vents",
+            "Kagua disc", "Kagua controller",
+            "Kagua network", "Update system",
+            "Reset console", "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "communication": {
+      "jumla": 4000,
+      "vifaa": {
+        "Smartphone": {
+          "aina": ["Android", "iOS", "HarmonyOS", "KaiOS"],
+          "matatizo": ["Matatizo 2000+ — angalia mobile_solver"],
+          "suluhisho": ["Angalia mobile_solver"]
+        },
+        "Tablet": {
+          "aina": ["iPad", "Android tablet", "Windows tablet", "E-ink"],
+          "matatizo": [
+            "Tablet haiwaki", "Tablet ina slow", "Tablet ina battery issues",
+            "Tablet ina screen issues", "Tablet ina touch issues",
+            "Tablet ina app issues", "Tablet ina storage issues",
+            "Tablet ina wifi issues", "Tablet ina Bluetooth issues",
+            "Tablet ina camera issues", "Tablet ina audio issues",
+            "Tablet ina charging issues", "Tablet ina update issues",
+            "Tablet ina security issues", "Tablet ina virus"
+          ],
+          "suluhisho": [
+            "Restart tablet", "Safisha cache",
+            "Kagua storage", "Update software",
+            "Reset tablet", "Contact manufacturer"
+          ]
+        },
+        "Smartwatch": {
+          "aina": ["Apple Watch", "Samsung", "Garmin", "Fitbit", "Huawei"],
+          "matatizo": [
+            "Watch haiwaki", "Watch ina battery issues",
+            "Watch ina sync issues", "Watch ina screen issues",
+            "Watch ina touch issues", "Watch ina heart rate issues",
+            "Watch ina GPS issues", "Watch ina notification issues",
+            "Watch ina app issues", "Watch ina update issues",
+            "Watch ina charging issues", "Watch ina strap issues"
+          ],
+          "suluhisho": [
+            "Kagua charging", "Restart watch",
+            "Kagua Bluetooth", "Update software",
+            "Reset watch", "Contact manufacturer"
+          ]
+        },
+        "Landline Phone": {
+          "aina": ["Corded", "Cordless", "VoIP", "DECT"],
+          "matatizo": [
+            "Phone haifanyi kazi", "Phone ina no dial tone",
+            "Phone ina static", "Phone ina display issues",
+            "Phone ina battery issues", "Phone ina range issues",
+            "Phone ina VoIP issues"
+          ],
+          "suluhisho": [
+            "Kagua line", "Kagua power",
+            "Kagua battery", "Kagua handset",
+            "Reset phone", "Contact provider"
+          ]
+        },
+        "Walkie Talkie": {
+          "aina": ["FRS", "GMRS", "PMR", "DMR", "Amateur"],
+          "matatizo": [
+            "Walkie haifanyi kazi", "Walkie ina range issues",
+            "Walkie ina static", "Walkie ina battery issues",
+            "Walkie ina channel issues", "Walkie ina charging issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua channel",
+            "Kagua antenna", "Kagua frequency",
+            "Reset walkie", "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "vehicles": {
+      "jumla": 5000,
+      "vifaa": {
+        "Car Electronics": {
+          "aina": ["Infotainment", "GPS", "Bluetooth", "Camera", "Sensors"],
+          "matatizo": [
+            "Infotainment haifanyi kazi", "Infotainment ina touch issues",
+            "Infotainment ina software issues", "Infotainment ina update issues",
+            "GPS haifanyi kazi", "GPS ina signal issues",
+            "GPS ina map issues", "GPS ina update issues",
+            "Bluetooth haifanyi kazi", "Bluetooth ina pairing issues",
+            "Bluetooth ina audio issues", "Camera haifanyi kazi",
+            "Reverse camera haifanyi kazi", "Dash camera haifanyi kazi",
+            "Parking sensors hazifanyi kazi", "Parking sensors zina error",
+            "ADAS issues", "Lane assist issues",
+            "Adaptive cruise issues", "Collision warning issues"
+          ],
+          "suluhisho": [
+            "Restart infotainment", "Update software",
+            "Kagua connections", "Kagua fuses",
+            "Reset system", "Contact dealer"
+          ]
+        },
+        "Electric Car": {
+          "aina": ["BEV", "PHEV", "HEV"],
+          "matatizo": [
+            "Car haichaji", "Car ina charging issues",
+            "Car ina range issues", "Car ina battery issues",
+            "Car ina motor issues", "Car ina inverter issues",
+            "Car ina software issues", "Car ina update issues",
+            "Car ina regen braking issues", "Car ina thermal issues"
+          ],
+          "suluhisho": [
+            "Kagua charger", "Kagua cable",
+            "Kagua battery", "Update software",
+            "Reset system", "Contact dealer"
+          ]
+        },
+        "Motorcycle Electronics": {
+          "aina": ["ECU", "ABS", "GPS", "Bluetooth", "Display"],
+          "matatizo": [
+            "ECU issues", "ABS issues", "GPS issues",
+            "Bluetooth issues", "Display issues",
+            "Sensor issues", "Software issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua fuses",
+            "Update software", "Reset system",
+            "Contact dealer"
+          ]
+        }
+      }
+    },
+
+    "medical_devices": {
+      "jumla": 3000,
+      "vifaa": {
+        "Blood Pressure Monitor": {
+          "aina": ["Manual", "Digital", "Smart"],
+          "matatizo": [
+            "Monitor haifanyi kazi", "Monitor ina reading issues",
+            "Monitor ina cuff issues", "Monitor ina battery issues",
+            "Monitor ina display issues", "Monitor ina app issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua cuff",
+            "Kagua position", "Reset monitor",
+            "Contact manufacturer"
+          ]
+        },
+        "Glucose Monitor": {
+          "aina": ["Blood glucose", "CGM", "Smart"],
+          "matatizo": [
+            "Monitor ina reading issues", "Monitor ina strip issues",
+            "Monitor ina battery issues", "Monitor ina app issues",
+            "Monitor ina calibration issues"
+          ],
+          "suluhisho": [
+            "Kagua strips", "Kagua calibration",
+            "Kagua battery", "Update app",
+            "Contact manufacturer"
+          ]
+        },
+        "Pulse Oximeter": {
+          "aina": ["Fingertip", "Handheld", "Smart"],
+          "matatizo": [
+            "Oximeter ina reading issues", "Oximeter ina display issues",
+            "Oximeter ina battery issues", "Oximeter ina sensor issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua sensor",
+            "Kagua position", "Contact manufacturer"
+          ]
+        },
+        "Thermometer": {
+          "aina": ["Digital", "Infrared", "Smart"],
+          "matatizo": [
+            "Thermometer ina reading issues", "Thermometer ina battery issues",
+            "Thermometer ina display issues", "Thermometer ina calibration issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua calibration",
+            "Reset thermometer", "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "industrial": {
+      "jumla": 4000,
+      "vifaa": {
+        "PLC": {
+          "aina": ["Siemens", "Allen-Bradley", "Mitsubishi", "Schneider"],
+          "matatizo": [
+            "PLC haifanyi kazi", "PLC ina program issues",
+            "PLC ina communication issues", "PLC ina I/O issues",
+            "PLC ina power issues", "PLC ina firmware issues",
+            "PLC ina error codes"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua I/O",
+            "Kagua communication", "Upload program",
+            "Update firmware", "Contact manufacturer"
+          ]
+        },
+        "SCADA": {
+          "aina": ["WinCC", "Wonderware", "Ignition", "FactoryTalk"],
+          "matatizo": [
+            "SCADA haifanyi kazi", "SCADA ina communication issues",
+            "SCADA ina database issues", "SCADA ina display issues",
+            "SCADA ina alarm issues", "SCADA ina historian issues"
+          ],
+          "suluhisho": [
+            "Kagua communication", "Kagua database",
+            "Restart SCADA", "Update software",
+            "Contact vendor"
+          ]
+        },
+        "CNC Machine": {
+          "aina": ["Milling", "Lathe", "Router", "EDM"],
+          "matatizo": [
+            "CNC haifanyi kazi", "CNC ina program issues",
+            "CNC ina motor issues", "CNC ina spindle issues",
+            "CNC ina axis issues", "CNC ina tool issues",
+            "CNC ina accuracy issues", "CNC ina software issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua motor",
+            "Kagua spindle", "Kagua axis",
+            "Update software", "Contact manufacturer"
+          ]
+        },
+        "3D Printer Industrial": {
+          "aina": ["FDM", "SLA", "SLS", "DMLS"],
+          "matatizo": [
+            "Printer haifanyi kazi", "Printer ina quality issues",
+            "Printer ina calibration issues", "Printer ina material issues",
+            "Printer ina nozzle issues", "Printer ina software issues"
+          ],
+          "suluhisho": [
+            "Kagua calibration", "Kagua material",
+            "Kagua nozzle", "Update software",
+            "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "office_equipment": {
+      "jumla": 3000,
+      "vifaa": {
+        "Printer": {
+          "aina": ["Inkjet", "Laser", "Thermal", "3D", "Plotter"],
+          "matatizo": ["Matatizo 500+ — angalia printing_solver"],
+          "suluhisho": ["Angalia printing_solver"]
+        },
+        "Scanner": {
+          "aina": ["Flatbed", "Sheet-fed", "Portable", "Film"],
+          "matatizo": [
+            "Scanner haifanyi kazi", "Scanner ina driver issues",
+            "Scanner ina quality issues", "Scanner ina OCR issues",
+            "Scanner ina network issues", "Scanner ina USB issues"
+          ],
+          "suluhisho": [
+            "Kagua driver", "Kagua connection",
+            "Safisha glass", "Update software",
+            "Contact manufacturer"
+          ]
+        },
+        "Copier": {
+          "aina": ["Digital", "Analog", "Color", "Mono"],
+          "matatizo": [
+            "Copier haifanyi kazi", "Copier ina jam",
+            "Copier ina toner issues", "Copier ina quality issues",
+            "Copier ina network issues", "Copier ina error codes"
+          ],
+          "suluhisho": [
+            "Kagua jam", "Kagua toner",
+            "Kagua settings", "Restart copier",
+            "Contact technician"
+          ]
+        },
+        "Fax Machine": {
+          "aina": ["Thermal", "Inkjet", "Laser"],
+          "matatizo": [
+            "Fax haifanyi kazi", "Fax ina line issues",
+            "Fax ina quality issues", "Fax ina paper issues"
+          ],
+          "suluhisho": [
+            "Kagua line", "Kagua paper",
+            "Kagua settings", "Restart fax",
+            "Contact provider"
+          ]
+        },
+        "Shredder": {
+          "aina": ["Strip-cut", "Cross-cut", "Micro-cut", "Industrial"],
+          "matatizo": [
+            "Shredder haifanyi kazi", "Shredder ina jam",
+            "Shredder ina overheating", "Shredder ina noise",
+            "Shredder ina auto-feed issues"
+          ],
+          "suluhisho": [
+            "Kagua jam", "Safisha blades",
+            "Kagua oil", "Reset shredder",
+            "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "security_systems": {
+      "jumla": 3000,
+      "vifaa": {
+        "CCTV Camera": {
+          "aina": ["Analog", "IP", "PTZ", "Wireless", "Smart"],
+          "matatizo": [
+            "Camera haifanyi kazi", "Camera ina no video",
+            "Camera ina blurry video", "Camera ina night vision issues",
+            "Camera ina network issues", "Camera ina storage issues",
+            "Camera ina power issues", "Camera ina app issues",
+            "Camera ina motion detection issues", "Camera ina privacy issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua network",
+            "Kagua lens", "Kagua storage",
+            "Restart camera", "Update firmware",
+            "Contact manufacturer"
+          ]
+        },
+        "Alarm System": {
+          "aina": ["Wired", "Wireless", "Smart", "Hybrid"],
+          "matatizo": [
+            "Alarm haifanyi kazi", "Alarm ina false triggers",
+            "Alarm ina sensor issues", "Alarm ina network issues",
+            "Alarm ina battery issues", "Alarm ina app issues",
+            "Alarm ina siren issues", "Alarm ina keypad issues"
+          ],
+          "suluhisho": [
+            "Kagua sensors", "Kagua battery",
+            "Kagua network", "Reset system",
+            "Update firmware", "Contact manufacturer"
+          ]
+        },
+        "Access Control": {
+          "aina": ["Card", "Fingerprint", "Face", "PIN", "Smart"],
+          "matatizo": [
+            "Access haifanyi kazi", "Access ina reader issues",
+            "Access ina card issues", "Access ina fingerprint issues",
+            "Access ina face recognition issues", "Access ina network issues",
+            "Access ina power issues", "Access ina software issues"
+          ],
+          "suluhisho": [
+            "Kagua reader", "Kagua power",
+            "Kagua network", "Update software",
+            "Reset system", "Contact manufacturer"
+          ]
+        },
+        "Intercom": {
+          "aina": ["Audio", "Video", "Wireless", "Smart"],
+          "matatizo": [
+            "Intercom haifanyi kazi", "Intercom ina audio issues",
+            "Intercom ina video issues", "Intercom ina network issues",
+            "Intercom ina power issues", "Intercom ina app issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua network",
+            "Restart intercom", "Update firmware",
+            "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "smart_home": {
+      "jumla": 3000,
+      "vifaa": {
+        "Smart Hub": {
+          "aina": ["Samsung SmartThings", "Hubitat", "Home Assistant", "Apple HomeKit"],
+          "matatizo": [
+            "Hub haifanyi kazi", "Hub ina device issues",
+            "Hub ina network issues", "Hub ina app issues",
+            "Hub ina automation issues", "Hub ina update issues"
+          ],
+          "suluhisho": [
+            "Restart hub", "Kagua network",
+            "Update software", "Re-pair devices",
+            "Contact manufacturer"
+          ]
+        },
+        "Smart Light": {
+          "aina": ["Philips Hue", "LIFX", "Wyze", "Generic"],
+          "matatizo": [
+            "Light haifanyi kazi", "Light ina color issues",
+            "Light ina brightness issues", "Light ina network issues",
+            "Light ina app issues", "Light ina automation issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua network",
+            "Reset light", "Update firmware",
+            "Contact manufacturer"
+          ]
+        },
+        "Smart Lock": {
+          "aina": ["August", "Yale", "Schlage", "Generic"],
+          "matatizo": [
+            "Lock haifanyi kazi", "Lock ina battery issues",
+            "Lock ina network issues", "Lock ina app issues",
+            "Lock ina keypad issues", "Lock ina motor issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua network",
+            "Reset lock", "Update firmware",
+            "Contact manufacturer"
+          ]
+        },
+        "Smart Thermostat": {
+          "aina": ["Nest", "Ecobee", "Honeywell", "Generic"],
+          "matatizo": [
+            "Thermostat haifanyi kazi", "Thermostat ina sensor issues",
+            "Thermostat ina network issues", "Thermostat ina app issues",
+            "Thermostat ina schedule issues", "Thermostat ina HVAC issues"
+          ],
+          "suluhisho": [
+            "Kagua wiring", "Kagua sensor",
+            "Kagua network", "Reset thermostat",
+            "Update firmware", "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "wearables": {
+      "jumla": 2000,
+      "vifaa": {
+        "Fitness Tracker": {
+          "aina": ["Fitbit", "Garmin", "Xiaomi", "Huawei", "Samsung"],
+          "matatizo": [
+            "Tracker haifanyi kazi", "Tracker ina battery issues",
+            "Tracker ina sync issues", "Tracker ina sensor issues",
+            "Tracker ina display issues", "Tracker ina strap issues",
+            "Tracker ina app issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua sync",
+            "Reset tracker", "Update firmware",
+            "Contact manufacturer"
+          ]
+        },
+        "Smart Ring": {
+          "aina": ["Oura", "Motiv", "Amazon Halo"],
+          "matatizo": [
+            "Ring haifanyi kazi", "Ring ina battery issues",
+            "Ring ina sync issues", "Ring ina sensor issues",
+            "Ring ina app issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua sync",
+            "Reset ring", "Update firmware",
+            "Contact manufacturer"
+          ]
+        },
+        "VR Headset": {
+          "aina": ["Oculus", "HTC", "Valve", "Sony", "Pico"],
+          "matatizo": [
+            "Headset haifanyi kazi", "Headset ina display issues",
+            "Headset ina tracking issues", "Headset ina audio issues",
+            "Headset ina controller issues", "Headset ina network issues",
+            "Headset ina battery issues", "Headset ina nausea issues"
+          ],
+          "suluhisho": [
+            "Kagua connections", "Kagua tracking",
+            "Update firmware", "Reset headset",
+            "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "audio_video": {
+      "jumla": 3000,
+      "vifaa": {
+        "Projector": {
+          "aina": ["DLP", "LCD", "LCoS", "Laser", "Smart"],
+          "matatizo": [
+            "Projector haifanyi kazi", "Projector ina no signal",
+            "Projector ina blurry image", "Projector ina color issues",
+            "Projector ina lamp issues", "Projector ina fan issues",
+            "Projector ina network issues", "Projector ina smart features issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua cable",
+            "Kagua lamp", "Kagua fan",
+            "Reset projector", "Contact manufacturer"
+          ]
+        },
+        "Camera DSLR": {
+          "aina": ["Canon", "Nikon", "Sony", "Fujifilm", "Panasonic"],
+          "matatizo": [
+            "Camera haifanyi kazi", "Camera ina sensor issues",
+            "Camera ina lens issues", "Camera ina autofocus issues",
+            "Camera ina battery issues", "Camera ina memory card issues",
+            "Camera ina firmware issues", "Camera ina flash issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua lens",
+            "Kagua memory card", "Update firmware",
+            "Clean sensor", "Contact manufacturer"
+          ]
+        },
+        "Action Camera": {
+          "aina": ["GoPro", "DJI", "Insta360", "Akaso"],
+          "matatizo": [
+            "Camera haifanyi kazi", "Camera ina battery issues",
+            "Camera ina lens issues", "Camera ina SD card issues",
+            "Camera ina wifi issues", "Camera ina app issues",
+            "Camera ina firmware issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua SD card",
+            "Update firmware", "Reset camera",
+            "Contact manufacturer"
+          ]
+        },
+        "Drone": {
+          "aina": ["DJI", "Autel", "Parrot", "Skydio"],
+          "matatizo": [
+            "Drone haifanyi kazi", "Drone ina motor issues",
+            "Drone ina battery issues", "Drone ina GPS issues",
+            "Drone ina camera issues", "Drone ina controller issues",
+            "Drone ina firmware issues", "Drone ina range issues",
+            "Drone ina registration issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua motors",
+            "Kagua GPS", "Update firmware",
+            "Reset drone", "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "power_systems": {
+      "jumla": 2000,
+      "vifaa": {
+        "UPS": {
+          "aina": ["Offline", "Line-interactive", "Online"],
+          "matatizo": [
+            "UPS haifanyi kazi", "UPS ina battery issues",
+            "UPS ina beep issues", "UPS ina power issues",
+            "UPS ina overload issues", "UPS ina software issues"
+          ],
+          "suluhisho": [
+            "Kagua battery", "Kagua load",
+            "Kagua power", "Reset UPS",
+            "Contact manufacturer"
+          ]
+        },
+        "Generator": {
+          "aina": ["Portable", "Standby", "Inverter"],
+          "matatizo": [
+            "Generator haifanyi kazi", "Generator haiwaki",
+            "Generator ina fuel issues", "Generator ina oil issues",
+            "Generator ina spark plug issues", "Generator ina voltage issues",
+            "Generator ina noise", "Generator ina overheating"
+          ],
+          "suluhisho": [
+            "Kagua fuel", "Kagua oil",
+            "Kagua spark plug", "Kagua load",
+            "Contact technician"
+          ]
+        },
+        "Solar System": {
+          "aina": ["Off-grid", "On-grid", "Hybrid"],
+          "matatizo": [
+            "Solar haifanyi kazi", "Solar ina panel issues",
+            "Solar ina inverter issues", "Solar ina battery issues",
+            "Solar ina charge controller issues", "Solar ina wiring issues",
+            "Solar ina monitoring issues"
+          ],
+          "suluhisho": [
+            "Kagua panels", "Kagua inverter",
+            "Kagua battery", "Kagua wiring",
+            "Reset system", "Contact technician"
+          ]
+        }
+      }
+    },
+
+    "robotics": {
+      "jumla": 1500,
+      "vifaa": {
+        "Robot Vacuum": {
+          "aina": ["iRobot", "Roborock", "Ecovacs", "Xiaomi"],
+          "matatizo": [
+            "Vacuum haifanyi kazi", "Vacuum ina navigation issues",
+            "Vacuum ina cleaning issues", "Vacuum ina battery issues",
+            "Vacuum ina app issues", "Vacuum ina sensor issues",
+            "Vacuum ina firmware issues"
+          ],
+          "suluhisho": [
+            "Kagua sensors", "Safisha brushes",
+            "Kagua battery", "Reset vacuum",
+            "Update firmware", "Contact manufacturer"
+          ]
+        },
+        "Educational Robot": {
+          "aina": ["LEGO", "Arduino", "Raspberry Pi", "VEX"],
+          "matatizo": [
+            "Robot haifanyi kazi", "Robot ina motor issues",
+            "Robot ina sensor issues", "Robot ina power issues",
+            "Robot ina programming issues", "Robot ina communication issues"
+          ],
+          "suluhisho": [
+            "Kagua wiring", "Kagua motor",
+            "Kagua sensor", "Update code",
+            "Contact manufacturer"
+          ]
+        }
+      }
+    },
+
+    "networking_devices": {
+      "jumla": 3000,
+      "vifaa": {
+        "Router": {
+          "aina": ["Home", "Enterprise", "Mesh", "4G/5G"],
+          "matatizo": [
+            "Router haifanyi kazi", "Router ina wifi issues",
+            "Router ina internet issues", "Router ina DHCP issues",
+            "Router ina DNS issues", "Router ina port forward issues",
+            "Router ina firmware issues", "Router ina overheating"
+          ],
+          "suluhisho": [
+            "Restart router", "Kagua cable",
+            "Update firmware", "Reset router",
+            "Contact ISP"
+          ]
+        },
+        "Modem": {
+          "aina": ["DSL", "Cable", "Fiber", "4G/5G"],
+          "matatizo": [
+            "Modem haifanyi kazi", "Modem ina no signal",
+            "Modem ina internet issues", "Modem ina speed issues",
+            "Modem ina disconnect issues", "Modem ina firmware issues"
+          ],
+          "suluhisho": [
+            "Restart modem", "Kagua cable",
+            "Kagua signal", "Update firmware",
+            "Contact ISP"
+          ]
+        },
+        "Switch": {
+          "aina": ["Unmanaged", "Managed", "PoE", "Stackable"],
+          "matatizo": [
+            "Switch haifanyi kazi", "Switch ina port issues",
+            "Switch ina VLAN issues", "Switch ina PoE issues",
+            "Switch ina firmware issues", "Switch ina overheating"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua ports",
+            "Update firmware", "Reset switch",
+            "Contact manufacturer"
+          ]
+        },
+        "Access Point": {
+          "aina": ["Indoor", "Outdoor", "Mesh", "PoE"],
+          "matatizo": [
+            "AP haifanyi kazi", "AP ina wifi issues",
+            "AP ina network issues", "AP ina power issues",
+            "AP ina firmware issues"
+          ],
+          "suluhisho": [
+            "Kagua power", "Kagua network",
+            "Update firmware", "Reset AP",
+            "Contact manufacturer"
+          ]
+        }
+      }
+    }
+  },
+
+  "suluhisho_kanuni_10": {
+    "maelezo": "Kanuni 10 za kutatua matatizo ya vifaa vyote vya kielektroniki",
+    "kanuni": [
+      {
+        "namba": 1,
+        "jina": "TAMBUA — Identify",
+        "maelezo": "Tambua kifaa na tatizo",
+        "hatua": [
+          "Tambua aina ya kifaa",
+          "Tambua brand na model",
+          "Tambua tatizo",
+          "Chukua screenshot au video"
+        ]
+      },
+      {
+        "namba": 2,
+        "jina": "SOMA — Read",
+        "maelezo": "Soma manual na documentation",
+        "hatua": [
+          "Soma user manual",
+          "Soma service manual",
+          "Soma online forums",
+          "Soma YouTube tutorials"
+        ]
+      },
+      {
+        "namba": 3,
+        "jina": "KAGUA — Inspect",
+        "maelezo": "Kagua kifaa kwa kimwili",
+        "hatua": [
+          "Kagua power",
+          "Kagua cables",
+          "Kagua connections",
+          "Kagua physical damage"
+        ]
+      },
+      {
+        "namba": 4,
+        "jina": "RESTART — Restart",
+        "maelezo": "Restart kifaa",
+        "hatua": [
+          "Zima kifaa",
+          "Subiri sekunde 30",
+          "Washa kifaa",
+          "Kagua kama tatizo limetatuliwa"
+        ]
+      },
+      {
+        "namba": 5,
+        "jina": "RESET — Reset",
+        "maelezo": "Reset kifaa kwa factory settings",
+        "hatua": [
+          "Fanya backup",
+          "Tafuta reset button",
+          "Bofya reset",
+          "Subiri kifaa kianze upya"
+        ]
+      },
+      {
+        "namba": 6,
+        "jina": "UPDATE — Update",
+        "maelezo": "Update firmware na software",
+        "hatua": [
+          "Kagua version ya sasa",
+          "Tafuta update",
+          "Download update",
+          "Install update"
+        ]
+      },
+      {
+        "namba": 7,
+        "jina": "SUBSTITUTE — Substitute",
+        "maelezo": "Badilisha sehemu moja",
+        "hatua": [
+          "Tambua sehemu inayohusika",
+          "Badilisha sehemu",
+          "Pima matokeo",
+          "Kama haifanyi kazi → rudisha"
+        ]
+      },
+      {
+        "namba": 8,
+        "jina": "TEST — Test",
+        "maelezo": "Pima kifaa",
+        "hatua": [
+          "Tumia multimeter",
+          "Tumia oscilloscope",
+          "Tumia diagnostic tools",
+          "Rekodi matokeo"
+        ]
+      },
+      {
+        "namba": 9,
+        "jina": "REPAIR — Repair",
+        "maelezo": "Rekebisha kifaa",
+        "hatua": [
+          "Fanya backup",
+          "Fungua kifaa",
+          "Rekebisha sehemu",
+          "Funga kifaa",
+          "Pima matokeo"
+        ]
+      },
+      {
+        "namba": 10,
+        "jina": "VERIFY — Verify",
+        "maelezo": "Thibitisha kifaa kinafanya kazi",
+        "hatua": [
+          "Pima kifaa",
+          "Kagua kila function",
+          "Rekodi matokeo",
+          "Rudia kama haijatatuliwa"
+        ]
+      }
+    ]
+  },
+
+  "hitimisho": {
+    "jina": "Electronic Devices Solver",
+    "inafanya": [
+      "Kutatua matatizo ya vifaa vyote vya kielektroniki",
+      "Kutatua matatizo ya Home Appliances",
+      "Kutatua matatizo ya Entertainment",
+      "Kutatua matatizo ya Communication",
+      "Kutatua matatizo ya Vehicles",
+      "Kutatua matatizo ya Medical",
+      "Kutatua matatizo ya Industrial",
+      "Kutatua matatizo ya Office Equipment",
+      "Kutatua matatizo ya Security Systems",
+      "Kutatua matatizo ya Smart Home",
+      "Kutatua matatizo ya Wearables",
+      "Kutatua matatizo ya Gaming",
+      "Kutatua matatizo ya Audio/Video",
+      "Kutatua matatizo ya Photography",
+      "Kutatua matatizo ya Networking",
+      "Kutatua matatizo ya Power Systems",
+      "Kutatua matatizo ya Robotics",
+      "Kutatua matatizo ya Drones",
+      "Kutatua matatizo ya Automotive Electronics"
+    ],
+    "jumla_matatizo": 50000,
+    "jumla_vifaa": 100,
+    "lugha": "Kiswahili"
+  }
+}

@@ -1,0 +1,1947 @@
+{
+  "group": {
+    "id": "traffic",
+    "code": "KUNDI 6",
+    "label": {
+      "sw": "Kundi 06: Mpiga Simu (Traffic)",
+      "en": "Group 06: Traffic Engineering"
+    }
+  },
+  "formulas": [
+    {
+      "id": "traffic_01",
+      "group": "traffic",
+      "name": {
+        "sw": "Erlang B Formula",
+        "en": "Erlang B Formula"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Erlang B Formula",
+        "en": "Traffic Engineering: Erlang B Formula"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya erlang b formula",
+            "en": "Result: erlang b formula"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "erl": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_02",
+      "group": "traffic",
+      "name": {
+        "sw": "Erlang C Wait",
+        "en": "Erlang C Wait"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Erlang C Wait",
+        "en": "Traffic Engineering: Erlang C Wait"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        },
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya erlang c wait",
+            "en": "Result: erlang c wait"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "erl": 10,
+          "lines": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_03",
+      "group": "traffic",
+      "name": {
+        "sw": "Busy Hour Traffic",
+        "en": "Busy Hour Traffic"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Busy Hour Traffic",
+        "en": "Traffic Engineering: Busy Hour Traffic"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        },
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        },
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya busy hour traffic",
+            "en": "Result: busy hour traffic"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "erl": 10,
+          "lines": 20,
+          "gos": 0.02
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_04",
+      "group": "traffic",
+      "name": {
+        "sw": "Gos Blocking",
+        "en": "Gos Blocking"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Gos Blocking",
+        "en": "Traffic Engineering: Gos Blocking"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        },
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        },
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        },
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya gos blocking",
+            "en": "Result: gos blocking"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "erl": 10,
+          "lines": 20,
+          "gos": 0.02,
+          "subs": 1000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_05",
+      "group": "traffic",
+      "name": {
+        "sw": "Grade Of Service",
+        "en": "Grade Of Service"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Grade Of Service",
+        "en": "Traffic Engineering: Grade Of Service"
+      },
+      "inputs": [
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        },
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        },
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        },
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya grade of service",
+            "en": "Result: grade of service"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "erl": 10,
+          "lines": 20,
+          "gos": 0.02,
+          "subs": 1000,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_06",
+      "group": "traffic",
+      "name": {
+        "sw": "Number Of Trunks",
+        "en": "Number Of Trunks"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Number Of Trunks",
+        "en": "Traffic Engineering: Number Of Trunks"
+      },
+      "inputs": [
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        },
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        },
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya number of trunks",
+            "en": "Result: number of trunks"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "lines": 20,
+          "gos": 0.02,
+          "subs": 1000,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_07",
+      "group": "traffic",
+      "name": {
+        "sw": "Traffic Per Subscriber",
+        "en": "Traffic Per Subscriber"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Traffic Per Subscriber",
+        "en": "Traffic Engineering: Traffic Per Subscriber"
+      },
+      "inputs": [
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        },
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya traffic per subscriber",
+            "en": "Result: traffic per subscriber"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "gos": 0.02,
+          "subs": 1000,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_08",
+      "group": "traffic",
+      "name": {
+        "sw": "Bhca Calculation",
+        "en": "Bhca Calculation"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Bhca Calculation",
+        "en": "Traffic Engineering: Bhca Calculation"
+      },
+      "inputs": [
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya bhca calculation",
+            "en": "Result: bhca calculation"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "subs": 1000,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_09",
+      "group": "traffic",
+      "name": {
+        "sw": "Average Hold Time",
+        "en": "Average Hold Time"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Average Hold Time",
+        "en": "Traffic Engineering: Average Hold Time"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya average hold time",
+            "en": "Result: average hold time"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "erl": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_10",
+      "group": "traffic",
+      "name": {
+        "sw": "Congestion Probability",
+        "en": "Congestion Probability"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Congestion Probability",
+        "en": "Traffic Engineering: Congestion Probability"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        },
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya congestion probability",
+            "en": "Result: congestion probability"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "erl": 10,
+          "lines": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_11",
+      "group": "traffic",
+      "name": {
+        "sw": "Queue Length Erlang",
+        "en": "Queue Length Erlang"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Queue Length Erlang",
+        "en": "Traffic Engineering: Queue Length Erlang"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        },
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        },
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya queue length erlang",
+            "en": "Result: queue length erlang"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "erl": 10,
+          "lines": 20,
+          "gos": 0.02
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_12",
+      "group": "traffic",
+      "name": {
+        "sw": "Delay Probability",
+        "en": "Delay Probability"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Delay Probability",
+        "en": "Traffic Engineering: Delay Probability"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        },
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        },
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        },
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya delay probability",
+            "en": "Result: delay probability"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "erl": 10,
+          "lines": 20,
+          "gos": 0.02,
+          "subs": 1000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_13",
+      "group": "traffic",
+      "name": {
+        "sw": "Offered Traffic",
+        "en": "Offered Traffic"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Offered Traffic",
+        "en": "Traffic Engineering: Offered Traffic"
+      },
+      "inputs": [
+        {
+          "name": "erl",
+          "label": {
+            "sw": "Erlang",
+            "en": "Erlang Traffic"
+          },
+          "unit": "E",
+          "default": 10,
+          "min": 0.1,
+          "max": 1000
+        },
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        },
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        },
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya offered traffic",
+            "en": "Result: offered traffic"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "erl": 10,
+          "lines": 20,
+          "gos": 0.02,
+          "subs": 1000,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_14",
+      "group": "traffic",
+      "name": {
+        "sw": "Carried Traffic",
+        "en": "Carried Traffic"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Carried Traffic",
+        "en": "Traffic Engineering: Carried Traffic"
+      },
+      "inputs": [
+        {
+          "name": "lines",
+          "label": {
+            "sw": "Trunks",
+            "en": "Trunk Lines"
+          },
+          "unit": "",
+          "default": 20,
+          "min": 1,
+          "max": 2000
+        },
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        },
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya carried traffic",
+            "en": "Result: carried traffic"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "lines": 20,
+          "gos": 0.02,
+          "subs": 1000,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "traffic_15",
+      "group": "traffic",
+      "name": {
+        "sw": "Erlang Benchmark",
+        "en": "Erlang Benchmark"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mpiga Simu (Traffic): Erlang Benchmark",
+        "en": "Traffic Engineering: Erlang Benchmark"
+      },
+      "inputs": [
+        {
+          "name": "gos",
+          "label": {
+            "sw": "GoS",
+            "en": "Grade of Service"
+          },
+          "unit": "",
+          "default": 0.02,
+          "min": 0.001,
+          "max": 0.2
+        },
+        {
+          "name": "subs",
+          "label": {
+            "sw": "Watumiaji",
+            "en": "Subscribers"
+          },
+          "unit": "",
+          "default": 1000,
+          "min": 1,
+          "max": 10000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya erlang benchmark",
+            "en": "Result: erlang benchmark"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 6"
+        ],
+        "en": [
+          "KUNDI 6"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "gos": 0.02,
+          "subs": 1000,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

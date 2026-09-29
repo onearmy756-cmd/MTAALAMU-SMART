@@ -1,0 +1,1302 @@
+{
+  "group": {
+    "id": "virtualization",
+    "code": "KUNDI 19",
+    "label": {
+      "sw": "Kundi 19: Virtualization",
+      "en": "Group 19: Virtualization"
+    }
+  },
+  "formulas": [
+    {
+      "id": "virtualization_01",
+      "group": "virtualization",
+      "name": {
+        "sw": "Vm Sizing Ram Cpu",
+        "en": "Vm Sizing Ram Cpu"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Vm Sizing Ram Cpu",
+        "en": "Virtualization: Vm Sizing Ram Cpu"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya vm sizing ram cpu",
+            "en": "Result: vm sizing ram cpu"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_02",
+      "group": "virtualization",
+      "name": {
+        "sw": "Vm Consolidation Ratio",
+        "en": "Vm Consolidation Ratio"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Vm Consolidation Ratio",
+        "en": "Virtualization: Vm Consolidation Ratio"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya vm consolidation ratio",
+            "en": "Result: vm consolidation ratio"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_03",
+      "group": "virtualization",
+      "name": {
+        "sw": "Cpu Ready Pct",
+        "en": "Cpu Ready Pct"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Cpu Ready Pct",
+        "en": "Virtualization: Cpu Ready Pct"
+      },
+      "inputs": [
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya cpu ready pct",
+            "en": "Result: cpu ready pct"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_04",
+      "group": "virtualization",
+      "name": {
+        "sw": "Memory Overhead Vm",
+        "en": "Memory Overhead Vm"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Memory Overhead Vm",
+        "en": "Virtualization: Memory Overhead Vm"
+      },
+      "inputs": [
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya memory overhead vm",
+            "en": "Result: memory overhead vm"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_05",
+      "group": "virtualization",
+      "name": {
+        "sw": "Hyper Threading Ratio",
+        "en": "Hyper Threading Ratio"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Hyper Threading Ratio",
+        "en": "Virtualization: Hyper Threading Ratio"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya hyper threading ratio",
+            "en": "Result: hyper threading ratio"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_06",
+      "group": "virtualization",
+      "name": {
+        "sw": "Vmdk Thin Thick",
+        "en": "Vmdk Thin Thick"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Vmdk Thin Thick",
+        "en": "Virtualization: Vmdk Thin Thick"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya vmdk thin thick",
+            "en": "Result: vmdk thin thick"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_07",
+      "group": "virtualization",
+      "name": {
+        "sw": "Storage Iops Vm",
+        "en": "Storage Iops Vm"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Storage Iops Vm",
+        "en": "Virtualization: Storage Iops Vm"
+      },
+      "inputs": [
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya storage iops vm",
+            "en": "Result: storage iops vm"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_08",
+      "group": "virtualization",
+      "name": {
+        "sw": "Network Vm Bandwidth",
+        "en": "Network Vm Bandwidth"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Network Vm Bandwidth",
+        "en": "Virtualization: Network Vm Bandwidth"
+      },
+      "inputs": [
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya network vm bandwidth",
+            "en": "Result: network vm bandwidth"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_09",
+      "group": "virtualization",
+      "name": {
+        "sw": "Snapshot Size Calc",
+        "en": "Snapshot Size Calc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Snapshot Size Calc",
+        "en": "Virtualization: Snapshot Size Calc"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya snapshot size calc",
+            "en": "Result: snapshot size calc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "virtualization_10",
+      "group": "virtualization",
+      "name": {
+        "sw": "Vm Migration Time",
+        "en": "Vm Migration Time"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Virtualization: Vm Migration Time",
+        "en": "Virtualization: Vm Migration Time"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya vm migration time",
+            "en": "Result: vm migration time"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 19"
+        ],
+        "en": [
+          "KUNDI 19"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

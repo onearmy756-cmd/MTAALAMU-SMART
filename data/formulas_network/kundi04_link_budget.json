@@ -1,0 +1,1947 @@
+{
+  "group": {
+    "id": "link_budget",
+    "code": "KUNDI 4",
+    "label": {
+      "sw": "Kundi 04: Mipango ya Link",
+      "en": "Group 04: Link Budget"
+    }
+  },
+  "formulas": [
+    {
+      "id": "link_budget_01",
+      "group": "link_budget",
+      "name": {
+        "sw": "Downlink Budget",
+        "en": "Downlink Budget"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Downlink Budget",
+        "en": "Link Budget: Downlink Budget"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya downlink budget",
+            "en": "Result: downlink budget"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_02",
+      "group": "link_budget",
+      "name": {
+        "sw": "Uplink Budget",
+        "en": "Uplink Budget"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Uplink Budget",
+        "en": "Link Budget: Uplink Budget"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya uplink budget",
+            "en": "Result: uplink budget"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_03",
+      "group": "link_budget",
+      "name": {
+        "sw": "Eirp Transmit",
+        "en": "Eirp Transmit"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Eirp Transmit",
+        "en": "Link Budget: Eirp Transmit"
+      },
+      "inputs": [
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya eirp transmit",
+            "en": "Result: eirp transmit"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_04",
+      "group": "link_budget",
+      "name": {
+        "sw": "Isotropic Receive",
+        "en": "Isotropic Receive"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Isotropic Receive",
+        "en": "Link Budget: Isotropic Receive"
+      },
+      "inputs": [
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya isotropic receive",
+            "en": "Result: isotropic receive"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_05",
+      "group": "link_budget",
+      "name": {
+        "sw": "Path Loss Total",
+        "en": "Path Loss Total"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Path Loss Total",
+        "en": "Link Budget: Path Loss Total"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya path loss total",
+            "en": "Result: path loss total"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_06",
+      "group": "link_budget",
+      "name": {
+        "sw": "Fade Margin Total",
+        "en": "Fade Margin Total"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Fade Margin Total",
+        "en": "Link Budget: Fade Margin Total"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya fade margin total",
+            "en": "Result: fade margin total"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_07",
+      "group": "link_budget",
+      "name": {
+        "sw": "System Gain",
+        "en": "System Gain"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: System Gain",
+        "en": "Link Budget: System Gain"
+      },
+      "inputs": [
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya system gain",
+            "en": "Result: system gain"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_08",
+      "group": "link_budget",
+      "name": {
+        "sw": "C No Ratio",
+        "en": "C No Ratio"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: C No Ratio",
+        "en": "Link Budget: C No Ratio"
+      },
+      "inputs": [
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya c no ratio",
+            "en": "Result: c no ratio"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_09",
+      "group": "link_budget",
+      "name": {
+        "sw": "Eb No Ratio",
+        "en": "Eb No Ratio"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Eb No Ratio",
+        "en": "Link Budget: Eb No Ratio"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya eb no ratio",
+            "en": "Result: eb no ratio"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_10",
+      "group": "link_budget",
+      "name": {
+        "sw": "Carrier To Noise",
+        "en": "Carrier To Noise"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Carrier To Noise",
+        "en": "Link Budget: Carrier To Noise"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya carrier to noise",
+            "en": "Result: carrier to noise"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_11",
+      "group": "link_budget",
+      "name": {
+        "sw": "Available Margin",
+        "en": "Available Margin"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Available Margin",
+        "en": "Link Budget: Available Margin"
+      },
+      "inputs": [
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya available margin",
+            "en": "Result: available margin"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_12",
+      "group": "link_budget",
+      "name": {
+        "sw": "Rain Fade Margin Lb",
+        "en": "Rain Fade Margin Lb"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Rain Fade Margin Lb",
+        "en": "Link Budget: Rain Fade Margin Lb"
+      },
+      "inputs": [
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya rain fade margin lb",
+            "en": "Result: rain fade margin lb"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_13",
+      "group": "link_budget",
+      "name": {
+        "sw": "Gaseous Absorption",
+        "en": "Gaseous Absorption"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Gaseous Absorption",
+        "en": "Link Budget: Gaseous Absorption"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya gaseous absorption",
+            "en": "Result: gaseous absorption"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_14",
+      "group": "link_budget",
+      "name": {
+        "sw": "Antenna Feed Loss",
+        "en": "Antenna Feed Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Antenna Feed Loss",
+        "en": "Link Budget: Antenna Feed Loss"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya antenna feed loss",
+            "en": "Result: antenna feed loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "link_budget_15",
+      "group": "link_budget",
+      "name": {
+        "sw": "Cable Loss Total",
+        "en": "Cable Loss Total"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Mipango ya Link: Cable Loss Total",
+        "en": "Link Budget: Cable Loss Total"
+      },
+      "inputs": [
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya cable loss total",
+            "en": "Result: cable loss total"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 4"
+        ],
+        "en": [
+          "KUNDI 4"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

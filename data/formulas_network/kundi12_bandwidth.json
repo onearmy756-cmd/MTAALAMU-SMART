@@ -1,0 +1,1947 @@
+{
+  "group": {
+    "id": "bandwidth",
+    "code": "KUNDI 12",
+    "label": {
+      "sw": "Kundi 12: Uwezo wa Bandwidth",
+      "en": "Group 12: Bandwidth Planning"
+    }
+  },
+  "formulas": [
+    {
+      "id": "bandwidth_01",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Bandwidth Per User",
+        "en": "Bandwidth Per User"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Bandwidth Per User",
+        "en": "Bandwidth Planning: Bandwidth Per User"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya bandwidth per user",
+            "en": "Result: bandwidth per user"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_02",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Total Bandwidth Needed",
+        "en": "Total Bandwidth Needed"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Total Bandwidth Needed",
+        "en": "Bandwidth Planning: Total Bandwidth Needed"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya total bandwidth needed",
+            "en": "Result: total bandwidth needed"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_03",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Throughput Vs Bandwidth",
+        "en": "Throughput Vs Bandwidth"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Throughput Vs Bandwidth",
+        "en": "Bandwidth Planning: Throughput Vs Bandwidth"
+      },
+      "inputs": [
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya throughput vs bandwidth",
+            "en": "Result: throughput vs bandwidth"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_04",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Over Subscription Ratio",
+        "en": "Over Subscription Ratio"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Over Subscription Ratio",
+        "en": "Bandwidth Planning: Over Subscription Ratio"
+      },
+      "inputs": [
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya over subscription ratio",
+            "en": "Result: over subscription ratio"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_05",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Qos Reserved Bw",
+        "en": "Qos Reserved Bw"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Qos Reserved Bw",
+        "en": "Bandwidth Planning: Qos Reserved Bw"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya qos reserved bw",
+            "en": "Result: qos reserved bw"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_06",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Peak Vs Avg Bw",
+        "en": "Peak Vs Avg Bw"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Peak Vs Avg Bw",
+        "en": "Bandwidth Planning: Peak Vs Avg Bw"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya peak vs avg bw",
+            "en": "Result: peak vs avg bw"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_07",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Bandwidth Utilization Pct",
+        "en": "Bandwidth Utilization Pct"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Bandwidth Utilization Pct",
+        "en": "Bandwidth Planning: Bandwidth Utilization Pct"
+      },
+      "inputs": [
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya bandwidth utilization pct",
+            "en": "Result: bandwidth utilization pct"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_08",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Bps To Kbps",
+        "en": "Bps To Kbps"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Bps To Kbps",
+        "en": "Bandwidth Planning: Bps To Kbps"
+      },
+      "inputs": [
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya bps to kbps",
+            "en": "Result: bps to kbps"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_09",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Data Usage Monthly",
+        "en": "Data Usage Monthly"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Data Usage Monthly",
+        "en": "Bandwidth Planning: Data Usage Monthly"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya data usage monthly",
+            "en": "Result: data usage monthly"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_10",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Voip Codec Bw",
+        "en": "Voip Codec Bw"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Voip Codec Bw",
+        "en": "Bandwidth Planning: Voip Codec Bw"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya voip codec bw",
+            "en": "Result: voip codec bw"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_11",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Video Conference Bw",
+        "en": "Video Conference Bw"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Video Conference Bw",
+        "en": "Bandwidth Planning: Video Conference Bw"
+      },
+      "inputs": [
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya video conference bw",
+            "en": "Result: video conference bw"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_12",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Streaming Bitrate",
+        "en": "Streaming Bitrate"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Streaming Bitrate",
+        "en": "Bandwidth Planning: Streaming Bitrate"
+      },
+      "inputs": [
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya streaming bitrate",
+            "en": "Result: streaming bitrate"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_13",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Dedicated Vs Shared",
+        "en": "Dedicated Vs Shared"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Dedicated Vs Shared",
+        "en": "Bandwidth Planning: Dedicated Vs Shared"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya dedicated vs shared",
+            "en": "Result: dedicated vs shared"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_14",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Mpls Bw Class",
+        "en": "Mpls Bw Class"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Mpls Bw Class",
+        "en": "Bandwidth Planning: Mpls Bw Class"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya mpls bw class",
+            "en": "Result: mpls bw class"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "bandwidth_15",
+      "group": "bandwidth",
+      "name": {
+        "sw": "Burst Tolerance Calc",
+        "en": "Burst Tolerance Calc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uwezo wa Bandwidth: Burst Tolerance Calc",
+        "en": "Bandwidth Planning: Burst Tolerance Calc"
+      },
+      "inputs": [
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya burst tolerance calc",
+            "en": "Result: burst tolerance calc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 12"
+        ],
+        "en": [
+          "KUNDI 12"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

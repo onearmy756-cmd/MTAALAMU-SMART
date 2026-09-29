@@ -1,0 +1,638 @@
+{
+  "version": "1.1.0",
+  "engine": "mtaalamu-bayesian-diagnosis",
+  "note": "Bayesian diagnosis data — thamani halisi kutoka SMART_SYSTEM_1. Models 7: umeme, gari, computer, simu, fridge, tv, washing_machine",
+  "models": {
+    "electrical": {
+      "title": { "sw": "Utambuzi wa Matatizo ya Umeme", "en": "Electrical Fault Diagnosis" },
+      "trade": "umeme",
+      "symptoms": ["breaker_trips", "sparks", "shock", "no_power", "flicker", "sound"],
+      "symptom_labels": {
+        "breaker_trips": { "sw": "Breaker inarudi", "en": "Breaker trips" },
+        "sparks": { "sw": "Sparks / mulanga", "en": "Sparks" },
+        "shock": { "sw": "Kupata nyudu ya umeme", "en": "Electric shock" },
+        "no_power": { "sw": "Hakuna umeme", "en": "No power" },
+        "flicker": { "sw": "Taa zinawaka waka", "en": "Lights flicker" },
+        "sound": { "sw": "Sauti", "en": "Sound / buzzing" }
+      },
+      "causes": ["overload", "short_circuit", "earth_leak", "loose_wire", "bad_breaker", "bad_switch"],
+      "priors": {
+        "overload": 0.30,
+        "short_circuit": 0.20,
+        "earth_leak": 0.15,
+        "loose_wire": 0.15,
+        "bad_breaker": 0.10,
+        "bad_switch": 0.10
+      },
+      "likelihood": {
+        "breaker_trips": [0.90, 0.85, 0.20, 0.30, 0.95, 0.10],
+        "sparks": [0.10, 0.90, 0.30, 0.60, 0.20, 0.70],
+        "shock": [0.00, 0.10, 0.95, 0.60, 0.00, 0.20],
+        "no_power": [0.40, 0.80, 0.30, 0.70, 0.90, 0.60],
+        "flicker": [0.30, 0.20, 0.10, 0.80, 0.40, 0.85],
+        "sound": [0.20, 0.30, 0.10, 0.40, 0.70, 0.50]
+      },
+      "fixes": {
+        "overload": {
+          "sw": "Punguza mzigo wa mzunguko au uanze mzunguko mpya wa umeme",
+          "en": "Reduce the circuit load or add a new dedicated circuit",
+          "cost_tzs": 35000,
+          "time_min": 20,
+          "tools": ["Multimeter", "Amperemeter (clamp)", "Screwdriver set", "Cable stripper"]
+        },
+        "short_circuit": {
+          "sw": "Tafuta na badilisha cable iliyovuja; funga kwa insulator bora",
+          "en": "Find and replace the shorted cable; insulate properly",
+          "cost_tzs": 80000,
+          "time_min": 60,
+          "tools": ["Multimeter", "Continuity tester", "Cable stripper", "Insulation tape", "Conduit bender"]
+        },
+        "earth_leak": {
+          "sw": "Weka RCD na chunguza vifaa vilivyoathirika",
+          "en": "Install an RCD and check damaged appliances",
+          "cost_tzs": 120000,
+          "time_min": 90,
+          "tools": ["Multimeter", "Earth resistance tester (Megger)", "Insulated screwdriver", "RCD tester"]
+        },
+        "loose_wire": {
+          "sw": "Funga wayari upya kwenye terminals na ukague jozi zote",
+          "en": "Retighten terminal connections and check all joints",
+          "cost_tzs": 20000,
+          "time_min": 30,
+          "tools": ["Screwdriver set", "Plier", "Multimeter", "Insulation tape"]
+        },
+        "bad_breaker": {
+          "sw": "Badilisha breaker kwa rating sahihi (6/10/16/20/25/32/40/50/63A)",
+          "en": "Replace breaker with the correct rating (6/10/16/20/25/32/40/50/63A)",
+          "cost_tzs": 25000,
+          "time_min": 30,
+          "tools": ["Insulated screwdriver", "Multimeter", "Lockout tag"]
+        },
+        "bad_switch": {
+          "sw": "Badilisha switch/socket yenye hitilafu",
+          "en": "Replace the faulty switch/socket",
+          "cost_tzs": 10000,
+          "time_min": 15,
+          "tools": ["Insulated screwdriver", "Multimeter", "Voltage tester"]
+        }
+      }
+    },
+    "mechanic": {
+      "title": { "sw": "Utambuzi wa Matatizo ya Gari", "en": "Car Engine Fault Diagnosis" },
+      "trade": "gari",
+      "symptoms": ["haianzi", "moshi_mweusi", "moshi_mweupe", "moshi_bluu", "overheating", "sauti", "check_engine"],
+      "symptom_labels": {
+        "haianzi": { "sw": "Haianzi", "en": "Won't start" },
+        "moshi_mweusi": { "sw": "Moshi mweusi", "en": "Black smoke" },
+        "moshi_mweupe": { "sw": "Moshi mweupe", "en": "White smoke" },
+        "moshi_bluu": { "sw": "Moshi bluu", "en": "Blue smoke" },
+        "overheating": { "sw": "Joto kubwa (overheating)", "en": "Overheating" },
+        "sauti": { "sw": "Sauti ya metal", "en": "Metal noise" },
+        "check_engine": { "sw": "Check engine light", "en": "Check engine light" }
+      },
+      "causes": ["battery", "starter", "fuel_pump", "injectors", "air_filter", "head_gasket", "piston_rings", "radiator", "thermostat"],
+      "priors": {
+        "battery": 0.20,
+        "starter": 0.12,
+        "fuel_pump": 0.13,
+        "injectors": 0.12,
+        "air_filter": 0.10,
+        "head_gasket": 0.08,
+        "piston_rings": 0.07,
+        "radiator": 0.10,
+        "thermostat": 0.08
+      },
+      "likelihood": {
+        "haianzi": [0.40, 0.35, 0.30, 0.15, 0.05, 0.05, 0.10, 0.05, 0.05],
+        "moshi_mweusi": [0.00, 0.00, 0.20, 0.60, 0.40, 0.00, 0.10, 0.00, 0.00],
+        "moshi_mweupe": [0.00, 0.00, 0.05, 0.10, 0.00, 0.80, 0.20, 0.10, 0.05],
+        "moshi_bluu": [0.00, 0.00, 0.05, 0.10, 0.00, 0.10, 0.70, 0.00, 0.00],
+        "overheating": [0.00, 0.00, 0.05, 0.05, 0.00, 0.30, 0.10, 0.60, 0.50],
+        "sauti": [0.00, 0.10, 0.10, 0.20, 0.15, 0.10, 0.20, 0.05, 0.05],
+        "check_engine": [0.05, 0.10, 0.30, 0.40, 0.20, 0.20, 0.15, 0.10, 0.10]
+      },
+      "fixes": {
+        "battery": {
+          "sw": "Kagua na badilisha battery; test alternator (13.8V-14.4V)",
+          "en": "Check and replace battery; test alternator (13.8V-14.4V)",
+          "cost_tzs": 200000,
+          "time_min": 30,
+          "tools": ["Multimeter", "Battery load tester", "Spanner set", "Battery terminal brush"]
+        },
+        "starter": {
+          "sw": "Badilisha starter motor au solenoid",
+          "en": "Replace starter motor or solenoid",
+          "cost_tzs": 350000,
+          "time_min": 120,
+          "tools": ["Jack", "Spanner set", "Multimeter", "Breaker bar"]
+        },
+        "fuel_pump": {
+          "sw": "Kagua relay/fuse kisha badilisha fuel pump",
+          "en": "Check relay/fuse then replace fuel pump",
+          "cost_tzs": 400000,
+          "time_min": 150,
+          "tools": ["Fuel pressure gauge", "Multimeter", "Spanner set", "Safety goggles"]
+        },
+        "injectors": {
+          "sw": "Safisha injectors (ultrasonic) au badilisha zilizolegea",
+          "en": "Clean injectors (ultrasonic) or replace weak ones",
+          "cost_tzs": 250000,
+          "time_min": 180,
+          "tools": ["Injector tester", "Ultrasonic cleaner", "Torque wrench", "Injector seal kit"]
+        },
+        "air_filter": {
+          "sw": "Badilisha air filter na safisha intake",
+          "en": "Replace air filter and clean intake",
+          "cost_tzs": 40000,
+          "time_min": 20,
+          "tools": ["Screwdriver set", "Compressed air", "Shop cloth"]
+        },
+        "head_gasket": {
+          "sw": "Badilisha head gasket na kusawazisha cylinder head",
+          "en": "Replace head gasket and resurface cylinder head",
+          "cost_tzs": 800000,
+          "time_min": 480,
+          "tools": ["Torque wrench", "Head gasket kit", "Dial indicator", "Scraper", "Engine hoist"]
+        },
+        "piston_rings": {
+          "sw": "Rebore silinda na badilisha piston rings",
+          "en": "Rebore cylinders and replace piston rings",
+          "cost_tzs": 1200000,
+          "time_min": 720,
+          "tools": ["Ring compressor", "Bore gauge", "Torque wrench", "Engine stand"]
+        },
+        "radiator": {
+          "sw": "Safisha/badilisha radiator na coolant mpya",
+          "en": "Flush/replace radiator and refill coolant",
+          "cost_tzs": 180000,
+          "time_min": 90,
+          "tools": ["Coolant pressure tester", "Drain pan", "Spanner set", "Radiator flush kit"]
+        },
+        "thermostat": {
+          "sw": "Badilisha thermostat (90-95°C) na kagua housing",
+          "en": "Replace thermostat (90-95°C) and check housing",
+          "cost_tzs": 60000,
+          "time_min": 60,
+          "tools": ["Spanner set", "Drain pan", "Thermostat gasket", "Coolant tester"]
+        }
+      }
+    },
+    "computer": {
+      "title": { "sw": "Utambuzi wa Matatizo ya Computer", "en": "Computer Fault Diagnosis" },
+      "trade": "computer",
+      "symptoms": ["no_boot", "slow", "blue_screen", "overheating", "virus", "network_down"],
+      "symptom_labels": {
+        "no_boot": { "sw": "Haiwaki kabisa", "en": "Won't boot" },
+        "slow": { "sw": "Inapolepole sana", "en": "Very slow" },
+        "blue_screen": { "sw": "Blue screen (BSOD)", "en": "Blue screen (BSOD)" },
+        "overheating": { "sw": "Joto kubwa / inazima yenyewe", "en": "Overheating / shuts down" },
+        "virus": { "sw": "Popups na mabadiliko ya browser", "en": "Popups and browser changes" },
+        "network_down": { "sw": "Hakuna intaneti", "en": "No network" }
+      },
+      "causes": ["hardware_fault", "software_corrupt", "virus", "ram_insufficient", "disk_failing", "overheating"],
+      "priors": {
+        "hardware_fault": 0.22,
+        "software_corrupt": 0.20,
+        "virus": 0.18,
+        "ram_insufficient": 0.15,
+        "disk_failing": 0.15,
+        "overheating": 0.10
+      },
+      "likelihood": {
+        "no_boot": [0.85, 0.60, 0.05, 0.45, 0.70, 0.25],
+        "slow": [0.30, 0.65, 0.75, 0.70, 0.85, 0.55],
+        "blue_screen": [0.55, 0.80, 0.20, 0.90, 0.50, 0.45],
+        "overheating": [0.60, 0.25, 0.10, 0.15, 0.35, 0.95],
+        "virus": [0.10, 0.60, 0.95, 0.05, 0.15, 0.05],
+        "network_down": [0.45, 0.55, 0.35, 0.10, 0.20, 0.15]
+      },
+      "fixes": {
+        "hardware_fault": {
+          "sw": "Kagua PSU, motherboard na cables; badilisha kipengele kilichoharibika",
+          "en": "Check PSU, motherboard and cables; replace the faulty part",
+          "cost_tzs": 150000,
+          "time_min": 90,
+          "tools": ["Multimeter", "Screwdriver set", "PSU tester", "Anti-static wrist strap"]
+        },
+        "software_corrupt": {
+          "sw": "SFC/DISM, chukua safe mode au reinstall operating system",
+          "en": "Run SFC/DISM, boot to safe mode or reinstall the OS",
+          "cost_tzs": 60000,
+          "time_min": 120,
+          "tools": ["Bootable USB", "External HDD", "Screwdriver set"]
+        },
+        "virus": {
+          "sw": "Scan na malware remover, futa browser extensions, weka firewall",
+          "en": "Scan with malware remover, remove browser extensions, enable firewall",
+          "cost_tzs": 40000,
+          "time_min": 60,
+          "tools": ["Antivirus USB", "Network cable", "Screwdriver set"]
+        },
+        "ram_insufficient": {
+          "sw": "Ongeza RAM (min 8GB) na futa RAM slots",
+          "en": "Upgrade RAM (min 8GB) and clean RAM slots",
+          "cost_tzs": 90000,
+          "time_min": 30,
+          "tools": ["Screwdriver set", "Anti-static wrist strap", "Compressed air", "RAM tester (MemTest86)"]
+        },
+        "disk_failing": {
+          "sw": "Nakili data kisha badilisha HDD kwa SSD (SMART check kwanza)",
+          "en": "Clone data then replace HDD with SSD (run SMART check first)",
+          "cost_tzs": 130000,
+          "time_min": 120,
+          "tools": ["Cloning software", "SATA-to-USB adapter", "Screwdriver set", "External HDD"]
+        },
+        "overheating": {
+          "sw": "Safisha feni na heatsink, badilisha thermal paste, angalia airflow",
+          "en": "Clean fan and heatsink, replace thermal paste, check airflow",
+          "cost_tzs": 35000,
+          "time_min": 45,
+          "tools": ["Compressed air", "Thermal paste", "Screwdriver set", "Temperature monitor"]
+        }
+      }
+    },
+    "phone": {
+      "title": { "sw": "Utambuzi wa Matatizo ya Simu", "en": "Phone Fault Diagnosis" },
+      "trade": "simu",
+      "symptoms": ["boot_loop", "no_power", "overheat", "screen_flicker", "dead_boot", "slow_ui", "battery_drain", "camera_gesture", "charging_gesture"],
+      "symptom_labels": {
+        "boot_loop": { "sw": "Inarudia logo tu (boot loop)", "en": "Stuck on logo loop" },
+        "no_power": { "sw": "Haiwaki na haijali", "en": "No power at all" },
+        "overheat": { "sw": "Joto kubwa na inazima", "en": "Overheats and shuts down" },
+        "screen_flicker": { "sw": "Skrini inapungua", "en": "Screen flickers" },
+        "dead_boot": { "sw": "Haiwaki kabisa (dead boot)", "en": "Completely dead" },
+        "slow_ui": { "sw": "Interface polepole sana", "en": "Very slow UI" },
+        "battery_drain": { "sw": "Betri inakwisha haraka", "en": "Battery drains fast" },
+        "camera_gesture": { "sw": "Kamera haifanyi kazi", "en": "Camera not working" },
+        "charging_gesture": { "sw": "Haijali charging", "en": "Not charging" }
+      },
+      "causes": ["battery_dead", "screen_broken", "charging_port_damaged", "motherboard_faulty", "software_corrupt", "water_damage", "overheat_sensor_faulty", "malware_virus"],
+      "priors": {
+        "battery_dead": 0.22,
+        "screen_broken": 0.18,
+        "charging_port_damaged": 0.15,
+        "motherboard_faulty": 0.10,
+        "software_corrupt": 0.15,
+        "water_damage": 0.08,
+        "overheat_sensor_faulty": 0.05,
+        "malware_virus": 0.07
+      },
+      "likelihood": {
+        "boot_loop": [0.20, 0.10, 0.05, 0.30, 0.85, 0.40, 0.15, 0.50],
+        "no_power": [0.70, 0.25, 0.60, 0.80, 0.15, 0.50, 0.10, 0.05],
+        "overheat": [0.40, 0.05, 0.05, 0.35, 0.15, 0.60, 0.90, 0.30],
+        "screen_flicker": [0.15, 0.70, 0.10, 0.40, 0.25, 0.20, 0.05, 0.10],
+        "dead_boot": [0.60, 0.30, 0.40, 0.90, 0.35, 0.70, 0.20, 0.10],
+        "slow_ui": [0.35, 0.05, 0.00, 0.20, 0.70, 0.30, 0.25, 0.80],
+        "battery_drain": [0.90, 0.05, 0.20, 0.15, 0.30, 0.25, 0.45, 0.40],
+        "camera_gesture": [0.05, 0.30, 0.00, 0.25, 0.20, 0.15, 0.05, 0.10],
+        "charging_gesture": [0.25, 0.05, 0.90, 0.30, 0.10, 0.20, 0.05, 0.00]
+      },
+      "fixes": {
+        "battery_dead": {
+          "sw": "Badilisha betri mpya (mAh sahihi kwa modeli) na kagua charging IC",
+          "en": "Replace with new battery (correct mAh for model) and check charging IC",
+          "cost_tzs": 80000,
+          "time_min": 45,
+          "tools": ["Plastic pry tool", "Isopropyl alcohol 99%", "Screwdriver set (Pentalobe/Torx)", "Suction cup"]
+        },
+        "screen_broken": {
+          "sw": "Badilisha skrini na digitizer (LCD + frame ikiwa muhimu)",
+          "en": "Replace screen and digitizer assembly (+frame if needed)",
+          "cost_tzs": 150000,
+          "time_min": 60,
+          "tools": ["Heat gun / hair dryer", "Suction cup", "Plastic pry tools", "Isopropyl alcohol", "Screwdriver set"]
+        },
+        "charging_port_damaged": {
+          "sw": "Badilisha charging port / dock connector na solder upya",
+          "en": "Replace charging port / dock connector and resolder",
+          "cost_tzs": 60000,
+          "time_min": 90,
+          "tools": ["Soldering station", "Desoldering pump", "Multimeter", "Flux", "Tweezers"]
+        },
+        "motherboard_faulty": {
+          "sw": "Kagua motherboard na ukarabate viambatanisho vya BGA",
+          "en": "Inspect motherboard and rework BGA connections",
+          "cost_tzs": 250000,
+          "time_min": 180,
+          "tools": ["Hot air rework station", "Multimeter", "Soldering iron", "Microscope", "Flux paste"]
+        },
+        "software_corrupt": {
+          "sw": "Flash stock ROM mpya kwa SP Flash Tool / Odin; wipe cache",
+          "en": "Flash fresh stock ROM via SP Flash Tool / Odin; wipe cache",
+          "cost_tzs": 45000,
+          "time_min": 60,
+          "tools": ["Computer", "USB cable (original)", "SP Flash Tool / Odin", "Firmware file"]
+        },
+        "water_damage": {
+          "sw": "Changanua simu na usafishe ultrasonic na isopropyl; badilisha vifaa vilivyoharibika",
+          "en": "Disassemble, ultrasonic clean with isopropyl; replace damaged components",
+          "cost_tzs": 120000,
+          "time_min": 150,
+          "tools": ["Ultrasonic cleaner", "Isopropyl alcohol 99%", "Soldering station", "Multimeter", "Brush (soft)"]
+        },
+        "overheat_sensor_faulty": {
+          "sw": "Badilisha thermistor sensor na kagua thermal pad",
+          "en": "Replace thermistor sensor and check thermal pad placement",
+          "cost_tzs": 40000,
+          "time_min": 60,
+          "tools": ["Screwdriver set", "Heat gun", "Multimeter", "Thermal paste"]
+        },
+        "malware_virus": {
+          "sw": "Factory reset + install antivirus; scan na adware",
+          "en": "Factory reset + install antivirus; scan for adware",
+          "cost_tzs": 20000,
+          "time_min": 30,
+          "tools": ["Computer", "Antivirus APK", "USB cable"]
+        }
+      }
+    },
+    "fridge": {
+      "title": { "sw": "Utambuzi wa Matatizo ya Fridge", "en": "Refrigerator Fault Diagnosis" },
+      "trade": "fridge",
+      "symptoms": ["warm_fridge", "compressor_not_running", "frost_build_up", "water_leaking", "strange_noise", "light_off", "door_seal_rotten", "ice_maker_broken"],
+      "symptom_labels": {
+        "warm_fridge": { "sw": "Fridge haiwezi baridi", "en": "Fridge not cooling" },
+        "compressor_not_running": { "sw": "Compressor haifanyi kazi", "en": "Compressor not running" },
+        "frost_build_up": { "sw": "Barafu inakusanyika", "en": "Excessive frost buildup" },
+        "water_leaking": { "sw": "Maji yanatoka", "en": "Water leaking inside/outside" },
+        "strange_noise": { "sw": "Sauti za kuzunguka", "en": "Strange noises" },
+        "light_off": { "sw": "Taa haijali", "en": "Interior light off" },
+        "door_seal_rotten": { "sw": "Seal ya mlango imeo imeharibika", "en": "Door seal rotten/damaged" },
+        "ice_maker_broken": { "sw": "Ice maker haifanyi kazi", "en": "Ice maker not working" }
+      },
+      "causes": ["thermostat_fail", "compressor_dead", "start_relay_broken", "dirty_coils", "sealed_system_leak", "defrost_heater_bad", "capacitor_faulty"],
+      "priors": {
+        "thermostat_fail": 0.20,
+        "compressor_dead": 0.12,
+        "start_relay_broken": 0.18,
+        "dirty_coils": 0.20,
+        "sealed_system_leak": 0.08,
+        "defrost_heater_bad": 0.12,
+        "capacitor_faulty": 0.10
+      },
+      "likelihood": {
+        "warm_fridge": [0.80, 0.90, 0.70, 0.65, 0.85, 0.55, 0.50],
+        "compressor_not_running": [0.20, 0.95, 0.90, 0.10, 0.15, 0.05, 0.85],
+        "frost_build_up": [0.30, 0.05, 0.05, 0.10, 0.10, 0.95, 0.00],
+        "water_leaking": [0.15, 0.05, 0.00, 0.20, 0.30, 0.60, 0.05],
+        "strange_noise": [0.10, 0.50, 0.40, 0.25, 0.20, 0.05, 0.35],
+        "light_off": [0.05, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
+        "door_seal_rotten": [0.40, 0.05, 0.00, 0.10, 0.05, 0.15, 0.00],
+        "ice_maker_broken": [0.25, 0.05, 0.00, 0.05, 0.15, 0.20, 0.00]
+      },
+      "fixes": {
+        "thermostat_fail": {
+          "sw": "Badilisha thermostat; kagua thermistor na defrost timer",
+          "en": "Replace thermostat; check thermistor and defrost timer",
+          "cost_tzs": 75000,
+          "time_min": 60,
+          "tools": ["Screwdriver set", "Multimeter", "Thermometer", "Pliers"]
+        },
+        "compressor_dead": {
+          "sw": "Badilisha compressor na recharge freon (R600a/R134a) + vacuum",
+          "en": "Replace compressor, vacuum system, recharge refrigerant",
+          "cost_tzs": 600000,
+          "time_min": 300,
+          "tools": ["Manifold gauge set", "Vacuum pump", "Torque wrench", "Refrigerant scale", "Leak detector"]
+        },
+        "start_relay_broken": {
+          "sw": "Badilisha start relay/overload + capacitor",
+          "en": "Replace start relay/overload protector",
+          "cost_tzs": 45000,
+          "time_min": 45,
+          "tools": ["Screwdriver set", "Multimeter", "Socket set"]
+        },
+        "dirty_coils": {
+          "sw": "Safisha condenser coils na vacuum brush",
+          "en": "Clean condenser coils with vacuum and brush",
+          "cost_tzs": 25000,
+          "time_min": 30,
+          "tools": ["Coil brush", "Vacuum cleaner with brush", "Condenser cleaner spray"]
+        },
+        "sealed_system_leak": {
+          "sw": "Tafuta uvujo na dye, solder upya, vacuum na recharge freon",
+          "en": "Locate leak with dye, solder/braze repair, vacuum and recharge",
+          "cost_tzs": 350000,
+          "time_min": 240,
+          "tools": ["Leak detector (electronic)", "Manifold gauge", "Vacuum pump", "Brazing torch", "UV dye kit"]
+        },
+        "defrost_heater_bad": {
+          "sw": "Badilisha defrost heater na kagua defrost thermostat",
+          "en": "Replace defrost heater and check defrost thermostat",
+          "cost_tzs": 90000,
+          "time_min": 90,
+          "tools": ["Screwdriver set", "Multimeter", "Hair dryer (defrost)"]
+        },
+        "capacitor_faulty": {
+          "sw": "Badilisha run/start capacitor",
+          "en": "Replace run/start capacitor",
+          "cost_tzs": 35000,
+          "time_min": 30,
+          "tools": ["Screwdriver set", "Capacitor tester / Multimeter", "Insulated pliers"]
+        }
+      }
+    },
+    "tvset": {
+      "title": { "sw": "Utambuzi wa Matatizo ya TV", "en": "Television Fault Diagnosis" },
+      "trade": "tv",
+      "symptoms": ["no_picture", "no_sound", "wont_power_on", "remote_not_responding", "pixels_dead", "image_distorted", "lines_on_screen", "flickering_image"],
+      "symptom_labels": {
+        "no_picture": { "sw": "Hakuna picha (skrini nyeusi)", "en": "No picture (black screen)" },
+        "no_sound": { "sw": "Hakuna sauti", "en": "No sound output" },
+        "wont_power_on": { "sw": "Haiwaki kabisa", "en": "Won't power on" },
+        "remote_not_responding": { "sw": "Remote haifanyi kazi", "en": "Remote not responding" },
+        "pixels_dead": { "sw": "Picha ina dots nyeusi/nyekundu", "en": "Dead/stuck pixels on screen" },
+        "image_distorted": { "sw": "Picha imepoteza umbo", "en": "Distorted image" },
+        "lines_on_screen": { "sw": "Mistar kwenye skrini", "en": "Vertical/horizontal lines" },
+        "flickering_image": { "sw": "Picha inapungua", "en": "Flickering image" }
+      },
+      "causes": ["power_supply_bad", "mainboard_malfunction", "tcon_board_fail", "backlight_dead", "hdmi_portbroken", "inverter_board", "firmware_glitch", "panel_ir_sensor"],
+      "priors": {
+        "power_supply_bad": 0.20,
+        "mainboard_malfunction": 0.15,
+        "tcon_board_fail": 0.12,
+        "backlight_dead": 0.18,
+        "hdmi_portbroken": 0.08,
+        "inverter_board": 0.10,
+        "firmware_glitch": 0.09,
+        "panel_ir_sensor": 0.08
+      },
+      "likelihood": {
+        "no_picture": [0.40, 0.50, 0.85, 0.95, 0.10, 0.70, 0.30, 0.20],
+        "no_sound": [0.20, 0.75, 0.10, 0.05, 0.15, 0.05, 0.30, 0.10],
+        "wont_power_on": [0.95, 0.60, 0.10, 0.20, 0.05, 0.15, 0.10, 0.05],
+        "remote_not_responding": [0.05, 0.20, 0.00, 0.00, 0.00, 0.00, 0.15, 0.80],
+        "pixels_dead": [0.00, 0.05, 0.10, 0.05, 0.00, 0.00, 0.00, 0.05],
+        "image_distorted": [0.15, 0.50, 0.75, 0.15, 0.40, 0.30, 0.25, 0.20],
+        "lines_on_screen": [0.10, 0.30, 0.90, 0.25, 0.05, 0.10, 0.15, 0.10],
+        "flickering_image": [0.30, 0.20, 0.25, 0.85, 0.10, 0.60, 0.35, 0.15]
+      },
+      "fixes": {
+        "power_supply_bad": {
+          "sw": "Kagua na badilisha capacitors (bulging) kwenye power board",
+          "en": "Inspect and replace bulging capacitors on power board",
+          "cost_tzs": 80000,
+          "time_min": 90,
+          "tools": ["Multimeter", "Soldering station", "ESR meter", "Screwdriver set"]
+        },
+        "mainboard_malfunction": {
+          "sw": "Kagua mainboard na badilisha IC zilizobomoa",
+          "en": "Inspect mainboard and replace faulty ICs",
+          "cost_tzs": 200000,
+          "time_min": 150,
+          "tools": ["Multimeter", "Soldering station", "Hot air station", "Flux", "Tweezers"]
+        },
+        "tcon_board_fail": {
+          "sw": "Badilisha T-Con board au LVDS cable",
+          "en": "Replace T-Con board or LVDS cable",
+          "cost_tzs": 120000,
+          "time_min": 60,
+          "tools": ["Screwdriver set", "Multimeter", "Anti-static mat"]
+        },
+        "backlight_dead": {
+          "sw": "Badilisha LED strips (LED driver board",
+          "en": "Replace LED strips / LED driver board",
+          "cost_tzs": 150000,
+          "time_min": 120,
+          "tools": ["Screwdriver set", "LED tester", "Suction cups (screen removal)"]
+        },
+        "hdmi_portbroken": {
+          "sw": "Resolder / badilisha HDMI port kwenye mainboard",
+          "en": "Resolder / replace HDMI port on mainboard",
+          "cost_tzs": 70000,
+          "time_min": 90,
+          "tools": ["Soldering station", "Desoldering pump", "Flux", "Tweezers"]
+        },
+        "inverter_board": {
+          "sw": "Badilisha inverter board (CCFL) au test CCFL tubes",
+          "en": "Replace inverter board (CCFL) or test/replace CCFL tubes",
+          "cost_tzs": 100000,
+          "time_min": 90,
+          "tools": ["Screwdriver set", "Multimeter", "Insulated tools"]
+        },
+        "firmware_glitch": {
+          "sw": "Flash firmware mpya kwa USB stick",
+          "en": "Flash updated firmware via USB stick",
+          "cost_tzs": 40000,
+          "time_min": 45,
+          "tools": ["USB stick (FAT32)", "Firmware file", "Computer"]
+        },
+        "panel_ir_sensor": {
+          "sw": "Badilisha IR sensor module",
+          "en": "Replace IR sensor module on front panel",
+          "cost_tzs": 35000,
+          "time_min": 40,
+          "tools": ["Screwdriver set", "Multimeter", "Soldering iron"]
+        }
+      }
+    },
+    "washing": {
+      "title": { "sw": "Utambuzi wa Matatizo ya Washing Machine", "en": "Washing Machine Fault Diagnosis" },
+      "trade": "washing_machine",
+      "symptoms": ["not_spinning", "water_not_heating", "wont_drain", "leaks_water", "door_lock_error", "excessive_vibration", "detergent_drawer_clogged", "burning_smell"],
+      "symptom_labels": {
+        "not_spinning": { "sw": "Haiendi spin", "en": "Drum not spinning" },
+        "water_not_heating": { "sw": "Maji hayajoto", "en": "Water not heating" },
+        "wont_drain": { "sw": "Haito maji", "en": "Won't drain water" },
+        "leaks_water": { "sw": "Maji yanavuja", "en": "Water leaks" },
+        "door_lock_error": { "sw": "Error ya kula mlango", "en": "Door lock error" },
+        "excessive_vibration": { "sw": "Vibration kubwa sana", "en": "Excessive vibration/shaking" },
+        "detergent_drawer_clogged": { "sw": "Hoto la sabuni limefika", "en": "Detergent drawer clogged" },
+        "burning_smell": { "sw": "Harufu ya kuchoma", "en": "Burning smell / smoke" }
+      },
+      "causes": ["belt_broken", "drain_pump_clogged", "heating_element_failed", "door_lock_switch_broken", "motor_brushes_worn", "control_board_error", "inlet_valve_leaking", "shock_absorber_worn", "dispenser_tray_clog"],
+      "priors": {
+        "belt_broken": 0.15,
+        "drain_pump_clogged": 0.18,
+        "heating_element_failed": 0.12,
+        "door_lock_switch_broken": 0.10,
+        "motor_brushes_worn": 0.13,
+        "control_board_error": 0.08,
+        "inlet_valve_leaking": 0.09,
+        "shock_absorber_worn": 0.08,
+        "dispenser_tray_clog": 0.07
+      },
+      "likelihood": {
+        "not_spinning": [0.95, 0.10, 0.05, 0.60, 0.90, 0.40, 0.05, 0.15, 0.05],
+        "water_not_heating": [0.00, 0.00, 0.95, 0.00, 0.00, 0.15, 0.00, 0.00, 0.00],
+        "wont_drain": [0.05, 0.95, 0.00, 0.05, 0.05, 0.10, 0.00, 0.05, 0.00],
+        "leaks_water": [0.05, 0.20, 0.05, 0.15, 0.00, 0.05, 0.90, 0.10, 0.30],
+        "door_lock_error": [0.00, 0.05, 0.00, 0.95, 0.00, 0.40, 0.05, 0.00, 0.00],
+        "excessive_vibration": [0.30, 0.00, 0.00, 0.00, 0.20, 0.10, 0.05, 0.95, 0.00],
+        "detergent_drawer_clogged": [0.00, 0.00, 0.00, 0.00, 0.00, 0.05, 0.20, 0.00, 0.95],
+        "burning_smell": [0.40, 0.05, 0.30, 0.05, 0.70, 0.50, 0.00, 0.10, 0.00]
+      },
+      "fixes": {
+        "belt_broken": {
+          "sw": "Badilisha drive belt (poly-V) kwa ukubwa sahihi",
+          "en": "Replace drive belt (poly-V) correct size",
+          "cost_tzs": 45000,
+          "time_min": 45,
+          "tools": ["Screwdriver set", "Spanner set", "Belt removal tool"]
+        },
+        "drain_pump_clogged": {
+          "sw": "Funga drain pump filter; kagua impeller na hose",
+          "en": "Clear drain pump filter; inspect impeller and hoses",
+          "cost_tzs": 30000,
+          "time_min": 30,
+          "tools": ["Pliers", "Screwdriver", "Towel / bucket"]
+        },
+        "heating_element_failed": {
+          "sw": "Badilisha heating element + NTC sensor",
+          "en": "Replace heating element + NTC temperature sensor",
+          "cost_tzs": 110000,
+          "time_min": 90,
+          "tools": ["Screwdriver set", "Multimeter", "Spanner set (10mm)"]
+        },
+        "door_lock_switch_broken": {
+          "sw": "Badilisha door lock interlock switch",
+          "en": "Replace door lock interlock switch",
+          "cost_tzs": 65000,
+          "time_min": 50,
+          "tools": ["Screwdriver set", "Multimeter"]
+        },
+        "motor_brushes_worn": {
+          "sw": "Badilisha carbon brushes kwenye motor",
+          "en": "Replace worn carbon brushes on drive motor",
+          "cost_tzs": 70000,
+          "time_min": 75,
+          "tools": ["Screwdriver set", "Spanner set", "Multimeter"]
+        },
+        "control_board_error": {
+          "sw": "Kagua control board; badilisha relay/swollen capacitors",
+          "en": "Inspect control board; replace relay/bulging capacitors",
+          "cost_tzs": 180000,
+          "time_min": 150,
+          "tools": ["Multimeter", "Soldering station", "Screwdriver set"]
+        },
+        "inlet_valve_leaking": {
+          "sw": "Badilisha water inlet valve (solenoid)",
+          "en": "Replace water inlet solenoid valve",
+          "cost_tzs": 55000,
+          "time_min": 40,
+          "tools": ["Screwdriver set", "Pliers", "Multimeter"]
+        },
+        "shock_absorber_worn": {
+          "sw": "Badilisha shock absorbers (zote mbili)",
+          "en": "Replace drum shock absorbers (both sides)",
+          "cost_tzs": 95000,
+          "time_min": 80,
+          "tools": ["Screwdriver set", "Spanner set", "Torx set"]
+        },
+        "dispenser_tray_clog": {
+          "sw": "Toa na usafishe detergent tray na siphon",
+          "en": "Remove and clean detergent tray and siphon",
+          "cost_tzs": 15000,
+          "time_min": 15,
+          "tools": ["Toothbrush", "Warm water + vinegar"]
+        }
+      }
+    }
+  },
+  "meta": {
+    "model_count": 7,
+    "learning_rate": 0.05,
+    "bayesian_enabled": true
+  }
+}

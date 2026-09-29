@@ -1,0 +1,949 @@
+{
+  "services": [
+    {
+      "code": "pay_password_reset",
+      "name": {"sw": "Upyaaji wa Nenosiri", "en": "Password Reset"},
+      "category": "recovery",
+      "price_tzs": 30000,
+      "duration_min": 30,
+      "remote_pct": 80,
+      "description": {"sw": "Kurejesha au kubadili nenosiri uliopotea kwa Windows, macOS, au BIOS", "en": "Reset or recover forgotten password for Windows, macOS, or BIOS"}
+    },
+    {
+      "code": "pay_email_setup",
+      "name": {"sw": "Uanzishaji wa Barua Pepe", "en": "Email Setup"},
+      "category": "remote",
+      "price_tzs": 25000,
+      "duration_min": 45,
+      "remote_pct": 100,
+      "description": {"sw": "Usanidi wa email (Gmail, Outlook, Yahoo) kwenye simu na kompyuta", "en": "Configure email accounts (Gmail, Outlook, Yahoo) on phone and computer"}
+    },
+    {
+      "code": "pay_virus_removal",
+      "name": {"sw": "Kutoa Virusi", "en": "Virus Removal"},
+      "category": "computer",
+      "price_tzs": 50000,
+      "duration_min": 90,
+      "remote_pct": 70,
+      "description": {"sw": "Ondoa virusi, malware, ransomware na adware kutoka kwa kompyuta yako", "en": "Remove viruses, malware, ransomware and adware from your computer"}
+    },
+    {
+      "code": "pay_windows_install",
+      "name": {"sw": "Kufunga Windows", "en": "Windows Install"},
+      "category": "computer",
+      "price_tzs": 120000,
+      "duration_min": 120,
+      "remote_pct": 20,
+      "description": {"sw": "Funga Windows 10/11 na drivers zote na software za msingi", "en": "Install Windows 10/11 with all drivers and essential software"}
+    },
+    {
+      "code": "pay_data_recovery",
+      "name": {"sw": "Kupata Data Iliyopotea", "en": "Data Recovery"},
+      "category": "recovery",
+      "price_tzs": 80000,
+      "duration_min": 180,
+      "remote_pct": 10,
+      "description": {"sw": "Inua data iliyopotea kutoka HDD, SSD, memory card na flash disk", "en": "Recover lost data from HDD, SSD, memory card and flash disk"}
+    },
+    {
+      "code": "pay_frp_bypass",
+      "name": {"sw": "Kupita FRP Lock", "en": "FRP Bypass"},
+      "category": "phone",
+      "price_tzs": 60000,
+      "duration_min": 45,
+      "remote_pct": 40,
+      "description": {"sw": "Kuvunja Factory Reset Protection kwenye simu za Android baada ya format", "en": "Bypass Factory Reset Protection on Android phones after format"}
+    },
+    {
+      "code": "pay_network_setup",
+      "name": {"sw": "Usanidi wa Network", "en": "Network Setup"},
+      "category": "network",
+      "price_tzs": 70000,
+      "duration_min": 90,
+      "remote_pct": 30,
+      "description": {"sw": "Usanidi wa router, switch, WiFi, VLANs na usalama wa mtandao", "en": "Setup router, switch, WiFi, VLANs and network security"}
+    },
+    {
+      "code": "pay_security_setup",
+      "name": {"sw": "Usalama wa Kompyuta", "en": "Security Setup"},
+      "category": "computer",
+      "price_tzs": 45000,
+      "duration_min": 60,
+      "remote_pct": 60,
+      "description": {"sw": "Usanidi wa antivirus, firewall, 2FA, encryption na ulinzi wa data", "en": "Setup antivirus, firewall, 2FA, encryption and data protection"}
+    },
+    {
+      "code": "comp_os_install",
+      "name": {"sw": "Kufunga Mfumo wa Uendeshaji", "en": "Operating System Install"},
+      "category": "computer",
+      "price_tzs": 120000,
+      "duration_min": 120,
+      "remote_pct": 15,
+      "description": {"sw": "Funga Windows 10/11 au Linux na backup ya data kabla ya kufunga", "en": "Install Windows 10/11 or Linux with data backup before installation"}
+    },
+    {
+      "code": "comp_driver_install",
+      "name": {"sw": "Kufunga Drivers", "en": "Driver Installation"},
+      "category": "computer",
+      "price_tzs": 35000,
+      "duration_min": 45,
+      "remote_pct": 50,
+      "description": {"sw": "Kufunga na kusasisha drivers za motherboard, GPU, sauti, mtandao na zingine", "en": "Install and update motherboard, GPU, audio, network and other drivers"}
+    },
+    {
+      "code": "comp_ms_office",
+      "name": {"sw": "Kufunga MS Office", "en": "MS Office Installation"},
+      "category": "computer",
+      "price_tzs": 55000,
+      "duration_min": 60,
+      "remote_pct": 70,
+      "description": {"sw": "Funga na kusaidia Office 2019/2021/365 (Word, Excel, PowerPoint, Outlook)", "en": "Install and activate Office 2019/2021/365 (Word, Excel, PowerPoint, Outlook)"}
+    },
+    {
+      "code": "comp_antivirus",
+      "name": {"sw": "Kufunga Antivirus", "en": "Antivirus Installation"},
+      "category": "computer",
+      "price_tzs": 25000,
+      "duration_min": 30,
+      "remote_pct": 90,
+      "description": {"sw": "Funga na usaidie antivirus na scan ya kuzalisha kwa virusi vya sasa", "en": "Install antivirus and run full scan for existing infections"}
+    },
+    {
+      "code": "comp_backup",
+      "name": {"sw": "Backup ya Data", "en": "Data Backup"},
+      "category": "recovery",
+      "price_tzs": 40000,
+      "duration_min": 90,
+      "remote_pct": 40,
+      "description": {"sw": "Backup data muhimu kwenda HDD nje, cloud au NAS kwa usalama", "en": "Backup critical data to external HDD, cloud or NAS securely"}
+    },
+    {
+      "code": "comp_ssd_clone",
+      "name": {"sw": "Kuchora SSD", "en": "SSD Clone"},
+      "category": "computer",
+      "price_tzs": 65000,
+      "duration_min": 90,
+      "remote_pct": 0,
+      "description": {"sw": "Kuchora ujumla wa HDD kwenda SSD bila kupoteza data au settings", "en": "Clone entire HDD to SSD without losing data or settings"}
+    },
+    {
+      "code": "comp_ram_upgrade",
+      "name": {"sw": "Ongeza RAM", "en": "RAM Upgrade"},
+      "category": "computer",
+      "price_tzs": 30000,
+      "duration_min": 30,
+      "remote_pct": 0,
+      "description": {"sw": "Badilisha na kuongeza RAM na kuhakikisha compatibility na motherboard", "en": "Replace and upgrade RAM ensuring motherboard compatibility"}
+    },
+    {
+      "code": "comp_hdd_repair",
+      "name": {"sw": "Matibabu ya HDD", "en": "HDD Repair"},
+      "category": "computer",
+      "price_tzs": 75000,
+      "duration_min": 120,
+      "remote_pct": 10,
+      "description": {"sw": "Matibabu ya HDD iliyoanguka - bad sectors, clicking noise au S.M.A.R.T errors", "en": "Repair failing HDD - bad sectors, clicking noise or S.M.A.R.T errors"}
+    },
+    {
+      "code": "comp_blue_screen",
+      "name": {"sw": "Kutatua Blue Screen", "en": "Blue Screen Fix"},
+      "category": "computer",
+      "price_tzs": 55000,
+      "duration_min": 90,
+      "remote_pct": 50,
+      "description": {"sw": "Kutatua BSOD (Blue Screen of Death) na uwezo wa kugundua sababu", "en": "Fix BSOD (Blue Screen of Death) and diagnose root cause"}
+    },
+    {
+      "code": "comp_boot_loop",
+      "name": {"sw": "Kutatua Boot Loop", "en": "Boot Loop Fix"},
+      "category": "computer",
+      "price_tzs": 60000,
+      "duration_min": 90,
+      "remote_pct": 30,
+      "description": {"sw": "Kompyuta inayojirudia kuzungumzia - inaweza tatizo la RAM, PSU au OS corruption", "en": "Fix computer restarting loop - RAM, PSU or OS corruption issues"}
+    },
+    {
+      "code": "comp_bios_update",
+      "name": {"sw": "Kusasisha BIOS", "en": "BIOS Update"},
+      "category": "computer",
+      "price_tzs": 40000,
+      "duration_min": 45,
+      "remote_pct": 20,
+      "description": {"sw": "Kusasisha BIOS/UEFI kwa usalama na kutoa majibu ya tatizo za hardware", "en": "Safely update BIOS/UEFI and resolve hardware compatibility issues"}
+    },
+    {
+      "code": "comp_password_crack",
+      "name": {"sw": "Kupata Nenosiri", "en": "Password Recovery"},
+      "category": "recovery",
+      "price_tzs": 45000,
+      "duration_min": 60,
+      "remote_pct": 20,
+      "description": {"sw": "Kupata nenosiri wa Windows, PDF, ZIP, Word, Excel uliopotea", "en": "Recover lost Windows, PDF, ZIP, Word, Excel passwords"}
+    },
+    {
+      "code": "comp_mobo_repair",
+      "name": {"sw": "Matibabu ya Motherboard", "en": "Motherboard Repair"},
+      "category": "computer",
+      "price_tzs": 150000,
+      "duration_min": 240,
+      "remote_pct": 0,
+      "description": {"sw": "Matibabu ya motherboard - capacitors, VRM, MOSFET, slots, BIOS chips", "en": "Motherboard repair - capacitors, VRM, MOSFET, slots, BIOS chips"}
+    },
+    {
+      "code": "comp_gpu_issue",
+      "name": {"sw": "Matatizo ya GPU", "en": "GPU Troubleshooting"},
+      "category": "computer",
+      "price_tzs": 70000,
+      "duration_min": 90,
+      "remote_pct": 20,
+      "description": {"sw": "Kutatua matatizo ya GPU - artifacts, black screen, overheating, driver crash", "en": "Fix GPU issues - artifacts, black screen, overheating, driver crashes"}
+    },
+    {
+      "code": "comp_laptop_fan",
+      "name": {"sw": "Kubadili Fan ya Laptop", "en": "Laptop Fan Replacement"},
+      "category": "computer",
+      "price_tzs": 50000,
+      "duration_min": 60,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili fan ya laptop iliyovunjika au kukata sauti na thermal paste", "en": "Replace broken/noisy laptop fan and apply new thermal paste"}
+    },
+    {
+      "code": "comp_overheating",
+      "name": {"sw": "Kutatua Overheating", "en": "Overheating Fix"},
+      "category": "computer",
+      "price_tzs": 40000,
+      "duration_min": 60,
+      "remote_pct": 10,
+      "description": {"sw": "Safa heatsink, badilisha thermal paste na ongeza usafirishaji wa hewa", "en": "Clean heatsink, replace thermal paste and improve airflow"}
+    },
+    {
+      "code": "comp_keyboard_repl",
+      "name": {"sw": "Kubadili Keyboard", "en": "Keyboard Replacement"},
+      "category": "computer",
+      "price_tzs": 55000,
+      "duration_min": 45,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili keyboard ya laptop ambayo vibao havifanyi kazi au imevunjika", "en": "Replace laptop keyboard with broken or non-functioning keys"}
+    },
+    {
+      "code": "comp_screen_repl",
+      "name": {"sw": "Kubadili Screen ya Laptop", "en": "Laptop Screen Replacement"},
+      "category": "computer",
+      "price_tzs": 180000,
+      "duration_min": 90,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili screen ya laptop iliyovunjika - cracks, lines, dead pixels, dim", "en": "Replace broken laptop screen - cracks, lines, dead pixels, dim display"}
+    },
+    {
+      "code": "comp_battery_repl",
+      "name": {"sw": "Kubadili Betri ya Laptop", "en": "Laptop Battery Replacement"},
+      "category": "computer",
+      "price_tzs": 95000,
+      "duration_min": 30,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili betri ya laptop ambayo haifiki muda mrefu au haichagi", "en": "Replace laptop battery that drains fast or no longer charges"}
+    },
+    {
+      "code": "comp_charger_port",
+      "name": {"sw": "Kubadili Charger Port", "en": "Charger Port Replacement"},
+      "category": "computer",
+      "price_tzs": 65000,
+      "duration_min": 75,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili DC jack au USB-C port ya kuchaji iliyovunjika", "en": "Replace broken DC jack or USB-C charging port on laptop"}
+    },
+    {
+      "code": "comp_usb_port",
+      "name": {"sw": "Kubadili USB Port", "en": "USB Port Replacement"},
+      "category": "computer",
+      "price_tzs": 50000,
+      "duration_min": 60,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili USB port iliyovunjika au haifanyi kazi kwenye motherboard", "en": "Replace broken or non-working USB port on motherboard"}
+    },
+    {
+      "code": "comp_hdmi_port",
+      "name": {"sw": "Kubadili HDMI Port", "en": "HDMI Port Replacement"},
+      "category": "computer",
+      "price_tzs": 70000,
+      "duration_min": 90,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili HDMI port iliyovunjika kwenye laptop, TV au GPU", "en": "Replace broken HDMI port on laptop, TV or GPU card"}
+    },
+    {
+      "code": "comp_ransomware",
+      "name": {"sw": "Kutatua Ransomware", "en": "Ransomware Decryption"},
+      "category": "recovery",
+      "price_tzs": 200000,
+      "duration_min": 180,
+      "remote_pct": 60,
+      "description": {"sw": "Kutarajisha data iliyoencryptwa na ransomware kwa decryption tools zilizopo", "en": "Decrypt ransomware-encrypted files with available tools and techniques"}
+    },
+    {
+      "code": "comp_vpn_setup",
+      "name": {"sw": "Usanidi wa VPN", "en": "VPN Setup"},
+      "category": "network",
+      "price_tzs": 40000,
+      "duration_min": 45,
+      "remote_pct": 80,
+      "description": {"sw": "Usanidi wa VPN (OpenVPN, WireGuard, Cisco) kwa ajili ya usalama mtandaoni", "en": "Configure VPN (OpenVPN, WireGuard, Cisco) for secure online access"}
+    },
+    {
+      "code": "comp_dual_boot",
+      "name": {"sw": "Kufunga Dual Boot", "en": "Dual Boot Setup"},
+      "category": "computer",
+      "price_tzs": 85000,
+      "duration_min": 120,
+      "remote_pct": 20,
+      "description": {"sw": "Funga Windows + Linux (Ubuntu/Mint) kwa dual boot na partition sahihi", "en": "Setup Windows + Linux (Ubuntu/Mint) dual boot with correct partitioning"}
+    },
+    {
+      "code": "comp_linux_install",
+      "name": {"sw": "Kufunga Linux", "en": "Linux Installation"},
+      "category": "computer",
+      "price_tzs": 70000,
+      "duration_min": 90,
+      "remote_pct": 25,
+      "description": {"sw": "Funga Ubuntu, Mint, Fedora, Debian na apps za kawaida na drivers", "en": "Install Ubuntu, Mint, Fedora, Debian with common apps and drivers"}
+    },
+    {
+      "code": "comp_server_setup",
+      "name": {"sw": "Usanidi wa Server", "en": "Server Setup"},
+      "category": "computer",
+      "price_tzs": 250000,
+      "duration_min": 300,
+      "remote_pct": 50,
+      "description": {"sw": "Usanidi wa Windows Server au Linux Server (DNS, DHCP, AD, File, Web)", "en": "Configure Windows Server or Linux Server (DNS, DHCP, AD, File, Web)"}
+    },
+    {
+      "code": "comp_domain_join",
+      "name": {"sw": "Kuingiza kwenye Domain", "en": "Domain Join"},
+      "category": "computer",
+      "price_tzs": 50000,
+      "duration_min": 60,
+      "remote_pct": 70,
+      "description": {"sw": "Kuingiza kompyuta kwenye Active Directory domain na policies", "en": "Join computer to Active Directory domain with correct policies"}
+    },
+    {
+      "code": "comp_gpo_config",
+      "name": {"sw": "Usanidi wa GPO", "en": "GPO Configuration"},
+      "category": "computer",
+      "price_tzs": 120000,
+      "duration_min": 180,
+      "remote_pct": 75,
+      "description": {"sw": "Usanidi wa Group Policy Objects kwa udhibiti wa kompyuta kwenye domain", "en": "Configure Group Policy Objects for domain-wide computer management"}
+    },
+    {
+      "code": "phone_screen_repl",
+      "name": {"sw": "Kubadili Screen ya Simu", "en": "Phone Screen Replacement"},
+      "category": "phone",
+      "price_tzs": 120000,
+      "duration_min": 60,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili screen ya simu iliyovunjika - touch, LCD, glass na frame", "en": "Replace cracked phone screen - touch, LCD, glass and frame assembly"}
+    },
+    {
+      "code": "phone_battery_repl",
+      "name": {"sw": "Kubadili Betri ya Simu", "en": "Phone Battery Replacement"},
+      "category": "phone",
+      "price_tzs": 65000,
+      "duration_min": 40,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili betri ya simu inayochakula haraka au haichagi", "en": "Replace phone battery draining fast or not charging properly"}
+    },
+    {
+      "code": "phone_charging_port",
+      "name": {"sw": "Kubadili Port ya Kuchaji", "en": "Charging Port Replacement"},
+      "category": "phone",
+      "price_tzs": 50000,
+      "duration_min": 60,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili USB-C, micro-USB au Lightning port iliyovunjika", "en": "Replace broken USB-C, micro-USB or Lightning charging port"}
+    },
+    {
+      "code": "phone_speaker",
+      "name": {"sw": "Kubadili Speaker", "en": "Speaker Replacement"},
+      "category": "phone",
+      "price_tzs": 35000,
+      "duration_min": 45,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili loudspeaker au earpiece iliyoovu - sauti dhaifu au hakuna", "en": "Replace loudspeaker or earpiece with weak or no sound output"}
+    },
+    {
+      "code": "phone_mic",
+      "name": {"sw": "Kubadili Microphone", "en": "Microphone Replacement"},
+      "category": "phone",
+      "price_tzs": 30000,
+      "duration_min": 45,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili microphone ya simu - watu hawasikilizi kwenye simu", "en": "Replace phone microphone - callers cannot hear you on calls"}
+    },
+    {
+      "code": "phone_camera_repl",
+      "name": {"sw": "Kubadili Kamera", "en": "Camera Replacement"},
+      "category": "phone",
+      "price_tzs": 80000,
+      "duration_min": 60,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili kamera ya mbele au ya nyuma iliyovunjika - blurry, black", "en": "Replace front or rear camera - blurry, black or not focusing"}
+    },
+    {
+      "code": "phone_earpiece",
+      "name": {"sw": "Kubadili Earpiece", "en": "Earpiece Replacement"},
+      "category": "phone",
+      "price_tzs": 25000,
+      "duration_min": 35,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili earpiece ya simu - hawasikilizi vizuri kwenye simu", "en": "Replace phone earpiece - cannot hear callers properly during calls"}
+    },
+    {
+      "code": "phone_network_unlock",
+      "name": {"sw": "Kufungua Network Lock", "en": "Network Unlock"},
+      "category": "phone",
+      "price_tzs": 45000,
+      "duration_min": 30,
+      "remote_pct": 80,
+      "description": {"sw": "Kufungua simu iliyofungwa kwa network maalum (Vodacom, Tigo, Airtel)", "en": "Unlock phone locked to a specific network carrier (Vodacom, Tigo, Airtel)"}
+    },
+    {
+      "code": "phone_imei_repair",
+      "name": {"sw": "Matibabu ya IMEI", "en": "IMEI Repair"},
+      "category": "phone",
+      "price_tzs": 75000,
+      "duration_min": 60,
+      "remote_pct": 50,
+      "description": {"sw": "Kurejesha na kutengeneza IMEI number iliyopotea au imeharibika", "en": "Restore and fix lost or corrupted IMEI number on phone"}
+    },
+    {
+      "code": "phone_flash_firmware",
+      "name": {"sw": "Flash Firmware", "en": "Flash Firmware"},
+      "category": "phone",
+      "price_tzs": 55000,
+      "duration_min": 90,
+      "remote_pct": 40,
+      "description": {"sw": "Flash stock firmware kufuta matatizo ya software, boot loop, hang", "en": "Flash stock firmware to fix software issues, boot loop, hang problems"}
+    },
+    {
+      "code": "phone_frp_bypass",
+      "name": {"sw": "Kupita FRP", "en": "FRP Bypass"},
+      "category": "phone",
+      "price_tzs": 60000,
+      "duration_min": 45,
+      "remote_pct": 50,
+      "description": {"sw": "Kupita Google Factory Reset Protection baada ya format simu", "en": "Bypass Google Factory Reset Protection after phone factory reset"}
+    },
+    {
+      "code": "phone_pattern_unlock",
+      "name": {"sw": "Kufungua Pattern Lock", "en": "Pattern Unlock"},
+      "category": "phone",
+      "price_tzs": 40000,
+      "duration_min": 40,
+      "remote_pct": 30,
+      "description": {"sw": "Kuvunja pattern, PIN au nenosiri kwa simu ya Android bila data", "en": "Remove pattern, PIN or password lock on Android phone - with or without wipe"}
+    },
+    {
+      "code": "phone_root",
+      "name": {"sw": "Kutoa Root Access", "en": "Phone Rooting"},
+      "category": "phone",
+      "price_tzs": 70000,
+      "duration_min": 60,
+      "remote_pct": 50,
+      "description": {"sw": "Kutoa root access kwa Android kwa custom recovery na Magisk", "en": "Root Android phone using custom recovery and Magisk manager"}
+    },
+    {
+      "code": "phone_custom_rom",
+      "name": {"sw": "Kufunga Custom ROM", "en": "Custom ROM Installation"},
+      "category": "phone",
+      "price_tzs": 85000,
+      "duration_min": 90,
+      "remote_pct": 40,
+      "description": {"sw": "Funga LineageOS, Pixel Experience, MIUI custom ROM na GApps", "en": "Install LineageOS, Pixel Experience, MIUI custom ROM with GApps"}
+    },
+    {
+      "code": "phone_icloud_unlock",
+      "name": {"sw": "Kufungua iCloud Lock", "en": "iCloud Unlock"},
+      "category": "phone",
+      "price_tzs": 150000,
+      "duration_min": 120,
+      "remote_pct": 60,
+      "description": {"sw": "Kufungua Activation Lock / iCloud lock kwa iPhone na iPad", "en": "Remove Activation Lock / iCloud lock from iPhone and iPad devices"}
+    },
+    {
+      "code": "phone_water_damage",
+      "name": {"sw": "Matibabu ya Maji", "en": "Water Damage Repair"},
+      "category": "phone",
+      "price_tzs": 90000,
+      "duration_min": 180,
+      "remote_pct": 0,
+      "description": {"sw": "Safa na tengeneza simu iliyingia maji - ultrasonic clean + diagnose", "en": "Clean and repair water damaged phone - ultrasonic clean + component diagnostics"}
+    },
+    {
+      "code": "phone_mobo_repair",
+      "name": {"sw": "Matibabu ya Motherboard Simu", "en": "Phone Motherboard Repair"},
+      "category": "phone",
+      "price_tzs": 180000,
+      "duration_min": 240,
+      "remote_pct": 0,
+      "description": {"sw": "Matibabu ya motherboard - charging IC, power IC, CPU, RAM, eMMC reball", "en": "Motherboard repair - charging IC, power IC, CPU reball, RAM, eMMC issues"}
+    },
+    {
+      "code": "phone_back_glass",
+      "name": {"sw": "Kubadili Back Glass", "en": "Back Glass Replacement"},
+      "category": "phone",
+      "price_tzs": 45000,
+      "duration_min": 50,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili back glass iliyovunjika ya nyuma ya simu (iPhone, Samsung)", "en": "Replace cracked back glass panel on phone (iPhone, Samsung models)"}
+    },
+    {
+      "code": "phone_vibration_motor",
+      "name": {"sw": "Kubadili Vibration Motor", "en": "Vibration Motor Replacement"},
+      "category": "phone",
+      "price_tzs": 25000,
+      "duration_min": 35,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili vibration motor isiyofanya kazi - haitisi kwenye simu", "en": "Replace non-functioning vibration motor - no vibration on calls/notifications"}
+    },
+    {
+      "code": "phone_proximity_sensor",
+      "name": {"sw": "Kubadili Proximity Sensor", "en": "Proximity Sensor Repair"},
+      "category": "phone",
+      "price_tzs": 30000,
+      "duration_min": 45,
+      "remote_pct": 0,
+      "description": {"sw": "Tengeneza proximity sensor - screen haijawashwa baada ya simu kwenye sikio", "en": "Fix proximity sensor - screen stays black or won't wake during calls"}
+    },
+    {
+      "code": "phone_accelerometer",
+      "name": {"sw": "Matibabu ya Accelerometer", "en": "Accelerometer Repair"},
+      "category": "phone",
+      "price_tzs": 35000,
+      "duration_min": 50,
+      "remote_pct": 0,
+      "description": {"sw": "Tengeneza gyroscope/accelerometer - hazirahisiri mazingira/games", "en": "Fix gyroscope/accelerometer - auto rotate not working, games unresponsive"}
+    },
+    {
+      "code": "phone_wifi_antenna",
+      "name": {"sw": "Kubadili WiFi Antenna", "en": "WiFi Antenna Repair"},
+      "category": "phone",
+      "price_tzs": 30000,
+      "duration_min": 50,
+      "remote_pct": 0,
+      "description": {"sw": "Tengeneza WiFi antenna - signal dhaifu au haukonekti kwenye WiFi", "en": "Fix WiFi antenna - weak signal or cannot connect to WiFi networks"}
+    },
+    {
+      "code": "phone_bluetooth",
+      "name": {"sw": "Matibabu ya Bluetooth", "en": "Bluetooth Repair"},
+      "category": "phone",
+      "price_tzs": 35000,
+      "duration_min": 50,
+      "remote_pct": 20,
+      "description": {"sw": "Tengeneza Bluetooth - haukanaau kwenye headphones, speaker au devices", "en": "Fix Bluetooth issues - won't pair with headphones, speakers or other devices"}
+    },
+    {
+      "code": "phone_sim_tray",
+      "name": {"sw": "Kubadili SIM Tray", "en": "SIM Tray Replacement"},
+      "category": "phone",
+      "price_tzs": 20000,
+      "duration_min": 20,
+      "remote_pct": 0,
+      "description": {"sw": "Kubadili SIM tray iliyovunjika au kosa la SIM card detection", "en": "Replace broken SIM tray or fix SIM card not detected issue"}
+    },
+    {
+      "code": "phone_sd_slot",
+      "name": {"sw": "Kubadili SD Card Slot", "en": "SD Card Slot Repair"},
+      "category": "phone",
+      "price_tzs": 30000,
+      "duration_min": 45,
+      "remote_pct": 0,
+      "description": {"sw": "Tengeneza au kubadili SD card slot - haigundui memory card", "en": "Repair or replace SD card slot - memory card not detected or read"}
+    },
+    {
+      "code": "gov_tin_apply",
+      "name": {"sw": "Maombi ya TIN Number", "en": "TIN Number Application"},
+      "category": "government",
+      "price_tzs": 50000,
+      "duration_min": 120,
+      "remote_pct": 70,
+      "description": {"sw": "Kusaidia kuomba na kupata TIN number kupitia TRA online system", "en": "Assist to apply and obtain TIN number through TRA online system"}
+    },
+    {
+      "code": "gov_brela_reg",
+      "name": {"sw": "Kusajili Kampuni BRELA", "en": "BRELA Company Registration"},
+      "category": "government",
+      "price_tzs": 150000,
+      "duration_min": 240,
+      "remote_pct": 60,
+      "description": {"sw": "Kusajili kampuni ya Private Limited kwa BRELA na pata sertifikeiti", "en": "Register Private Limited company with BRELA and obtain certificate"}
+    },
+    {
+      "code": "gov_nida_id",
+      "name": {"sw": "Kusaidia NIDA ID", "en": "NIDA ID Assistance"},
+      "category": "government",
+      "price_tzs": 40000,
+      "duration_min": 90,
+      "remote_pct": 30,
+      "description": {"sw": "Kusaidia kupata National ID kupitia NIDA - registration na follow-up", "en": "Assist with National ID processing through NIDA - registration and follow-up"}
+    },
+    {
+      "code": "gov_tin_certificate",
+      "name": {"sw": "Kupata Sertifikeiti ya TIN", "en": "TIN Certificate Retrieval"},
+      "category": "government",
+      "price_tzs": 30000,
+      "duration_min": 60,
+      "remote_pct": 80,
+      "description": {"sw": "Kupata sertifikeiti ya TIN iliyopotea au kutoa copy mpya", "en": "Retrieve lost TIN certificate or print a fresh copy from TRA portal"}
+    },
+    {
+      "code": "gov_vat_registration",
+      "name": {"sw": "Kusajili kwa VAT", "en": "VAT Registration"},
+      "category": "government",
+      "price_tzs": 80000,
+      "duration_min": 120,
+      "remote_pct": 65,
+      "description": {"sw": "Kusajili kampuni kwa Value Added Tax kupitia TRA na kufunga returns", "en": "Register company for Value Added Tax with TRA and file first returns"}
+    },
+    {
+      "code": "train_basic_computer",
+      "name": {"sw": "Kozi ya Msingi ya Kompyuta", "en": "Basic Computer Course"},
+      "category": "training",
+      "price_tzs": 200000,
+      "duration_min": 1800,
+      "remote_pct": 50,
+      "description": {"sw": "Kozi ya mwanzo - Windows, MS Office (Word, Excel, PowerPoint), internet", "en": "Beginner course - Windows, MS Office (Word, Excel, PowerPoint), internet"}
+    },
+    {
+      "code": "train_computer_repair",
+      "name": {"sw": "Ukarabati wa Kompyuta", "en": "Computer Repair Training"},
+      "category": "training",
+      "price_tzs": 600000,
+      "duration_min": 3600,
+      "remote_pct": 20,
+      "description": {"sw": "Kozi ya ukarabati wa kompyuta - hardware, software, troubleshooting, OS", "en": "Computer repair course - hardware, software, troubleshooting, OS install"}
+    },
+    {
+      "code": "train_phone_repair",
+      "name": {"sw": "Ukarabati wa Simu", "en": "Phone Repair Training"},
+      "category": "training",
+      "price_tzs": 600000,
+      "duration_min": 3600,
+      "remote_pct": 15,
+      "description": {"sw": "Kozi ya ukarabati wa simu - micro-soldering, screens, batteries, ports, FRP", "en": "Phone repair course - micro-soldering, screens, batteries, ports, FRP bypass"}
+    },
+    {
+      "code": "train_digital_marketing",
+      "name": {"sw": "Digital Marketing", "en": "Digital Marketing Course"},
+      "category": "training",
+      "price_tzs": 350000,
+      "duration_min": 2400,
+      "remote_pct": 80,
+      "description": {"sw": "Kozi ya marketing ya mtandao - WhatsApp, Instagram, Facebook, Google Ads", "en": "Online marketing course - WhatsApp, Instagram, Facebook, Google Ads basics"}
+    },
+    {
+      "code": "train_cctv_install",
+      "name": {"sw": "Kufunga CCTV", "en": "CCTV Installation Training"},
+      "category": "training",
+      "price_tzs": 450000,
+      "duration_min": 2400,
+      "remote_pct": 30,
+      "description": {"sw": "Kozi ya kufunga na usimamizi wa CCTV - Hikvision, Dahua, NVR/DVR setup", "en": "CCTV installation and management course - Hikvision, Dahua, NVR/DVR setup"}
+    },
+    {
+      "code": "plat_appointment",
+      "name": {"sw": "Uendeshaji wa Miadi", "en": "Appointment Booking System"},
+      "category": "platform",
+      "price_tzs": 800000,
+      "duration_min": 600,
+      "remote_pct": 90,
+      "description": {"sw": "Mfumo wa kuweka miadi kwa wateja kwa biashara (saluni, duka, kliniki)", "en": "Customer appointment booking system for businesses (salon, shop, clinic)"}
+    },
+    {
+      "code": "plat_ecommerce",
+      "name": {"sw": "Kutumikia E-commerce", "en": "E-commerce Website"},
+      "category": "platform",
+      "price_tzs": 1500000,
+      "duration_min": 1200,
+      "remote_pct": 85,
+      "description": {"sw": "Kutumikia website ya kuuza bidhaa - WooCommerce, Shopify au custom", "en": "Build online store/e-commerce website - WooCommerce, Shopify or custom build"}
+    },
+    {
+      "code": "plat_landing_page",
+      "name": {"sw": "Landing Page ya Biashara", "en": "Business Landing Page"},
+      "category": "platform",
+      "price_tzs": 500000,
+      "duration_min": 480,
+      "remote_pct": 90,
+      "description": {"sw": "Kutumikia landing page nzuri ya kutoa maelezo ya bidhaa au huduma", "en": "Build modern landing page to showcase your product or service professionally"}
+    },
+    {
+      "code": "plat_inventory",
+      "name": {"sw": "Mfumo wa Hifadhi", "en": "Inventory Management System"},
+      "category": "platform",
+      "price_tzs": 1000000,
+      "duration_min": 900,
+      "remote_pct": 85,
+      "description": {"sw": "Mfumo wa kusimamia hifadhi - stock in/out, report, tracking, barcode", "en": "Stock management system - stock in/out, reports, tracking, barcode scanning"}
+    },
+    {
+      "code": "plat_pos_system",
+      "name": {"sw": "Mfumo wa POS", "en": "Point of Sale System"},
+      "category": "platform",
+      "price_tzs": 1200000,
+      "duration_min": 900,
+      "remote_pct": 80,
+      "description": {"sw": "Mfumo wa kuuza - sales, receipt printing, M-Pesa integration, report", "en": "Point of sale system - sales, receipt printing, M-Pesa integration, reports"}
+    },
+    {
+      "code": "appl_fridge_repair",
+      "name": {"sw": "Matibabu ya Fridge", "en": "Refrigerator Repair"},
+      "category": "appliance",
+      "price_tzs": 70000,
+      "duration_min": 120,
+      "remote_pct": 0,
+      "description": {"sw": "Matibabu ya fridge - haifichi, inamoto, compressor, gas refill, thermostat", "en": "Refrigerator repair - not cooling, overheating, compressor, gas refill, thermostat"}
+    },
+    {
+      "code": "appl_washing_machine",
+      "name": {"sw": "Matibabu ya Mashingine ya Nguo", "en": "Washing Machine Repair"},
+      "category": "appliance",
+      "price_tzs": 65000,
+      "duration_min": 120,
+      "remote_pct": 0,
+      "description": {"sw": "Matibabu ya washing machine - haifungi, haikasirii, drum, motor, pump", "en": "Washing machine repair - won't start, won't drain, drum, motor, pump issues"}
+    },
+    {
+      "code": "appl_tv_repair",
+      "name": {"sw": "Matibabu ya TV", "en": "TV Repair"},
+      "category": "appliance",
+      "price_tzs": 60000,
+      "duration_min": 90,
+      "remote_pct": 10,
+      "description": {"sw": "Matibabu ya Smart TV - hakuna picture, on/off tu, backlight, HDMI, sound", "en": "Smart TV repair - no picture, keeps restarting, backlight, HDMI, sound issues"}
+    },
+    {
+      "code": "appl_microwave",
+      "name": {"sw": "Matibabu ya Microwave", "en": "Microwave Repair"},
+      "category": "appliance",
+      "price_tzs": 45000,
+      "duration_min": 60,
+      "remote_pct": 0,
+      "description": {"sw": "Matibabu ya microwave - haipishi, magnetron, fuse, door switch, turntable", "en": "Microwave repair - not heating, magnetron, fuse, door switch, turntable issues"}
+    },
+    {
+      "code": "appl_cooker_oven",
+      "name": {"sw": "Matibabu ya Cooker/Oven", "en": "Cooker/Oven Repair"},
+      "category": "appliance",
+      "price_tzs": 75000,
+      "duration_min": 90,
+      "remote_pct": 0,
+      "description": {"sw": "Matibabu ya cooker na oven - stoves, gas burner, electric element, thermostat", "en": "Cooker and oven repair - stoves, gas burner, electric element, thermostat"}
+    },
+    {
+      "code": "solar_panel_install",
+      "name": {"sw": "Kufunga Paneli za Solar", "en": "Solar Panel Installation"},
+      "category": "solar",
+      "price_tzs": 150000,
+      "duration_min": 240,
+      "remote_pct": 0,
+      "description": {"sw": "Kufunga paneli za solar kwenye paa na uwezo wa kugawi wire vizuri", "en": "Mount solar panels on roof with proper wiring and lightning protection"}
+    },
+    {
+      "code": "solar_inverter_setup",
+      "name": {"sw": "Usanidi wa Inverter", "en": "Solar Inverter Setup"},
+      "category": "solar",
+      "price_tzs": 100000,
+      "duration_min": 180,
+      "remote_pct": 20,
+      "description": {"sw": "Usanidi wa solar inverter - grid-tie, off-grid, hybrid na MPPT charger", "en": "Configure solar inverter - grid-tie, off-grid, hybrid with MPPT charge controller"}
+    },
+    {
+      "code": "solar_battery_install",
+      "name": {"sw": "Kufunga Betri za Solar", "en": "Solar Battery Installation"},
+      "category": "solar",
+      "price_tzs": 120000,
+      "duration_min": 180,
+      "remote_pct": 0,
+      "description": {"sw": "Kufunga na kuunganisha betri za solar - lithium, lead-acid series/parallel", "en": "Install and wire solar batteries - lithium, lead-acid series/parallel bank setup"}
+    },
+    {
+      "code": "solar_maintenance",
+      "name": {"sw": "Ukarabati wa Solar", "en": "Solar System Maintenance"},
+      "category": "solar",
+      "price_tzs": 80000,
+      "duration_min": 120,
+      "remote_pct": 0,
+      "description": {"sw": "Usafi wa paneli, test betri, sasisha software ya inverter, check connections", "en": "Panel cleaning, battery testing, inverter firmware update, loose connection check"}
+    },
+    {
+      "code": "solar_system_design",
+      "name": {"sw": "Kupanga Mfumo wa Solar", "en": "Solar System Design"},
+      "category": "solar",
+      "price_tzs": 60000,
+      "duration_min": 120,
+      "remote_pct": 70,
+      "description": {"sw": "Kupanga mfumo wa solar kulingana na mzigo - calculate panels, inverter, battery", "en": "Design solar system based on load - calculate panels, inverter size, battery bank"}
+    },
+    {
+      "code": "net_wifi_install",
+      "name": {"sw": "Kufunga WiFi (Nyumbani)", "en": "Home WiFi Installation"},
+      "category": "network",
+      "price_tzs": 60000,
+      "duration_min": 90,
+      "remote_pct": 20,
+      "description": {"sw": "Kufunga na usanidi wa WiFi nyumbani - router, range extender, mesh WiFi", "en": "Install and configure home WiFi - router setup, range extender, mesh WiFi system"}
+    },
+    {
+      "code": "net_cctv_install",
+      "name": {"sw": "Kufunga CCTV", "en": "CCTV Installation"},
+      "category": "network",
+      "price_tzs": 150000,
+      "duration_min": 240,
+      "remote_pct": 10,
+      "description": {"sw": "Kufunga na usanidi wa CCTV - cameras, DVR/NVR, storage, remote viewing", "en": "Professional CCTV installation - cameras, DVR/NVR, storage setup, remote view"}
+    },
+    {
+      "code": "net_fiber_setup",
+      "name": {"sw": "Usanidi wa Fiber Internet", "en": "Fiber Internet Setup"},
+      "category": "network",
+      "price_tzs": 50000,
+      "duration_min": 90,
+      "remote_pct": 30,
+      "description": {"sw": "Usanidi wa fiber - Airtel, TigoPesa, Vodacom - router, WiFi, static IP, VPN", "en": "Fiber setup - Airtel, Tigo, Vodacom - router config, WiFi, static IP, VPN"}
+    },
+    {
+      "code": "net_network_troubleshoot",
+      "name": {"sw": "Kutatua Matatizo ya Network", "en": "Network Troubleshooting"},
+      "category": "network",
+      "price_tzs": 75000,
+      "duration_min": 90,
+      "remote_pct": 40,
+      "description": {"sw": "Kutatua - no internet, slow speed, IP conflict, DNS, cable, VLAN, firewall", "en": "Diagnose - no internet, slow speed, IP conflict, DNS, cable, VLAN, firewall"}
+    },
+    {
+      "code": "net_structured_cabling",
+      "name": {"sw": "Structured Cabling", "en": "Structured Cabling"},
+      "category": "network",
+      "price_tzs": 200000,
+      "duration_min": 300,
+      "remote_pct": 0,
+      "description": {"sw": "Kufunga cable ya network (CAT6, fiber) - ofisi, maduka, server rack, patch panel", "en": "Network cabling installation (CAT6, fiber) - offices, shops, server rack, patch panel"}
+    },
+    {
+      "code": "rem_remote_support",
+      "name": {"sw": "Msaada wa Kivinjari", "en": "Remote Support Session"},
+      "category": "remote",
+      "price_tzs": 40000,
+      "duration_min": 60,
+      "remote_pct": 100,
+      "description": {"sw": "Msaada wa kibinafsi wa teknolojia kwa TeamViewer/AnyDesk kwa saa moja", "en": "One-on-one remote tech support via TeamViewer/AnyDesk for one hour"}
+    },
+    {
+      "code": "rem_software_install",
+      "name": {"sw": "Kufunga Software (Kivinjari)", "en": "Remote Software Install"},
+      "category": "remote",
+      "price_tzs": 35000,
+      "duration_min": 45,
+      "remote_pct": 100,
+      "description": {"sw": "Kufunga software yoyote kwa njia ya remote - Adobe, AutoCAD, Corel, IDEs", "en": "Install any software remotely - Adobe, AutoCAD, Corel, development IDEs"}
+    },
+    {
+      "code": "rem_file_recovery",
+      "name": {"sw": "Kupata Files (Kivinjari)", "en": "Remote File Recovery"},
+      "category": "recovery",
+      "price_tzs": 60000,
+      "duration_min": 90,
+      "remote_pct": 90,
+      "description": {"sw": "Kupata files zilizofutwa kwa njia ya remote - Recuva, EaseUS, Stellar tools", "en": "Recover deleted files remotely - Recuva, EaseUS, Stellar recovery tools"}
+    },
+    {
+      "code": "rem_windows_activation",
+      "name": {"sw": "Kusaidia Windows Activation", "en": "Windows Activation Help"},
+      "category": "remote",
+      "price_tzs": 45000,
+      "duration_min": 30,
+      "remote_pct": 100,
+      "description": {"sw": "Kusaidia kutoa license ya Windows 10/11 na kutoa majibu ya activation error", "en": "Assist with Windows 10/11 licensing and resolve activation errors"}
+    },
+    {
+      "code": "rem_smtp_setup",
+      "name": {"sw": "Usanidi wa SMTP Server", "en": "SMTP Server Setup"},
+      "category": "remote",
+      "price_tzs": 90000,
+      "duration_min": 120,
+      "remote_pct": 100,
+      "description": {"sw": "Usanidi wa SMTP server - bulk email, mailgun, sendgrid, zoho, cPanel email", "en": "SMTP server config - bulk email, Mailgun, SendGrid, Zoho, cPanel email"}
+    },
+    {
+      "code": "rec_hdd_deep_recovery",
+      "name": {"sw": "Data Recovery ya Kina (HDD)", "en": "Deep HDD Data Recovery"},
+      "category": "recovery",
+      "price_tzs": 200000,
+      "duration_min": 360,
+      "remote_pct": 5,
+      "description": {"sw": "Inua data kutoka HDD iliyokosa heads, scratched platter au fried PCB", "en": "Recover data from HDD with failed heads, scratched platter or fried PCB board"}
+    },
+    {
+      "code": "rec_raid_recovery",
+      "name": {"sw": "Data Recovery ya RAID", "en": "RAID Data Recovery"},
+      "category": "recovery",
+      "price_tzs": 350000,
+      "duration_min": 480,
+      "remote_pct": 20,
+      "description": {"sw": "Inua data kutoka RAID 0/1/5/6/10 - controller failure, rebuild errors", "en": "Recover data from RAID 0/1/5/6/10 - controller failure, rebuild errors, crashed array"}
+    },
+    {
+      "code": "rem_wordpress_fix",
+      "name": {"sw": "Kutatua WordPress", "en": "WordPress Fix"},
+      "category": "remote",
+      "price_tzs": 75000,
+      "duration_min": 90,
+      "remote_pct": 100,
+      "description": {"sw": "Kutatua WordPress errors - 500, 404, white screen, database, plugins, themes", "en": "Fix WordPress errors - 500, 404, white screen, database, plugin and theme issues"}
+    },
+    {
+      "code": "rem_server_maint",
+      "name": {"sw": "Ukarabati wa Server", "en": "Server Maintenance"},
+      "category": "remote",
+      "price_tzs": 180000,
+      "duration_min": 180,
+      "remote_pct": 95,
+      "description": {"sw": "Updates, backup, security audit, log review, optimization kwa Linux/Windows server", "en": "Updates, backup, security audit, log review, optimization for Linux/Windows server"}
+    },
+    {
+      "code": "rec_sd_card_recovery",
+      "name": {"sw": "Kupata Data ya SD Card", "en": "SD Card Data Recovery"},
+      "category": "recovery",
+      "price_tzs": 50000,
+      "duration_min": 90,
+      "remote_pct": 25,
+      "description": {"sw": "Inua picha na video kutoka SD card iliyosota, format au inakuwa corrupt", "en": "Recover photos/videos from corrupted, formatted or broken SD/microSD card"}
+    },
+    {
+      "code": "comp_data_migration",
+      "name": {"sw": "Kuhamisha Data", "en": "Data Migration"},
+      "category": "computer",
+      "price_tzs": 60000,
+      "duration_min": 90,
+      "remote_pct": 30,
+      "description": {"sw": "Kuhamisha data, settings, software kutoka kompyuta moja kwenda nyingine", "en": "Migrate data, settings, installed software from old computer to new one"}
+    },
+    {
+      "code": "comp_os_tuneup",
+      "name": {"sw": "Kuongeza Kasi ya OS", "en": "OS Tune-Up & Optimization"},
+      "category": "computer",
+      "price_tzs": 35000,
+      "duration_min": 60,
+      "remote_pct": 60,
+      "description": {"sw": "Fanya computer iwe kasi - startup, disk cleanup, defrag, registry, services", "en": "Speed up slow computer - startup, disk cleanup, defrag, registry, disable services"}
+    },
+    {
+      "code": "train_graphic_design",
+      "name": {"sw": "Grafiki na Ubunifu", "en": "Graphic Design Course"},
+      "category": "training",
+      "price_tzs": 400000,
+      "duration_min": 2400,
+      "remote_pct": 60,
+      "description": {"sw": "Kozi ya CorelDRAW, Photoshop, Illustrator - logo, poster, flyer, card design", "en": "CorelDRAW, Photoshop, Illustrator course - logo, poster, flyer, business card design"}
+    }
+  ]
+}

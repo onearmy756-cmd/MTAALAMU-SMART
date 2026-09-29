@@ -1,0 +1,26 @@
+# --- Rust (engine-rust) ---
+engine-rust/target/
+
+# --- Node ---
+node_modules/
+npm-debug.log*
+
+# --- R ---
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# --- Backups / temp ---
+*.bak
+*.backup
+*.tmp
+*~
+~$*
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

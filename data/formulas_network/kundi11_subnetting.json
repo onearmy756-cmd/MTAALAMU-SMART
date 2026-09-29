@@ -1,0 +1,2684 @@
+{
+  "group": {
+    "id": "subnetting",
+    "code": "KUNDI 11",
+    "label": {
+      "sw": "Kundi 11: Subnetting IP",
+      "en": "Group 11: IP Subnetting"
+    }
+  },
+  "formulas": [
+    {
+      "id": "subnetting_01",
+      "group": "subnetting",
+      "name": {
+        "sw": "Ipv4 Subnet Mask",
+        "en": "Ipv4 Subnet Mask"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Ipv4 Subnet Mask",
+        "en": "IP Subnetting: Ipv4 Subnet Mask"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya ipv4 subnet mask",
+            "en": "Result: ipv4 subnet mask"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100"
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_02",
+      "group": "subnetting",
+      "name": {
+        "sw": "Wildcard Mask",
+        "en": "Wildcard Mask"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Wildcard Mask",
+        "en": "IP Subnetting: Wildcard Mask"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya wildcard mask",
+            "en": "Result: wildcard mask"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_03",
+      "group": "subnetting",
+      "name": {
+        "sw": "Network Address",
+        "en": "Network Address"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Network Address",
+        "en": "IP Subnetting: Network Address"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya network address",
+            "en": "Result: network address"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0"
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_04",
+      "group": "subnetting",
+      "name": {
+        "sw": "Broadcast Address",
+        "en": "Broadcast Address"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Broadcast Address",
+        "en": "IP Subnetting: Broadcast Address"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya broadcast address",
+            "en": "Result: broadcast address"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_05",
+      "group": "subnetting",
+      "name": {
+        "sw": "Hosts Per Subnet",
+        "en": "Hosts Per Subnet"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Hosts Per Subnet",
+        "en": "IP Subnetting: Hosts Per Subnet"
+      },
+      "inputs": [
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya hosts per subnet",
+            "en": "Result: hosts per subnet"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_06",
+      "group": "subnetting",
+      "name": {
+        "sw": "Subnet Count Cidr",
+        "en": "Subnet Count Cidr"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Subnet Count Cidr",
+        "en": "IP Subnetting: Subnet Count Cidr"
+      },
+      "inputs": [
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya subnet count cidr",
+            "en": "Result: subnet count cidr"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_07",
+      "group": "subnetting",
+      "name": {
+        "sw": "Supernet Cidr Summary",
+        "en": "Supernet Cidr Summary"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Supernet Cidr Summary",
+        "en": "IP Subnetting: Supernet Cidr Summary"
+      },
+      "inputs": [
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya supernet cidr summary",
+            "en": "Result: supernet cidr summary"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "mask": "255.255.255.0",
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_08",
+      "group": "subnetting",
+      "name": {
+        "sw": "Vlsm Subnet",
+        "en": "Vlsm Subnet"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Vlsm Subnet",
+        "en": "IP Subnetting: Vlsm Subnet"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya vlsm subnet",
+            "en": "Result: vlsm subnet"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100"
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_09",
+      "group": "subnetting",
+      "name": {
+        "sw": "Ip Class Check",
+        "en": "Ip Class Check"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Ip Class Check",
+        "en": "IP Subnetting: Ip Class Check"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya ip class check",
+            "en": "Result: ip class check"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_10",
+      "group": "subnetting",
+      "name": {
+        "sw": "Cidr To Mask",
+        "en": "Cidr To Mask"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Cidr To Mask",
+        "en": "IP Subnetting: Cidr To Mask"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya cidr to mask",
+            "en": "Result: cidr to mask"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0"
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_11",
+      "group": "subnetting",
+      "name": {
+        "sw": "Mask To Cidr",
+        "en": "Mask To Cidr"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Mask To Cidr",
+        "en": "IP Subnetting: Mask To Cidr"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya mask to cidr",
+            "en": "Result: mask to cidr"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_12",
+      "group": "subnetting",
+      "name": {
+        "sw": "Ipv6 Prefix Length",
+        "en": "Ipv6 Prefix Length"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Ipv6 Prefix Length",
+        "en": "IP Subnetting: Ipv6 Prefix Length"
+      },
+      "inputs": [
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya ipv6 prefix length",
+            "en": "Result: ipv6 prefix length"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_13",
+      "group": "subnetting",
+      "name": {
+        "sw": "Number Ipv6 Hosts",
+        "en": "Number Ipv6 Hosts"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Number Ipv6 Hosts",
+        "en": "IP Subnetting: Number Ipv6 Hosts"
+      },
+      "inputs": [
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya number ipv6 hosts",
+            "en": "Result: number ipv6 hosts"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_14",
+      "group": "subnetting",
+      "name": {
+        "sw": "Subnet Id Calc",
+        "en": "Subnet Id Calc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Subnet Id Calc",
+        "en": "IP Subnetting: Subnet Id Calc"
+      },
+      "inputs": [
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya subnet id calc",
+            "en": "Result: subnet id calc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "mask": "255.255.255.0",
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_15",
+      "group": "subnetting",
+      "name": {
+        "sw": "Gateway Address",
+        "en": "Gateway Address"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Gateway Address",
+        "en": "IP Subnetting: Gateway Address"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya gateway address",
+            "en": "Result: gateway address"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100"
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_16",
+      "group": "subnetting",
+      "name": {
+        "sw": "Dns Reverse Zone",
+        "en": "Dns Reverse Zone"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Dns Reverse Zone",
+        "en": "IP Subnetting: Dns Reverse Zone"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out15",
+          "label": {
+            "sw": "Matokeo ya dns reverse zone",
+            "en": "Result: dns reverse zone"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out15 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_17",
+      "group": "subnetting",
+      "name": {
+        "sw": "Ip Range First Last",
+        "en": "Ip Range First Last"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Ip Range First Last",
+        "en": "IP Subnetting: Ip Range First Last"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out16",
+          "label": {
+            "sw": "Matokeo ya ip range first last",
+            "en": "Result: ip range first last"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out16 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0"
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_18",
+      "group": "subnetting",
+      "name": {
+        "sw": "Subnet Increment",
+        "en": "Subnet Increment"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Subnet Increment",
+        "en": "IP Subnetting: Subnet Increment"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out17",
+          "label": {
+            "sw": "Matokeo ya subnet increment",
+            "en": "Result: subnet increment"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out17 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_19",
+      "group": "subnetting",
+      "name": {
+        "sw": "Binary To Ipv4",
+        "en": "Binary To Ipv4"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Binary To Ipv4",
+        "en": "IP Subnetting: Binary To Ipv4"
+      },
+      "inputs": [
+        {
+          "name": "ipv4",
+          "label": {
+            "sw": "Anwani IPv4",
+            "en": "IPv4 Address"
+          },
+          "unit": "",
+          "default": "192.168.1.100",
+          "select": [
+            {
+              "label": "192.168.1.100",
+              "value": "192.168.1.100"
+            },
+            {
+              "label": "10.0.0.5",
+              "value": "10.0.0.5"
+            }
+          ]
+        },
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out18",
+          "label": {
+            "sw": "Matokeo ya binary to ipv4",
+            "en": "Result: binary to ipv4"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out18 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "ipv4": "192.168.1.100",
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "subnetting_20",
+      "group": "subnetting",
+      "name": {
+        "sw": "Ipv4 To Binary",
+        "en": "Ipv4 To Binary"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Subnetting IP: Ipv4 To Binary",
+        "en": "IP Subnetting: Ipv4 To Binary"
+      },
+      "inputs": [
+        {
+          "name": "cidr",
+          "label": {
+            "sw": "CIDR /prefix",
+            "en": "CIDR Prefix"
+          },
+          "unit": "",
+          "default": 24,
+          "min": 0,
+          "max": 32
+        },
+        {
+          "name": "mask",
+          "label": {
+            "sw": "Subnet Mask",
+            "en": "Subnet Mask"
+          },
+          "unit": "",
+          "default": "255.255.255.0"
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out19",
+          "label": {
+            "sw": "Matokeo ya ipv4 to binary",
+            "en": "Result: ipv4 to binary"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out19 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 11"
+        ],
+        "en": [
+          "KUNDI 11"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "cidr": 24,
+          "mask": "255.255.255.0",
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

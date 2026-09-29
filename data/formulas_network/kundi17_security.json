@@ -1,0 +1,1302 @@
+{
+  "group": {
+    "id": "security",
+    "code": "KUNDI 17",
+    "label": {
+      "sw": "Kundi 17: Usalama (Security)",
+      "en": "Group 17: Security"
+    }
+  },
+  "formulas": [
+    {
+      "id": "security_01",
+      "group": "security",
+      "name": {
+        "sw": "Password Entropy Bits",
+        "en": "Password Entropy Bits"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Password Entropy Bits",
+        "en": "Security: Password Entropy Bits"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya password entropy bits",
+            "en": "Result: password entropy bits"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_02",
+      "group": "security",
+      "name": {
+        "sw": "Bcrypt Cost Factor",
+        "en": "Bcrypt Cost Factor"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Bcrypt Cost Factor",
+        "en": "Security: Bcrypt Cost Factor"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya bcrypt cost factor",
+            "en": "Result: bcrypt cost factor"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_03",
+      "group": "security",
+      "name": {
+        "sw": "Aes Key Length Sec",
+        "en": "Aes Key Length Sec"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Aes Key Length Sec",
+        "en": "Security: Aes Key Length Sec"
+      },
+      "inputs": [
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya aes key length sec",
+            "en": "Result: aes key length sec"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_04",
+      "group": "security",
+      "name": {
+        "sw": "Rsa Key Strength",
+        "en": "Rsa Key Strength"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Rsa Key Strength",
+        "en": "Security: Rsa Key Strength"
+      },
+      "inputs": [
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya rsa key strength",
+            "en": "Result: rsa key strength"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_05",
+      "group": "security",
+      "name": {
+        "sw": "Hash Collision Bits",
+        "en": "Hash Collision Bits"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Hash Collision Bits",
+        "en": "Security: Hash Collision Bits"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya hash collision bits",
+            "en": "Result: hash collision bits"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_06",
+      "group": "security",
+      "name": {
+        "sw": "Ssl Handshake Latency",
+        "en": "Ssl Handshake Latency"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Ssl Handshake Latency",
+        "en": "Security: Ssl Handshake Latency"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya ssl handshake latency",
+            "en": "Result: ssl handshake latency"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_07",
+      "group": "security",
+      "name": {
+        "sw": "Firewall Rule Complexity",
+        "en": "Firewall Rule Complexity"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Firewall Rule Complexity",
+        "en": "Security: Firewall Rule Complexity"
+      },
+      "inputs": [
+        {
+          "name": "NF",
+          "label": {
+            "sw": "Noise Figure",
+            "en": "Noise Figure"
+          },
+          "unit": "dB",
+          "default": 3,
+          "min": 0,
+          "max": 30
+        },
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya firewall rule complexity",
+            "en": "Result: firewall rule complexity"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "NF": 3,
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_08",
+      "group": "security",
+      "name": {
+        "sw": "Vpn Throughput Overhead",
+        "en": "Vpn Throughput Overhead"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Vpn Throughput Overhead",
+        "en": "Security: Vpn Throughput Overhead"
+      },
+      "inputs": [
+        {
+          "name": "SNR",
+          "label": {
+            "sw": "SNR",
+            "en": "SNR"
+          },
+          "unit": "dB",
+          "default": 20,
+          "min": -20,
+          "max": 100
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya vpn throughput overhead",
+            "en": "Result: vpn throughput overhead"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "SNR": 20,
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_09",
+      "group": "security",
+      "name": {
+        "sw": "Ids Signature Perf",
+        "en": "Ids Signature Perf"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Ids Signature Perf",
+        "en": "Security: Ids Signature Perf"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya ids signature perf",
+            "en": "Result: ids signature perf"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "security_10",
+      "group": "security",
+      "name": {
+        "sw": "Zero Trust Score",
+        "en": "Zero Trust Score"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Usalama (Security): Zero Trust Score",
+        "en": "Security: Zero Trust Score"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "V_in",
+          "label": {
+            "sw": "Voltage In",
+            "en": "Input Voltage"
+          },
+          "unit": "V",
+          "default": 1,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "V_out",
+          "label": {
+            "sw": "Voltage Out",
+            "en": "Output Voltage"
+          },
+          "unit": "V",
+          "default": 3.16,
+          "min": 0.000001,
+          "max": 10000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya zero trust score",
+            "en": "Result: zero trust score"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 17"
+        ],
+        "en": [
+          "KUNDI 17"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "V_in": 1,
+          "V_out": 3.16,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

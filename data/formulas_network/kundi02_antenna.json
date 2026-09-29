@@ -1,0 +1,2592 @@
+{
+  "group": {
+    "id": "antenna",
+    "code": "KUNDI 2",
+    "label": {
+      "sw": "Kundi 02: Antenna",
+      "en": "Group 02: Antenna"
+    }
+  },
+  "formulas": [
+    {
+      "id": "antenna_01",
+      "group": "antenna",
+      "name": {
+        "sw": "Dipole Length Metre",
+        "en": "Dipole Length Metre"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Dipole Length Metre",
+        "en": "Antenna: Dipole Length Metre"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya dipole length metre",
+            "en": "Result: dipole length metre"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_02",
+      "group": "antenna",
+      "name": {
+        "sw": "Yagi Gain Dbi",
+        "en": "Yagi Gain Dbi"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Yagi Gain Dbi",
+        "en": "Antenna: Yagi Gain Dbi"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya yagi gain dbi",
+            "en": "Result: yagi gain dbi"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_03",
+      "group": "antenna",
+      "name": {
+        "sw": "Parabolic Gain",
+        "en": "Parabolic Gain"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Parabolic Gain",
+        "en": "Antenna: Parabolic Gain"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya parabolic gain",
+            "en": "Result: parabolic gain"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2,
+          "eta": 0.6
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_04",
+      "group": "antenna",
+      "name": {
+        "sw": "Effective Aperture",
+        "en": "Effective Aperture"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Effective Aperture",
+        "en": "Antenna: Effective Aperture"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya effective aperture",
+            "en": "Result: effective aperture"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2,
+          "eta": 0.6,
+          "N": 4
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_05",
+      "group": "antenna",
+      "name": {
+        "sw": "Radiation Resistance",
+        "en": "Radiation Resistance"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Radiation Resistance",
+        "en": "Antenna: Radiation Resistance"
+      },
+      "inputs": [
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya radiation resistance",
+            "en": "Result: radiation resistance"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "f_MHz": 900,
+          "D_m": 2,
+          "eta": 0.6,
+          "N": 4,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_06",
+      "group": "antenna",
+      "name": {
+        "sw": "Beamwidth Degrees",
+        "en": "Beamwidth Degrees"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Beamwidth Degrees",
+        "en": "Antenna: Beamwidth Degrees"
+      },
+      "inputs": [
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya beamwidth degrees",
+            "en": "Result: beamwidth degrees"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "D_m": 2,
+          "eta": 0.6,
+          "N": 4,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_07",
+      "group": "antenna",
+      "name": {
+        "sw": "Front To Back Ratio",
+        "en": "Front To Back Ratio"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Front To Back Ratio",
+        "en": "Antenna: Front To Back Ratio"
+      },
+      "inputs": [
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya front to back ratio",
+            "en": "Result: front to back ratio"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "eta": 0.6,
+          "N": 4,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_08",
+      "group": "antenna",
+      "name": {
+        "sw": "Return Loss Swr",
+        "en": "Return Loss Swr"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Return Loss Swr",
+        "en": "Antenna: Return Loss Swr"
+      },
+      "inputs": [
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya return loss swr",
+            "en": "Result: return loss swr"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "N": 4,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_09",
+      "group": "antenna",
+      "name": {
+        "sw": "Polarization Loss",
+        "en": "Polarization Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Polarization Loss",
+        "en": "Antenna: Polarization Loss"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya polarization loss",
+            "en": "Result: polarization loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_10",
+      "group": "antenna",
+      "name": {
+        "sw": "Far Field Distance",
+        "en": "Far Field Distance"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Far Field Distance",
+        "en": "Antenna: Far Field Distance"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya far field distance",
+            "en": "Result: far field distance"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_11",
+      "group": "antenna",
+      "name": {
+        "sw": "Path Loss Friis",
+        "en": "Path Loss Friis"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Path Loss Friis",
+        "en": "Antenna: Path Loss Friis"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya path loss friis",
+            "en": "Result: path loss friis"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2,
+          "eta": 0.6
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_12",
+      "group": "antenna",
+      "name": {
+        "sw": "Link Margin",
+        "en": "Link Margin"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Link Margin",
+        "en": "Antenna: Link Margin"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya link margin",
+            "en": "Result: link margin"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2,
+          "eta": 0.6,
+          "N": 4
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_13",
+      "group": "antenna",
+      "name": {
+        "sw": "Radar Range",
+        "en": "Radar Range"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Radar Range",
+        "en": "Antenna: Radar Range"
+      },
+      "inputs": [
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya radar range",
+            "en": "Result: radar range"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "f_MHz": 900,
+          "D_m": 2,
+          "eta": 0.6,
+          "N": 4,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_14",
+      "group": "antenna",
+      "name": {
+        "sw": "Eirp Calc",
+        "en": "Eirp Calc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Eirp Calc",
+        "en": "Antenna: Eirp Calc"
+      },
+      "inputs": [
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya eirp calc",
+            "en": "Result: eirp calc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "D_m": 2,
+          "eta": 0.6,
+          "N": 4,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_15",
+      "group": "antenna",
+      "name": {
+        "sw": "Effective Radiated Power",
+        "en": "Effective Radiated Power"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Effective Radiated Power",
+        "en": "Antenna: Effective Radiated Power"
+      },
+      "inputs": [
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya effective radiated power",
+            "en": "Result: effective radiated power"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "eta": 0.6,
+          "N": 4,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_16",
+      "group": "antenna",
+      "name": {
+        "sw": "Effective Isotropic",
+        "en": "Effective Isotropic"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Effective Isotropic",
+        "en": "Antenna: Effective Isotropic"
+      },
+      "inputs": [
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out15",
+          "label": {
+            "sw": "Matokeo ya effective isotropic",
+            "en": "Result: effective isotropic"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out15 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "N": 4,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_17",
+      "group": "antenna",
+      "name": {
+        "sw": "Gain Of Array",
+        "en": "Gain Of Array"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Gain Of Array",
+        "en": "Antenna: Gain Of Array"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out16",
+          "label": {
+            "sw": "Matokeo ya gain of array",
+            "en": "Result: gain of array"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out16 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_18",
+      "group": "antenna",
+      "name": {
+        "sw": "Diversity Gain Combine",
+        "en": "Diversity Gain Combine"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Diversity Gain Combine",
+        "en": "Antenna: Diversity Gain Combine"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out17",
+          "label": {
+            "sw": "Matokeo ya diversity gain combine",
+            "en": "Result: diversity gain combine"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out17 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_19",
+      "group": "antenna",
+      "name": {
+        "sw": "Diversity Gain Maximum",
+        "en": "Diversity Gain Maximum"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Diversity Gain Maximum",
+        "en": "Antenna: Diversity Gain Maximum"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out18",
+          "label": {
+            "sw": "Matokeo ya diversity gain maximum",
+            "en": "Result: diversity gain maximum"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out18 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2,
+          "eta": 0.6
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "antenna_20",
+      "group": "antenna",
+      "name": {
+        "sw": "Effective Area M2",
+        "en": "Effective Area M2"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Antenna: Effective Area M2",
+        "en": "Antenna: Effective Area M2"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_MHz",
+          "label": {
+            "sw": "Frequency (MHz)",
+            "en": "Frequency (MHz)"
+          },
+          "unit": "MHz",
+          "default": 900,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "D_m",
+          "label": {
+            "sw": "Diameter (m)",
+            "en": "Diameter (m)"
+          },
+          "unit": "m",
+          "default": 2,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "eta",
+          "label": {
+            "sw": "Ufanisi",
+            "en": "Efficiency"
+          },
+          "unit": "",
+          "default": 0.6,
+          "min": 0.01,
+          "max": 1
+        },
+        {
+          "name": "N",
+          "label": {
+            "sw": "Elements",
+            "en": "Elements"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 256
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out19",
+          "label": {
+            "sw": "Matokeo ya effective area m2",
+            "en": "Result: effective area m2"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out19 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 2"
+        ],
+        "en": [
+          "KUNDI 2"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "f_MHz": 900,
+          "D_m": 2,
+          "eta": 0.6,
+          "N": 4
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

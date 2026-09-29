@@ -1,0 +1,1302 @@
+{
+  "group": {
+    "id": "cloud",
+    "code": "KUNDI 20",
+    "label": {
+      "sw": "Kundi 20: Cloud Computing",
+      "en": "Group 20: Cloud Computing"
+    }
+  },
+  "formulas": [
+    {
+      "id": "cloud_01",
+      "group": "cloud",
+      "name": {
+        "sw": "Ec2 Instance Cost Mo",
+        "en": "Ec2 Instance Cost Mo"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Ec2 Instance Cost Mo",
+        "en": "Cloud Computing: Ec2 Instance Cost Mo"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "vcpu",
+          "label": {
+            "sw": "vCPU",
+            "en": "vCPU"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 0.25,
+          "max": 256
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya ec2 instance cost mo",
+            "en": "Result: ec2 instance cost mo"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "vcpu": 4
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_02",
+      "group": "cloud",
+      "name": {
+        "sw": "S3 Storage Cost Gb",
+        "en": "S3 Storage Cost Gb"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: S3 Storage Cost Gb",
+        "en": "Cloud Computing: S3 Storage Cost Gb"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "vcpu",
+          "label": {
+            "sw": "vCPU",
+            "en": "vCPU"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 0.25,
+          "max": 256
+        },
+        {
+          "name": "gb_ram",
+          "label": {
+            "sw": "RAM (GB)",
+            "en": "RAM (GB)"
+          },
+          "unit": "GB",
+          "default": 16,
+          "min": 0.5,
+          "max": 4000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya s3 storage cost gb",
+            "en": "Result: s3 storage cost gb"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "vcpu": 4,
+          "gb_ram": 16
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_03",
+      "group": "cloud",
+      "name": {
+        "sw": "Cloud Egress Cost",
+        "en": "Cloud Egress Cost"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Cloud Egress Cost",
+        "en": "Cloud Computing: Cloud Egress Cost"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "vcpu",
+          "label": {
+            "sw": "vCPU",
+            "en": "vCPU"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 0.25,
+          "max": 256
+        },
+        {
+          "name": "gb_ram",
+          "label": {
+            "sw": "RAM (GB)",
+            "en": "RAM (GB)"
+          },
+          "unit": "GB",
+          "default": 16,
+          "min": 0.5,
+          "max": 4000
+        },
+        {
+          "name": "hours",
+          "label": {
+            "sw": "Saa / Mwezi",
+            "en": "Hours / Month"
+          },
+          "unit": "h",
+          "default": 730,
+          "min": 1,
+          "max": 8760
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya cloud egress cost",
+            "en": "Result: cloud egress cost"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "vcpu": 4,
+          "gb_ram": 16,
+          "hours": 730
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_04",
+      "group": "cloud",
+      "name": {
+        "sw": "Reserved Instance Saving",
+        "en": "Reserved Instance Saving"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Reserved Instance Saving",
+        "en": "Cloud Computing: Reserved Instance Saving"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "vcpu",
+          "label": {
+            "sw": "vCPU",
+            "en": "vCPU"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 0.25,
+          "max": 256
+        },
+        {
+          "name": "gb_ram",
+          "label": {
+            "sw": "RAM (GB)",
+            "en": "RAM (GB)"
+          },
+          "unit": "GB",
+          "default": 16,
+          "min": 0.5,
+          "max": 4000
+        },
+        {
+          "name": "hours",
+          "label": {
+            "sw": "Saa / Mwezi",
+            "en": "Hours / Month"
+          },
+          "unit": "h",
+          "default": 730,
+          "min": 1,
+          "max": 8760
+        },
+        {
+          "name": "gb_storage",
+          "label": {
+            "sw": "Storage (GB)",
+            "en": "Storage (GB)"
+          },
+          "unit": "GB",
+          "default": 100,
+          "min": 1,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya reserved instance saving",
+            "en": "Result: reserved instance saving"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "vcpu": 4,
+          "gb_ram": 16,
+          "hours": 730,
+          "gb_storage": 100
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_05",
+      "group": "cloud",
+      "name": {
+        "sw": "Auto Scale Min Max",
+        "en": "Auto Scale Min Max"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Auto Scale Min Max",
+        "en": "Cloud Computing: Auto Scale Min Max"
+      },
+      "inputs": [
+        {
+          "name": "vcpu",
+          "label": {
+            "sw": "vCPU",
+            "en": "vCPU"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 0.25,
+          "max": 256
+        },
+        {
+          "name": "gb_ram",
+          "label": {
+            "sw": "RAM (GB)",
+            "en": "RAM (GB)"
+          },
+          "unit": "GB",
+          "default": 16,
+          "min": 0.5,
+          "max": 4000
+        },
+        {
+          "name": "hours",
+          "label": {
+            "sw": "Saa / Mwezi",
+            "en": "Hours / Month"
+          },
+          "unit": "h",
+          "default": 730,
+          "min": 1,
+          "max": 8760
+        },
+        {
+          "name": "gb_storage",
+          "label": {
+            "sw": "Storage (GB)",
+            "en": "Storage (GB)"
+          },
+          "unit": "GB",
+          "default": 100,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya auto scale min max",
+            "en": "Result: auto scale min max"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "vcpu": 4,
+          "gb_ram": 16,
+          "hours": 730,
+          "gb_storage": 100,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_06",
+      "group": "cloud",
+      "name": {
+        "sw": "Serverless Lambda Cost",
+        "en": "Serverless Lambda Cost"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Serverless Lambda Cost",
+        "en": "Cloud Computing: Serverless Lambda Cost"
+      },
+      "inputs": [
+        {
+          "name": "gb_ram",
+          "label": {
+            "sw": "RAM (GB)",
+            "en": "RAM (GB)"
+          },
+          "unit": "GB",
+          "default": 16,
+          "min": 0.5,
+          "max": 4000
+        },
+        {
+          "name": "hours",
+          "label": {
+            "sw": "Saa / Mwezi",
+            "en": "Hours / Month"
+          },
+          "unit": "h",
+          "default": 730,
+          "min": 1,
+          "max": 8760
+        },
+        {
+          "name": "gb_storage",
+          "label": {
+            "sw": "Storage (GB)",
+            "en": "Storage (GB)"
+          },
+          "unit": "GB",
+          "default": 100,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya serverless lambda cost",
+            "en": "Result: serverless lambda cost"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "gb_ram": 16,
+          "hours": 730,
+          "gb_storage": 100,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_07",
+      "group": "cloud",
+      "name": {
+        "sw": "Cloudfront Bandwidth Cost",
+        "en": "Cloudfront Bandwidth Cost"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Cloudfront Bandwidth Cost",
+        "en": "Cloud Computing: Cloudfront Bandwidth Cost"
+      },
+      "inputs": [
+        {
+          "name": "hours",
+          "label": {
+            "sw": "Saa / Mwezi",
+            "en": "Hours / Month"
+          },
+          "unit": "h",
+          "default": 730,
+          "min": 1,
+          "max": 8760
+        },
+        {
+          "name": "gb_storage",
+          "label": {
+            "sw": "Storage (GB)",
+            "en": "Storage (GB)"
+          },
+          "unit": "GB",
+          "default": 100,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya cloudfront bandwidth cost",
+            "en": "Result: cloudfront bandwidth cost"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "hours": 730,
+          "gb_storage": 100,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_08",
+      "group": "cloud",
+      "name": {
+        "sw": "Rds Storage Cost",
+        "en": "Rds Storage Cost"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Rds Storage Cost",
+        "en": "Cloud Computing: Rds Storage Cost"
+      },
+      "inputs": [
+        {
+          "name": "gb_storage",
+          "label": {
+            "sw": "Storage (GB)",
+            "en": "Storage (GB)"
+          },
+          "unit": "GB",
+          "default": 100,
+          "min": 1,
+          "max": 1000000
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya rds storage cost",
+            "en": "Result: rds storage cost"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "gb_storage": 100,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_09",
+      "group": "cloud",
+      "name": {
+        "sw": "Multi Az Availability",
+        "en": "Multi Az Availability"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Multi Az Availability",
+        "en": "Cloud Computing: Multi Az Availability"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "vcpu",
+          "label": {
+            "sw": "vCPU",
+            "en": "vCPU"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 0.25,
+          "max": 256
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya multi az availability",
+            "en": "Result: multi az availability"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "vcpu": 4
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "cloud_10",
+      "group": "cloud",
+      "name": {
+        "sw": "Tco Onprem Vs Cloud",
+        "en": "Tco Onprem Vs Cloud"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Cloud Computing: Tco Onprem Vs Cloud",
+        "en": "Cloud Computing: Tco Onprem Vs Cloud"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "vcpu",
+          "label": {
+            "sw": "vCPU",
+            "en": "vCPU"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 0.25,
+          "max": 256
+        },
+        {
+          "name": "gb_ram",
+          "label": {
+            "sw": "RAM (GB)",
+            "en": "RAM (GB)"
+          },
+          "unit": "GB",
+          "default": 16,
+          "min": 0.5,
+          "max": 4000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya tco onprem vs cloud",
+            "en": "Result: tco onprem vs cloud"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 20"
+        ],
+        "en": [
+          "KUNDI 20"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "vcpu": 4,
+          "gb_ram": 16
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

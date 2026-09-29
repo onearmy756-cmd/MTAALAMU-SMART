@@ -1,0 +1,1947 @@
+{
+  "group": {
+    "id": "propagation",
+    "code": "KUNDI 3",
+    "label": {
+      "sw": "Kundi 03: Uenezi wa Mawasiliano",
+      "en": "Group 03: Propagation"
+    }
+  },
+  "formulas": [
+    {
+      "id": "propagation_01",
+      "group": "propagation",
+      "name": {
+        "sw": "Free Space Path Loss",
+        "en": "Free Space Path Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Free Space Path Loss",
+        "en": "Propagation: Free Space Path Loss"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya free space path loss",
+            "en": "Result: free space path loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_GHz": 2.1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_02",
+      "group": "propagation",
+      "name": {
+        "sw": "Two Ray Ground Reflection",
+        "en": "Two Ray Ground Reflection"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Two Ray Ground Reflection",
+        "en": "Propagation: Two Ray Ground Reflection"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya two ray ground reflection",
+            "en": "Result: two ray ground reflection"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_GHz": 2.1,
+          "d_km": 5
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_03",
+      "group": "propagation",
+      "name": {
+        "sw": "Okumura Hata",
+        "en": "Okumura Hata"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Okumura Hata",
+        "en": "Propagation: Okumura Hata"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya okumura hata",
+            "en": "Result: okumura hata"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "f_GHz": 2.1,
+          "d_km": 5,
+          "h_tx": 50
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_04",
+      "group": "propagation",
+      "name": {
+        "sw": "Cost 231 Hata",
+        "en": "Cost 231 Hata"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Cost 231 Hata",
+        "en": "Propagation: Cost 231 Hata"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        },
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya cost 231 hata",
+            "en": "Result: cost 231 hata"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "f_GHz": 2.1,
+          "d_km": 5,
+          "h_tx": 50,
+          "h_rx": 5
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_05",
+      "group": "propagation",
+      "name": {
+        "sw": "Walfisch Ikegami",
+        "en": "Walfisch Ikegami"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Walfisch Ikegami",
+        "en": "Propagation: Walfisch Ikegami"
+      },
+      "inputs": [
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        },
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya walfisch ikegami",
+            "en": "Result: walfisch ikegami"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "f_GHz": 2.1,
+          "d_km": 5,
+          "h_tx": 50,
+          "h_rx": 5,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_06",
+      "group": "propagation",
+      "name": {
+        "sw": "Longley Rice",
+        "en": "Longley Rice"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Longley Rice",
+        "en": "Propagation: Longley Rice"
+      },
+      "inputs": [
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        },
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya longley rice",
+            "en": "Result: longley rice"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "d_km": 5,
+          "h_tx": 50,
+          "h_rx": 5,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_07",
+      "group": "propagation",
+      "name": {
+        "sw": "Knife Edge Diffraction",
+        "en": "Knife Edge Diffraction"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Knife Edge Diffraction",
+        "en": "Propagation: Knife Edge Diffraction"
+      },
+      "inputs": [
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        },
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya knife edge diffraction",
+            "en": "Result: knife edge diffraction"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "h_tx": 50,
+          "h_rx": 5,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_08",
+      "group": "propagation",
+      "name": {
+        "sw": "Rain Fade Margin",
+        "en": "Rain Fade Margin"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Rain Fade Margin",
+        "en": "Propagation: Rain Fade Margin"
+      },
+      "inputs": [
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya rain fade margin",
+            "en": "Result: rain fade margin"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "h_rx": 5,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_09",
+      "group": "propagation",
+      "name": {
+        "sw": "Vegetation Loss",
+        "en": "Vegetation Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Vegetation Loss",
+        "en": "Propagation: Vegetation Loss"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya vegetation loss",
+            "en": "Result: vegetation loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_GHz": 2.1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_10",
+      "group": "propagation",
+      "name": {
+        "sw": "Building Penetration",
+        "en": "Building Penetration"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Building Penetration",
+        "en": "Propagation: Building Penetration"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya building penetration",
+            "en": "Result: building penetration"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "f_GHz": 2.1,
+          "d_km": 5
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_11",
+      "group": "propagation",
+      "name": {
+        "sw": "Foliage Loss",
+        "en": "Foliage Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Foliage Loss",
+        "en": "Propagation: Foliage Loss"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya foliage loss",
+            "en": "Result: foliage loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "f_GHz": 2.1,
+          "d_km": 5,
+          "h_tx": 50
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_12",
+      "group": "propagation",
+      "name": {
+        "sw": "Urban Macro Loss",
+        "en": "Urban Macro Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Urban Macro Loss",
+        "en": "Propagation: Urban Macro Loss"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        },
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya urban macro loss",
+            "en": "Result: urban macro loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "f_GHz": 2.1,
+          "d_km": 5,
+          "h_tx": 50,
+          "h_rx": 5
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_13",
+      "group": "propagation",
+      "name": {
+        "sw": "Suburban Path Loss",
+        "en": "Suburban Path Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Suburban Path Loss",
+        "en": "Propagation: Suburban Path Loss"
+      },
+      "inputs": [
+        {
+          "name": "f_GHz",
+          "label": {
+            "sw": "Frequency (GHz)",
+            "en": "Frequency (GHz)"
+          },
+          "unit": "GHz",
+          "default": 2.1,
+          "min": 0.01,
+          "max": 100
+        },
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        },
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya suburban path loss",
+            "en": "Result: suburban path loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "f_GHz": 2.1,
+          "d_km": 5,
+          "h_tx": 50,
+          "h_rx": 5,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_14",
+      "group": "propagation",
+      "name": {
+        "sw": "Rural Area Loss",
+        "en": "Rural Area Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Rural Area Loss",
+        "en": "Propagation: Rural Area Loss"
+      },
+      "inputs": [
+        {
+          "name": "d_km",
+          "label": {
+            "sw": "Distance (km)",
+            "en": "Distance (km)"
+          },
+          "unit": "km",
+          "default": 5,
+          "min": 0.001,
+          "max": 1000
+        },
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        },
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya rural area loss",
+            "en": "Result: rural area loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "d_km": 5,
+          "h_tx": 50,
+          "h_rx": 5,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "propagation_15",
+      "group": "propagation",
+      "name": {
+        "sw": "Indoor Path Loss",
+        "en": "Indoor Path Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Uenezi wa Mawasiliano: Indoor Path Loss",
+        "en": "Propagation: Indoor Path Loss"
+      },
+      "inputs": [
+        {
+          "name": "h_tx",
+          "label": {
+            "sw": "Tx Height (m)",
+            "en": "Tx Height"
+          },
+          "unit": "m",
+          "default": 50,
+          "min": 1,
+          "max": 500
+        },
+        {
+          "name": "h_rx",
+          "label": {
+            "sw": "Rx Height (m)",
+            "en": "Rx Height"
+          },
+          "unit": "m",
+          "default": 5,
+          "min": 1,
+          "max": 300
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya indoor path loss",
+            "en": "Result: indoor path loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 3"
+        ],
+        "en": [
+          "KUNDI 3"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "h_tx": 50,
+          "h_rx": 5,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+/* ============================================================
+   shiny.css — marekebisho madogo ya vitu vya Shiny/Bootstrap
+   ili zilingane kabisa na mwonekano wa dashboard.css (wa React)
+   ============================================================ */
+
+/* --- uchaguzi wa lugha (hud-header) --- */
+.hud-pills {
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 6px;
+}
+.lang-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  background: rgba(0, 20, 30, 0.75);
+  padding: 3px 8px;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.lang-box .lang-flag { font-size: 13px; }
+.lang-box .shiny-input-container {
+  width: auto !important;
+  margin-bottom: 0 !important;
+  height: auto !important;
+}
+.lang-box select,
+.lang-box .selectize-input {
+  background: rgba(0, 30, 48, 0.95) !important;
+  color: var(--cyan) !important;
+  border: none !important;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  letter-spacing: 1px;
+  padding: 3px 4px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  box-shadow: none !important;
+  outline: none;
+  cursor: pointer;
+  overflow: visible;
+  width: auto;
+}
+.lang-box select:focus,
+.lang-box .selectize-input:focus { box-shadow: none !important; border: none !important; }
+.lang-box .selectize-input input { color: var(--cyan); }
+.lang-box .selectize-dropdown { background: #04121a; color: var(--text); }
+
+/* --- container za input za Shiny --- */
+.shiny-input-container {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.shiny-input-container .control-label { display: none; }
+
+/* --- input za nambari / text ndani ya panel --- */
+.field input[type="number"],
+.field input[type="text"],
+.field select,
+.form-control {
+  background: rgba(0, 30, 48, 0.9);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  box-shadow: none;
+  border-radius: 0;
+}
+.field input:focus,
+.field select:focus,
+.form-control:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+  outline: none;
+}
+select.form-control option { background: #04121a; color: var(--text); }
+
+/* --- checkbox za input (haitumiki lakini iwe safe) --- */
+.checkbox input[type="checkbox"],
+.radio input[type="radio"] { accent-color: var(--cyan); }
+
+/* --- container-fluid ya Shiny isifinyange dashboard --- */
+.container-fluid { padding: 0 !important; max-width: 100% !important; }
+
+/* --- mwonekano wa tab ---
+   (kitufe cha tab ni button ya kawaida kama React) --- */
+.tabs .tab { font-weight: 400; }
+.tabs .tab.active { font-weight: 700; }
+
+/* ============================================================
+   RAMANI (MAP) — panel, vidhibiti, mwelekeo mweusi wa Leaflet
+   ============================================================ */
+.map-wrap { display: flex; flex-direction: column; gap: 12px; }
+
+.map-bar {
+  display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start;
+  background: rgba(6, 18, 28, .85);
+  border: 1px solid rgba(0, 229, 255, .18);
+  padding: 10px 12px;
+}
+.map-ctl { flex: 1 1 250px; min-width: 230px; }
+.map-ctl > label {
+  display: block; font-size: 11px; letter-spacing: .14em;
+  color: var(--cyan); font-weight: 700; margin-bottom: 6px;
+}
+.map-ctl .shiny-input-container { margin-bottom: 0; width: 100% !important; }
+.map-ctl select {
+  width: 100%; background: #04121a; color: var(--text);
+  border: 1px solid rgba(0, 229, 255, .25);
+  padding: 7px 8px; font-size: 13px; border-radius: 0;
+}
+.map-ctl select:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0, 229, 255, .35); outline: none; }
+.map-ctl select option { background: #04121a; color: var(--text); }
+
+.ov-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 6px 14px; }
+.ov-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text); cursor: pointer; user-select: none;
+}
+.ov-item input[type="checkbox"] { accent-color: var(--cyan); width: 15px; height: 15px; }
+
+.route-row { display: flex; align-items: center; gap: 8px; }
+.route-row .shiny-input-container { flex: 1; margin-bottom: 0; width: auto !important; }
+.route-arrow { color: var(--cyan); font-weight: 700; }
+.map-go {
+  background: var(--cyan); color: #04121a; border: none; padding: 9px 14px;
+  font-weight: 700; font-size: 12px; letter-spacing: .1em; cursor: pointer;
+}
+.map-go:hover { filter: brightness(1.15); }
+.route-info { margin-top: 8px; font-size: 13px; color: #9fb3c8; min-height: 18px; }
+.route-info .mt-src { opacity: .6; font-size: 11px; letter-spacing: .1em; }
+.route-info .mt-err { color: #f87171; }
+.route-info .mt-busy { color: var(--cyan); }
+
+/* --- kichwa cha ramani --- */
+.tzmap {
+  height: 58vh; min-height: 420px; max-height: 720px; width: 100%;
+  border: 1px solid rgba(0, 229, 255, .25); background: #05121b; z-index: 0;
+}
+.leaflet-container { font-family: inherit; background: #05121b; }
+
+.map-under { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; justify-content: space-between; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; font-size: 12.5px; }
+.map-legend .lg { display: inline-flex; align-items: center; gap: 7px; }
+.map-legend i { display: inline-block; }
+.dot-tech, .dot-cust, .dot-job { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #0b1220; }
+.dot-tech { background: #22c55e; }
+.dot-cust { background: #38bdf8; }
+.dot-job  { background: #f59e0b; }
+.lg-scale .scale-bar {
+  width: 90px; height: 12px; border: 1px solid #0b1220;
+  background: linear-gradient(90deg, #fef08a, #fdb24c, #f03b20, #a50f15);
+}
+.lg-hint { color: #8aa2b8; font-style: italic; }
+
+.map-license {
+  flex: 1 1 380px; min-width: 300px;
+  border: 1px dashed rgba(0, 229, 255, .3);
+  background: rgba(6, 18, 28, .6);
+  padding: 10px 12px; font-size: 12px; line-height: 1.6; color: #b9cbdd;
+}
+.ml-title { font-weight: 700; letter-spacing: .12em; color: var(--cyan); font-size: 11.5px; margin-bottom: 6px; }
+.ml-row b { color: var(--text); }
+
+/* --- baraza la maelezo (Leaflet popups) --- */
+.leaflet-popup-content-wrapper {
+  background: #06121d; color: var(--text);
+  border: 1px solid rgba(0, 229, 255, .35); border-radius: 4px;
+}
+.leaflet-popup-content { margin: 10px 12px; font-size: 13px; line-height: 1.5; }
+.leaflet-popup-tip { background: #06121d; border: 1px solid rgba(0, 229, 255, .35); }
+.leaflet-popup-close-button { color: var(--cyan) !important; }
+.mt-pop-h { font-size: 14px; margin-bottom: 2px; }
+.mt-pop-id { font-size: 11.5px; color: #8aa2b8; margin-bottom: 6px; letter-spacing: .06em; }
+.mt-pop-rows > div { display: flex; justify-content: space-between; gap: 16px; padding: 1px 0; }
+.mt-pop-rows span { color: #8aa2b8; }
+.mt-pop .mt-st { color: var(--cyan); }
+.mt-pop-env { margin-top: 6px; font-size: 12px; color: #b9cbdd; }
+.mt-pop-env i { color: #8aa2b8; }
+.leaflet-control-attribution { background: rgba(4, 12, 20, .82) !important; color: #8aa2b8 !important; font-size: 10.5px; }
+.leaflet-control-attribution a { color: var(--cyan) !important; }
+.leaflet-bar a { background: #06121d !important; color: var(--cyan) !important; border-color: rgba(0, 229, 255, .3) !important; }
+.leaflet-bar a:hover { background: #0b1c2b !important; }
+.leaflet-control-layers { background: #06121d !important; color: var(--text) !important; }
+
+@media (max-width: 1100px) {
+  .tzmap { height: 50vh; }
+  .map-bar { flex-direction: column; }
+}
+

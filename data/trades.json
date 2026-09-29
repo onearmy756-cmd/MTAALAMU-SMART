@@ -1,0 +1,1190 @@
+{
+  "version": "1.0.0",
+  "trades": [
+    {
+      "id": "computer",
+      "name_sw": "Kompyuta",
+      "name_en": "Computer",
+      "icon": "💻",
+      "color": "#1976D2",
+      "skills": [
+        {
+          "name": "Kusanidi OS Windows",
+          "formula": "muda = 45 + (num_programs × 5)",
+          "difficulty": 2,
+          "tools": ["Bootable USB", "License key", "Screwdriver set"]
+        },
+        {
+          "name": "Kutoa virus na malware",
+          "formula": "muda = 30 + (files_gb × 2)",
+          "difficulty": 2,
+          "tools": ["Antivirus boot USB", "External HDD"]
+        },
+        {
+          "name": "Kubadilisha RAM",
+          "formula": "muda = 15 + (ram_slots × 3)",
+          "difficulty": 1,
+          "tools": ["Screwdriver (Phillips #0)", "Anti-static wrist strap"]
+        },
+        {
+          "name": "Kubadilisha Hard Disk kwenda SSD",
+          "formula": "muda = 60 + (data_gb × 0.5)",
+          "difficulty": 3,
+          "tools": ["Screwdriver set", "SATA-to-USB adapter", "Cloning software"]
+        },
+        {
+          "name": "Usindikaji wa PSU",
+          "formula": "muda = 40 + (wattage / 100)",
+          "difficulty": 3,
+          "tools": ["Screwdriver set", "Multimeter", "Cable ties"]
+        },
+        {
+          "name": "Kutengeneza fan na cooling",
+          "formula": "muda = 30 + (fans_count × 5)",
+          "difficulty": 2,
+          "tools": ["Screwdriver set", "Compressed air", "Thermal paste"]
+        },
+        {
+          "name": "Network setup (LAN/WiFi)",
+          "formula": "muda = 30 + (devices × 5)",
+          "difficulty": 2,
+          "tools": ["Ethernet cable tester", "Router config access"]
+        },
+        {
+          "name": "Kutatua blue screen (BSOD)",
+          "formula": "muda = 60 + (stop_code_complexity × 15)",
+          "difficulty": 4,
+          "tools": ["Bootable USB", "MemTest86", "Hirens BootCD"]
+        }
+      ],
+      "common_problems": [
+        "Kompyuta haiwaki (no boot)",
+        "Inapolepole sana (slow performance)",
+        "Blue screen (BSOD) mara kwa mara",
+        "Joto kubwa na inazima yenyewe",
+        "Hakuna intaneti (network down)",
+        "Popups na mabadiliko ya browser (virus)"
+      ]
+    },
+    {
+      "id": "simu",
+      "name_sw": "Simu",
+      "name_en": "Phone",
+      "icon": "📱",
+      "color": "#0288D1",
+      "skills": [
+        {
+          "name": "Kubadilisha skrini ya simu",
+          "formula": "muda = 45 + (screen_inches × 3)",
+          "difficulty": 4,
+          "tools": ["Heat gun", "Suction cup", "Screwdriver set (Pentalobe)", "Isopropyl alcohol"]
+        },
+        {
+          "name": "Kubadilisha betri ya simu",
+          "formula": "muda = 30 + (battery_mah / 500)",
+          "difficulty": 3,
+          "tools": ["Plastic pry tool", "Isopropyl alcohol", "Screwdriver set"]
+        },
+        {
+          "name": "Kutoa FRP (Factory Reset Protection)",
+          "formula": "muda = 30 + (lock_level × 10)",
+          "difficulty": 4,
+          "tools": ["FRP unlock tool", "USB cable", "Computer"]
+        },
+        {
+          "name": "Kufuta password / pattern lock",
+          "formula": "muda = 20 + (encryption_level × 5)",
+          "difficulty": 3,
+          "tools": ["ADB tools", "SP Flash Tool (MediaTek)", "USB cable"]
+        },
+        {
+          "name": "Kusindika simu baada ya maji (water damage)",
+          "formula": "muda = 120 + (immersion_min × 5)",
+          "difficulty": 5,
+          "tools": ["Isopropyl alcohol 99%", "Ultrasonic cleaner", "Soldering station", "Multimeter"]
+        }
+      ],
+      "common_problems": [
+        "Skrini imevunjika au haionekani",
+        "Betri haifizi muda (kupungua)",
+        "Simu haijali (charging port)",
+        "Haiwaki kabisa (stuck on logo)",
+        "Kucha / password haifanyi kazi",
+        "Maji yameingia ndani"
+      ]
+    },
+    {
+      "id": "umeme",
+      "name_sw": "Umeme",
+      "name_en": "Electrical",
+      "icon": "⚡",
+      "color": "#FB8C00",
+      "skills": [
+        {
+          "name": "Ukubwa wa cable (voltage drop)",
+          "formula": "vd = (M × L × I × rho) / A",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Clamp ammeter", "Cable stripper", "Screwdriver set"]
+        },
+        {
+          "name": "Chagua breaker sahihi",
+          "formula": "ib = (P / (V × pf)) × 1.25",
+          "difficulty": 2,
+          "tools": ["Multimeter", "Insulated screwdriver", "Breaker sizing chart"]
+        },
+        {
+          "name": "Usindi wa switch/socket",
+          "formula": "muda = 20 + (units × 5)",
+          "difficulty": 2,
+          "tools": ["Test pen", "Insulated screwdriver", "Plier", "Cable stripper"]
+        },
+        {
+          "name": "Kutatua short circuit",
+          "formula": "muda = 60 + (circuit_count × 10)",
+          "difficulty": 4,
+          "tools": ["Multimeter", "Continuity tester", "Insulation tape", "Cable tracer"]
+        },
+        {
+          "name": "Usindi wa RCD (earth leakage)",
+          "formula": "muda = 45 + (subcircuits × 5)",
+          "difficulty": 3,
+          "tools": ["RCD tester", "Insulated screwdriver", "Multimeter"]
+        },
+        {
+          "name": "Usalama wa umeme - ukaguzi",
+          "formula": "muda = 30 + (rooms × 5)",
+          "difficulty": 3,
+          "tools": ["Megger (earth resistance)", "Multimeter", "Socket tester"]
+        },
+        {
+          "name": "Usindi wa distribution box",
+          "formula": "muda = 90 + (breakers × 5)",
+          "difficulty": 4,
+          "tools": ["Insulated screwdriver set", "Cable stripper", "Label maker", "Multimeter"]
+        },
+        {
+          "name": "Kupima uwezo wa transformer",
+          "formula": "kva = (V × I × 1.732) / 1000",
+          "difficulty": 4,
+          "tools": ["Clamp ammeter", "Multimeter", "Thermal camera"]
+        }
+      ],
+      "common_problems": [
+        "Breaker inarudi kila mara",
+        "Hakuna umeme kwa sehemu fulani",
+        "Sparks na mulanga kwenye sockets",
+        "Nyudu ya umeme (shock)",
+        "Taa zinawaka-waka (flickering)",
+        "Gesi ya umeme inatoka (buzzing)"
+      ]
+    },
+    {
+      "id": "maji",
+      "name_sw": "Maji",
+      "name_en": "Water / Plumbing",
+      "icon": "💧",
+      "color": "#039BE5",
+      "skills": [
+        {
+          "name": "Mtiririko wa maji kwenye bomu",
+          "formula": "q = pi × pow(d / 2000, 2) × v × 1000",
+          "difficulty": 2,
+          "tools": ["Pipe cutter", "Adjustable wrench", "Teflon tape", "Pressure gauge"]
+        },
+        {
+          "name": "Kichwa cha pampu (TDH)",
+          "formula": "tdh = Hs + Hf + Hp",
+          "difficulty": 3,
+          "tools": ["Pressure gauge", "Flow meter", "Pipe wrench"]
+        },
+        {
+          "name": "Kutatua uvujo wa bomu",
+          "formula": "muda = 45 + (pipe_diameter_mm × 0.2)",
+          "difficulty": 3,
+          "tools": ["Pipe wrench", "Hacksaw", "Plumber's putty", "PTFE tape"]
+        },
+        {
+          "name": "Usindi wa sink na toilet",
+          "formula": "muda = 60 + (fixtures × 15)",
+          "difficulty": 3,
+          "tools": ["Plunger", "Toilet auger", "Adjustable wrench", "Sealant gun"]
+        },
+        {
+          "name": "Kusafisha sewer / drain blockage",
+          "formula": "muda = 30 + (blockage_meters × 10)",
+          "difficulty": 2,
+          "tools": ["Drain snake (auger)", "High pressure water jet", "Gloves"]
+        },
+        {
+          "name": "Upanuzi wa dharura ya heater",
+          "formula": "muda = 60 + (kw × 10)",
+          "difficulty": 3,
+          "tools": ["Adjustable wrench", "Multimeter", "Heater element tester"]
+        },
+        {
+          "name": "Usindi wa tanki la maji",
+          "formula": "muda = 90 + (liters / 100)",
+          "difficulty": 3,
+          "tools": ["Pipe wrench", "Teflon tape", "Level tool", "Float valve"]
+        },
+        {
+          "name": "Shinikizo la maji - testing",
+          "formula": "bar_test = pressure_min + (elevation × 0.1)",
+          "difficulty": 2,
+          "tools": ["Pressure gauge", "Stop watch", "Bucket (known volume)"]
+        }
+      ],
+      "common_problems": [
+        "Maji yana uvujo kwenye bomu",
+        "Shinikizo la maji ni duni sana",
+        "Toilet haijazi (inakataa)",
+        "Drain imetungwa (hakuna mtiririko)",
+        "Heater haitoi maji ya moto",
+        "Maji yana uchafu na rangi ya chuma"
+      ]
+    },
+    {
+      "id": "gari",
+      "name_sw": "Gari",
+      "name_en": "Car / Mechanic",
+      "icon": "🚗",
+      "color": "#43A047",
+      "skills": [
+        {
+          "name": "Kubadilisha mafuta ya injini",
+          "formula": "muda = 30 + (liters × 2)",
+          "difficulty": 1,
+          "tools": ["Oil filter wrench", "Drain pan", "Jack + stands", "Funnel"]
+        },
+        {
+          "name": "Kugundua tatizo la kupumua (diagnosis)",
+          "formula": "muda = 60 + (symptoms_count × 10)",
+          "difficulty": 4,
+          "tools": ["OBD-II scanner", "Multimeter", "Compression tester", "Stethoscope"]
+        },
+        {
+          "name": "Kubadilisha brake pads",
+          "formula": "muda = 45 + (wheels_count × 10)",
+          "difficulty": 2,
+          "tools": ["Jack + stands", "Lug wrench", "C-clamp", "Torque wrench"]
+        },
+        {
+          "name": "Engine tune-up (candles + filters)",
+          "formula": "muda = 90 + (cylinders × 5)",
+          "difficulty": 3,
+          "tools": ["Spark plug socket", "Feeler gauge", "Screwdriver set", "Compressed air"]
+        },
+        {
+          "name": "Kubadilisha tyre na balance",
+          "formula": "muda = 20 + (tyres × 10)",
+          "difficulty": 2,
+          "tools": ["Tyre machine", "Wheel balancer", "Torque wrench", "Jack"]
+        },
+        {
+          "name": "Kutatua overheating",
+          "formula": "muda = 60 + (temp_delta × 0.5)",
+          "difficulty": 4,
+          "tools": ["Coolant pressure tester", "Drain pan", "Thermometer", "Hose clamps"]
+        },
+        {
+          "name": "Kubadilisha clutch assembly",
+          "formula": "muda = 240 + (engine_cc / 10)",
+          "difficulty": 5,
+          "tools": ["Engine hoist / Jack", "Clutch alignment tool", "Torque wrench", "Spanner set"]
+        },
+        {
+          "name": "Transmission (gearbox) diagnosis",
+          "formula": "muda = 120 + (gears_count × 10)",
+          "difficulty": 5,
+          "tools": ["Transmission jack", "Dial indicator", "Torque wrench", "Feeler gauge"]
+        },
+        {
+          "name": "Kubadilisha starter na alternator",
+          "formula": "muda = 60 + (engine_cylinders × 5)",
+          "difficulty": 3,
+          "tools": ["Spanner set", "Multimeter", "Jack + stands", "Battery tester"]
+        },
+        {
+          "name": "Suspension (shock absorber) badilisha",
+          "formula": "muda = 60 + (axles_count × 20)",
+          "difficulty": 4,
+          "tools": ["Spring compressor", "Torque wrench", "Spanner set", "Jack + stands"]
+        }
+      ],
+      "common_problems": [
+        "Gari haianzi kabisa",
+        "Moshi mweusi/mweupe/bluu unaondoka",
+        "Joto kubwa sana (overheating)",
+        "Sauti za chuma kwa engine",
+        "Check engine light inaandaa",
+        "Brake hazina nguvu / inatoa sauti"
+      ]
+    },
+    {
+      "id": "hvac",
+      "name_sw": "AC / Jokofu",
+      "name_en": "AC / HVAC",
+      "icon": "❄️",
+      "color": "#26A69A",
+      "skills": [
+        {
+          "name": "Ukubwa wa AC (BTU to TZS)",
+          "formula": "btu = room_area_sqm × 500; price_tzs = btu × 700",
+          "difficulty": 2,
+          "tools": ["Tape measure", "Thermometer", "BTU calculator"]
+        },
+        {
+          "name": "Usindi wa AC split unit",
+          "formula": "muda = 120 + (btu / 2000)",
+          "difficulty": 3,
+          "tools": ["Manifold gauge", "Vacuum pump", "Torque wrench", "Level tool", "Drill"]
+        },
+        {
+          "name": "Kugeuza freon (gas recharge)",
+          "formula": "muda = 45 + (btu / 3000)",
+          "difficulty": 3,
+          "tools": ["Manifold gauge", "R410A/R32 gas cylinder", "Leak detector"]
+        },
+        {
+          "name": "Kusafisha coil na filter",
+          "formula": "muda = 30 + (indoor_units × 15)",
+          "difficulty": 1,
+          "tools": ["Spray bottle (coil cleaner)", "Water hose", "Brush", "Screwdriver"]
+        },
+        {
+          "name": "Kutatua tatizo la haitoi baridi",
+          "formula": "muda = 60 + (error_code_complexity × 10)",
+          "difficulty": 4,
+          "tools": ["Manifold gauge", "Multimeter", "Thermometer", "Leak detector"]
+        },
+        {
+          "name": "Ukarabati wa kompressor",
+          "formula": "muda = 180 + (hp × 30)",
+          "difficulty": 5,
+          "tools": ["Manifold gauge", "Vacuum pump", "Torque wrench", "Capacitor tester"]
+        },
+        {
+          "name": "Duct cleaning (central AC)",
+          "formula": "muda = 60 + (ducts_m × 3)",
+          "difficulty": 2,
+          "tools": ["Vacuum (HEPA)", "Duct brush", "Air compressor"]
+        },
+        {
+          "name": "Thermostat usindi na setting",
+          "formula": "muda = 30 + (zones × 10)",
+          "difficulty": 2,
+          "tools": ["Screwdriver", "Level tool", "Multimeter"]
+        },
+        {
+          "name": "Kupima uwezo wa fan blower",
+          "formula": "cfm = (rpm × fan_diameter_in × pi) / 60",
+          "difficulty": 3,
+          "tools": ["Anemometer", "Tachometer", "Multimeter"]
+        },
+        {
+          "name": "Kutatua sauti kubwa kwa AC",
+          "formula": "muda = 45 + (db_level × 0.5)",
+          "difficulty": 3,
+          "tools": ["Screwdriver", "Rubber dampers", "Level tool", "Wrench set"]
+        }
+      ],
+      "common_problems": [
+        "AC haitoi baridi kabisa",
+        "Inatoa sauti kubwa / isiyo ya kawaida",
+        "Maji yanatoka kando (leak)",
+        "Haiwaki / remote haifanyi kazi",
+        "Inaandaa error code kwa display",
+        "Inakupita hivi karibuni baada ya kuanza"
+      ]
+    },
+    {
+      "id": "cctv",
+      "name_sw": "CCTV",
+      "name_en": "CCTV Cameras",
+      "icon": "📹",
+      "color": "#8E24AA",
+      "skills": [
+        {
+          "name": "Kujenga mtandao wa CCTV",
+          "formula": "muda = 60 + (cameras × 20)",
+          "difficulty": 3,
+          "tools": ["Ethernet crimper", "Cable tester", "Drill + bits", "Fish tape", "Ladder"]
+        },
+        {
+          "name": "Storage (HDD) kuhesabu",
+          "formula": "gb_day = (cams × bitrate_mbps × 86400) / (8 × 1000)",
+          "difficulty": 2,
+          "tools": ["NVR/Software", "HDD calculator", "Storage calculator"]
+        },
+        {
+          "name": "Usindi wa kamera na angle",
+          "formula": "muda = 30 + (cameras × 15)",
+          "difficulty": 2,
+          "tools": ["Drill", "Ladder", "Screwdriver", "Cable clips", "Tester monitor"]
+        },
+        {
+          "name": "Remote viewing setup (app)",
+          "formula": "muda = 30 + (remote_devices × 5)",
+          "difficulty": 2,
+          "tools": ["Router access", "Phone/tablet", "NVR credentials"]
+        },
+        {
+          "name": "Kutatua camera haifiki mtandao",
+          "formula": "muda = 45 + (offline_cams × 10)",
+          "difficulty": 3,
+          "tools": ["Cable tester", "Multimeter", "PoE tester", "IP scanner tool"]
+        }
+      ],
+      "common_problems": [
+        "Kamera haionekani kwenye NVR",
+        "Picha ni bluu / giza",
+        "Hakuna storage / hakuna recording",
+        "Kamera inatoka offline mara kwa mara",
+        "Remote viewing haifanyi kazi",
+        "Sauti haitaki / ni duni"
+      ]
+    },
+    {
+      "id": "solar",
+      "name_sw": "Solar",
+      "name_en": "Solar Power",
+      "icon": "☀️",
+      "color": "#FDD835",
+      "skills": [
+        {
+          "name": "Ukubwa wa Panel (Wp)",
+          "formula": "array_w = Load_Wh / (PSH × eta)",
+          "difficulty": 3,
+          "tools": ["Solarimeter", "Tape measure", "Level tool", "Multimeter"]
+        },
+        {
+          "name": "Ukubwa wa Betri (Ah)",
+          "formula": "ah = (Load × Days) / (DoD × V_batt × eta)",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Hydrometer", "Battery tester"]
+        },
+        {
+          "name": "Usindi wa solar panel + inverter",
+          "formula": "muda = 180 + (panels × 20)",
+          "difficulty": 4,
+          "tools": ["Drill", "Socket set", "Wire stripper", "MC4 crimping tool", "Multimeter"]
+        },
+        {
+          "name": "Ukaguzi wa betri (load test)",
+          "formula": "muda = 45 + (batteries × 10)",
+          "difficulty": 2,
+          "tools": ["Load tester", "Multimeter", "Hydrometer"]
+        },
+        {
+          "name": "MPPT charge controller usindi",
+          "formula": "muda = 60 + (panels × 5)",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Wire stripper", "Crimping tool", "Cable lugs"]
+        },
+        {
+          "name": "Kutatua inverter haijaweza kuweka umeme",
+          "formula": "muda = 60 + (kw_rating × 5)",
+          "difficulty": 4,
+          "tools": ["Multimeter", "Oscilloscope", "Inverter manual", "Clamp ammeter"]
+        },
+        {
+          "name": "Kusafisha panels na ukaguzi wa uwezo",
+          "formula": "muda = 30 + (panels × 3)",
+          "difficulty": 1,
+          "tools": ["Soft brush", "Water hose", "Microfiber cloth", "Solarimeter"]
+        }
+      ],
+      "common_problems": [
+        "Inverter haitoi umeme",
+        "Betri haichaji (kwa jua)",
+        "Muda wa umeme ni mfupi mno",
+        "Hakuna charging wakati wa mchana",
+        "Panels yanaonekana kuwa na uchafu",
+        "Inverter kina error code"
+      ]
+    },
+    {
+      "id": "useremala",
+      "name_sw": "Useremala",
+      "name_en": "Upholstery / Furniture",
+      "icon": "🪑",
+      "color": "#8D6E63",
+      "skills": [
+        {
+          "name": "Kutengeneza kiti cha sofa",
+          "formula": "muda = 240 + (seaters × 60)",
+          "difficulty": 3,
+          "tools": ["Staple gun", "Upholstery needle", "Hammer", "Scissors", "Screwdriver"]
+        },
+        {
+          "name": "Kubadilisha vifaa vya foam",
+          "formula": "muda = 60 + (cushions × 15)",
+          "difficulty": 2,
+          "tools": ["Foam cutter", "Scissors", "Spray adhesive", "Measuring tape"]
+        },
+        {
+          "name": "Kubadilisha spring za kiti",
+          "formula": "muda = 90 + (spring_units × 10)",
+          "difficulty": 3,
+          "tools": ["Spring pliers", "Hammer", "Upholstery clips", "Screwdriver"]
+        },
+        {
+          "name": "Kutatua frame ya kuni",
+          "formula": "muda = 60 + (joints_broken × 20)",
+          "difficulty": 3,
+          "tools": ["Wood glue", "Clamps", "Screwdriver set", "Sand paper"]
+        },
+        {
+          "name": "Ukarabati wa armrest",
+          "formula": "muda = 45 + (armrests × 20)",
+          "difficulty": 2,
+          "tools": ["Staple gun", "Screwdriver", "Scissors", "Glue"]
+        },
+        {
+          "name": "Bed frame assembly",
+          "formula": "muda = 30 + (drawers × 10)",
+          "difficulty": 1,
+          "tools": ["Allen key set", "Screwdriver", "Mallet"]
+        },
+        {
+          "name": "Carpet / curtain ufungaji",
+          "formula": "muda = 30 + (sqm × 2)",
+          "difficulty": 1,
+          "tools": ["Carpet tucker", "Knee kicker", "Staple gun", "Tape measure"]
+        },
+        {
+          "name": "Re-upholstery - kuzalisha upya",
+          "formula": "muda = 360 + (pieces × 60)",
+          "difficulty": 4,
+          "tools": ["Staple remover", "Upholstery needles", "Fabric scissors", "Sewing machine"]
+        }
+      ],
+      "common_problems": [
+        "Sofa inagongana (imepoteza umbo)",
+        "Kiti kina mawazo / foam limepoteza",
+        "Frame ya kuni imevunjika",
+        "Armrest imeraruka",
+        "Kiti cha kitanda (bed) haina usalama",
+        "Spring za kiti zina sauti"
+      ]
+    },
+    {
+      "id": "ujenzi",
+      "name_sw": "Ujenzi",
+      "name_en": "Construction",
+      "icon": "🏗️",
+      "color": "#5D4037",
+      "skills": [
+        {
+          "name": "Makadirio ya madenga (blocks)",
+          "formula": "blocks = ceil((WallL × WallH) / (BL × BH) × (1 + waste/100))",
+          "difficulty": 2,
+          "tools": ["Tape measure", "Calculator", "Plans/map"]
+        },
+        {
+          "name": "Mchanganyiko wa saruji (concrete)",
+          "formula": "cement_bags = ceil(L × W × T × 7 × ratio)",
+          "difficulty": 3,
+          "tools": ["Tape measure", "Trowel", "Spirit level", "Wheelbarrow"]
+        },
+        {
+          "name": "Ukaguzi wa ukubwa wa msingi (foundation)",
+          "formula": "muda = 60 + (area_sqm × 0.5)",
+          "difficulty": 3,
+          "tools": ["Spirit level", "Tape measure", "Plumb bob", "Surveyor's level"]
+        },
+        {
+          "name": "Kujenga ukuta (block laying)",
+          "formula": "muda = 60 + (blocks × 1.5)",
+          "difficulty": 3,
+          "tools": ["Trowel", "Spirit level", "Mortar board", "Tape measure"]
+        },
+        {
+          "name": "Kupima kimo cha sakafu (floor)",
+          "formula": "muda = 60 + (sqm × 1.5)",
+          "difficulty": 3,
+          "tools": ["Concrete mixer", "Trowel", "Spirit level", "Tamper"]
+        },
+        {
+          "name": "Kujenga stair (ngazi)",
+          "formula": "muda = 180 + (steps × 15)",
+          "difficulty": 4,
+          "tools": ["Tape measure", "Spirit level", "Trowel", "Rebar bender"]
+        },
+        {
+          "name": "Tiles ufungaji (floor)",
+          "formula": "muda = 45 + (sqm × 2)",
+          "difficulty": 2,
+          "tools": ["Tile cutter", "Notched trowel", "Spirit level", "Tile spacers", "Grout float"]
+        },
+        {
+          "name": "Usalama - ukaguzi wa scaffolding",
+          "formula": "muda = 30 + (height_m × 3)",
+          "difficulty": 3,
+          "tools": ["Spanner set", "Level tool", "Inspection checklist", "Tape measure"]
+        },
+        {
+          "name": "Usindi wa window na door",
+          "formula": "muda = 45 + (units × 10)",
+          "difficulty": 2,
+          "tools": ["Drill", "Spirit level", "Screwdriver", "Shims", "Caulking gun"]
+        },
+        {
+          "name": "Kupima uwezo wa lami (beams)",
+          "formula": "load_capacity = (width_m × depth_pow2 × steel_ratio) / 100",
+          "difficulty": 5,
+          "tools": ["Rebar scanner", "Ultrasonic tester", "Charts", "Calculator"]
+        }
+      ],
+      "common_problems": [
+        "Ukuta una mawazo (cracks)",
+        "Sakafu haina usawa",
+        "Madenge yana kuvuja (water seepage)",
+        "Mlango/windo haifungui vizuri",
+        "Saruji inapasuka (cracking)",
+        "Beam inaonekana kuwa imepoteza nguvu"
+      ]
+    },
+    {
+      "id": "rangi",
+      "name_sw": "Rangi",
+      "name_en": "Painting",
+      "icon": "🎨",
+      "color": "#EC407A",
+      "skills": [
+        {
+          "name": "Makadirio ya rangi",
+          "formula": "liters = ceil((Area_sqm / Coverage_sqm_per_L) × coats)",
+          "difficulty": 1,
+          "tools": ["Tape measure", "Calculator", "Color chart"]
+        },
+        {
+          "name": "Kusanduku na kuzalisha upya (sand + primer)",
+          "formula": "muda = 30 + (sqm × 0.5)",
+          "difficulty": 2,
+          "tools": ["Sandpaper", "Sanding block", "Putty knife", "Primer brush"]
+        },
+        {
+          "name": "Ukuta wa nje (exterior) kuchora",
+          "formula": "muda = 45 + (sqm × 0.8)",
+          "difficulty": 3,
+          "tools": ["Paint roller", "Extension pole", "Paint brush", "Drop cloths", "Ladder"]
+        },
+        {
+          "name": "Ukuta wa ndani (interior) kuchora",
+          "formula": "muda = 30 + (sqm × 0.6)",
+          "difficulty": 2,
+          "tools": ["Paint roller + tray", "Cut-in brush", "Painter's tape", "Drop cloths"]
+        },
+        {
+          "name": "Sakafu na ceiling kuchora",
+          "formula": "muda = 30 + (sqm × 0.5)",
+          "difficulty": 2,
+          "tools": ["Long handle roller", "Stepladder", "Drop cloths", "Paint tray"]
+        }
+      ],
+      "common_problems": [
+        "Rangi inayotoa (peeling)",
+        "Rangi iko na madoa (stains)",
+        "Mabadiliko ya rangi kwa ukuta",
+        "Ukuta una mawazo na uharibifu",
+        "Mvua inafanya ukota uongee (damp)",
+        "Rangi ya zamani ni duni mno"
+      ]
+    },
+    {
+      "id": "welding",
+      "name_sw": "Welding",
+      "name_en": "Welding / Kuunganya",
+      "icon": "🔥",
+      "color": "#D84315",
+      "skills": [
+        {
+          "name": "Kuunganya chuma (MIG/MMA)",
+          "formula": "muda = 20 + (weld_length_cm × 0.5)",
+          "difficulty": 3,
+          "tools": ["Welding machine", "Electrode/Hose", "Clamps", "Welding helmet", "Angle grinder"]
+        },
+        {
+          "name": "Kubadilisha vifaa vya chuma (frame)",
+          "formula": "muda = 60 + (joints × 20)",
+          "difficulty": 3,
+          "tools": ["Angle grinder", "Welder", "Hammer", "Chipping hammer", "Measuring tape"]
+        },
+        {
+          "name": "Kutatua chuma kinachomoto",
+          "formula": "muda = 45 + (cracks × 20)",
+          "difficulty": 4,
+          "tools": ["Angle grinder", "Welding machine", "Preheat torch", "Clamps"]
+        },
+        {
+          "name": "Usindi wa gate na mlango",
+          "formula": "muda = 120 + (meters_wide × 30)",
+          "difficulty": 3,
+          "tools": ["Welder", "Angle grinder", "Spirit level", "Tape measure", "Hinges + lock"]
+        },
+        {
+          "name": "Kutengeneza stair handrail",
+          "formula": "muda = 60 + (meters_length × 20)",
+          "difficulty": 2,
+          "tools": ["Angle grinder", "Welder", "Tape measure", "Spirit level"]
+        },
+        {
+          "name": "Cutting (angle grinder + plasma)",
+          "formula": "muda = 15 + (cut_length_cm × 0.3)",
+          "difficulty": 2,
+          "tools": ["Angle grinder", "Plasma cutter", "Clamps", "Measuring tape"]
+        },
+        {
+          "name": "Stainless TIG welding",
+          "formula": "muda = 30 + (weld_cm × 1.5)",
+          "difficulty": 4,
+          "tools": ["TIG welder", "Tungsten electrodes", "Argon gas", "Filler rod"]
+        },
+        {
+          "name": "Window grill usindi",
+          "formula": "muda = 60 + (sqm_window × 15)",
+          "difficulty": 2,
+          "tools": ["Welder", "Angle grinder", "Tape measure", "Squares"]
+        }
+      ],
+      "common_problems": [
+        "Gate haifungi / ina sauti",
+        "Chuma kina makonda (rust)",
+        "Handrail ya stair ni duni",
+        "Window grill imevunjika",
+        "Frame ya mlango ni mbaya",
+        "Kitu kingine cha chuma kimepoteza nguvu"
+      ]
+    },
+    {
+      "id": "pikipiki",
+      "name_sw": "Pikipiki",
+      "name_en": "Motorcycle",
+      "icon": "🏍️",
+      "color": "#546E7A",
+      "skills": [
+        {
+          "name": "Engine tune-up + mafuta",
+          "formula": "muda = 45 + (cc / 20)",
+          "difficulty": 2,
+          "tools": ["Spark plug socket", "Oil filter wrench", "Screwdriver", "Feeler gauge"]
+        },
+        {
+          "name": "Kubadilisha brake pads/disc",
+          "formula": "muda = 30 + (wheels × 10)",
+          "difficulty": 2,
+          "tools": ["Spanner set", "Allen key", "C-clamp", "Torque wrench"]
+        },
+        {
+          "name": "Chain + sprocket badilisha",
+          "formula": "muda = 45 + (cc / 25)",
+          "difficulty": 3,
+          "tools": ["Chain breaker", "Spanner set", "Torque wrench", "Chain alignment tool"]
+        },
+        {
+          "name": "Kutatua haianzi (carburetor)",
+          "formula": "muda = 60 + (cc / 15)",
+          "difficulty": 4,
+          "tools": ["Carb cleaner", "Screwdriver set", "Feeler gauge", "Compression tester"]
+        },
+        {
+          "name": "Kubadilisha tyre na tube",
+          "formula": "muda = 20 + (tyres × 10)",
+          "difficulty": 2,
+          "tools": ["Tyre levers", "Pump", "Bead breaker", "Spanner set"]
+        },
+        {
+          "name": "Kutatua overheating (cooling)",
+          "formula": "muda = 45 + (cc / 20)",
+          "difficulty": 3,
+          "tools": ["Radiator flush kit", "Coolant", "Thermometer", "Spanner"]
+        },
+        {
+          "name": "Battery + electrical wiring",
+          "formula": "muda = 30 + (faults × 10)",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Battery tester", "Screwdriver", "Wire stripper"]
+        },
+        {
+          "name": "Fork suspension ukarabati",
+          "formula": "muda = 60 + (cc / 25)",
+          "difficulty": 4,
+          "tools": ["Fork seal driver", "Spanner set", "Torque wrench", "Fork oil"]
+        }
+      ],
+      "common_problems": [
+        "Pikipiki haianzi kabisa",
+        "Sauti ya injini siyo ya kawaida",
+        "Brake hazina nguvu",
+        "Chain inaruka/imezeeka",
+        "Joto kubwa sana",
+        "Tyre ina uvujo / haina hewa"
+      ]
+    },
+    {
+      "id": "jenereta",
+      "name_sw": "Jenereta",
+      "name_en": "Generator",
+      "icon": "🔋",
+      "color": "#7E57C2",
+      "skills": [
+        {
+          "name": "Ukubwa wa jenereta (kW)",
+          "formula": "kw_needed = (sum_load_w × safety_factor) / 1000",
+          "difficulty": 3,
+          "tools": ["Clamp ammeter", "Multimeter", "Load list", "Calculator"]
+        },
+        {
+          "name": "Engine service (mafuta + filter)",
+          "formula": "muda = 45 + (kva / 5)",
+          "difficulty": 2,
+          "tools": ["Oil filter wrench", "Drain pan", "Fuel filter tool", "Funnel"]
+        },
+        {
+          "name": "Kutatua haijali (carb/fuel)",
+          "formula": "muda = 60 + (kva × 0.5)",
+          "difficulty": 4,
+          "tools": ["Fuel pressure gauge", "Carb cleaner", "Multimeter", "Screwdriver set"]
+        },
+        {
+          "name": "Voltage regulator usindikaji",
+          "formula": "muda = 45 + (kva × 0.3)",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Oscilloscope", "Spanner set", "Screwdriver"]
+        },
+        {
+          "name": "Karatasi ya AVR (Automatic Voltage)",
+          "formula": "muda = 60 + (kva × 0.4)",
+          "difficulty": 4,
+          "tools": ["Multimeter", "Soldering iron", "AVR tester", "Screwdriver"]
+        }
+      ],
+      "common_problems": [
+        "Jenereta haianzi",
+        "Voltage haiko sahihi (sikuzidi)",
+        "Inatoa sauti kubwa / vibration",
+        "Haiwezi kubeba mzigo",
+        "Inatumia mafuta sana",
+        "Inakupita kila muda mdogo"
+      ]
+    },
+    {
+      "id": "gas",
+      "name_sw": "Gesi",
+      "name_en": "Gas Appliance",
+      "icon": "🔥",
+      "color": "#E53935",
+      "skills": [
+        {
+          "name": "Kutatua uvujo wa gesi",
+          "formula": "muda = 30 + (leak_points × 15)",
+          "difficulty": 4,
+          "tools": ["Gas leak detector", "Soap solution", "Wrench set", "PTFE tape"]
+        },
+        {
+          "name": "Kubadilisha pipe za gesi",
+          "formula": "muda = 45 + (meters × 10)",
+          "difficulty": 3,
+          "tools": ["Pipe wrench", "Bender", "Leak detector", "Spanner set"]
+        },
+        {
+          "name": "Ukarabati wa cooker/stove",
+          "formula": "muda = 45 + (burners × 10)",
+          "difficulty": 2,
+          "tools": ["Screwdriver", "Brush", "Multimeter (ignition)", "Soap solution"]
+        },
+        {
+          "name": "Gas geyser ukarabati",
+          "formula": "muda = 60 + (liters_per_min × 5)",
+          "difficulty": 3,
+          "tools": ["Wrench set", "Multimeter", "Leak detector", "Thermometer"]
+        }
+      ],
+      "common_problems": [
+        "Nuno ya gesi inapatikana (uvujo)",
+        "Sindano haina moto wa kutosha",
+        "Geyser haifanya kazi / haijali",
+        "Moto ya gesi ni rangi ya bluu/yanguvua",
+        "Hakuna gesi inayofika kwa sindano",
+        "Gesi ina tumiza kwa wingi mno"
+      ]
+    },
+    {
+      "id": "roofing",
+      "name_sw": "Roofing",
+      "name_en": "Paa / Roofing",
+      "icon": "🏠",
+      "color": "#6D4C41",
+      "skills": [
+        {
+          "name": "Makadirio ya mabati ya paa",
+          "formula": "sheets = ceil((roof_area_sqm × slope_factor) / sheet_cover_sqm)",
+          "difficulty": 2,
+          "tools": ["Tape measure", "Ladder", "Roofing plans", "Calculator"]
+        },
+        {
+          "name": "Ufungaji wa mabati (roofing sheets)",
+          "formula": "muda = 90 + (sheets_count × 5)",
+          "difficulty": 3,
+          "tools": ["Drill + roofing bits", "Screws", "Ladder", "Tape measure", "Safety harness"]
+        },
+        {
+          "name": "Kutatua uvujo wa paa",
+          "formula": "muda = 45 + (leak_areas × 20)",
+          "difficulty": 3,
+          "tools": ["Ladder", "Hammer", "Roofing nails", "Sealant", "Roofing cement"]
+        },
+        {
+          "name": "Ufungaji wa gutters",
+          "formula": "muda = 30 + (meters_length × 3)",
+          "difficulty": 2,
+          "tools": ["Ladder", "Drill", "Brackets", "Gutter sealant", "Hacksaw"]
+        },
+        {
+          "name": "Kutengeneza tiles (roof)",
+          "formula": "muda = 60 + (sqm × 1.5)",
+          "difficulty": 3,
+          "tools": ["Tape measure", "Hammer", "Roofing nails", "Sealant", "Tile cutter"]
+        }
+      ],
+      "common_problems": [
+        "Paa inavuja (maji yanakuja ndani)",
+        "Mabati yamepoteza (kuzaliwa na mvua)",
+        "Gutter haitaji maji / imetungwa",
+        "Paa ina sauti ya mpepo (mkuki)",
+        "Vifaa vya paa vimepoteza (ridges)",
+        "Mafuta ya paa yanaonekana"
+      ]
+    },
+    {
+      "id": "pump",
+      "name_sw": "Pampu / Tumbo",
+      "name_en": "Water Pump",
+      "icon": "💦",
+      "color": "#00838F",
+      "skills": [
+        {
+          "name": "Ukubwa wa pampu (TDH + GPM)",
+          "formula": "tdh = static + friction + pressure; power = (9.81 × Q_m3h × tdh) / (3600 × eff)",
+          "difficulty": 3,
+          "tools": ["Flow meter", "Pressure gauge", "Multimeter"]
+        },
+        {
+          "name": "Kutatua pampu haitoi maji",
+          "formula": "muda = 45 + (hp × 10)",
+          "difficulty": 3,
+          "tools": ["Pressure gauge", "Multimeter", "Priming port", "Wrench set"]
+        },
+        {
+          "name": "Kubadilisha seal na impeller",
+          "formula": "muda = 60 + (hp × 15)",
+          "difficulty": 4,
+          "tools": ["Spanner set", "Pump puller", "Seal kit", "Impeller"]
+        },
+        {
+          "name": "Motor electrical ukarabati",
+          "formula": "muda = 45 + (kw_rating × 10)",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Megger", "Bearing puller", "Screwdriver"]
+        },
+        {
+          "name": "Pressure tank ufungaji",
+          "formula": "muda = 45 + (capacity_liters × 0.2)",
+          "difficulty": 2,
+          "tools": ["Wrench set", "PTFE tape", "Pressure gauge"]
+        }
+      ],
+      "common_problems": [
+        "Pampu haitoi maji kabisa",
+        "Shinikizo la maji ni duni",
+        "Pampu inaruka mara kwa mara (short cycle)",
+        "Inatoa sauti kubwa / vibration",
+        "Motor haifanyi kazi (umeme)",
+        "Maji yana uchafu kwenye pampu"
+      ]
+    },
+    {
+      "id": "tailor",
+      "name_sw": "Tailor / Ushonaji",
+      "name_en": "Tailoring",
+      "icon": "🪡",
+      "color": "#F06292",
+      "skills": [
+        {
+          "name": "Kupiga ukubwa (measurements)",
+          "formula": "muda = 10 + (garments × 5)",
+          "difficulty": 1,
+          "tools": ["Measuring tape", "Notepad", "Marking chalk"]
+        },
+        {
+          "name": "Kutunga kaptura / shirt",
+          "formula": "muda = 120 + (embellishments × 20)",
+          "difficulty": 2,
+          "tools": ["Sewing machine", "Scissors", "Pins", "Chalk", "Sewing kit"]
+        },
+        {
+          "name": "Kutunga suit / koti",
+          "formula": "muda = 480 + (details × 30)",
+          "difficulty": 4,
+          "tools": ["Sewing machine", "Steam iron", "Scissors", "Chalk", "Interfacing"]
+        },
+        {
+          "name": "Kubadilisha nguo (alterations)",
+          "formula": "muda = 30 + (changes × 15)",
+          "difficulty": 2,
+          "tools": ["Sewing kit", "Seam ripper", "Chalk", "Iron"]
+        },
+        {
+          "name": "Kutenga nguo ya harusi (wedding)",
+          "formula": "muda = 720 + (layers × 60)",
+          "difficulty": 5,
+          "tools": ["Sewing machine (industrial)", "Fabric scissors", "Lace tools", "Steamer", "Mannequin"]
+        }
+      ],
+      "common_problems": [
+        "Nguo haifai (ndogo/kubwa)",
+        "Zip imeharibika",
+        "Seam imeraruka",
+        "Nguo inahitaji kubadilisha urefu",
+        "Kaptura imepoteza umbo",
+        "Vifaa vya nguo (buttons, hook) zimepoteza"
+      ]
+    },
+    {
+      "id": "appliance",
+      "name_sw": "Vifaa vya Nyumba",
+      "name_en": "Home Appliances",
+      "icon": "🧺",
+      "color": "#3949AB",
+      "skills": [
+        {
+          "name": "Kutatua washing machine haifanyi kazi",
+          "formula": "muda = 60 + (kg_load × 5)",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Screwdriver", "Spanner set", "Inlet valve tester"]
+        },
+        {
+          "name": "Kutatua fridge haitoi baridi",
+          "formula": "muda = 60 + (liters × 0.1)",
+          "difficulty": 4,
+          "tools": ["Multimeter", "Thermometer", "Manifold gauge", "Compressor tester"]
+        },
+        {
+          "name": "Microwave ukarabati",
+          "formula": "muda = 30 + (watts / 100)",
+          "difficulty": 3,
+          "tools": ["Microwave leakage tester", "Multimeter", "Screwdriver", "High voltage probe"]
+        },
+        {
+          "name": "TV ukarabati - haionekani",
+          "formula": "muda = 45 + (inches × 0.5)",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Soldering iron", "LED tester", "Panel removal tools"]
+        }
+      ],
+      "common_problems": [
+        "Washing machine haijali / haikamata",
+        "Fridge haitoi baridi / ina moto",
+        "Microwave haionekani",
+        "TV haionekani skrini",
+        "Iron box haijali",
+        "Vifaa vina sound ya kuuma"
+      ]
+    },
+    {
+      "id": "borehole",
+      "name_sw": "Borehole",
+      "name_en": "Borehole / Shaft",
+      "icon": "🕳️",
+      "color": "#546E7A",
+      "skills": [
+        {
+          "name": "Makadirio ya kina cha kupima",
+          "formula": "depth_est = water_table_m + 10",
+          "difficulty": 3,
+          "tools": ["Geological report", "Water table map", "Surveyor"]
+        },
+        {
+          "name": "Kupima maji kwenye borehole",
+          "formula": "yield_lps = (volume_liters / test_time_s)",
+          "difficulty": 3,
+          "tools": ["Submersible test pump", "Stopwatch", "Flow meter", "Known container"]
+        },
+        {
+          "name": "Usindi wa submersible pump",
+          "formula": "muda = 120 + (depth_m × 1.5)",
+          "difficulty": 4,
+          "tools": ["Pump hoist / crane", "Tapes", "Pipe wrench", "Cable ties", "Multimeter"]
+        },
+        {
+          "name": "Kutatua uvijo wa uvujo wa borehole",
+          "formula": "muda = 60 + (depth_m × 0.5)",
+          "difficulty": 4,
+          "tools": ["Borehole camera", "Pump", "Chlorine", "Test pump"]
+        },
+        {
+          "name": "Casing / screen ukarabati",
+          "formula": "muda = 90 + (depth_m × 0.5)",
+          "difficulty": 5,
+          "tools": ["Borehole camera", "Drill rig", "Casing puller", "Welding"]
+        }
+      ],
+      "common_problems": [
+        "Hakuna maji / yield ni duni",
+        "Maji yana uchafu (mchanga)",
+        "Pampu haipatikani ndani",
+        "Maji yana uchafu wa rangi",
+        "Casing imepoteza / kuvuja",
+        "Shinikizo ya maji ni duni sana"
+      ]
+    },
+    {
+      "id": "gate_motor",
+      "name_sw": "Gate Motor",
+      "name_en": "Gate Motor / Automation",
+      "icon": "🚪",
+      "color": "#2E7D32",
+      "skills": [
+        {
+          "name": "Kupima uwezo wa motor",
+          "formula": "power_nm = weight_kg × width_m × 0.1",
+          "difficulty": 3,
+          "tools": ["Tape measure", "Scale", "Hinge friction tester", "Calculator"]
+        },
+        {
+          "name": "Usindi wa sliding gate motor",
+          "formula": "muda = 180 + (meters_width × 20)",
+          "difficulty": 3,
+          "tools": ["Drill", "Spirit level", "Spanner set", "Welder", "Remote programmer"]
+        },
+        {
+          "name": "Usindi wa swing gate motor",
+          "formula": "muda = 180 + (gate_meters × 25)",
+          "difficulty": 3,
+          "tools": ["Drill", "Spirit level", "Spanner set", "Remote programmer", "Safety beam"]
+        },
+        {
+          "name": "Kutatua motor haifungui",
+          "formula": "muda = 45 + (fault_code_complexity × 10)",
+          "difficulty": 3,
+          "tools": ["Multimeter", "Remote programmer", "Limit adjuster", "Manual"]
+        },
+        {
+          "name": "Access control usindi (intercom)",
+          "formula": "muda = 60 + (readers × 15)",
+          "difficulty": 2,
+          "tools": ["Drill", "Network cable tester", "Multimeter", "Program cable"]
+        }
+      ],
+      "common_problems": [
+        "Gate haifungui / haifungi",
+        "Motor inatoa sauti kubwa",
+        "Remote haifanyi kazi",
+        "Gate inaongesha kidogo tu",
+        "Safety beam hazina utu",
+        "Motor inakupita kila wakati"
+      ]
+    }
+  ]
+}

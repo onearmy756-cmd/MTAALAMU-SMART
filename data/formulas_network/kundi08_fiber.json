@@ -1,0 +1,2592 @@
+{
+  "group": {
+    "id": "fiber",
+    "code": "KUNDI 8",
+    "label": {
+      "sw": "Kundi 08: Fiber Optic",
+      "en": "Group 08: Fiber Optics"
+    }
+  },
+  "formulas": [
+    {
+      "id": "fiber_01",
+      "group": "fiber",
+      "name": {
+        "sw": "Fiber Attenuation Db",
+        "en": "Fiber Attenuation Db"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Fiber Attenuation Db",
+        "en": "Fiber Optics: Fiber Attenuation Db"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya fiber attenuation db",
+            "en": "Result: fiber attenuation db"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_02",
+      "group": "fiber",
+      "name": {
+        "sw": "Chromatic Dispersion",
+        "en": "Chromatic Dispersion"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Chromatic Dispersion",
+        "en": "Fiber Optics: Chromatic Dispersion"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya chromatic dispersion",
+            "en": "Result: chromatic dispersion"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_03",
+      "group": "fiber",
+      "name": {
+        "sw": "Pmd Dispersion",
+        "en": "Pmd Dispersion"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Pmd Dispersion",
+        "en": "Fiber Optics: Pmd Dispersion"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya pmd dispersion",
+            "en": "Result: pmd dispersion"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25,
+          "D_ps": 17
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_04",
+      "group": "fiber",
+      "name": {
+        "sw": "Link Budget Fiber",
+        "en": "Link Budget Fiber"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Link Budget Fiber",
+        "en": "Fiber Optics: Link Budget Fiber"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya link budget fiber",
+            "en": "Result: link budget fiber"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25,
+          "D_ps": 17,
+          "Tx_dBm": 0
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_05",
+      "group": "fiber",
+      "name": {
+        "sw": "Splice Loss Total",
+        "en": "Splice Loss Total"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Splice Loss Total",
+        "en": "Fiber Optics: Splice Loss Total"
+      },
+      "inputs": [
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya splice loss total",
+            "en": "Result: splice loss total"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "L_km": 10,
+          "alpha_db": 0.25,
+          "D_ps": 17,
+          "Tx_dBm": 0,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_06",
+      "group": "fiber",
+      "name": {
+        "sw": "Connector Loss",
+        "en": "Connector Loss"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Connector Loss",
+        "en": "Fiber Optics: Connector Loss"
+      },
+      "inputs": [
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya connector loss",
+            "en": "Result: connector loss"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "alpha_db": 0.25,
+          "D_ps": 17,
+          "Tx_dBm": 0,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_07",
+      "group": "fiber",
+      "name": {
+        "sw": "Fiber Range Max",
+        "en": "Fiber Range Max"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Fiber Range Max",
+        "en": "Fiber Optics: Fiber Range Max"
+      },
+      "inputs": [
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya fiber range max",
+            "en": "Result: fiber range max"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "D_ps": 17,
+          "Tx_dBm": 0,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_08",
+      "group": "fiber",
+      "name": {
+        "sw": "Db Km Cable",
+        "en": "Db Km Cable"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Db Km Cable",
+        "en": "Fiber Optics: Db Km Cable"
+      },
+      "inputs": [
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya db km cable",
+            "en": "Result: db km cable"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "Tx_dBm": 0,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_09",
+      "group": "fiber",
+      "name": {
+        "sw": "Dispersion Limit",
+        "en": "Dispersion Limit"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Dispersion Limit",
+        "en": "Fiber Optics: Dispersion Limit"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya dispersion limit",
+            "en": "Result: dispersion limit"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_10",
+      "group": "fiber",
+      "name": {
+        "sw": "Power Budget Fiber",
+        "en": "Power Budget Fiber"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Power Budget Fiber",
+        "en": "Fiber Optics: Power Budget Fiber"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya power budget fiber",
+            "en": "Result: power budget fiber"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_11",
+      "group": "fiber",
+      "name": {
+        "sw": "Rise Time Budget",
+        "en": "Rise Time Budget"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Rise Time Budget",
+        "en": "Fiber Optics: Rise Time Budget"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya rise time budget",
+            "en": "Result: rise time budget"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25,
+          "D_ps": 17
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_12",
+      "group": "fiber",
+      "name": {
+        "sw": "Eye Diagram Jitter",
+        "en": "Eye Diagram Jitter"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Eye Diagram Jitter",
+        "en": "Fiber Optics: Eye Diagram Jitter"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya eye diagram jitter",
+            "en": "Result: eye diagram jitter"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25,
+          "D_ps": 17,
+          "Tx_dBm": 0
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_13",
+      "group": "fiber",
+      "name": {
+        "sw": "Ber Vs Q Factor",
+        "en": "Ber Vs Q Factor"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Ber Vs Q Factor",
+        "en": "Fiber Optics: Ber Vs Q Factor"
+      },
+      "inputs": [
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya ber vs q factor",
+            "en": "Result: ber vs q factor"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "L_km": 10,
+          "alpha_db": 0.25,
+          "D_ps": 17,
+          "Tx_dBm": 0,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_14",
+      "group": "fiber",
+      "name": {
+        "sw": "Osnr Calculation",
+        "en": "Osnr Calculation"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Osnr Calculation",
+        "en": "Fiber Optics: Osnr Calculation"
+      },
+      "inputs": [
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya osnr calculation",
+            "en": "Result: osnr calculation"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "alpha_db": 0.25,
+          "D_ps": 17,
+          "Tx_dBm": 0,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_15",
+      "group": "fiber",
+      "name": {
+        "sw": "Edfa Gain Calc",
+        "en": "Edfa Gain Calc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Edfa Gain Calc",
+        "en": "Fiber Optics: Edfa Gain Calc"
+      },
+      "inputs": [
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya edfa gain calc",
+            "en": "Result: edfa gain calc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "D_ps": 17,
+          "Tx_dBm": 0,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_16",
+      "group": "fiber",
+      "name": {
+        "sw": "Fiber Kappa Nonlinear",
+        "en": "Fiber Kappa Nonlinear"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Fiber Kappa Nonlinear",
+        "en": "Fiber Optics: Fiber Kappa Nonlinear"
+      },
+      "inputs": [
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out15",
+          "label": {
+            "sw": "Matokeo ya fiber kappa nonlinear",
+            "en": "Result: fiber kappa nonlinear"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out15 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "Tx_dBm": 0,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_17",
+      "group": "fiber",
+      "name": {
+        "sw": "Rz Nrz Bandwidth",
+        "en": "Rz Nrz Bandwidth"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Rz Nrz Bandwidth",
+        "en": "Fiber Optics: Rz Nrz Bandwidth"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out16",
+          "label": {
+            "sw": "Matokeo ya rz nrz bandwidth",
+            "en": "Result: rz nrz bandwidth"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out16 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_18",
+      "group": "fiber",
+      "name": {
+        "sw": "Wdm Channel Spacing",
+        "en": "Wdm Channel Spacing"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Wdm Channel Spacing",
+        "en": "Fiber Optics: Wdm Channel Spacing"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out17",
+          "label": {
+            "sw": "Matokeo ya wdm channel spacing",
+            "en": "Result: wdm channel spacing"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out17 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_19",
+      "group": "fiber",
+      "name": {
+        "sw": "Number Wdm Channels",
+        "en": "Number Wdm Channels"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Number Wdm Channels",
+        "en": "Fiber Optics: Number Wdm Channels"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out18",
+          "label": {
+            "sw": "Matokeo ya number wdm channels",
+            "en": "Result: number wdm channels"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out18 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25,
+          "D_ps": 17
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "fiber_20",
+      "group": "fiber",
+      "name": {
+        "sw": "Fiber Cutoff Wavelength",
+        "en": "Fiber Cutoff Wavelength"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "Fiber Optic: Fiber Cutoff Wavelength",
+        "en": "Fiber Optics: Fiber Cutoff Wavelength"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "L_km",
+          "label": {
+            "sw": "Urefu (km)",
+            "en": "Length (km)"
+          },
+          "unit": "km",
+          "default": 10,
+          "min": 0.001,
+          "max": 500
+        },
+        {
+          "name": "alpha_db",
+          "label": {
+            "sw": "Attenuation dB/km",
+            "en": "Attenuation dB/km"
+          },
+          "unit": "dB/km",
+          "default": 0.25,
+          "min": 0.05,
+          "max": 5
+        },
+        {
+          "name": "D_ps",
+          "label": {
+            "sw": "Dispersion ps/nm/km",
+            "en": "Dispersion"
+          },
+          "unit": "ps/nm/km",
+          "default": 17,
+          "min": 0.1,
+          "max": 200
+        },
+        {
+          "name": "Tx_dBm",
+          "label": {
+            "sw": "Tx (dBm)",
+            "en": "Tx Power"
+          },
+          "unit": "dBm",
+          "default": 0,
+          "min": -30,
+          "max": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out19",
+          "label": {
+            "sw": "Matokeo ya fiber cutoff wavelength",
+            "en": "Result: fiber cutoff wavelength"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out19 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 8"
+        ],
+        "en": [
+          "KUNDI 8"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "L_km": 10,
+          "alpha_db": 0.25,
+          "D_ps": 17,
+          "Tx_dBm": 0
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,2107 @@
+{
+  "group": {
+    "id": "nr5g",
+    "code": "KUNDI 10",
+    "label": {
+      "sw": "Kundi 10: 5G NR",
+      "en": "Group 10: 5G New Radio"
+    }
+  },
+  "formulas": [
+    {
+      "id": "nr5g_01",
+      "group": "nr5g",
+      "name": {
+        "sw": "Nr Arfcn Calc",
+        "en": "Nr Arfcn Calc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Nr Arfcn Calc",
+        "en": "5G New Radio: Nr Arfcn Calc"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out0",
+          "label": {
+            "sw": "Matokeo ya nr arfcn calc",
+            "en": "Result: nr arfcn calc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out0 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "freq_mhz": 3500
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_02",
+      "group": "nr5g",
+      "name": {
+        "sw": "Ssb Frequency",
+        "en": "Ssb Frequency"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Ssb Frequency",
+        "en": "5G New Radio: Ssb Frequency"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        },
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out1",
+          "label": {
+            "sw": "Matokeo ya ssb frequency",
+            "en": "Result: ssb frequency"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out1 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "freq_mhz": 3500,
+          "scs": 30
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_03",
+      "group": "nr5g",
+      "name": {
+        "sw": "Prach Conf",
+        "en": "Prach Conf"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Prach Conf",
+        "en": "5G New Radio: Prach Conf"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        },
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        },
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out2",
+          "label": {
+            "sw": "Matokeo ya prach conf",
+            "en": "Result: prach conf"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out2 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "freq_mhz": 3500,
+          "scs": 30,
+          "bw_mhz": 100
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_04",
+      "group": "nr5g",
+      "name": {
+        "sw": "Numerology Scs",
+        "en": "Numerology Scs"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Numerology Scs",
+        "en": "5G New Radio: Numerology Scs"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        },
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        },
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        },
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out3",
+          "label": {
+            "sw": "Matokeo ya numerology scs",
+            "en": "Result: numerology scs"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out3 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "freq_mhz": 3500,
+          "scs": 30,
+          "bw_mhz": 100,
+          "layers": 4
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_05",
+      "group": "nr5g",
+      "name": {
+        "sw": "Bandwidth Part Bw",
+        "en": "Bandwidth Part Bw"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Bandwidth Part Bw",
+        "en": "5G New Radio: Bandwidth Part Bw"
+      },
+      "inputs": [
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        },
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        },
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        },
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out4",
+          "label": {
+            "sw": "Matokeo ya bandwidth part bw",
+            "en": "Result: bandwidth part bw"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out4 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "freq_mhz": 3500,
+          "scs": 30,
+          "bw_mhz": 100,
+          "layers": 4,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_06",
+      "group": "nr5g",
+      "name": {
+        "sw": "Prb Count Bw",
+        "en": "Prb Count Bw"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Prb Count Bw",
+        "en": "5G New Radio: Prb Count Bw"
+      },
+      "inputs": [
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        },
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        },
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out5",
+          "label": {
+            "sw": "Matokeo ya prb count bw",
+            "en": "Result: prb count bw"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out5 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "scs": 30,
+          "bw_mhz": 100,
+          "layers": 4,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_07",
+      "group": "nr5g",
+      "name": {
+        "sw": "Max Throughput 5g",
+        "en": "Max Throughput 5g"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Max Throughput 5g",
+        "en": "5G New Radio: Max Throughput 5g"
+      },
+      "inputs": [
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        },
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out6",
+          "label": {
+            "sw": "Matokeo ya max throughput 5g",
+            "en": "Result: max throughput 5g"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out6 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "bw_mhz": 100,
+          "layers": 4,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_08",
+      "group": "nr5g",
+      "name": {
+        "sw": "Slot Duration",
+        "en": "Slot Duration"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Slot Duration",
+        "en": "5G New Radio: Slot Duration"
+      },
+      "inputs": [
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out7",
+          "label": {
+            "sw": "Matokeo ya slot duration",
+            "en": "Result: slot duration"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out7 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "layers": 4,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_09",
+      "group": "nr5g",
+      "name": {
+        "sw": "Cp Length Calc",
+        "en": "Cp Length Calc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Cp Length Calc",
+        "en": "5G New Radio: Cp Length Calc"
+      },
+      "inputs": [
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out8",
+          "label": {
+            "sw": "Matokeo ya cp length calc",
+            "en": "Result: cp length calc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out8 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "freq_mhz": 3500
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_10",
+      "group": "nr5g",
+      "name": {
+        "sw": "Beam Sweep Gain",
+        "en": "Beam Sweep Gain"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Beam Sweep Gain",
+        "en": "5G New Radio: Beam Sweep Gain"
+      },
+      "inputs": [
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        },
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out9",
+          "label": {
+            "sw": "Matokeo ya beam sweep gain",
+            "en": "Result: beam sweep gain"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out9 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "P_out": 10,
+          "BW": 1000000,
+          "T": 290,
+          "freq_mhz": 3500,
+          "scs": 30
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_11",
+      "group": "nr5g",
+      "name": {
+        "sw": "Massive Mimo Gain",
+        "en": "Massive Mimo Gain"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Massive Mimo Gain",
+        "en": "5G New Radio: Massive Mimo Gain"
+      },
+      "inputs": [
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        },
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        },
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        },
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out10",
+          "label": {
+            "sw": "Matokeo ya massive mimo gain",
+            "en": "Result: massive mimo gain"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out10 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "BW": 1000000,
+          "T": 290,
+          "freq_mhz": 3500,
+          "scs": 30,
+          "bw_mhz": 100
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_12",
+      "group": "nr5g",
+      "name": {
+        "sw": "Mu Mimo Pairing",
+        "en": "Mu Mimo Pairing"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Mu Mimo Pairing",
+        "en": "5G New Radio: Mu Mimo Pairing"
+      },
+      "inputs": [
+        {
+          "name": "T",
+          "label": {
+            "sw": "Joto (K)",
+            "en": "Temperature"
+          },
+          "unit": "K",
+          "default": 290,
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        },
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        },
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        },
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out11",
+          "label": {
+            "sw": "Matokeo ya mu mimo pairing",
+            "en": "Result: mu mimo pairing"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out11 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "T": 290,
+          "freq_mhz": 3500,
+          "scs": 30,
+          "bw_mhz": 100,
+          "layers": 4
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_13",
+      "group": "nr5g",
+      "name": {
+        "sw": "Spectral Eff 5g",
+        "en": "Spectral Eff 5g"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Spectral Eff 5g",
+        "en": "5G New Radio: Spectral Eff 5g"
+      },
+      "inputs": [
+        {
+          "name": "freq_mhz",
+          "label": {
+            "sw": "Freq (MHz)",
+            "en": "Freq (MHz)"
+          },
+          "unit": "MHz",
+          "default": 3500,
+          "min": 400,
+          "max": 52600
+        },
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        },
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        },
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out12",
+          "label": {
+            "sw": "Matokeo ya spectral eff 5g",
+            "en": "Result: spectral eff 5g"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out12 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "freq_mhz": 3500,
+          "scs": 30,
+          "bw_mhz": 100,
+          "layers": 4,
+          "P_in": 1
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_14",
+      "group": "nr5g",
+      "name": {
+        "sw": "Latency 5g Urllc",
+        "en": "Latency 5g Urllc"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Latency 5g Urllc",
+        "en": "5G New Radio: Latency 5g Urllc"
+      },
+      "inputs": [
+        {
+          "name": "scs",
+          "label": {
+            "sw": "Numerology SCS",
+            "en": "SCS"
+          },
+          "unit": "kHz",
+          "default": 30,
+          "select": [
+            {
+              "label": "15 kHz",
+              "value": 15
+            },
+            {
+              "label": "30 kHz",
+              "value": 30
+            },
+            {
+              "label": "60 kHz",
+              "value": 60
+            },
+            {
+              "label": "120 kHz",
+              "value": 120
+            }
+          ]
+        },
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        },
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out13",
+          "label": {
+            "sw": "Matokeo ya latency 5g urllc",
+            "en": "Result: latency 5g urllc"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out13 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "scs": 30,
+          "bw_mhz": 100,
+          "layers": 4,
+          "P_in": 1,
+          "P_out": 10
+        },
+        "expect": {}
+      }
+    },
+    {
+      "id": "nr5g_15",
+      "group": "nr5g",
+      "name": {
+        "sw": "Coreset Resource",
+        "en": "Coreset Resource"
+      },
+      "formula": "(P_out + P_in + V_out + V_in) / 4",
+      "description": {
+        "sw": "5G NR: Coreset Resource",
+        "en": "5G New Radio: Coreset Resource"
+      },
+      "inputs": [
+        {
+          "name": "bw_mhz",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "MHz",
+          "default": 100,
+          "min": 5,
+          "max": 400
+        },
+        {
+          "name": "layers",
+          "label": {
+            "sw": "MIMO Layers",
+            "en": "MIMO Layers"
+          },
+          "unit": "",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        },
+        {
+          "name": "P_in",
+          "label": {
+            "sw": "Nishati In",
+            "en": "Input Power"
+          },
+          "unit": "W",
+          "default": 1,
+          "min": 0.001,
+          "max": 1000000
+        },
+        {
+          "name": "P_out",
+          "label": {
+            "sw": "Nishati Out",
+            "en": "Output Power"
+          },
+          "unit": "W",
+          "default": 10,
+          "min": 0.001,
+          "max": 10000000
+        },
+        {
+          "name": "BW",
+          "label": {
+            "sw": "Bandwidth",
+            "en": "Bandwidth"
+          },
+          "unit": "Hz",
+          "default": 1000000,
+          "min": 1,
+          "max": 1000000000000
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out14",
+          "label": {
+            "sw": "Matokeo ya coreset resource",
+            "en": "Result: coreset resource"
+          },
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "unit": "",
+          "digits": 3
+        }
+      ],
+      "steps": [
+        {
+          "label": "Formula",
+          "text": "(P_out + P_in + V_out + V_in) / 4"
+        },
+        {
+          "label": "Weka thamani",
+          "expr": "(P_out + P_in + V_out + V_in) / 4",
+          "template": "Matokeo = {{result}}"
+        }
+      ],
+      "rules": [
+        {
+          "check": "out14 >= 0",
+          "status": "GOOD",
+          "msg": {
+            "sw": "Thamani nzuri",
+            "en": "Good value"
+          }
+        },
+        {
+          "check": "true",
+          "status": "WARNING",
+          "msg": {
+            "sw": "Angalia vigezo",
+            "en": "Check constraints"
+          }
+        }
+      ],
+      "standards": {
+        "sw": [
+          "Kundi KUNDI 10"
+        ],
+        "en": [
+          "KUNDI 10"
+        ]
+      },
+      "test": {
+        "inputs": {
+          "bw_mhz": 100,
+          "layers": 4,
+          "P_in": 1,
+          "P_out": 10,
+          "BW": 1000000
+        },
+        "expect": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "system": {
+    "name": "MTAALAMU SMART",
+    "version": "1.0.0",
+    "language": "sw",
+    "offline_mode": true
+  },
+  "ai": {
+    "model": "qwen2.5:3b",
+    "learning_rate": 0.05,
+    "bayesian_enabled": true,
+    "fuzzy_enabled": true
+  },
+  "database": {
+    "type": "sqlite",
+    "path": "./data/smart_technician.db"
+  },
+  "payment": {
+    "method": "M-Pesa",
+    "commission": 0.10,
+    "escrow_enabled": true
+  },
+  "notifications": {
+    "sms": true,
+    "whatsapp": true,
+    "email": false
+  }
+}

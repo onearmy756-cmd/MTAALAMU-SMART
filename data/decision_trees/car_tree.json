@@ -1,0 +1,169 @@
+{
+  "id": "car_tree",
+  "label": { "sw": "Mti wa Uchunguzi wa Gari", "en": "Car Diagnostic Decision Tree" },
+  "trade": "gari",
+  "source": "SMART_SYSTEM_1 (R-214)",
+  "start": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "question": "Gari inawaka?",
+      "yes": 1,
+      "no": 10
+    },
+    {
+      "id": 1,
+      "question": "Check engine light imewaka?",
+      "yes": 2,
+      "no": 5
+    },
+    {
+      "id": 2,
+      "question": "OBD inatoa code P0300 (misfire)?",
+      "yes": 3,
+      "no": 4
+    },
+    {
+      "id": 3,
+      "question": "Spark plugs zimechakaa?",
+      "result": {
+        "diagnosis": "Spark plugs zimechakaa (misfire P0300)",
+        "solution": "Badilisha spark plugs zote 4/6 kwa pamoja na ukague ignition coils",
+        "confidence": 0.88,
+        "actions": [
+          "Ondoa spark plugs na kukagua umbo la electrode",
+          "Badilisha spark plugs mpya za factory spec",
+          "Futa misfiring code kisha jaribu gari tena",
+          "Kagua ignition coils kama misfiring inaendelea"
+        ],
+        "cost_tzs": 80000,
+        "cost_range_tzs": [60000, 150000]
+      }
+    },
+    {
+      "id": 4,
+      "question": "Code ni P0420 (catalyst)?",
+      "result": {
+        "diagnosis": "Catalyst efficiency chini ya kikomo (P0420) au O2 sensor",
+        "solution": "Kagua O2 sensor na catalyst; badilisha O2 sensor kama imelemewa",
+        "confidence": 0.75,
+        "actions": [
+          "Scan code tena na kagua live data ya O2 sensor",
+          "Kisia upstream/downstream O2 sensor voltages",
+          "Badilisha O2 sensor kama mabadiliko ni mabaya",
+          "Chunguza exhaust leak kabla ya kubadilisha catalyst"
+        ],
+        "cost_tzs": 180000,
+        "cost_range_tzs": [120000, 600000]
+      }
+    },
+    {
+      "id": 5,
+      "question": "Gari inasikika sauti ya metal?",
+      "yes": 6,
+      "no": 7
+    },
+    {
+      "id": 6,
+      "question": "Sauti inatokea wakati wa kubreak?",
+      "result": {
+        "diagnosis": "Brake pads zimeisha (metal backing imegusa rotor)",
+        "solution": "Badilisha brake pads na kusawazisha rotors",
+        "confidence": 0.9,
+        "actions": [
+          "Punguza brake pads na kukagua unene wa rotor",
+          "Badilisha brake pads za mbele (na za nyuma kama zimeisha)",
+          "Resurface au badilisha rotors kama zimejaa mfinyanzi",
+          "Fanya brake bleeding baada ya kazi"
+        ],
+        "cost_tzs": 140000,
+        "cost_range_tzs": [100000, 300000]
+      }
+    },
+    {
+      "id": 7,
+      "question": "Gari inatoa moshi?",
+      "yes": 8,
+      "no": 9
+    },
+    {
+      "id": 8,
+      "question": "Moshi ni mweupe?",
+      "result": {
+        "diagnosis": "Head gasket imewaka au coolant inaingia kwenye combustion chamber",
+        "solution": "Compression test kisha badilisha head gasket na kusawazisha cylinder head",
+        "confidence": 0.85,
+        "actions": [
+          "Kagua coolant level na test ya combustion leak (block tester)",
+          "Fanya compression test kwa silinda zote",
+          "Badilisha head gasket na mill cylinder head kama inahitajika",
+          "Badilisha coolant na bleeding ya cooling system"
+        ],
+        "cost_tzs": 700000,
+        "cost_range_tzs": [450000, 1200000]
+      }
+    },
+    {
+      "id": 9,
+      "question": "Gari inatumia fuel nyingi?",
+      "result": {
+        "diagnosis": "Air filter na/au injectors zinafanya kazi vibaya",
+        "solution": "Badilisha air filter, safisha injectors na ukague fuel trim",
+        "confidence": 0.8,
+        "actions": [
+          "Badilisha air filter",
+          "Safisha injectors (juice au ultrasonic)",
+          "Kagua fuel trim data kwenye OBD (STFT/LTFT)",
+          "Kagua tyre pressure na alignment kama ndio chanzo"
+        ],
+        "cost_tzs": 90000,
+        "cost_range_tzs": [50000, 250000]
+      }
+    },
+    {
+      "id": 10,
+      "question": "Inatoa sauti ya 'click'?",
+      "yes": 11,
+      "no": 12
+    },
+    {
+      "id": 11,
+      "question": "Battery ina voltage 12.6V?",
+      "result": {
+        "diagnosis": "Battery mbovu / imelemewa",
+        "solution": "Badilisha battery na kagua charging system",
+        "confidence": 0.92,
+        "actions": [
+          "Kagua voltage ya battery (chini ya 12.4V = imelemewa)",
+          "Fanya load test ya battery",
+          "Charge au badilisha battery",
+          "Kagua alternator output (13.8V - 14.4V)"
+        ],
+        "cost_tzs": 200000,
+        "cost_range_tzs": [150000, 400000]
+      }
+    },
+    {
+      "id": 12,
+      "question": "Fuel pump inasikika?",
+      "result": {
+        "diagnosis": "Fuel pump au relay imeharibika",
+        "solution": "Kagua relay ya fuel pump na fuel pump current; badilisha kama imekufa",
+        "confidence": 0.78,
+        "actions": [
+          "Sikiliza fuel pump kwa kuwasha kuwali (prime) sekunde 2",
+          "Kagua fuse na relay ya fuel pump",
+          "Kagua voltage kwenye fuel pump connector",
+          "Badilisha fuel pump kama hakuna pressure"
+        ],
+        "cost_tzs": 350000,
+        "cost_range_tzs": [250000, 600000]
+      }
+    }
+  ],
+  "meta": {
+    "node_count": 13,
+    "leaf_count": 7,
+    "language": "sw"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "id": "rules_electrical",
+  "label": { "sw": "Sheria za Umeme", "en": "Electrical Rules" },
+  "trade": "umeme",
+  "source": "SMART_NETWORK_F (data/rules_electrical.json)",
+  "operators": ["gt", "gte", "lt", "lte", "eq"],
+  "note": "Rules zimepangwa kwa priority (kubwa kwanza). Kila condition inapaswa kutimizwa (AND). GOOD priority=11 juu kuliko WARNING=8 ili thamani 3.0 kabisa ionekane GOOD (overlap kati ya gte 3 na lte 3).",
+  "rules": [
+    {
+      "id": "VOLTAGE_DROP_HIGH",
+      "name_sw": "Voltage drop ni kubwa",
+      "name_en": "Voltage drop is too high",
+      "priority": 10,
+      "conditions": [
+        { "field": "voltage_drop_percent", "operator": "gt", "value": 5.0 }
+      ],
+      "action": {
+        "action_type": "reject",
+        "message": "⚠️ Voltage drop ni kubwa sana. Cable haifai.",
+        "message_en": "⚠️ Voltage drop is too high. Cable is not suitable.",
+        "solution": "Ongeza cable size",
+        "confidence": 0.95
+      }
+    },
+    {
+      "id": "VOLTAGE_DROP_WARNING",
+      "name_sw": "Voltage drop ni wastani",
+      "name_en": "Voltage drop is moderate",
+      "priority": 8,
+      "conditions": [
+        { "field": "voltage_drop_percent", "operator": "gte", "value": 3.0 },
+        { "field": "voltage_drop_percent", "operator": "lt", "value": 5.0 }
+      ],
+      "action": {
+        "action_type": "warn",
+        "message": "⚠️ Voltage drop ni wastani. Inaweza kuwa shida.",
+        "message_en": "⚠️ Voltage drop is moderate. It may become a problem.",
+        "solution": "Fikiria cable kubwa zaidi",
+        "confidence": 0.75
+      }
+    },
+    {
+      "id": "VOLTAGE_DROP_GOOD",
+      "name_sw": "Voltage drop ni nzuri",
+      "name_en": "Voltage drop is good",
+      "priority": 11,
+      "conditions": [
+        { "field": "voltage_drop_percent", "operator": "lte", "value": 3.0 }
+      ],
+      "action": {
+        "action_type": "recommend",
+        "message": "✅ Cable inafaa",
+        "message_en": "✅ Cable is adequate",
+        "solution": null,
+        "confidence": 1.0
+      }
+    },
+    {
+      "id": "BREAKER_UNDERSIZED",
+      "name_sw": "Breaker ni ndogo",
+      "name_en": "Breaker is undersized",
+      "priority": 9,
+      "conditions": [
+        { "field": "current", "operator": "gt", "value": 10.0 },
+        { "field": "breaker_rating", "operator": "lte", "value": 10.0 }
+      ],
+      "action": {
+        "action_type": "reject",
+        "message": "⚠️ Breaker ni ndogo kwa load hii",
+        "message_en": "⚠️ Breaker is too small for this load",
+        "solution": "Badilisha breaker kubwa zaidi",
+        "confidence": 0.9
+      }
+    },
+    {
+      "id": "EARTH_RESISTANCE_HIGH",
+      "name_sw": "Ueme wa ardhini ni mkubwa",
+      "name_en": "Earth resistance is too high",
+      "priority": 7,
+      "conditions": [
+        { "field": "earth_resistance_ohm", "operator": "gt", "value": 10.0 }
+      ],
+      "action": {
+        "action_type": "warn",
+        "message": "⚠️ Uume wa ardhini zaidi ya 10Ω — hatari ya shock na vifaa.",
+        "message_en": "⚠️ Earth resistance above 10Ω — shock and equipment risk.",
+        "solution": "Safisha earth rod, ongeza pipe ya ardhini au chuja mchanga",
+        "confidence": 0.85
+      }
+    },
+    {
+      "id": "POWER_FACTOR_LOW",
+      "name_sw": "Power factor ni ndogo sana",
+      "name_en": "Power factor is too low",
+      "priority": 6,
+      "conditions": [
+        { "field": "power_factor", "operator": "lt", "value": 0.85 }
+      ],
+      "action": {
+        "action_type": "warn",
+        "message": "⚠️ Power factor chini ya 0.85 — TANESCO inaweza kutoa penalty.",
+        "message_en": "⚠️ Power factor below 0.85 — TANESCO may levy a penalty.",
+        "solution": "Weka capacitor ya correction kwenye motor/mzigo wa induktiviti",
+        "confidence": 0.8
+      }
+    },
+    {
+      "id": "SUPPLY_VOLTAGE_NOMINAL",
+      "name_sw": "Ume ni sawa na TANESCO (230V)",
+      "name_en": "Supply voltage matches TANESCO (230V)",
+      "priority": 3,
+      "conditions": [
+        { "field": "supply_voltage", "operator": "eq", "value": 230.0 }
+      ],
+      "action": {
+        "action_type": "recommend",
+        "message": "✅ Ume wa msingi ni 230V — sawa na kiwango cha TANESCO.",
+        "message_en": "✅ Supply voltage is 230V — matches TANESCO standard.",
+        "solution": null,
+        "confidence": 1.0
+      }
+    }
+  ],
+  "meta": { "rule_count": 7, "priority_desc": true }
+}

@@ -1,0 +1,112 @@
+{
+  "id": "phone_tree",
+  "label": { "sw": "Mti wa Uchunguzi wa Simu", "en": "Phone Diagnostic Decision Tree" },
+  "trade": "electronics",
+  "source": "SMART_NETWORK_F (N-159)",
+  "start_node": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "question": "Simu inawaka?",
+      "node_type": "Question",
+      "children": [
+        { "answer": "Ndiyo", "next_node": "boots_check" },
+        { "answer": "Hapana", "next_node": "no_boot_check" }
+      ]
+    },
+    {
+      "id": "no_boot_check",
+      "question": "Inatoa vibration wakati wa kuwasha?",
+      "node_type": "Question",
+      "children": [
+        { "answer": "Ndiyo", "next_node": "screen_problem" },
+        { "answer": "Hapana", "next_node": "battery_or_motherboard" }
+      ]
+    },
+    {
+      "id": "screen_problem",
+      "question": "Screen inaonyesha kitu?",
+      "node_type": "Result",
+      "result": {
+        "diagnosis": "Screen imeharibika",
+        "solution": "Badilisha screen",
+        "confidence": 0.85,
+        "actions": [
+          "Tafuta screen spare part",
+          "Fundi wa hardware",
+          "Gharama: TZS 80,000 - 150,000"
+        ],
+        "cost_tzs": 115000,
+        "cost_range_tzs": [80000, 150000]
+      }
+    },
+    {
+      "id": "battery_or_motherboard",
+      "question": "Simu ilikuwa kwenye charger?",
+      "node_type": "Result",
+      "result": {
+        "diagnosis": "Battery au motherboard",
+        "solution": "Charge kwanza dakika 30, kama haifanyi ni motherboard",
+        "confidence": 0.75,
+        "actions": [
+          "Charge dakika 30",
+          "Kama haifanyi, fundi wa hardware",
+          "Gharama: TZS 100,000 - 300,000"
+        ],
+        "cost_tzs": 200000,
+        "cost_range_tzs": [100000, 300000]
+      }
+    },
+    {
+      "id": "boots_check",
+      "question": "Inaonyesha error message?",
+      "node_type": "Question",
+      "children": [
+        { "answer": "Ndiyo", "next_node": "error_diagnosis" },
+        { "answer": "Hapana", "next_node": "slow_or_normal" }
+      ]
+    },
+    {
+      "id": "error_diagnosis",
+      "question": "Error ni nini?",
+      "node_type": "Result",
+      "result": {
+        "diagnosis": "Software error",
+        "solution": "Recovery mode au flash",
+        "confidence": 0.7,
+        "actions": [
+          "Ingia recovery mode",
+          "Wipe cache",
+          "Kama haifanyi, flash firmware",
+          "Gharama: TZS 30,000 - 80,000"
+        ],
+        "cost_tzs": 50000,
+        "cost_range_tzs": [30000, 80000]
+      }
+    },
+    {
+      "id": "slow_or_normal",
+      "question": "Simu ni slow?",
+      "node_type": "Result",
+      "result": {
+        "diagnosis": "Simu inafanya kazi",
+        "solution": "Angalia storage au apps",
+        "confidence": 0.9,
+        "actions": [
+          "Futa files",
+          "Futa apps zisizotumika",
+          "Clear cache",
+          "Gharama: TZS 20,000 - 50,000"
+        ],
+        "cost_tzs": 30000,
+        "cost_range_tzs": [20000, 50000]
+      }
+    }
+  ],
+  "meta": {
+    "node_count": 7,
+    "question_count": 3,
+    "result_count": 4,
+    "language": "sw"
+  }
+}

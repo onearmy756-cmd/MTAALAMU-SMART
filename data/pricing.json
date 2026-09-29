@@ -1,0 +1,204 @@
+{
+  "currency": "TZS",
+  "vat_rate": 0.18,
+  "service_charge_tzs": 5000,
+  "ewura_levy_rate": 0.01,
+  "commission": {
+    "job_rate": 0.10,
+    "range": [0.10, 0.15]
+  },
+  "escrow": {
+    "fee_rate": 0.08,
+    "legacy": [0.05, 0.08],
+    "fundi_share": 0.92
+  },
+  "subscriptions": [
+    {
+      "code": "solo",
+      "name": {"sw": "Solo (Bure)", "en": "Solo (Free)"},
+      "price_tzs": 0,
+      "days_months": "none",
+      "duration": 0,
+      "features": [
+        {"sw": "Matumizi ya huduma 3 kwa siku", "en": "3 service uses per day"},
+        {"sw": "Orodha ya fundi 50 tu", "en": "50 fundi listings only"},
+        {"sw": "Msaada wa WhatsApp", "en": "WhatsApp support"}
+      ]
+    },
+    {
+      "code": "personal",
+      "name": {"sw": "Personal", "en": "Personal"},
+      "price_tzs": 20000,
+      "days_months": "days",
+      "duration": 30,
+      "features": [
+        {"sw": "Huduma zisizo na kikomo kwa siku", "en": "Unlimited daily service uses"},
+        {"sw": "Orodha ya fundi 500", "en": "500 fundi listings"},
+        {"sw": "Msaada wa simu + WhatsApp", "en": "Phone + WhatsApp support"},
+        {"sw": "Historia ya miaka 1 ya kazi", "en": "1 year job history"},
+        {"sw": "Receipt PDF", "en": "PDF receipts"}
+      ]
+    },
+    {
+      "code": "pro",
+      "name": {"sw": "Pro", "en": "Pro"},
+      "price_tzs": 60000,
+      "days_months": "months",
+      "duration": 1,
+      "features": [
+        {"sw": "Kila kitu cha Personal", "en": "Everything in Personal"},
+        {"sw": "Orodha ya fundi isiyo na kikomo", "en": "Unlimited fundi listings"},
+        {"sw": "Msaada wa kina 24/7", "en": "24/7 priority support"},
+        {"sw": "Historia ya miaka 5", "en": "5 year history storage"},
+        {"sw": "Dashboard ya Biashara", "en": "Business Dashboard"},
+        {"sw": "QR Code kwa mteja", "en": "Customer QR code payments"},
+        {"sw": "Report za PDF/Excel", "en": "PDF/Excel reports"}
+      ]
+    },
+    {
+      "code": "premium",
+      "name": {"sw": "Premium", "en": "Premium"},
+      "price_tzs": 150000,
+      "days_months": "months",
+      "duration": 1,
+      "features": [
+        {"sw": "Kila kitu cha Pro", "en": "Everything in Pro"},
+        {"sw": "API access", "en": "API access"},
+        {"sw": "White-label branding", "en": "White-label branding"},
+        {"sw": "Msaada wa Mtaalamu wa Mazingira", "en": "Dedicated Account Manager"},
+        {"sw": "Training ya timu kwa video", "en": "Video team training"},
+        {"sw": "Backup ya siku zote", "en": "Daily backups"},
+        {"sw": "Multi-user mpaka 10", "en": "Up to 10 multi-user accounts"}
+      ]
+    },
+    {
+      "code": "business",
+      "name": {"sw": "Biashara", "en": "Business"},
+      "price_tzs": 500000,
+      "days_months": "months",
+      "duration": 1,
+      "features": [
+        {"sw": "Kila kitu cha Premium", "en": "Everything in Premium"},
+        {"sw": "Multi-user mpaka 50", "en": "Up to 50 multi-user accounts"},
+        {"sw": "Custom workflows", "en": "Custom workflows"},
+        {"sw": "Msaada wa on-site kwa Mkoa wa Dar", "en": "On-site support (Dar es Salaam)"},
+        {"sw": "Integrations za ERP", "en": "ERP integrations"},
+        {"sw": "SLA 99.9% uptime", "en": "99.9% uptime SLA"},
+        {"sw": "Custom reporting", "en": "Custom reporting module"}
+      ]
+    },
+    {
+      "code": "enterprise",
+      "name": {"sw": "Enterprise", "en": "Enterprise"},
+      "price_tzs": 2000000,
+      "days_months": "months",
+      "duration": 1,
+      "features": [
+        {"sw": "Kila kitu cha Business", "en": "Everything in Business"},
+        {"sw": "Watu wote (unlimited)", "en": "Unlimited users"},
+        {"sw": "Dedicated server", "en": "Dedicated server instance"},
+        {"sw": "Custom development", "en": "Custom development sprints"},
+        {"sw": "Msaada wa siku 24/7 kwa simu", "en": "24/7 phone hotline support"},
+        {"sw": "Contract ya miaka 1+", "en": "1+ year contracts available"},
+        {"sw": "SLA 99.99% uptime", "en": "99.99% uptime SLA"},
+        {"sw": "On-site training barabara", "en": "On-site nationwide training"}
+      ]
+    }
+  ],
+  "materials": {
+    "cement_bag": 30000,
+    "sand_m3": 50000,
+    "gravel_m3": 60000,
+    "steel_kg": 3000,
+    "blocks_pcs": 800,
+    "timber_ft": 2500,
+    "roofing_iron_pc": 45000,
+    "paint_litre": 18000,
+    "nails_kg": 5000,
+    "wire_kg": 8000,
+    "pvc_pipe_m": 3500,
+    "bricks_pcs": 500,
+    "tile_m2": 25000,
+    "granite_m2": 80000,
+    "door_pc": 150000,
+    "window_pc": 120000
+  },
+  "hardware": {
+    "fundi_box_bom_tzs": 710000,
+    "raspberry_pi_4_tzs": 250000,
+    "ssd_512gb_tzs": 85000,
+    "usb_flash_32gb_tzs": 18000,
+    "network_switch_8port_tzs": 65000,
+    "wifi_router_tzs": 95000,
+    "ethernet_cable_cat6_box_tzs": 120000,
+    "digital_multimeter_tzs": 45000,
+    "crimping_tool_tzs": 55000,
+    "hdmi_cable_5m_tzs": 15000
+  },
+  "products": [
+    {
+      "code": "prod_fundi_deploy",
+      "name": {"sw": "Fundi Deploy USB", "en": "Fundi Deploy USB"},
+      "price_tzs": 45000,
+      "type": "hardware",
+      "description": {"sw": "USB maalum yenye Rescue OS, Windows, Linux + tools za matibabu", "en": "Custom USB with Rescue OS, Windows/Linux installers & repair tools"}
+    },
+    {
+      "code": "prod_rescue_os",
+      "name": {"sw": "Rescue OS (License)", "en": "Rescue OS (License)"},
+      "price_tzs": 120000,
+      "type": "license",
+      "description": {"sw": "Mfumo wa uokoaji data - data recovery, password reset, antivirus scan, disk clone", "en": "Bootable rescue environment - data recovery, password reset, antivirus, disk clone"}
+    },
+    {
+      "code": "prod_fundi_box",
+      "name": {"sw": "Fundi Box Complete", "en": "Fundi Box Complete"},
+      "price_tzs": 950000,
+      "type": "hardware",
+      "description": {"sw": "Kifaa cha teknolojia - multimeter, tools, USB, SD, cables, soldering iron kamili", "en": "Complete hardware toolkit - multimeter, tools, USB, SD, cables, soldering iron set"}
+    },
+    {
+      "code": "prod_fundi_map",
+      "name": {"sw": "Fundi Map (Annual)", "en": "Fundi Map (Annual)"},
+      "price_tzs": 300000,
+      "type": "subscription",
+      "description": {"sw": "Ramani ya fundi na wateja - GPS tracking, route optimization, kazi ndogo ndogo", "en": "Fundi/customer map - GPS tracking, route optimization, nearby job alerts"}
+    },
+    {
+      "code": "prod_smart_doctor_basic",
+      "name": {"sw": "Smart Doctor - Basic", "en": "Smart Doctor - Basic"},
+      "price_tzs": 180000,
+      "type": "license",
+      "description": {"sw": "Software ya kutatua magonjwa ya kompyuta/simu - scan, diagnose, report", "en": "Computer/phone diagnostic software - scan, diagnose, generate PDF reports"}
+    },
+    {
+      "code": "prod_smart_doctor_pro",
+      "name": {"sw": "Smart Doctor - Pro", "en": "Smart Doctor - Pro"},
+      "price_tzs": 450000,
+      "type": "license",
+      "description": {"sw": "Smart Doctor + cloud sync + API + diagnosis ya Bayesian + upyaaji wa data", "en": "Smart Doctor + cloud sync + API + Bayesian diagnosis + advanced recovery"}
+    },
+    {
+      "code": "prod_smart_doctor_network",
+      "name": {"sw": "Smart Doctor - Network", "en": "Smart Doctor - Network"},
+      "price_tzs": 600000,
+      "type": "license",
+      "description": {"sw": "Smart Doctor + network tools - WiFi audit, cable tester, subnet calculator, VLAN", "en": "Smart Doctor + network toolkit - WiFi audit, cable tester, subnet calc, VLAN setup"}
+    },
+    {
+      "code": "prod_smart_doctor_enterprise",
+      "name": {"sw": "Smart Doctor - Enterprise", "en": "Smart Doctor - Enterprise"},
+      "price_tzs": 2000000,
+      "type": "license",
+      "description": {"sw": "Smart Doctor + site-wide license + audit trail + RBAC + SSO + on-site training", "en": "Smart Doctor site-wide license + audit trail + RBAC + SSO + on-site training"}
+    },
+    {
+      "code": "prod_smart_doctor_training",
+      "name": {"sw": "Smart Doctor - Training Pack", "en": "Smart Doctor - Training Pack"},
+      "price_tzs": 800000,
+      "type": "license",
+      "description": {"sw": "Smart Doctor Pro + video training (masaa 40) + certificate + kozi ya ukarabati", "en": "Smart Doctor Pro + 40-hour video training + certificate + repair course access"}
+    }
+  ],
+  "payment_methods": ["M-Pesa", "Tigo Pesa", "Airtel Money", "Halopesa", "Bank", "NMB", "CRDB"]
+}

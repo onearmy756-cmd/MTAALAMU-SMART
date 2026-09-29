@@ -1,0 +1,140 @@
+{
+  "center": { "lat": -6.37, "lng": 34.89, "zoom": 6 },
+  "boundaries_url": "tz_regions.geojson",
+  "license": {
+    "sources": "Google Satellite · NASA EOSDIS GIBS (MODIS Terra) · Esri World Imagery · © OpenStreetMap contributors",
+    "routing": "OSRM — Open Source Routing Machine (ODbL)",
+    "note": "Data za ramani hutoka kwa watoa huduma hao; timiza masharti ya leseni na uonyeshe attribution. Vifaa vya watu binafsi vinaonekana tu kwa ruhusa (Data Protection Act 2022)."
+  },
+  "basemaps": [
+    {
+      "id": "google",
+      "label": "Google Satellite",
+      "tiles": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+      "attr": "Imagery © Google",
+      "maxZoom": 21
+    },
+    {
+      "id": "hybrid",
+      "label": "Google Satellite + Labels",
+      "tiles": "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+      "attr": "Imagery © Google",
+      "maxZoom": 21
+    },
+    {
+      "id": "nasa",
+      "label": "NASA GIBS — MODIS Terra True Color",
+      "tiles": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",
+      "attr": "Imagery © NASA EOSDIS GIBS",
+      "maxZoom": 9,
+      "dated": true
+    },
+    {
+      "id": "esri",
+      "label": "Esri World Imagery",
+      "tiles": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      "attr": "Imagery © Esri, Maxar, Earthstar Geographics",
+      "maxZoom": 19
+    },
+    {
+      "id": "osm",
+      "label": "OpenStreetMap (roads)",
+      "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      "attr": "© OpenStreetMap contributors (ODbL)",
+      "maxZoom": 19
+    },
+    {
+      "id": "esri_labels",
+      "label": "Esri Roads & Labels",
+      "tiles": "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+      "attr": "© Esri",
+      "maxZoom": 19,
+      "overlay": true
+    }
+  ],
+  "overlays": [
+    { "id": "boundaries", "on": true },
+    { "id": "choropleth", "on": true },
+    { "id": "techs", "on": true },
+    { "id": "customers", "on": true },
+    { "id": "jobs", "on": true },
+    { "id": "corridors", "on": false }
+  ],
+  "regions": {
+    "Arusha": { "lat": -3.316, "lng": 36.058, "jobs": 69, "techs": 18, "customers": 44 },
+    "Dar es Salaam": { "lat": -6.918, "lng": 39.341, "jobs": 142, "techs": 38, "customers": 96 },
+    "Dodoma": { "lat": -6.204, "lng": 35.886, "jobs": 61, "techs": 16, "customers": 39 },
+    "Geita": { "lat": -3.265, "lng": 32.166, "jobs": 30, "techs": 8, "customers": 19 },
+    "Iringa": { "lat": -7.738, "lng": 35.403, "jobs": 33, "techs": 8, "customers": 21 },
+    "Kagera": { "lat": -2.378, "lng": 30.764, "jobs": 31, "techs": 8, "customers": 20 },
+    "Katavi": { "lat": -6.54, "lng": 31.39, "jobs": 14, "techs": 3, "customers": 9 },
+    "Kigoma": { "lat": -4.135, "lng": 30.269, "jobs": 28, "techs": 7, "customers": 17 },
+    "Kilimanjaro": { "lat": -3.689, "lng": 37.628, "jobs": 47, "techs": 12, "customers": 30 },
+    "Lindi": { "lat": -9.207, "lng": 39.302, "jobs": 19, "techs": 5, "customers": 12 },
+    "Manyara": { "lat": -4.277, "lng": 36.557, "jobs": 29, "techs": 7, "customers": 18 },
+    "Mara": { "lat": -1.93, "lng": 34.118, "jobs": 32, "techs": 8, "customers": 21 },
+    "Mbeya": { "lat": -9.099, "lng": 33.417, "jobs": 45, "techs": 11, "customers": 29 },
+    "Morogoro": { "lat": -8.046, "lng": 36.985, "jobs": 48, "techs": 12, "customers": 31 },
+    "Mtwara": { "lat": -10.63, "lng": 39.669, "jobs": 23, "techs": 6, "customers": 15 },
+    "Mwanza": { "lat": -2.881, "lng": 33.093, "jobs": 74, "techs": 19, "customers": 48 },
+    "Njombe": { "lat": -9.754, "lng": 34.572, "jobs": 22, "techs": 5, "customers": 14 },
+    "North Pemba": { "lat": -5.058, "lng": 39.766, "jobs": 18, "techs": 4, "customers": 11 },
+    "Pwani": { "lat": -7.625, "lng": 39.315, "jobs": 37, "techs": 9, "customers": 24 },
+    "Rukwa": { "lat": -8.341, "lng": 31.422, "jobs": 17, "techs": 4, "customers": 11 },
+    "Ruvuma": { "lat": -11.183, "lng": 36.057, "jobs": 21, "techs": 5, "customers": 13 },
+    "Shinyanga": { "lat": -3.802, "lng": 33.135, "jobs": 36, "techs": 9, "customers": 23 },
+    "Simiyu": { "lat": -3.272, "lng": 33.889, "jobs": 25, "techs": 6, "customers": 16 },
+    "Singida": { "lat": -5.779, "lng": 34.435, "jobs": 27, "techs": 7, "customers": 17 },
+    "South Pemba": { "lat": -5.341, "lng": 39.728, "jobs": 16, "techs": 4, "customers": 10 },
+    "Tabora": { "lat": -4.454, "lng": 33.077, "jobs": 34, "techs": 8, "customers": 21 },
+    "Tanga": { "lat": -5.105, "lng": 38.956, "jobs": 52, "techs": 13, "customers": 33 },
+    "Zanzibar North": { "lat": -5.871, "lng": 39.25, "jobs": 26, "techs": 7, "customers": 17 },
+    "Zanzibar South & Central": { "lat": -6.274, "lng": 39.429, "jobs": 24, "techs": 6, "customers": 15 },
+    "Zanzibar Urban/West": { "lat": -6.219, "lng": 39.246, "jobs": 41, "techs": 11, "customers": 26 }
+  },
+  "markers": [
+    { "id": "TCH-01", "kind": "tech", "name": "Juma Mkumbwa", "trade": "Umeme / Electrical", "place": "Kinondoni, Dar es Salaam", "lat": -6.755, "lng": 39.28, "status": "online", "jobs": 148, "rating": 4.9, "env": "Duka la vifaa vya umeme + panel shop", "tools": "Megger, clamp meter, PPE, cable trunking" },
+    { "id": "TCH-02", "kind": "tech", "name": "Amina Hassan", "trade": "Air-conditioning / Solar", "place": "Mikocheni, Dar es Salaam", "lat": -6.775, "lng": 39.235, "status": "online", "jobs": 96, "rating": 4.7, "env": "Kanzi AC & solar shop", "tools": "Vacuum pump, manifold gauge, panels 450W" },
+    { "id": "TCH-03", "kind": "tech", "name": "Peter Mushi", "trade": "IT / Computer repair", "place": "Njiro, Arusha", "lat": -3.377, "lng": 36.679, "status": "busy", "jobs": 211, "rating": 4.8, "env": "IT shop na bench ya kurekebisha", "tools": "Soldering station, USB tester, thermal paste" },
+    { "id": "TCH-04", "kind": "tech", "name": "Neema Silaa", "trade": "Solar / Installation", "place": "Nzuguni, Dodoma", "lat": -6.163, "lng": 35.751, "status": "online", "jobs": 74, "rating": 4.6, "env": "Solar showroom + warehouse", "tools": "Inverter 5kVA, batteries, roof rails" },
+    { "id": "TCH-05", "kind": "tech", "name": "Baraka John", "trade": "Mechanic / Auto", "place": "Buzuruga, Mwanza", "lat": -2.516, "lng": 32.917, "status": "offline", "jobs": 132, "rating": 4.5, "env": "Garage wazi (mud/dust season)", "tools": "OBD scanner, jack, compressor" },
+    { "id": "TCH-06", "kind": "tech", "name": "Rehema Ally", "trade": "Plumbing / Pumps", "place": "Mwanzani, Tanga", "lat": -5.069, "lng": 39.099, "status": "online", "jobs": 88, "rating": 4.7, "env": "Hardware na duka la pampu", "tools": "Pressure test kit, pipe welder" },
+    { "id": "TCH-07", "kind": "tech", "name": "Frank Mwaipopo", "trade": "CCTV / Security", "place": "Mbeya", "lat": -8.9, "lng": 33.45, "status": "online", "jobs": 65, "rating": 4.4, "env": "Ofisi ndogo + stock ya cameras", "tools": "NVR, PoE tester, DVR 16ch" },
+    { "id": "TCH-08", "kind": "tech", "name": "Salma Ramadhani", "trade": "Printing / Signage", "place": "Mjini, Zanzibar", "lat": -6.162, "lng": 39.198, "status": "online", "jobs": 57, "rating": 4.8, "env": "Print shop (umidity high)", "tools": "Sublimation printer, cutter, laminate" },
+    { "id": "CUS-01", "kind": "customer", "name": "Harbour View Hotel", "trade": "Hoteli", "place": "Dar es Salaam CBD", "lat": -6.816, "lng": 39.285, "status": "open", "jobs": 12, "rating": 4.6, "env": "Hoteli ya nyota 4 — AC, generator, lift", "tools": "Hitaji: AC service + backup power" },
+    { "id": "CUS-02", "kind": "customer", "name": "Sekondari Kilakala", "trade": "Elimu", "place": "Morogoro", "lat": -6.821, "lng": 37.661, "status": "open", "jobs": 7, "rating": 4.2, "env": "Shule ya bweni (umeme wa gridi hukatika)", "tools": "Hitaji: solar + LAN ya maabara" },
+    { "id": "CUS-03", "kind": "customer", "name": "Kliniki Mwananyamala", "trade": "Afya", "place": "Dar es Salaam", "lat": -6.744, "lng": 39.236, "status": "urgent", "jobs": 4, "rating": 4.9, "env": "Kliniki — cold room + stethoscope devices", "tools": "Hitaji: matatizo ya umeme (haraka)" },
+    { "id": "CUS-04", "kind": "customer", "name": "Duka la Vibeti Bariadi", "trade": "Biashara", "place": "Simiyu", "lat": -2.8, "lng": 33.98, "status": "open", "jobs": 3, "rating": 4.1, "env": "Duka la vifaa (mabawa, TV)", "tools": "Hitaji: satellite dish alignment" },
+    { "id": "CUS-05", "kind": "customer", "name": "Kampuni ya Nafaka Tabora", "trade": "Viwanda", "place": "Tabora", "lat": -5.019, "lng": 32.802, "status": "open", "jobs": 9, "rating": 4.3, "env": "Kiwanda — vibration na dust kubwa", "tools": "Hitaji: motors, control panel, pumps" },
+    { "id": "CUS-06", "kind": "customer", "name": "Sekondari Kibaha", "trade": "Elimu", "place": "Pwani", "lat": -6.767, "lng": 39.283, "status": "open", "jobs": 5, "rating": 4.0, "env": "Shule — computer lab ya vifaa 40", "tools": "Hitaji: PCs, switch, UPS" },
+    { "id": "CUS-07", "kind": "customer", "name": "Zanzibar Coffee House", "trade": "Hoteli", "place": "Stone Town", "lat": -6.165, "lng": 39.19, "status": "open", "jobs": 6, "rating": 4.7, "env": "Jengo la zamani (heritage) — wiring ya zamani", "tools": "Hitaji: rewiring salama + CCTV" },
+    { "id": "JOB-01", "kind": "job", "name": "Solar power station", "trade": "Umeme jua", "place": "Chamwino, Dodoma", "lat": -6.1, "lng": 35.85, "status": "in_progress", "jobs": 1, "rating": 0, "env": "Uwanja wazi — joto kubwa na vumbi", "tools": "Progress 62% · Panels 240 · Inverters 4" },
+    { "id": "JOB-02", "kind": "job", "name": "Fiber installation", "trade": "Mitandao", "place": "Moshi", "lat": -3.346, "lng": 37.339, "status": "in_progress", "jobs": 1, "rating": 0, "env": "Barabara kuu — trenching", "tools": "Progress 41% · Km 18.5 · OLT 2" },
+    { "id": "JOB-03", "kind": "job", "name": "Borehole pump", "trade": "Pampu", "place": "Sumbawanga", "lat": -7.967, "lng": 31.617, "status": "pending", "jobs": 1, "rating": 0, "env": "Kijiji — njia ngumu ya kufikia", "tools": "Progress 8% · Depth 120m · Pump 3HP" },
+    { "id": "JOB-04", "kind": "job", "name": "CCTV market rollout", "trade": "Usalama", "place": "Arusha", "lat": -3.386, "lng": 36.683, "status": "in_progress", "jobs": 1, "rating": 0, "env": "Soko kuu — msongamano wa watu", "tools": "Progress 73% · Cameras 34 / 46" }
+  ],
+  "routes": [
+    { "id": "C1", "name": "Dar es Salaam → Dodoma", "from": { "lat": -6.816, "lng": 39.285 }, "to": { "lat": -6.163, "lng": 35.751 }, "type": "highway" },
+    { "id": "C2", "name": "Dar es Salaam → Mwanza", "from": { "lat": -6.816, "lng": 39.285 }, "to": { "lat": -2.516, "lng": 32.917 }, "type": "highway" },
+    { "id": "C3", "name": "Dar es Salaam → Tanga", "from": { "lat": -6.816, "lng": 39.285 }, "to": { "lat": -5.069, "lng": 39.099 }, "type": "highway" },
+    { "id": "C4", "name": "Arusha → Mwanza", "from": { "lat": -3.386, "lng": 36.683 }, "to": { "lat": -2.516, "lng": 32.917 }, "type": "highway" },
+    { "id": "C5", "name": "Dodoma → Mbeya", "from": { "lat": -6.163, "lng": 35.751 }, "to": { "lat": -8.9, "lng": 33.45 }, "type": "highway" },
+    { "id": "C6", "name": "Mwanza → Geita", "from": { "lat": -2.516, "lng": 32.917 }, "to": { "lat": -2.872, "lng": 32.232 }, "type": "trunk" },
+    { "id": "C7", "name": "Kigoma → Tabora", "from": { "lat": -4.876, "lng": 29.661 }, "to": { "lat": -5.019, "lng": 32.802 }, "type": "trunk" },
+    { "id": "C8", "name": "Mtwara → Dar es Salaam", "from": { "lat": -10.267, "lng": 40.183 }, "to": { "lat": -6.816, "lng": 39.285 }, "type": "highway" }
+  ],
+  "cities": [
+    { "name": "Dar es Salaam", "lat": -6.816, "lng": 39.285 },
+    { "name": "Dodoma", "lat": -6.163, "lng": 35.751 },
+    { "name": "Mwanza", "lat": -2.516, "lng": 32.917 },
+    { "name": "Arusha", "lat": -3.386, "lng": 36.683 },
+    { "name": "Tanga", "lat": -5.069, "lng": 39.099 },
+    { "name": "Mbeya", "lat": -8.9, "lng": 33.45 },
+    { "name": "Morogoro", "lat": -6.821, "lng": 37.661 },
+    { "name": "Tabora", "lat": -5.019, "lng": 32.802 },
+    { "name": "Kigoma", "lat": -4.876, "lng": 29.661 },
+    { "name": "Mtwara", "lat": -10.267, "lng": 40.183 },
+    { "name": "Iringa", "lat": -7.77, "lng": 35.69 },
+    { "name": "Zanzibar", "lat": -6.162, "lng": 39.198 }
+  ]
+}
