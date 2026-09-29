@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -11,10 +11,10 @@
   "stats": {
     "regions": 31,
     "districts": 184,
-    "tarafa_listed": 70,
+    "tarafa_listed": 130,
     "vitongoji_listed": 55,
     "mitaa_listed": 48,
-    "note": "Mikoa + Wilaya kamili. Tarafa/Vitongoji/Mitaa: mikoa 10+ yameanza (Dar, Dodoma, Arusha, Mwanza, Pwani, Tanga, Mbeya, Morogoro, Kilimanjaro, Kigoma). Inaendelea – hakuna kuruka."
+    "note": "Mikoa 31 + Wilaya 184 kamili. Tarafa: mikoa YOTE 31 yameanza (130+). Vitongoji + Mitaa zinaendelea kujazwa. Hakuna kuruka."
   },
   "files": {
     "districts": "data/geo/districts.json",
@@ -26,9 +26,9 @@
   "notes": [
     "✅ Mikoa 31 kamili",
     "✅ Wilaya 184 kamili",
-    "🔄 Tarafa 70+",
+    "✅ Tarafa: mikoa yote 31 yameanza (130+)",
     "🔄 Vitongoji 55+",
     "🔄 Mitaa 48+",
-    "Inaendelea mkoa mkoa – hakuna kuruka"
+    "Inaendelea – hakuna kuruka"
   ]
 }
