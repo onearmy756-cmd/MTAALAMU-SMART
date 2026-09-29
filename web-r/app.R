@@ -1,5 +1,5 @@
 # ============================================================
-# MTAALAMU SMART — UI (R/Shiny) + AGENTIC VISION (AV4/AV5)
+# MTAALAMU SMART — UI + AGENTIC VISION (AV4/AV5/AV6)
 # ============================================================
 
 .libPaths(c(file.path(Sys.getenv("USERPROFILE"), "Documents", "R", "win-library",
@@ -32,6 +32,7 @@ source(p_app("R", "views.R"), local = FALSE)
 source(p_app("R", "agentic.R"), local = FALSE)
 source(p_app("R", "agentic_i18n_patch.R"), local = FALSE)
 source(p_app("R", "scribe.R"), local = FALSE)
+source(p_app("R", "sysprobe.R"), local = FALSE)
 
 library(jsonlite)
 FDOC      <- fromJSON(p_app("data", "formulas.json"), simplifyVector = FALSE)
@@ -100,19 +101,39 @@ server <- function(input, output, session) {
 
   tick    <- reactiveVal(0L)
   uptime  <- reactiveVal(52327L)
-  stats   <- reactiveVal(list(cpu = 62, ram = 78, disk = 94, gpu = 41, latency = 12))
+  # seed from real probe once
+  .init_probe <- tryCatch(sysprobe_snapshot(), error = function(e) NULL)
+  stats   <- reactiveVal(list(
+    cpu = if (!is.null(.init_probe$cpu_usage_pct) && !is.na(.init_probe$cpu_usage_pct))
+            as.integer(round(.init_probe$cpu_usage_pct)) else 62L,
+    ram = if (!is.null(.init_probe$ram_usage_pct) && !is.na(.init_probe$ram_usage_pct))
+            as.integer(round(.init_probe$ram_usage_pct)) else 78L,
+    disk = 94L, gpu = 41L, latency = 12L
+  ))
+  probe_snap <- reactiveVal(.init_probe)
 
   observe({
-    invalidateLater(1500, session)
+    invalidateLater(5000, session)
     isolate({
-      s <- stats()
-      stats(list(
-        cpu = max(5, min(99, s$cpu + round((runif(1) - 0.5) * 8))),
-        ram = max(20, min(99, s$ram + round((runif(1) - 0.5) * 4))),
-        disk = 94,
-        gpu = max(10, min(99, s$gpu + round((runif(1) - 0.5) * 10))),
-        latency = max(3, min(80, s$latency + round((runif(1) - 0.5) * 6)))))
-      uptime(uptime() + 1L)
+      # refresh OS probe every 5s (cheaper than every 1.5s)
+      snap <- tryCatch(sysprobe_snapshot(), error = function(e) NULL)
+      if (!is.null(snap)) {
+        probe_snap(snap)
+        s <- stats()
+        if (!is.null(snap$cpu_usage_pct) && !is.na(snap$cpu_usage_pct))
+          s$cpu <- max(1L, min(99L, as.integer(round(snap$cpu_usage_pct))))
+        if (!is.null(snap$ram_usage_pct) && !is.na(snap$ram_usage_pct))
+          s$ram <- max(1L, min(99L, as.integer(round(snap$ram_usage_pct))))
+        stats(s)
+      } else {
+        s <- stats()
+        stats(list(
+          cpu = max(5, min(99, s$cpu + round((runif(1) - 0.5) * 8))),
+          ram = max(20, min(99, s$ram + round((runif(1) - 0.5) * 4))),
+          disk = s$disk, gpu = max(10, min(99, s$gpu + round((runif(1) - 0.5) * 10))),
+          latency = max(3, min(80, s$latency + round((runif(1) - 0.5) * 6)))))
+      }
+      uptime(uptime() + 5L)
       tick(tick() + 1L)
     })
   })
@@ -129,7 +150,7 @@ server <- function(input, output, session) {
   output$tabs <- renderUI(tabs_el(lang(), length(FORMULAS), length(MODEL_IDS), input$tab %||% "live"))
   output$live <- renderUI(view_live(stats(), NET, lang()))
 
-  # ---- AGENTIC VISION + SCRIBE + BOOK ----
+  # ---- AGENTIC + SCRIBE + BOOK + SYSPROBE ----
   av_state <- reactiveVal(list(
     pipe_idx = 0L, status = "ready", log = character(0),
     msg = "", narration = "", session_id = paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
@@ -137,26 +158,41 @@ server <- function(input, output, session) {
 
   output$agentic <- renderUI(view_agentic(lang(), AGENTIC, av_state()))
 
+  output$av_sysprobe <- renderUI({
+    sysprobe_panel_el(probe_snap(), lang())
+  })
+
   observeEvent(input$av_start, {
     msg <- isolate(as.character(input$av_msg %||% ""))
     if (!nzchar(trimws(msg))) msg <- "Tatizo la kifaa — scan automatic (Vision)"
     issues <- AGENTIC$agent_data$issues %||% list()
     sid <- paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
     narr <- build_scribe_narration(msg, issues, "hitl")
-    greet <- av_voice_script(AGENTIC, "agent.receptionist.greet")
-    hitl_q <- av_voice_script(AGENTIC, "hitl.ask_fix")
+    # merge OS probe issues into log
+    snap <- tryCatch(sysprobe_snapshot(), error = function(e) NULL)
+    if (!is.null(snap)) probe_snap(snap)
+    probe_lines <- character(0)
+    if (!is.null(snap)) {
+      probe_lines <- c(
+        paste0("OS Probe: ", snap$hostname %||% "", " / ", snap$os %||% ""),
+        paste0("  CPU: ", snap$cpu_usage_pct %||% "?", "%  RAM: ", snap$ram_usage_pct %||% "?", "%  health=", snap$health %||% "?"),
+        if (length(snap$issues) > 0) paste0("  ! ", unlist(snap$issues)) else "  (hakuna tahadhari OS)"
+      )
+    }
     lines <- c(
       paste0("Session: ", sid),
       paste0("Ujumbe: ", msg),
+      probe_lines,
       paste0("Vision: matatizo ", length(issues)),
       "--- SCRIBE ---",
       narr,
       "",
       "Hali: inasubiri RUHUSU (HITL)"
     )
-    av_state(list(pipe_idx = 1L, status = "hitl", log = lines, msg = msg,
-                  narration = narr, session_id = sid))
-    # Auto TTS
+    av_state(list(pipe_idx = 1L, status = "hitl", log = as.character(unlist(lines)),
+                  msg = msg, narration = narr, session_id = sid))
+    greet <- av_voice_script(AGENTIC, "agent.receptionist.greet")
+    hitl_q <- av_voice_script(AGENTIC, "hitl.ask_permission")
     session$sendCustomMessage("mtaalamu_speak", list(text = paste(greet, hitl_q, sep = " ")))
   }, ignoreInit = TRUE)
 
@@ -165,22 +201,32 @@ server <- function(input, output, session) {
     issues <- AGENTIC$agent_data$issues %||% list()
     msg <- st$msg %||% "Tatizo"
     narr <- build_scribe_narration(msg, issues, "done")
-    done_v <- av_voice_script(AGENTIC, "session.complete")
     lines <- c(st$log %||% character(0), "", "=== BAADA YA HITL ===", narr)
     av_state(list(pipe_idx = 6L, status = "done", log = lines, msg = msg,
                   narration = narr, session_id = st$session_id %||% "AV-done"))
-    session$sendCustomMessage("mtaalamu_speak", list(text = done_v))
+    session$sendCustomMessage("mtaalamu_speak",
+      list(text = av_voice_script(AGENTIC, "session.complete")))
   }, ignoreInit = TRUE)
 
   observeEvent(input$av_scan, {
     st <- av_state()
-    scan_v <- av_voice_script(AGENTIC, "agent.vision.scanning")
-    lines <- c(st$log %||% character(0),
-               paste0("Scan @ ", format(Sys.time(), "%H:%M:%S")),
-               paste0("Components: ", length(AGENTIC$agent_data$components %||% list())),
-               paste0("Processes: ", length(AGENTIC$agent_data$processes %||% list())))
-    av_state(modifyList(st, list(log = lines)))
-    session$sendCustomMessage("mtaalamu_speak", list(text = scan_v))
+    snap <- tryCatch(sysprobe_snapshot(), error = function(e) NULL)
+    if (!is.null(snap)) probe_snap(snap)
+    lines <- c(
+      st$log %||% character(0),
+      paste0("Scan @ ", format(Sys.time(), "%H:%M:%S")),
+      paste0("Components: ", length(AGENTIC$agent_data$components %||% list())),
+      paste0("Processes: ", length(AGENTIC$agent_data$processes %||% list()))
+    )
+    if (!is.null(snap)) {
+      lines <- c(lines,
+        paste0("OS CPU: ", snap$cpu_usage_pct %||% "?", "% RAM: ", snap$ram_usage_pct %||% "?", "%"),
+        paste0("OS health: ", snap$health %||% "?"),
+        if (length(snap$issues) > 0) paste0("OS: ", unlist(snap$issues)) else NULL)
+    }
+    av_state(modifyList(st, list(log = as.character(unlist(lines)))))
+    session$sendCustomMessage("mtaalamu_speak",
+      list(text = av_voice_script(AGENTIC, "agent.vision.scanning")))
   }, ignoreInit = TRUE)
 
   output$av_session_status <- renderUI({
@@ -196,10 +242,9 @@ server <- function(input, output, session) {
   output$av_report_out <- renderUI({
     st <- av_state()
     log <- st$log %||% character(0)
-    if (length(log) == 0) {
+    if (length(log) == 0)
       return(tags$div(style = "color:var(--dim)",
                       tryCatch(tr("av.session.ready", lang()), error = function(e) "Tayari")))
-    }
     tags$pre(style = "white-space:pre-wrap;color:#b2ebf2;font-size:12px;background:#050d18;padding:12px;border-radius:8px;max-height:420px;overflow:auto",
              paste(log, collapse = "\n"))
   })
@@ -210,32 +255,20 @@ server <- function(input, output, session) {
   })
 
   output$av_book_html <- downloadHandler(
-    filename = function() {
-      st <- av_state()
-      paste0(st$session_id %||% "AV-report", "-kitabu.html")
-    },
+    filename = function() paste0((av_state())$session_id %||% "AV", "-kitabu.html"),
     content = function(file) {
       st <- av_state()
-      issues <- AGENTIC$agent_data$issues %||% list()
       html <- build_digital_book_html(
         session_id = st$session_id %||% "AV",
         msg = st$msg %||% "",
-        issues = issues,
+        issues = AGENTIC$agent_data$issues %||% list(),
         narration = st$narration %||% paste(st$log, collapse = "\n"),
-        lang = lang()
-      )
+        lang = lang())
       writeLines(html, file, useBytes = TRUE)
     }
   )
 
-  # Custom message handler registration for TTS
-  observe({
-    session$onFlushed(function() {
-      # inject handler once
-    }, once = TRUE)
-  })
-
-  # ---- FORMULA (condensed) ----
+  # ---- FORMULA ----
   sel_id <- reactiveVal(NULL)
   filtered_formulas <- reactive({
     tf <- input$fx_trade %||% "all"
@@ -317,13 +350,13 @@ server <- function(input, output, session) {
         })))
   })
   output$dx_results <- renderUI({
-    lg <- lang(); res <- bayes_causes(current_model(), on_sym())
+    res <- bayes_causes(current_model(), on_sym())
     tags$div(class = "result-card",
       tags$div(class = "formula-line", l("d.causes")),
       lapply(res, function(r) {
         tags$div(class = "prob-row",
-          tags$div(class = "prob-top",
-            tags$span(bi(r$name, lg)), tags$span(class = "pct", paste0(r$prob, "%"))),
+          tags$div(class = "prob-top", tags$span(bi(r$name, lang())),
+                   tags$span(class = "pct", paste0(r$prob, "%"))),
           meter_el(r$prob, r$prob >= 50))
       }))
   })
@@ -336,8 +369,5 @@ server <- function(input, output, session) {
     outputOptions(output, nm, suspendWhenHidden = FALSE)
   }
 }
-
-# Register JS handler for TTS custom messages
-shiny::addResourcePath("www", file.path(normalizePath(APP_DIR), "www"))
 
 shinyApp(ui = ui, server = server)
