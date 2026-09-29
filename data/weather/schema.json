@@ -1,39 +1,73 @@
 {
-  "version": "1.0.0",
-  "description": "Schema ya utabiri wa hali ya hewa + alerts kwa MTAALAMU SMART",
-  "forecast": {
-    "location": { "lat": 0.0, "lng": 0.0, "name_sw": "", "name_en": "" },
-    "updated_at": "ISO8601",
-    "current": {
-      "temp_c": 0.0,
-      "feels_like_c": 0.0,
-      "humidity": 0,
-      "wind_kmh": 0.0,
-      "condition_sw": "",
-      "condition_en": "",
-      "icon": ""
+  "version": "2.0.0",
+  "description": "Schema ya utabiri wa hali ya hewa + alerts kwa navigation",
+  "units": {
+    "temperature": "celsius",
+    "wind_speed": "km/h",
+    "precipitation": "mm",
+    "visibility": "km"
+  },
+  "fields": {
+    "current": ["temp_c", "feels_like_c", "humidity_pct", "wind_kmh", "wind_dir", "condition", "condition_sw", "visibility_km", "pressure_hpa", "uv_index"],
+    "hourly": ["time", "temp_c", "condition", "condition_sw", "precip_mm", "precip_prob", "wind_kmh"],
+    "daily": ["date", "temp_min_c", "temp_max_c", "condition", "condition_sw", "precip_mm", "precip_prob", "sunrise", "sunset"]
+  },
+  "conditions_sw": {
+    "clear": "Anga safi",
+    "partly_cloudy": "Mawingu kidogo",
+    "cloudy": "Mawingu",
+    "overcast": "Mawingu mengi",
+    "fog": "Ukungu",
+    "drizzle": "Manyunyu",
+    "rain": "Mvua",
+    "heavy_rain": "Mvua kubwa",
+    "thunderstorm": "Radi na radi",
+    "snow": "Theluji",
+    "windy": "Upepo mkali",
+    "hot": "Joto kali",
+    "cold": "Baridi"
+  },
+  "alerts": [
+    {
+      "id": "heavy_rain",
+      "condition": "precip_mm > 20 OR condition == heavy_rain",
+      "severity": 3,
+      "message_sw": "Mvua kubwa inatarajiwa. Kuwa makini barabarani.",
+      "message_en": "Heavy rain expected. Drive carefully."
     },
-    "hourly": [],
-    "daily": []
-  },
-  "alerts": {
-    "type": "array",
-    "items": {
-      "id": "string",
-      "severity": "low|medium|high|critical",
-      "title_sw": "",
-      "title_en": "",
-      "description_sw": "",
-      "description_en": "",
-      "start": "ISO8601",
-      "end": "ISO8601",
-      "areas": []
+    {
+      "id": "thunderstorm",
+      "condition": "condition == thunderstorm",
+      "severity": 4,
+      "message_sw": "Radi na radi. Epuka maeneo wazi.",
+      "message_en": "Thunderstorm. Avoid open areas."
+    },
+    {
+      "id": "fog",
+      "condition": "condition == fog OR visibility_km < 1",
+      "severity": 3,
+      "message_sw": "Ukungu. Punguza kasi.",
+      "message_en": "Fog. Reduce speed."
+    },
+    {
+      "id": "strong_wind",
+      "condition": "wind_kmh > 50",
+      "severity": 2,
+      "message_sw": "Upepo mkali.",
+      "message_en": "Strong wind."
+    },
+    {
+      "id": "extreme_heat",
+      "condition": "temp_c > 38",
+      "severity": 2,
+      "message_sw": "Joto kali sana.",
+      "message_en": "Extreme heat."
     }
+  ],
+  "providers": {
+    "primary": "open-meteo",
+    "fallback": "cache",
+    "offline_cache_hours": 6
   },
-  "sources": ["OpenWeatherMap", "offline-cache", "Tanzania Meteorological Authority (baadaye)"],
-  "notes": [
-    "Offline-first: cache ya forecast ihifadhiwe ndani.",
-    "Voice: tumia voice_prompts_sw.json key 'weather_alert'.",
-    "Itaonyeshwa kama overlay kwenye ramani + arifa."
-  ]
+  "api_notes": "Open-Meteo ni bure na hakuna API key. Offline cache kwa masaa 6."
 }
