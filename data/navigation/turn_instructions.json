@@ -1,38 +1,65 @@
 {
-  "version": "1.0.0",
-  "language": "sw-TZ",
-  "description": "Templates za maelekezo ya hatua kwa hatua (turn-by-turn) kwa Kiswahili",
+  "version": "2.0.0",
+  "description": "Templates za maelekezo ya hatua kwa hatua (turn-by-turn) - Kiswahili",
   "instructions": {
-    "depart": "Anza safari kutoka {{origin}}.",
-    "arrive": "Umefika {{destination}}. Hongera!",
-    "turn": "{{modifier}} {{direction}} kwenye {{street}}.",
-    "continue": "Endelea moja kwa moja kwenye {{street}}.",
-    "roundabout": "Ingia kwenye mzunguko, chukua njia ya {{exit}}.",
-    "merge": "Jiunge na {{street}}.",
-    "fork": "Chukua njia ya {{direction}} kwenye {{street}}.",
-    "end_of_road": "Mwisho wa barabara – {{modifier}} {{direction}}.",
-    "new_name": "Barabara inabadilika jina kuwa {{street}}.",
-    "notification": "{{message}}.",
-    "use_lane": "Tumia {{lanes}}.",
-    "ramp": "Chukua exit ya {{street}}."
+    "depart": {
+      "sw": "Anza safari kuelekea {destination}",
+      "en": "Start journey towards {destination}"
+    },
+    "arrive": {
+      "sw": "Umefika {destination}",
+      "en": "You have arrived at {destination}"
+    },
+    "turn": {
+      "left": { "sw": "Pinda kushoto", "en": "Turn left" },
+      "right": { "sw": "Pinda kulia", "en": "Turn right" },
+      "slight_left": { "sw": "Pinda kidogo kushoto", "en": "Slight left" },
+      "slight_right": { "sw": "Pinda kidogo kulia", "en": "Slight right" },
+      "sharp_left": { "sw": "Pinda kwa kasi kushoto", "en": "Sharp left" },
+      "sharp_right": { "sw": "Pinda kwa kasi kulia", "en": "Sharp right" },
+      "u_turn": { "sw": "Geuka nyuma", "en": "Make a U-turn" }
+    },
+    "continue": {
+      "straight": { "sw": "Endelea moja kwa moja", "en": "Continue straight" },
+      "on_road": { "sw": "Endelea kwenye {road}", "en": "Continue on {road}" }
+    },
+    "roundabout": {
+      "enter": { "sw": "Ingia kwenye mzunguko", "en": "Enter the roundabout" },
+      "exit": { "sw": "Toka kwenye mzunguko, exit {exit_number}", "en": "Exit the roundabout, exit {exit_number}" }
+    },
+    "highway": {
+      "enter": { "sw": "Ingia barabara kuu {road}", "en": "Enter highway {road}" },
+      "exit": { "sw": "Toka barabara kuu kwenye exit {exit}", "en": "Exit highway at exit {exit}" }
+    },
+    "waypoint": {
+      "sw": "Pitia {place}",
+      "en": "Pass {place}"
+    },
+    "distance": {
+      "meters": { "sw": "mita {n}", "en": "{n} meters" },
+      "kilometers": { "sw": "kilomita {n}", "en": "{n} kilometers" }
+    },
+    "combine": {
+      "sw": "{distance_phrase}, {action_phrase}",
+      "en": "In {distance_phrase}, {action_phrase}"
+    }
   },
-  "modifiers": {
-    "left": "geuka kushoto",
-    "right": "geuka kulia",
-    "sharp left": "geuka sana kushoto",
-    "sharp right": "geuka sana kulia",
-    "slight left": "geuka kidogo kushoto",
-    "slight right": "geuka kidogo kulia",
-    "straight": "endelea moja kwa moja",
-    "uturn": "geuka nyuma"
-  },
-  "distance_phrases": {
-    "meters": "Baada ya mita {{n}}",
-    "kilometers": "Baada ya kilomita {{n}}",
-    "now": "Sasa"
-  },
-  "notes": [
-    "Variables: {{origin}}, {{destination}}, {{street}}, {{direction}}, {{modifier}}, {{exit}}, {{lanes}}, {{message}}, {{n}}",
-    "Inaunganishwa na voice_prompts_sw.json kwa TTS."
-  ]
+  "maneuver_map": {
+    "turn-left": "turn.left",
+    "turn-right": "turn.right",
+    "turn-slight-left": "turn.slight_left",
+    "turn-slight-right": "turn.slight_right",
+    "turn-sharp-left": "turn.sharp_left",
+    "turn-sharp-right": "turn.sharp_right",
+    "uturn": "turn.u_turn",
+    "continue": "continue.straight",
+    "roundabout": "roundabout.enter",
+    "exit roundabout": "roundabout.exit",
+    "merge": "continue.straight",
+    "fork": "continue.straight",
+    "end of road": "turn.left",
+    "new name": "continue.on_road",
+    "arrive": "arrive",
+    "depart": "depart"
+  }
 }
