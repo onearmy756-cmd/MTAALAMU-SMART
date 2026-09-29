@@ -1,9 +1,15 @@
 # ============================================================
-# agentic.R — Agentic Vision UI + AV4/AV5/AV6 (sysprobe)
+# agentic.R — Agentic Vision UI + data/*.json bridge
 # ============================================================
 
 load_agentic_data <- function() {
-  roots <- c(p_root("data"), p_app("data"), file.path(dirname(APP_DIR), "data"))
+  roots <- c(
+    if (exists("p_root", mode = "function")) p_root("data") else NULL,
+    if (exists("p_app", mode = "function")) p_app("data") else NULL,
+    if (exists("APP_DIR")) file.path(dirname(APP_DIR), "data") else NULL,
+    "data", "../data"
+  )
+  roots <- unique(Filter(Negate(is.null), roots))
   pick <- function(rel) {
     for (r in roots) {
       f <- file.path(r, rel)
@@ -14,8 +20,9 @@ load_agentic_data <- function() {
   readj <- function(rel, default = list()) {
     f <- pick(rel)
     if (is.null(f)) return(default)
-    tryCatch(fromJSON(f, simplifyVector = FALSE), error = function(e) default)
+    tryCatch(jsonlite::fromJSON(f, simplifyVector = FALSE), error = function(e) default)
   }
+  kb <- tryCatch(load_knowledge_bundle(), error = function(e) NULL)
   list(
     agent_data = readj("agent_data.json"),
     agents     = readj("agents/agents_10.json"),
@@ -23,7 +30,8 @@ load_agentic_data <- function() {
     device_map = readj("vision/device_map.json"),
     system_bus = readj("vision/system_bus.json"),
     voice      = readj("vision/voice_scripts_sw.json"),
-    report_tpl = readj("vision/report_template.json")
+    report_tpl = readj("vision/report_template.json"),
+    knowledge  = kb
   )
 }
 
@@ -79,7 +87,7 @@ agentic_topology_svg <- function(topology) {
 
 agentic_processes_el <- function(processes, lang) {
   if (is.null(processes) || length(processes) == 0)
-    return(tags$div(style = "color:var(--dim)", tr("av.no_proc", lang)))
+    return(tags$div(style = "color:var(--dim)", tryCatch(tr("av.no_proc", lang), error = function(e) "—")))
   tags$div(class = "proc-list", lapply(processes, function(p) {
     st <- p$status %||% "good"
     tags$div(class = paste("proc-row", if (st == "critical") "danger"),
@@ -92,7 +100,7 @@ agentic_processes_el <- function(processes, lang) {
 
 agentic_issues_el <- function(issues, lang) {
   if (is.null(issues) || length(issues) == 0)
-    return(tags$div(class = "status-banner INFO", tr("av.no_issues", lang)))
+    return(tags$div(class = "status-banner INFO", tryCatch(tr("av.no_issues", lang), error = function(e) "Hakuna")))
   tags$div(lapply(issues, function(iss) {
     tags$div(class = "issue warn",
       tags$span(class = "ico", "⚠"),
@@ -138,54 +146,70 @@ view_agentic <- function(lang, data, session_state = NULL) {
   issues     <- ad$issues %||% list()
   pipe_steps <- (data$pipeline$steps) %||% list()
   greet <- (data$voice$scripts[["agent.receptionist.greet"]]) %||% "Habari. Mimi ni Mtaalamu Smart."
+  kb <- data$knowledge
+  lookup <- session_state$knowledge_lookup
 
   tags$div(class = "av-wrap",
-    panel_el(tr("av.qa.title", lang), tr("av.qa.meta", lang),
+    panel_el(tryCatch(tr("av.qa.title", lang), error = function(e) "Uliza / Anza"),
+             tryCatch(tr("av.qa.meta", lang), error = function(e) "Agentic"),
       tags$div(
         tags$div(class = "field",
-          tags$label(tr("av.qa.label", lang)),
+          tags$label(tryCatch(tr("av.qa.label", lang), error = function(e) "Tatizo")),
           tags$textarea(id = "av_msg", class = "form-control", rows = 3,
             style = "width:100%;background:#0a1628;color:#e0f7fa;border:1px solid #00e5ff44",
-            placeholder = tr("av.qa.placeholder", lang))),
+            placeholder = tryCatch(tr("av.qa.placeholder", lang), error = function(e) "Mf. kompyuta inaenda polepole..."))),
         tags$div(style = "display:flex;gap:10px;margin-top:10px;flex-wrap:wrap",
           tags$button(class = "trade-pill active",
             onclick = "Shiny.setInputValue('av_start', Date.now(), {priority:'event'})",
-            tr("av.btn.start", lang)),
+            tryCatch(tr("av.btn.start", lang), error = function(e) "ANZA")),
           tags$button(class = "trade-pill",
             onclick = "Shiny.setInputValue('av_approve', Date.now(), {priority:'event'})",
-            tr("av.btn.approve", lang)),
+            tryCatch(tr("av.btn.approve", lang), error = function(e) "RUHUSU")),
           tags$button(class = "trade-pill",
             onclick = "Shiny.setInputValue('av_scan', Date.now(), {priority:'event'})",
-            tr("av.btn.scan", lang)),
+            tryCatch(tr("av.btn.scan", lang), error = function(e) "SCAN")),
           tags$button(class = "trade-pill",
             onclick = "if(window.mtaalamuSpeakLog){mtaalamuSpeakLog('#av_narration_text');}",
-            tr("av.btn.voice", lang))),
+            tryCatch(tr("av.btn.voice", lang), error = function(e) "SAUTI"))),
         tags$div(id = "av_voice_text", style = "display:none", greet),
         uiOutput("av_session_status"))),
 
-    # AV6 — OS probe live
-    panel_el("⚡ OS PROBE (HALISI)", "CPU · RAM · Disk · Health — sysprobe",
+    # DATA catalog from data/
+    panel_el("📚 DATA / KNOWLEDGE BASE", "problems.json · diagnosis.json · devices_solver · trades",
+      tags$div(
+        knowledge_catalog_summary_el(kb, lang),
+        tags$div(style = "margin-top:12px", uiOutput("av_knowledge"))
+      )),
+
+    panel_el("⚡ OS PROBE (HALISI)", "CPU · RAM · Disk · Health",
       uiOutput("av_sysprobe")),
 
-    panel_el(tr("av.agents.title", lang), tr("av.agents.meta", lang),
+    panel_el(tryCatch(tr("av.agents.title", lang), error = function(e) "Agents"),
+             tryCatch(tr("av.agents.meta", lang), error = function(e) ""),
       agentic_agents_el(data$agents, lang)),
 
-    panel_el(tr("av.pipe.title", lang), tr("av.pipe.meta", lang),
+    panel_el(tryCatch(tr("av.pipe.title", lang), error = function(e) "Pipeline"),
+             tryCatch(tr("av.pipe.meta", lang), error = function(e) ""),
       agentic_pipeline_el(pipe_steps, session_state$pipe_idx %||% 0, lang)),
 
     tags$div(class = "grid",
-      panel_el(tr("av.map.title", lang), tr("av.map.meta", lang),
+      panel_el(tryCatch(tr("av.map.title", lang), error = function(e) "Ramani"),
+               tryCatch(tr("av.map.meta", lang), error = function(e) ""),
         HTML(agentic_device_map_svg(components))),
-      panel_el(tr("av.proc.title", lang), tr("av.proc.meta", lang),
+      panel_el(tryCatch(tr("av.proc.title", lang), error = function(e) "Processes"),
+               tryCatch(tr("av.proc.meta", lang), error = function(e) ""),
         agentic_processes_el(processes, lang))),
 
     tags$div(class = "grid grid-bottom",
-      panel_el(tr("av.topo.title", lang), tr("av.topo.meta", lang),
+      panel_el(tryCatch(tr("av.topo.title", lang), error = function(e) "Topology"),
+               tryCatch(tr("av.topo.meta", lang), error = function(e) ""),
         HTML(agentic_topology_svg(topology))),
-      panel_el(tr("av.iss.title", lang), tr("av.iss.meta", lang),
+      panel_el(tryCatch(tr("av.iss.title", lang), error = function(e) "Issues"),
+               tryCatch(tr("av.iss.meta", lang), error = function(e) ""),
         agentic_issues_el(issues, lang))),
 
-    panel_el(tr("av.bus.title", lang), tr("av.bus.meta", lang),
+    panel_el(tryCatch(tr("av.bus.title", lang), error = function(e) "Bus"),
+             tryCatch(tr("av.bus.meta", lang), error = function(e) ""),
       tags$div(style = "display:flex;flex-wrap:wrap;gap:8px",
         lapply((data$system_bus$buses) %||% list(), function(b) {
           tags$div(style = "border:1px solid #00e5ff33;border-radius:6px;padding:8px 12px;background:#0a1628",
@@ -193,7 +217,8 @@ view_agentic <- function(lang, data, session_state = NULL) {
             tags$div(style = "font-size:10px;color:var(--dim)", paste((b$path %||% list()), collapse = " → ")))
         }))),
 
-    panel_el(tr("av.report.title", lang), tr("av.report.meta", lang),
+    panel_el(tryCatch(tr("av.report.title", lang), error = function(e) "Ripoti"),
+             tryCatch(tr("av.report.meta", lang), error = function(e) ""),
       tags$div(
         uiOutput("av_report_out"),
         tags$div(id = "av_narration_text", style = "position:absolute;left:-9999px;height:1px;overflow:hidden",
