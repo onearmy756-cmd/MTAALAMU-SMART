@@ -1,5 +1,5 @@
 # ============================================================
-# MTAALAMU SMART — UI + AGENTIC VISION + data/*.json
+# MTAALAMU SMART — UI + AGENTIC VISION + data/*.json + SOLVE
 # ============================================================
 
 .libPaths(c(file.path(Sys.getenv("USERPROFILE"), "Documents", "R", "win-library",
@@ -34,10 +34,10 @@ source(p_app("R", "agentic.R"), local = FALSE)
 source(p_app("R", "agentic_i18n_patch.R"), local = FALSE)
 source(p_app("R", "scribe.R"), local = FALSE)
 source(p_app("R", "sysprobe.R"), local = FALSE)
+source(p_app("R", "solve.R"), local = FALSE)
 
 library(jsonlite)
 
-# Prefer repo-root data/ then web-r/data/
 .data_file <- function(name) {
   for (p in c(p_root("data", name), p_app("data", name))) {
     if (file.exists(p)) return(p)
@@ -59,7 +59,6 @@ AGENTIC_BASE <- tryCatch(load_agentic_data(), error = function(e) list(
   live <- tryCatch(build_live_agent_data(), error = function(e) NULL)
   out <- AGENTIC_BASE
   if (!is.null(live)) out$agent_data <- live
-  # refresh knowledge paths occasionally
   if (is.null(out$knowledge))
     out$knowledge <- tryCatch(load_knowledge_bundle(), error = function(e) NULL)
   out
@@ -171,7 +170,7 @@ server <- function(input, output, session) {
   av_state <- reactiveVal(list(
     pipe_idx = 0L, status = "ready", log = character(0),
     msg = "", narration = "", session_id = paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S")),
-    knowledge_lookup = NULL
+    knowledge_lookup = NULL, solve_result = NULL
   ))
 
   output$agentic <- renderUI({
@@ -186,6 +185,11 @@ server <- function(input, output, session) {
     agentic_knowledge_panel_el(st$knowledge_lookup, lang())
   })
 
+  output$av_solve <- renderUI({
+    st <- av_state()
+    solve_result_ui(st$solve_result, lang())
+  })
+
   observeEvent(input$av_start, {
     msg <- isolate(as.character(input$av_msg %||% ""))
     if (!nzchar(trimws(msg))) msg <- "Tatizo la kifaa — scan OS (Vision)"
@@ -193,59 +197,41 @@ server <- function(input, output, session) {
     live_agentic(live)
     issues <- live$agent_data$issues %||% list()
     sid <- paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
-
-    # --- DATA bridge: match problems.json + diagnosis.json ---
     lookup <- tryCatch(agentic_knowledge_lookup(msg, lang = lang()), error = function(e) NULL)
-
     narr <- build_scribe_narration(msg, issues, "hitl")
     if (!is.null(lookup) && length(lookup$problems_matched) > 0) {
       top <- lookup$problems_matched[[1]]
-      narr <- paste0(
-        narr, "\n\n--- KUTOKA problems.json ---\n",
+      narr <- paste0(narr, "\n\n--- KUTOKA problems.json ---\n",
         top$description %||% "", "\n",
         "Suluhisho: ", top$solution %||% "", "\n",
         "Muda ~", top$time_min %||% "?", " min · TZS ", top$cost_tzs %||% "?")
     }
-
     snap <- live$agent_data$probe %||% tryCatch(sysprobe_snapshot(), error = function(e) NULL)
     if (!is.null(snap)) probe_snap(snap)
     probe_lines <- character(0)
     if (!is.null(snap)) {
       probe_lines <- c(
-        paste0("SOURCE: ", snap$source %||% "live", " (OS HALISI)"),
+        paste0("SOURCE: ", snap$source %||% "live"),
         paste0("Host: ", snap$hostname %||% "", " / ", snap$os %||% ""),
-        paste0("CPU: ", snap$cpu_usage_pct %||% "?", "%  RAM: ", snap$ram_usage_pct %||% "?",
-               "%  health=", snap$health %||% "?"),
+        paste0("CPU: ", snap$cpu_usage_pct %||% "?", "%  RAM: ", snap$ram_usage_pct %||% "?", "%"),
         if (length(snap$issues) > 0) paste0("! ", unlist(snap$issues)) else "(hakuna tahadhari OS)"
       )
     }
-
     know_lines <- character(0)
     if (!is.null(lookup)) {
       know_lines <- c(
         paste0("DATA problems total: ", lookup$catalog$problems_total %||% "?"),
-        paste0("Matched problems: ", length(lookup$problems_matched %||% list())),
-        paste0("Matched diagnosis models: ", length(lookup$diagnosis_matched %||% list()))
+        paste0("Matched problems: ", length(lookup$problems_matched %||% list()))
       )
-      for (p in head(lookup$problems_matched %||% list(), 3)) {
+      for (p in head(lookup$problems_matched %||% list(), 3))
         know_lines <- c(know_lines, paste0("  • ", p$id, ": ", substr(p$description %||% "", 1, 80)))
-      }
     }
-
-    lines <- c(
-      paste0("Session: ", sid),
-      paste0("Ujumbe: ", msg),
-      probe_lines,
-      "--- DATA KNOWLEDGE ---",
-      know_lines,
-      paste0("Vision issues: ", length(issues)),
-      "--- SCRIBE ---", narr, "", "Hali: inasubiri RUHUSU (HITL)"
-    )
-    av_state(list(
-      pipe_idx = 1L, status = "hitl", log = as.character(unlist(lines)),
-      msg = msg, narration = narr, session_id = sid,
-      knowledge_lookup = lookup
-    ))
+    lines <- c(paste0("Session: ", sid), paste0("Ujumbe: ", msg), probe_lines,
+               "--- DATA KNOWLEDGE ---", know_lines, "--- SCRIBE ---", narr,
+               "", "Hali: inasubiri RUHUSU (HITL) — software itasolve baada ya ruhusa")
+    av_state(list(pipe_idx = 1L, status = "hitl", log = as.character(unlist(lines)),
+                  msg = msg, narration = narr, session_id = sid,
+                  knowledge_lookup = lookup, solve_result = NULL))
     session$sendCustomMessage("mtaalamu_speak", list(text = paste(
       av_voice_script(AGENTIC_BASE, "agent.receptionist.greet"),
       av_voice_script(AGENTIC_BASE, "hitl.ask_permission"), sep = " ")))
@@ -256,19 +242,38 @@ server <- function(input, output, session) {
     live <- live_agentic()
     issues <- live$agent_data$issues %||% list()
     msg <- st$msg %||% "Tatizo"
-    narr <- build_scribe_narration(msg, issues, "done")
+    matched <- NULL
     if (!is.null(st$knowledge_lookup) && length(st$knowledge_lookup$problems_matched) > 0) {
       top <- st$knowledge_lookup$problems_matched[[1]]
-      narr <- paste0(narr, "\n\nSuluhisho (problems.json): ", top$solution %||% "")
+      matched <- list(
+        id = top$id, trade = top$trade, symptoms = top$symptoms,
+        causes = if (!is.null(top$top_cause)) setNames(list(1), top$top_cause) else list(),
+        solution = list(sw = top$solution %||% "", en = top$solution %||% "")
+      )
     }
-    lines <- c(st$log %||% character(0), "", "=== BAADA YA HITL ===", narr)
+    solve_res <- tryCatch(
+      agentic_solve(msg, matched_problem = matched, hitl_approved = TRUE, lang = lang()),
+      error = function(e) list(domain = "unknown", summary_sw = conditionMessage(e), executed = list())
+    )
+    narr <- build_scribe_narration(msg, issues, "done")
+    if (!is.null(matched))
+      narr <- paste0(narr, "\n\nSuluhisho (problems.json): ", matched$solution$sw %||% "")
+    narr <- paste0(narr, "\n\n=== SOLVE (", solve_res$domain %||% "?", ") ===\n", solve_res$summary_sw %||% "")
+    for (ex in solve_res$executed %||% list()) {
+      narr <- paste0(narr, "\n• ", ex$action_id %||% "", ": ", ex$message_sw %||% "")
+      if (nzchar(ex$detail %||% "")) narr <- paste0(narr, "\n  ", ex$detail)
+    }
+    if (!is.null(solve_res$hardware_guide_sw) && nzchar(solve_res$hardware_guide_sw))
+      narr <- paste0(narr, "\n\n", solve_res$hardware_guide_sw)
+    lines <- c(st$log %||% character(0), "", "=== BAADA YA HITL + SOLVE ===", narr)
     av_state(list(
       pipe_idx = 6L, status = "done", log = lines, msg = msg,
       narration = narr, session_id = st$session_id %||% "AV-done",
-      knowledge_lookup = st$knowledge_lookup
+      knowledge_lookup = st$knowledge_lookup, solve_result = solve_res
     ))
     iss_titles <- vapply(issues, function(x) as.character(x$title %||% ""), character(1))
-    append_learning_log(st$session_id %||% "AV", msg, as.list(iss_titles), "completed")
+    append_learning_log(st$session_id %||% "AV", msg, as.list(iss_titles),
+                        paste0("completed:", solve_res$domain %||% ""))
     session$sendCustomMessage("mtaalamu_speak",
       list(text = av_voice_script(AGENTIC_BASE, "session.complete")))
   }, ignoreInit = TRUE)
@@ -279,13 +284,9 @@ server <- function(input, output, session) {
     live_agentic(live)
     snap <- live$agent_data$probe %||% sysprobe_snapshot()
     probe_snap(snap)
-    lines <- c(
-      st$log %||% character(0),
+    lines <- c(st$log %||% character(0),
       paste0("Scan LIVE @ ", format(Sys.time(), "%H:%M:%S")),
-      paste0("source=", live$agent_data$source %||% "live"),
-      paste0("Components: ", length(live$agent_data$components %||% list())),
-      paste0("CPU: ", snap$cpu_usage_pct %||% "?", "% RAM: ", snap$ram_usage_pct %||% "?", "%")
-    )
+      paste0("CPU: ", snap$cpu_usage_pct %||% "?", "% RAM: ", snap$ram_usage_pct %||% "?", "%"))
     av_state(modifyList(st, list(log = as.character(unlist(lines)))))
     session$sendCustomMessage("mtaalamu_speak",
       list(text = av_voice_script(AGENTIC_BASE, "agent.vision.scanning")))
@@ -305,8 +306,7 @@ server <- function(input, output, session) {
     st <- av_state()
     log <- st$log %||% character(0)
     if (length(log) == 0)
-      return(tags$div(style = "color:var(--dim)",
-                      tryCatch(tr("av.session.ready", lang()), error = function(e) "Tayari")))
+      return(tags$div(style = "color:var(--dim)", tryCatch(tr("av.session.ready", lang()), error = function(e) "Tayari")))
     tags$pre(style = "white-space:pre-wrap;color:#b2ebf2;font-size:12px;background:#050d18;padding:12px;border-radius:8px;max-height:420px;overflow:auto",
              paste(log, collapse = "\n"))
   })
@@ -322,19 +322,15 @@ server <- function(input, output, session) {
       st <- av_state()
       issues <- (live_agentic())$agent_data$issues %||% list()
       html <- build_digital_book_html(
-        session_id = st$session_id %||% "AV",
-        msg = st$msg %||% "",
-        issues = issues,
-        narration = st$narration %||% paste(st$log, collapse = "\n"),
-        lang = lang())
+        session_id = st$session_id %||% "AV", msg = st$msg %||% "",
+        issues = issues, narration = st$narration %||% paste(st$log, collapse = "\n"), lang = lang())
       writeLines(html, file, useBytes = TRUE)
     }
   )
 
   sel_id <- reactiveVal(NULL)
   filtered_formulas <- reactive({
-    tf <- input$fx_trade %||% "all"
-    q  <- tolower(trimws(input$fx_search %||% ""))
+    tf <- input$fx_trade %||% "all"; q <- tolower(trimws(input$fx_search %||% ""))
     Filter(function(f) {
       (identical(tf, "all") || identical(f$trade, tf)) &&
         (!nzchar(q) || grepl(q, tolower(paste(f$name$sw %||% "", f$name$en %||% "", f$formula %||% "")), fixed = TRUE))
