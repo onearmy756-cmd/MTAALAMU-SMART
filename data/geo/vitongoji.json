@@ -1,20 +1,58 @@
 {
-  "version": "1.0.0",
-  "description": "Vitongoji (Hamlets / Sub-villages) za Tanzania. Lengo: zote, hakuna kuruka.",
+  "version": "1.1.0",
+  "description": "Vitongoji (Hamlets / Sub-villages / Areas) za Tanzania. Inajazwa – hakuna kuruka.",
   "status": "in_progress",
-  "note": "Vitongoji ni maelfu nchi nzima. Muundo uko. Data inajazwa region/district by district kutoka sources rasmi + OSM.",
   "vitongoji": [
-    {"id": "TZ-02-01-01-001", "tarafa_id": "TZ-02-01-01", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Kariakoo", "name_en": "Kariakoo"},
-    {"id": "TZ-02-01-01-002", "tarafa_id": "TZ-02-01-01", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Gerezani", "name_en": "Gerezani"},
-    {"id": "TZ-02-02-01-001", "tarafa_id": "TZ-02-02-01", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Sinza", "name_en": "Sinza"},
-    {"id": "TZ-02-02-01-002", "tarafa_id": "TZ-02-02-01", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Kijitonyama", "name_en": "Kijitonyama"},
-    {"id": "TZ-02-03-01-001", "tarafa_id": "TZ-02-03-01", "district_id": "TZ-02-03", "region_id": "TZ-02", "name_sw": "Mbagala Kuu", "name_en": "Mbagala Kuu"},
-    {"id": "TZ-03-01-01-001", "tarafa_id": "TZ-03-01-01", "district_id": "TZ-03-01", "region_id": "TZ-03", "name_sw": "Makulu", "name_en": "Makulu"},
-    {"id": "TZ-01-01-01-001", "tarafa_id": "TZ-01-01-01", "district_id": "TZ-01-01", "region_id": "TZ-01", "name_sw": "Sekei", "name_en": "Sekei"}
+    {"id":"TZ-02-01-01-001","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Kariakoo","name_en":"Kariakoo"},
+    {"id":"TZ-02-01-01-002","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Gerezani","name_en":"Gerezani"},
+    {"id":"TZ-02-01-01-003","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Mchafukoge","name_en":"Mchafukoge"},
+    {"id":"TZ-02-01-01-004","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Kisutu","name_en":"Kisutu"},
+    {"id":"TZ-02-01-01-005","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Jangwani","name_en":"Jangwani"},
+    {"id":"TZ-02-01-02-001","tarafa_id":"TZ-02-01-02","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Ukonga","name_en":"Ukonga"},
+    {"id":"TZ-02-01-02-002","tarafa_id":"TZ-02-01-02","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Gongolamboto","name_en":"Gongolamboto"},
+    {"id":"TZ-02-01-03-001","tarafa_id":"TZ-02-01-03","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Buguruni","name_en":"Buguruni"},
+    {"id":"TZ-02-01-04-001","tarafa_id":"TZ-02-01-04","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Tabata","name_en":"Tabata"},
+    {"id":"TZ-02-01-05-001","tarafa_id":"TZ-02-01-05","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Vingunguti","name_en":"Vingunguti"},
+
+    {"id":"TZ-02-02-01-001","tarafa_id":"TZ-02-02-01","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kinondoni","name_en":"Kinondoni"},
+    {"id":"TZ-02-02-01-002","tarafa_id":"TZ-02-02-01","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Hananasif","name_en":"Hananasif"},
+    {"id":"TZ-02-02-02-001","tarafa_id":"TZ-02-02-02","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kawe","name_en":"Kawe"},
+    {"id":"TZ-02-02-02-002","tarafa_id":"TZ-02-02-02","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Mikocheni","name_en":"Mikocheni"},
+    {"id":"TZ-02-02-03-001","tarafa_id":"TZ-02-02-03","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Msasani","name_en":"Msasani"},
+    {"id":"TZ-02-02-03-002","tarafa_id":"TZ-02-02-03","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Oysterbay","name_en":"Oysterbay"},
+    {"id":"TZ-02-02-04-001","tarafa_id":"TZ-02-02-04","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Sinza","name_en":"Sinza"},
+    {"id":"TZ-02-02-05-001","tarafa_id":"TZ-02-02-05","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Makumbusho","name_en":"Makumbusho"},
+    {"id":"TZ-02-02-06-001","tarafa_id":"TZ-02-02-06","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kijitonyama","name_en":"Kijitonyama"},
+
+    {"id":"TZ-02-03-01-001","tarafa_id":"TZ-02-03-01","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Temeke","name_en":"Temeke"},
+    {"id":"TZ-02-03-02-001","tarafa_id":"TZ-02-03-02","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Mbagala Kuu","name_en":"Mbagala Kuu"},
+    {"id":"TZ-02-03-02-002","tarafa_id":"TZ-02-03-02","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Mbagala Rangi Tatu","name_en":"Mbagala Rangi Tatu"},
+    {"id":"TZ-02-03-03-001","tarafa_id":"TZ-02-03-03","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Kijichi","name_en":"Kijichi"},
+    {"id":"TZ-02-03-04-001","tarafa_id":"TZ-02-03-04","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Mtoni","name_en":"Mtoni"},
+    {"id":"TZ-02-03-05-001","tarafa_id":"TZ-02-03-05","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Chang'ombe","name_en":"Chang'ombe"},
+
+    {"id":"TZ-02-04-01-001","tarafa_id":"TZ-02-04-01","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Ubungo","name_en":"Ubungo"},
+    {"id":"TZ-02-04-02-001","tarafa_id":"TZ-02-04-02","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Kimara","name_en":"Kimara"},
+    {"id":"TZ-02-04-03-001","tarafa_id":"TZ-02-04-03","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Mbezi","name_en":"Mbezi"},
+    {"id":"TZ-02-04-04-001","tarafa_id":"TZ-02-04-04","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Saranga","name_en":"Saranga"},
+
+    {"id":"TZ-02-05-01-001","tarafa_id":"TZ-02-05-01","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Kigamboni","name_en":"Kigamboni"},
+    {"id":"TZ-02-05-02-001","tarafa_id":"TZ-02-05-02","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Somangila","name_en":"Somangila"},
+    {"id":"TZ-02-05-03-001","tarafa_id":"TZ-02-05-03","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Tungi","name_en":"Tungi"},
+
+    {"id":"TZ-03-01-01-001","tarafa_id":"TZ-03-01-01","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Makulu","name_en":"Makulu"},
+    {"id":"TZ-03-01-01-002","tarafa_id":"TZ-03-01-01","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Madukani","name_en":"Madukani"},
+    {"id":"TZ-03-01-02-001","tarafa_id":"TZ-03-01-02","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Nala","name_en":"Nala"},
+
+    {"id":"TZ-01-01-01-001","tarafa_id":"TZ-01-01-01","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Sekei","name_en":"Sekei"},
+    {"id":"TZ-01-01-01-002","tarafa_id":"TZ-01-01-01","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Kati","name_en":"Kati"},
+    {"id":"TZ-01-01-02-001","tarafa_id":"TZ-01-01-02","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Themi","name_en":"Themi"},
+    {"id":"TZ-01-01-03-001","tarafa_id":"TZ-01-01-03","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Kaloleni","name_en":"Kaloleni"}
   ],
   "stats": {
-    "listed": 7,
+    "listed": 40,
+    "regions_started": ["Dar es Salaam", "Dodoma", "Arusha"],
     "target": "all vitongoji nationwide",
-    "coverage": "Seed data (Dar, Dodoma, Arusha). Full population in progress – hakuna kuruka."
+    "note": "Dar es Salaam imejaa zaidi. Inaendelea – hakuna kuruka."
   }
 }
