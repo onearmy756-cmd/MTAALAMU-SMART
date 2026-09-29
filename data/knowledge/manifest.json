@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "modules": {
+    "devices": "data/devices/",
+    "problems": "data/problems.json (420) + data/knowledge/problems/*",
+    "diagnosis": "data/diagnosis.json + data/knowledge/diagnosis_index.json",
+    "trades": "data/trades.json",
+    "services": "data/services.json",
+    "professions": "data/professions.json",
+    "formulas": "data/formulas.json"
+  },
+  "counts": {
+    "problems": 420,
+    "diagnosis_models": 7,
+    "trades": 21,
+    "services": 105,
+    "devices": 59,
+    "device_problems": 507
+  },
+  "cli": {
+    "knowledge": "mtaalamu knowledge --msg '...'",
+    "devices": "mtaalamu device-solve --msg '...'",
+    "solve": "mtaalamu solve --msg '...' --approve"
+  }
+}
