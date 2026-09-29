@@ -1,5 +1,5 @@
 # ============================================================
-# MTAALAMU SMART — UI + AGENTIC VISION (AV4/AV5/AV6)
+# MTAALAMU SMART — UI + AGENTIC VISION (data HALISI via OS probe)
 # ============================================================
 
 .libPaths(c(file.path(Sys.getenv("USERPROFILE"), "Documents", "R", "win-library",
@@ -40,9 +40,18 @@ FORMULAS  <- FDOC$formulas
 CONSTANTS <- FDOC$constants %||% list()
 DIAGNOSIS <- fromJSON(p_app("data", "diagnosis.json"), simplifyVector = FALSE)
 MODEL_IDS <- names(DIAGNOSIS$models)
-AGENTIC  <- tryCatch(load_agentic_data(), error = function(e) list(
+AGENTIC_BASE <- tryCatch(load_agentic_data(), error = function(e) list(
   agent_data = list(), agents = list(), pipeline = list(),
   device_map = list(), system_bus = list(), voice = list(), report_tpl = list()))
+
+# Live agent data from OS (halisi)
+.refresh_agentic_live <- function() {
+  live <- tryCatch(build_live_agent_data(), error = function(e) NULL)
+  out <- AGENTIC_BASE
+  if (!is.null(live)) out$agent_data <- live
+  out
+}
+AGENTIC <- .refresh_agentic_live()
 
 GEO     <- fromJSON(p_app("data", "geo.json"), simplifyVector = FALSE)
 GEO_TXT <- paste(readLines(p_app("data", "geo.json"), encoding = "UTF-8", warn = FALSE), collapse = "\n")
@@ -100,38 +109,33 @@ server <- function(input, output, session) {
   l <- function(k) tr(k, lang())
 
   tick    <- reactiveVal(0L)
-  uptime  <- reactiveVal(52327L)
-  # seed from real probe once
+  uptime  <- reactiveVal(as.integer(Sys.time()) %% 100000L)
   .init_probe <- tryCatch(sysprobe_snapshot(), error = function(e) NULL)
   stats   <- reactiveVal(list(
     cpu = if (!is.null(.init_probe$cpu_usage_pct) && !is.na(.init_probe$cpu_usage_pct))
-            as.integer(round(.init_probe$cpu_usage_pct)) else 62L,
+            as.integer(round(.init_probe$cpu_usage_pct)) else 50L,
     ram = if (!is.null(.init_probe$ram_usage_pct) && !is.na(.init_probe$ram_usage_pct))
-            as.integer(round(.init_probe$ram_usage_pct)) else 78L,
-    disk = 94L, gpu = 41L, latency = 12L
+            as.integer(round(.init_probe$ram_usage_pct)) else 50L,
+    disk = 50L, gpu = 20L, latency = 12L
   ))
   probe_snap <- reactiveVal(.init_probe)
+  live_agentic <- reactiveVal(.refresh_agentic_live())
 
   observe({
     invalidateLater(5000, session)
     isolate({
-      # refresh OS probe every 5s (cheaper than every 1.5s)
       snap <- tryCatch(sysprobe_snapshot(), error = function(e) NULL)
       if (!is.null(snap)) {
         probe_snap(snap)
+        live_agentic(.refresh_agentic_live())
         s <- stats()
         if (!is.null(snap$cpu_usage_pct) && !is.na(snap$cpu_usage_pct))
           s$cpu <- max(1L, min(99L, as.integer(round(snap$cpu_usage_pct))))
         if (!is.null(snap$ram_usage_pct) && !is.na(snap$ram_usage_pct))
           s$ram <- max(1L, min(99L, as.integer(round(snap$ram_usage_pct))))
+        if (length(snap$disks) > 0 && !is.null(snap$disks[[1]]$used_pct) && !is.na(snap$disks[[1]]$used_pct))
+          s$disk <- max(1L, min(99L, as.integer(round(snap$disks[[1]]$used_pct))))
         stats(s)
-      } else {
-        s <- stats()
-        stats(list(
-          cpu = max(5, min(99, s$cpu + round((runif(1) - 0.5) * 8))),
-          ram = max(20, min(99, s$ram + round((runif(1) - 0.5) * 4))),
-          disk = s$disk, gpu = max(10, min(99, s$gpu + round((runif(1) - 0.5) * 10))),
-          latency = max(3, min(80, s$latency + round((runif(1) - 0.5) * 6)))))
       }
       uptime(uptime() + 5L)
       tick(tick() + 1L)
@@ -150,83 +154,86 @@ server <- function(input, output, session) {
   output$tabs <- renderUI(tabs_el(lang(), length(FORMULAS), length(MODEL_IDS), input$tab %||% "live"))
   output$live <- renderUI(view_live(stats(), NET, lang()))
 
-  # ---- AGENTIC + SCRIBE + BOOK + SYSPROBE ----
   av_state <- reactiveVal(list(
     pipe_idx = 0L, status = "ready", log = character(0),
     msg = "", narration = "", session_id = paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
   ))
 
-  output$agentic <- renderUI(view_agentic(lang(), AGENTIC, av_state()))
-
-  output$av_sysprobe <- renderUI({
-    sysprobe_panel_el(probe_snap(), lang())
+  output$agentic <- renderUI({
+    tick() # refresh with probe
+    view_agentic(lang(), live_agentic(), av_state())
   })
+
+  output$av_sysprobe <- renderUI(sysprobe_panel_el(probe_snap(), lang()))
 
   observeEvent(input$av_start, {
     msg <- isolate(as.character(input$av_msg %||% ""))
-    if (!nzchar(trimws(msg))) msg <- "Tatizo la kifaa — scan automatic (Vision)"
-    issues <- AGENTIC$agent_data$issues %||% list()
+    if (!nzchar(trimws(msg))) msg <- "Tatizo la kifaa — scan OS (Vision)"
+    live <- .refresh_agentic_live()
+    live_agentic(live)
+    issues <- live$agent_data$issues %||% list()
     sid <- paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
     narr <- build_scribe_narration(msg, issues, "hitl")
-    # merge OS probe issues into log
-    snap <- tryCatch(sysprobe_snapshot(), error = function(e) NULL)
+    snap <- live$agent_data$probe %||% tryCatch(sysprobe_snapshot(), error = function(e) NULL)
     if (!is.null(snap)) probe_snap(snap)
     probe_lines <- character(0)
     if (!is.null(snap)) {
       probe_lines <- c(
-        paste0("OS Probe: ", snap$hostname %||% "", " / ", snap$os %||% ""),
-        paste0("  CPU: ", snap$cpu_usage_pct %||% "?", "%  RAM: ", snap$ram_usage_pct %||% "?", "%  health=", snap$health %||% "?"),
-        if (length(snap$issues) > 0) paste0("  ! ", unlist(snap$issues)) else "  (hakuna tahadhari OS)"
+        paste0("SOURCE: ", snap$source %||% "live", " (OS HALISI)"),
+        paste0("Host: ", snap$hostname %||% "", " / ", snap$os %||% ""),
+        paste0("CPU: ", snap$cpu_usage_pct %||% "?", "%  RAM: ", snap$ram_usage_pct %||% "?",
+               "%  health=", snap$health %||% "?"),
+        if (length(snap$issues) > 0) paste0("! ", unlist(snap$issues)) else "(hakuna tahadhari OS)"
       )
     }
     lines <- c(
       paste0("Session: ", sid),
       paste0("Ujumbe: ", msg),
       probe_lines,
-      paste0("Vision: matatizo ", length(issues)),
-      "--- SCRIBE ---",
-      narr,
-      "",
-      "Hali: inasubiri RUHUSU (HITL)"
+      paste0("Vision issues: ", length(issues)),
+      "--- SCRIBE ---", narr, "", "Hali: inasubiri RUHUSU (HITL)"
     )
     av_state(list(pipe_idx = 1L, status = "hitl", log = as.character(unlist(lines)),
                   msg = msg, narration = narr, session_id = sid))
-    greet <- av_voice_script(AGENTIC, "agent.receptionist.greet")
-    hitl_q <- av_voice_script(AGENTIC, "hitl.ask_permission")
-    session$sendCustomMessage("mtaalamu_speak", list(text = paste(greet, hitl_q, sep = " ")))
+    session$sendCustomMessage("mtaalamu_speak", list(text = paste(
+      av_voice_script(AGENTIC_BASE, "agent.receptionist.greet"),
+      av_voice_script(AGENTIC_BASE, "hitl.ask_permission"), sep = " ")))
   }, ignoreInit = TRUE)
 
   observeEvent(input$av_approve, {
     st <- av_state()
-    issues <- AGENTIC$agent_data$issues %||% list()
+    live <- live_agentic()
+    issues <- live$agent_data$issues %||% list()
     msg <- st$msg %||% "Tatizo"
     narr <- build_scribe_narration(msg, issues, "done")
     lines <- c(st$log %||% character(0), "", "=== BAADA YA HITL ===", narr)
     av_state(list(pipe_idx = 6L, status = "done", log = lines, msg = msg,
                   narration = narr, session_id = st$session_id %||% "AV-done"))
+    # Hifadhi maarifa HALISI
+    iss_titles <- vapply(issues, function(x) as.character(x$title %||% ""), character(1))
+    append_learning_log(st$session_id %||% "AV", msg, as.list(iss_titles), "completed")
     session$sendCustomMessage("mtaalamu_speak",
-      list(text = av_voice_script(AGENTIC, "session.complete")))
+      list(text = av_voice_script(AGENTIC_BASE, "session.complete")))
   }, ignoreInit = TRUE)
 
   observeEvent(input$av_scan, {
     st <- av_state()
-    snap <- tryCatch(sysprobe_snapshot(), error = function(e) NULL)
-    if (!is.null(snap)) probe_snap(snap)
+    live <- .refresh_agentic_live()
+    live_agentic(live)
+    snap <- live$agent_data$probe %||% sysprobe_snapshot()
+    probe_snap(snap)
     lines <- c(
       st$log %||% character(0),
-      paste0("Scan @ ", format(Sys.time(), "%H:%M:%S")),
-      paste0("Components: ", length(AGENTIC$agent_data$components %||% list())),
-      paste0("Processes: ", length(AGENTIC$agent_data$processes %||% list()))
+      paste0("Scan LIVE @ ", format(Sys.time(), "%H:%M:%S")),
+      paste0("source=", live$agent_data$source %||% "live"),
+      paste0("Components: ", length(live$agent_data$components %||% list())),
+      paste0("Processes: ", length(live$agent_data$processes %||% list())),
+      paste0("CPU: ", snap$cpu_usage_pct %||% "?", "% RAM: ", snap$ram_usage_pct %||% "?", "%"),
+      paste0("health: ", snap$health %||% "?")
     )
-    if (!is.null(snap)) {
-      lines <- c(lines,
-        paste0("OS CPU: ", snap$cpu_usage_pct %||% "?", "% RAM: ", snap$ram_usage_pct %||% "?", "%"),
-        paste0("OS health: ", snap$health %||% "?"),
-        if (length(snap$issues) > 0) paste0("OS: ", unlist(snap$issues)) else NULL)
-    }
     av_state(modifyList(st, list(log = as.character(unlist(lines)))))
     session$sendCustomMessage("mtaalamu_speak",
-      list(text = av_voice_script(AGENTIC, "agent.vision.scanning")))
+      list(text = av_voice_script(AGENTIC_BASE, "agent.vision.scanning")))
   }, ignoreInit = TRUE)
 
   output$av_session_status <- renderUI({
@@ -258,17 +265,18 @@ server <- function(input, output, session) {
     filename = function() paste0((av_state())$session_id %||% "AV", "-kitabu.html"),
     content = function(file) {
       st <- av_state()
+      issues <- (live_agentic())$agent_data$issues %||% list()
       html <- build_digital_book_html(
         session_id = st$session_id %||% "AV",
         msg = st$msg %||% "",
-        issues = AGENTIC$agent_data$issues %||% list(),
+        issues = issues,
         narration = st$narration %||% paste(st$log, collapse = "\n"),
         lang = lang())
       writeLines(html, file, useBytes = TRUE)
     }
   )
 
-  # ---- FORMULA ----
+  # ---- FORMULA / DIAG (unchanged condensed) ----
   sel_id <- reactiveVal(NULL)
   filtered_formulas <- reactive({
     tf <- input$fx_trade %||% "all"
@@ -313,7 +321,6 @@ server <- function(input, output, session) {
   })
   output$fx_results <- renderUI(formula_results_el(lang(), formula_result()))
 
-  # ---- DIAGNOSIS ----
   model_id <- reactiveVal(NULL)
   on_sym <- reactiveVal(list())
   current_model <- reactive({ DIAGNOSIS$models[[model_id() %||% MODEL_IDS[[1]]]] })
