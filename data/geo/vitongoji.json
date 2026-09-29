@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Vitongoji za Tanzania. Inajazwa – hakuna kuruka.",
   "status": "in_progress",
   "vitongoji": [
@@ -42,33 +42,57 @@
     {"id":"TZ-01-01-01-002","tarafa_id":"TZ-01-01-01","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Kati","name_en":"Kati"},
     {"id":"TZ-01-01-02-001","tarafa_id":"TZ-01-01-02","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Themi","name_en":"Themi"},
     {"id":"TZ-01-01-03-001","tarafa_id":"TZ-01-01-03","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Kaloleni","name_en":"Kaloleni"},
-
     {"id":"TZ-21-01-01-001","tarafa_id":"TZ-21-01-01","district_id":"TZ-21-01","region_id":"TZ-21","name_sw":"Kibaha Mjini","name_en":"Kibaha Town"},
     {"id":"TZ-21-03-01-001","tarafa_id":"TZ-21-03-01","district_id":"TZ-21-03","region_id":"TZ-21","name_sw":"Bagamoyo Mjini","name_en":"Bagamoyo Town"},
     {"id":"TZ-21-03-01-002","tarafa_id":"TZ-21-03-01","district_id":"TZ-21-03","region_id":"TZ-21","name_sw":"Kaole","name_en":"Kaole"},
     {"id":"TZ-21-06-01-001","tarafa_id":"TZ-21-06-01","district_id":"TZ-21-06","region_id":"TZ-21","name_sw":"Mkuranga","name_en":"Mkuranga"},
-
     {"id":"TZ-29-01-01-001","tarafa_id":"TZ-29-01-01","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Ngamiani","name_en":"Ngamiani"},
     {"id":"TZ-29-01-01-002","tarafa_id":"TZ-29-01-01","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Usagara","name_en":"Usagara"},
     {"id":"TZ-29-01-01-003","tarafa_id":"TZ-29-01-01","district_id":"TZ-29-01","region_id":"TZ-29","name_sw":"Chumbageni","name_en":"Chumbageni"},
     {"id":"TZ-29-07-01-001","tarafa_id":"TZ-29-07-01","district_id":"TZ-29-07","region_id":"TZ-29","name_sw":"Lushoto Mjini","name_en":"Lushoto Town"},
-
     {"id":"TZ-13-01-01-001","tarafa_id":"TZ-13-01-01","district_id":"TZ-13-01","region_id":"TZ-13","name_sw":"Forest","name_en":"Forest"},
     {"id":"TZ-13-01-01-002","tarafa_id":"TZ-13-01-01","district_id":"TZ-13-01","region_id":"TZ-13","name_sw":"Mwanjelwa","name_en":"Mwanjelwa"},
     {"id":"TZ-13-01-01-003","tarafa_id":"TZ-13-01-01","district_id":"TZ-13-01","region_id":"TZ-13","name_sw":"Sisimba","name_en":"Sisimba"},
-
     {"id":"TZ-15-01-01-001","tarafa_id":"TZ-15-01-01","district_id":"TZ-15-01","region_id":"TZ-15","name_sw":"Morogoro Mjini","name_en":"Morogoro Town"},
     {"id":"TZ-15-01-01-002","tarafa_id":"TZ-15-01-01","district_id":"TZ-15-01","region_id":"TZ-15","name_sw":"Kichangani","name_en":"Kichangani"},
     {"id":"TZ-15-01-01-003","tarafa_id":"TZ-15-01-01","district_id":"TZ-15-01","region_id":"TZ-15","name_sw":"Mafiga","name_en":"Mafiga"},
-
     {"id":"TZ-09-01-01-001","tarafa_id":"TZ-09-01-01","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Moshi Mjini","name_en":"Moshi Town"},
     {"id":"TZ-09-01-01-002","tarafa_id":"TZ-09-01-01","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Rau","name_en":"Rau"},
-    {"id":"TZ-09-01-01-003","tarafa_id":"TZ-09-01-01","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Majengo","name_en":"Majengo"}
+    {"id":"TZ-09-01-01-003","tarafa_id":"TZ-09-01-01","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Majengo","name_en":"Majengo"},
+
+    {"id":"TZ-04-01-01-001","tarafa_id":"TZ-04-01-01","district_id":"TZ-04-01","region_id":"TZ-04","name_sw":"Geita Mjini","name_en":"Geita Town"},
+    {"id":"TZ-04-03-01-001","tarafa_id":"TZ-04-03-01","district_id":"TZ-04-03","region_id":"TZ-04","name_sw":"Chato","name_en":"Chato"},
+
+    {"id":"TZ-05-01-01-001","tarafa_id":"TZ-05-01-01","district_id":"TZ-05-01","region_id":"TZ-05","name_sw":"Iringa Mjini","name_en":"Iringa Town"},
+    {"id":"TZ-05-01-01-002","tarafa_id":"TZ-05-01-01","district_id":"TZ-05-01","region_id":"TZ-05","name_sw":"Kihesa","name_en":"Kihesa"},
+
+    {"id":"TZ-06-01-01-001","tarafa_id":"TZ-06-01-01","district_id":"TZ-06-01","region_id":"TZ-06","name_sw":"Bukoba Mjini","name_en":"Bukoba Town"},
+    {"id":"TZ-06-01-01-002","tarafa_id":"TZ-06-01-01","district_id":"TZ-06-01","region_id":"TZ-06","name_sw":"Hamugembe","name_en":"Hamugembe"},
+
+    {"id":"TZ-12-01-01-001","tarafa_id":"TZ-12-01-01","district_id":"TZ-12-01","region_id":"TZ-12","name_sw":"Musoma Mjini","name_en":"Musoma Town"},
+    {"id":"TZ-12-08-01-001","tarafa_id":"TZ-12-08-01","district_id":"TZ-12-08","region_id":"TZ-12","name_sw":"Tarime","name_en":"Tarime"},
+
+    {"id":"TZ-28-01-01-001","tarafa_id":"TZ-28-01-01","district_id":"TZ-28-01","region_id":"TZ-28","name_sw":"Tabora Mjini","name_en":"Tabora Town"},
+    {"id":"TZ-28-01-01-002","tarafa_id":"TZ-28-01-01","district_id":"TZ-28-01","region_id":"TZ-28","name_sw":"Chemchem","name_en":"Chemchem"},
+
+    {"id":"TZ-24-01-01-001","tarafa_id":"TZ-24-01-01","district_id":"TZ-24-01","region_id":"TZ-24","name_sw":"Shinyanga Mjini","name_en":"Shinyanga Town"},
+    {"id":"TZ-24-03-01-001","tarafa_id":"TZ-24-03-01","district_id":"TZ-24-03","region_id":"TZ-24","name_sw":"Kahama Mjini","name_en":"Kahama Town"},
+
+    {"id":"TZ-26-01-01-001","tarafa_id":"TZ-26-01-01","district_id":"TZ-26-01","region_id":"TZ-26","name_sw":"Singida Mjini","name_en":"Singida Town"},
+
+    {"id":"TZ-23-01-01-001","tarafa_id":"TZ-23-01-01","district_id":"TZ-23-01","region_id":"TZ-23","name_sw":"Songea Mjini","name_en":"Songea Town"},
+
+    {"id":"TZ-22-01-01-001","tarafa_id":"TZ-22-01-01","district_id":"TZ-22-01","region_id":"TZ-22","name_sw":"Sumbawanga Mjini","name_en":"Sumbawanga Town"},
+
+    {"id":"TZ-14-01-01-001","tarafa_id":"TZ-14-01-01","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Stone Town","name_en":"Stone Town"},
+    {"id":"TZ-14-01-01-002","tarafa_id":"TZ-14-01-01","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Malindi","name_en":"Malindi"},
+    {"id":"TZ-19-01-01-001","tarafa_id":"TZ-19-01-01","district_id":"TZ-19-01","region_id":"TZ-19","name_sw":"Wete","name_en":"Wete"},
+    {"id":"TZ-20-01-01-001","tarafa_id":"TZ-20-01-01","district_id":"TZ-20-01","region_id":"TZ-20","name_sw":"Chake Chake","name_en":"Chake Chake"}
   ],
   "stats": {
-    "listed": 55,
-    "regions_started": ["Dar es Salaam", "Dodoma", "Arusha", "Pwani", "Tanga", "Mbeya", "Morogoro", "Kilimanjaro"],
+    "listed": 80,
+    "regions_covered": 20,
     "target": "all vitongoji nationwide",
-    "note": "Inaendelea mkoa mkoa – hakuna kuruka."
+    "note": "Mikoa kuu yameanza. Inaendelea – hakuna kuruka."
   }
 }
