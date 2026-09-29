@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0",
+  "version": "3.2.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -12,12 +12,13 @@
     "regions": 31,
     "districts": 184,
     "tarafa_listed": 130,
-    "kata_listed": 70,
+    "kata_listed": 220,
+    "kata_districts_covered": 184,
     "vijiji_listed": 40,
     "vitongoji_listed": 95,
     "mitaa_listed": 80,
     "barabara_listed": 40,
-    "note": "Hierarkia yote imeanza. Mikoa + Wilaya kamili. Tarafa: mikoa yote. Kata 70+. Vitongoji 95+. Mitaa 80+ (mikoa 28+). Vijiji/Barabara zinaendelea. Hakuna kuruka."
+    "note": "KATA: Kila wilaya 184 imefunikwa (220+ kata). Miji mikubwa imejaa zaidi. Kata kamili za nchi (elfu+) zinahitaji NBS import."
   },
   "files": {
     "districts": "data/geo/districts.json",
@@ -32,12 +33,12 @@
   "notes": [
     "✅ Mikoa 31 kamili",
     "✅ Wilaya 184 kamili",
-    "✅ Tarafa: mikoa yote 31 (130+)",
-    "🔄 Kata 70+",
+    "✅ Tarafa: mikoa yote",
+    "✅ Kata: KILA wilaya imefunikwa (220+)",
     "🔄 Vijiji 40+",
     "🔄 Vitongoji 95+",
     "🔄 Mitaa 80+",
     "🔄 Barabara 40+",
-    "Inaendelea – hakuna kuruka"
+    "Hakuna wilaya iliyorukwa kwenye Kata"
   ]
 }
