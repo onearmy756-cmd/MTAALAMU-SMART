@@ -1,5 +1,5 @@
 {
-  "version": "2.4.0",
+  "version": "2.5.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -7,18 +7,20 @@
     "level": "country",
     "center": { "lat": -6.3690, "lng": 34.8888 }
   },
-  "levels": ["country", "region", "district", "tarafa", "ward", "village", "vitongoji", "mtaa", "road"],
+  "levels": ["country", "region", "district", "tarafa", "kata", "village", "vitongoji", "mtaa", "road"],
   "stats": {
     "regions": 31,
     "districts": 184,
     "tarafa_listed": 130,
+    "kata_listed": 40,
     "vitongoji_listed": 80,
     "mitaa_listed": 65,
-    "note": "Mikoa 31 + Wilaya 184 kamili. Tarafa: mikoa yote. Vitongoji 80+ na Mitaa 65+ (mikoa 18+). Inaendelea – hakuna kuruka."
+    "note": "Mikoa + Wilaya kamili. Tarafa: mikoa yote. Kata zimeanza. Vitongoji + Mitaa zinaendelea. Hakuna kuruka."
   },
   "files": {
     "districts": "data/geo/districts.json",
     "tarafa": "data/geo/tarafa.json",
+    "kata": "data/geo/kata.json",
     "vitongoji": "data/geo/vitongoji.json",
     "mitaa": "data/geo/mitaa.json",
     "schema": "data/geo/SCHEMA.md"
@@ -27,8 +29,10 @@
     "✅ Mikoa 31 kamili",
     "✅ Wilaya 184 kamili",
     "✅ Tarafa: mikoa yote 31 (130+)",
+    "🔄 Kata 40+ (zimeanza)",
     "🔄 Vitongoji 80+",
     "🔄 Mitaa 65+",
+    "⏳ Vijiji + Barabara",
     "Inaendelea – hakuna kuruka"
   ]
 }
