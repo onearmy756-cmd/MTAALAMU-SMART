@@ -1,195 +1,197 @@
 # ============================================================
-# scribe.R — AI Scribe + Digital Book (HTML / Markdown)
-# Kiswahili fasaha, hatua kwa hatua — data-driven
+# scribe.R — AI Scribe (Kiswahili) + Digital Book builder
+# AV4: narration hatua-kwa-hatua
+# AV5: kitabu kidigitali (HTML / Markdown)
 # ============================================================
 
-# ---- Voice script helper ----
-av_voice <- function(data, key, fallback = "") {
+av_voice_script <- function(data, key, vars = list()) {
   scripts <- data$voice$scripts %||% list()
-  if (!is.null(scripts[[key]]) && nzchar(scripts[[key]])) return(scripts[[key]])
-  fallback
-}
-
-# ---- Scribe: build narration lines (Kiswahili) ----
-build_scribe_narration <- function(user_msg, issues, status = "running", lang = "sw") {
-  lines <- character(0)
-  ts <- format(Sys.time(), "%H:%M:%S")
-  n <- length(issues %||% list())
-
-  if (identical(lang, "en")) {
-    lines <- c(
-      paste0("[", ts, "] Session started."),
-      paste0("Problem: ", user_msg),
-      paste0("Vision detected ", n, " issue(s).")
-    )
-    if (n > 0) {
-      for (i in seq_len(min(5L, n))) {
-        iss <- issues[[i]]
-        lines <- c(lines, paste0("  ", i, ". ", iss$title %||% "", " — ", iss$action %||% ""))
-      }
+  txt <- scripts[[key]] %||% key
+  if (length(vars) > 0) {
+    for (nm in names(vars)) {
+      txt <- gsub(paste0("\\{", nm, "\\}"), as.character(vars[[nm]]), txt, perl = TRUE)
     }
-    if (identical(status, "hitl"))
-      lines <- c(lines, "Waiting for your approval (HITL) before automatic fix.")
-    if (identical(status, "done"))
-      lines <- c(lines,
-        "HITL approved. Implement → Test → Verify → Document completed.",
-        "Digital book report is ready. Knowledge saved.")
-  } else {
-    lines <- c(
-      paste0("[", ts, "] Session imeanza."),
-      paste0("Tatizo: ", user_msg),
-      paste0("Muono (Vision) umegundua matatizo ", n, ".")
-    )
-    if (n > 0) {
-      for (i in seq_len(min(5L, n))) {
-        iss <- issues[[i]]
-        lines <- c(lines, paste0("  ", i, ". ", iss$title %||% "", " — ", iss$action %||% ""))
-      }
-    }
-    if (identical(status, "hitl"))
-      lines <- c(lines, "Ninasubiri ruhusa yako (HITL) kabla ya kurekebisha kiotomatiki.")
-    if (identical(status, "done"))
-      lines <- c(lines,
-        "Ruhusa imetolewa. Tekeleza → Jaribu → Thibitisha → Andika — imekamilika.",
-        "Ripoti ya kitabu kidigitali iko tayari. Maarifa yamehifadhiwa.")
   }
-  lines
+  txt
 }
 
-# ---- Voice queue texts for TTS ----
-build_voice_queue <- function(data, phase = c("greet", "found", "hitl", "done"), n_issues = 0L) {
-  phase <- match.arg(phase)
-  q <- character(0)
-  if (phase == "greet") {
-    q <- c(av_voice(data, "agent.receptionist.greet",
-                    "Habari. Mimi ni Mtaalamu Smart. Niambie tatizo lako."),
-           av_voice(data, "agent.vision.scanning",
-                    "Ninaangalia kifaa chako sasa."))
-  } else if (phase == "found") {
-    q <- c(sprintf("Nimegundua matatizo %d. Ninakueleza.", as.integer(n_issues)),
-           av_voice(data, "agent.planner.ready",
-                    "Nimeandaa mpango. Ninahitaji ruhusa yako."))
-  } else if (phase == "hitl") {
-    q <- av_voice(data, "hitl.ask_fix",
-                  "Nimegundua matatizo. Je, unaniruhusu kuanza kurekebisha?")
-  } else if (phase == "done") {
-    q <- c(av_voice(data, "hitl.approved", "Asante. Ninaendelea."),
-           av_voice(data, "agent.solver.working", "Ninafanya kazi ya kurekebisha."),
-           av_voice(data, "agent.reporter.ready", "Ripoti yako iko tayari."),
-           av_voice(data, "session.complete", "Kazi imekamilika."))
-  }
-  as.character(q)
-}
+# Scribe: unda maelezo ya Kiswahili kwa kila hatua
+build_scribe_narration <- function(msg, issues, status = "hitl") {
+  n <- length(issues)
+  titles <- if (n > 0) {
+    vapply(issues, function(x) as.character(x$title %||% ""), character(1))
+  } else character(0)
+  actions <- if (n > 0) {
+    vapply(issues, function(x) as.character(x$action %||% ""), character(1))
+  } else character(0)
 
-# ---- Digital Book: Markdown ----
-build_digital_book_md <- function(session_id, user_msg, issues, log_lines, lang = "sw") {
-  ts <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
-  n <- length(issues %||% list())
-  md <- c(
-    "# MTAALAMU SMART — Ripoti (Kitabu Kidigitali)",
+  lines <- c(
+    paste0("=== MWANDISHI (SCRIBE) — ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), " ==="),
     "",
-    paste0("**Session:** ", session_id),
-    paste0("**Tarehe:** ", ts),
-    paste0("**Lugha:** ", lang),
+    "SURA YA KWANZA — TATIZO",
+    paste0("Mteja ameripoti: ", msg),
+    "",
+    "SURA YA PILI — UGUNDUZI (VISION)"
+  )
+  if (n == 0) {
+    lines <- c(lines, "Hakuna matatizo makubwa yaliyorekodiwa kwenye snapshot.")
+  } else {
+    lines <- c(lines, paste0("Nimegundua matatizo ", n, ":"))
+    for (i in seq_len(n)) {
+      lines <- c(lines,
+        paste0("  ", i, ". ", titles[i]),
+        paste0("     Kitendo: ", actions[i]))
+    }
+  }
+  lines <- c(lines, "",
+    "SURA YA TATU — MPANGO (PIITVD)",
+    "1. Panga — lengo na hatari",
+    "2. Tambua — sababu na ushahidi",
+    "3. Tekeleza — suluhisho (inahitaji ruhusa)",
+    "4. Jaribu — metrics baada ya fix",
+    "5. Thibitisha — mteja / mtaalamu",
+    "6. Andika — ripoti na maarifa"
+  )
+  if (identical(status, "hitl")) {
+    lines <- c(lines, "",
+      "HALI: Ninasubiri ruhusa yako (HITL) kabla ya kutekeleza suluhisho.",
+      "Bofya RUHUSU ili niendelee.")
+  } else if (identical(status, "done")) {
+    lines <- c(lines, "",
+      "SURA YA NNE — UTEKELEZAJI",
+      "Ruhusa imetolewa. Hatua za suluhisho zimetekelezwa kulingana na orodha ya matatizo.",
+      "",
+      "SURA YA TANO — UTHIBITISHO",
+      "Majaribio ya afya yamekamilika. Metrics zimeangaliwa.",
+      "",
+      "SURA YA SITA — HITIMISHO",
+      "Kazi imekamilika. Ripoti hii imehifadhiwa kama kitabu kidigitali.",
+      "Maarifa yameongezwa kwenye mfumo wa kujifunza.")
+  }
+  paste(lines, collapse = "\n")
+}
+
+# Digital book HTML (print-friendly / save as PDF from browser)
+build_digital_book_html <- function(session_id, msg, issues, narration, lang = "sw") {
+  n <- length(issues)
+  issue_rows <- if (n > 0) {
+    paste(vapply(seq_len(n), function(i) {
+      iss <- issues[[i]]
+      sprintf("<tr><td>%d</td><td>%s</td><td>%s</td><td>%s</td></tr>",
+              i,
+              htmltools::htmlEscape(iss$title %||% ""),
+              htmltools::htmlEscape(iss$desc %||% ""),
+              htmltools::htmlEscape(iss$action %||% ""))
+    }, character(1)), collapse = "\n")
+  } else {
+    "<tr><td colspan='4'>Hakuna matatizo</td></tr>"
+  }
+
+  title <- if (identical(lang, "en")) "Mtaalamu Smart — Digital Report Book" else
+    "Mtaalamu Smart — Kitabu Kidigitali cha Ripoti"
+
+  sprintf(''
+<!DOCTYPE html>
+<html lang="%s">
+<head>
+<meta charset="utf-8"/>
+<title>%s</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
+  :root { --bg:#0a1628; --cyan:#00e5ff; --text:#e0f7fa; --dim:#78909c; --card:#0d2137; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Space Grotesk',system-ui,sans-serif; background:var(--bg); color:var(--text); }
+  .book { max-width:800px; margin:0 auto; padding:32px 24px 64px; }
+  .cover { border:2px solid var(--cyan); border-radius:16px; padding:48px 32px; text-align:center;
+           background:linear-gradient(160deg,#0a1628 0%%,#003d4d 100%%); margin-bottom:32px; }
+  .cover h1 { color:var(--cyan); font-size:28px; margin:0 0 8px; letter-spacing:2px; }
+  .cover .sub { color:var(--dim); font-size:13px; }
+  .cover .sid { margin-top:20px; font-family:monospace; color:var(--cyan); font-size:12px; }
+  h2 { color:var(--cyan); font-size:16px; border-bottom:1px solid #00e5ff33; padding-bottom:8px; margin-top:32px; }
+  p, li { line-height:1.6; font-size:14px; color:#b2ebf2; }
+  table { width:100%%; border-collapse:collapse; margin:16px 0; font-size:13px; }
+  th, td { border:1px solid #00e5ff22; padding:10px; text-align:left; }
+  th { background:#00e5ff15; color:var(--cyan); }
+  pre { background:#050d18; border:1px solid #00e5ff22; border-radius:8px; padding:16px;
+        white-space:pre-wrap; font-size:12px; color:#b2ebf2; }
+  .footer { margin-top:48px; text-align:center; color:var(--dim); font-size:11px; }
+  @media print {
+    body { background:#fff; color:#111; }
+    .cover { background:#f0f9ff; border-color:#0891b2; }
+    .cover h1, h2, th { color:#0e7490; }
+    p, li, td, pre { color:#134e4a; }
+    pre { background:#f8fafc; }
+  }
+</style>
+</head>
+<body>
+<div class="book">
+  <div class="cover">
+    <h1>%s</h1>
+    <div class="sub">Agentic Vision · PIITVD · Multi-Agent 10</div>
+    <div class="sid">SESSION %s</div>
+    <div class="sub" style="margin-top:12px">%s</div>
+  </div>
+
+  <h2>1. Tatizo / Problem</h2>
+  <p>%s</p>
+
+  <h2>2. Ugunduzi (Vision)</h2>
+  <table>
+    <thead><tr><th>#</th><th>Tatizo</th><th>Maelezo</th><th>Kitendo</th></tr></thead>
+    <tbody>
+%s
+    </tbody>
+  </table>
+
+  <h2>3. Maelezo ya Mwandishi (Scribe)</h2>
+  <pre>%s</pre>
+
+  <div class="footer">
+    MTAALAMU SMART · Data-driven · Kiswahili kwanza · %s
+  </div>
+</div>
+</body>
+</html>
+', lang, title, title, htmltools::htmlEscape(session_id),
+     format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+     htmltools::htmlEscape(msg),
+     issue_rows,
+     htmltools::htmlEscape(narration),
+     format(Sys.time(), "%Y"))
+}
+
+build_digital_book_md <- function(session_id, msg, issues, narration) {
+  n <- length(issues)
+  md <- c(
+    "# Mtaalamu Smart — Kitabu Kidigitali",
+    "",
+    paste0("**Session:** `", session_id, "`  "),
+    paste0("**Tarehe:** ", format(Sys.time(), "%Y-%m-%d %H:%M:%S")),
     "",
     "---",
     "",
-    "## Sura 1 — Tatizo",
+    "## 1. Tatizo",
     "",
-    paste0("> ", user_msg),
+    msg,
     "",
-    "## Sura 2 — Ugunduzi (Vision)",
-    "",
-    paste0("Matatizo yaliyogunduliwa: **", n, "**"),
+    "## 2. Ugunduzi (Vision)",
     ""
   )
   if (n > 0) {
-    for (i in seq_along(issues)) {
+    for (i in seq_len(n)) {
       iss <- issues[[i]]
       md <- c(md,
-        paste0("### ", i, ". ", iss$title %||% "Tatizo"),
-        paste0("- **Maelezo:** ", iss$desc %||% "—"),
-        paste0("- **Kitendo:** ", iss$action %||% "—"),
+        paste0("### ", i, ". ", iss$title %||% ""),
+        "",
+        iss$desc %||% "",
+        "",
+        paste0("**Kitendo:** ", iss$action %||% ""),
         "")
     }
+  } else {
+    md <- c(md, "_Hakuna matatizo._", "")
   }
-  md <- c(md,
-    "## Sura 3 — Mpango (PIITVD)",
-    "",
-    "1. **P** Panga",
-    "2. **I** Tambua",
-    "3. **I** Tekeleza (HITL)",
-    "4. **T** Jaribu",
-    "5. **V** Thibitisha",
-    "6. **D** Andika",
-    "",
-    "## Sura 4 — Utekelezaji / Log",
-    "",
-    "```",
-    log_lines %||% character(0),
-    "```",
-    "",
-    "## Sura 5 — Hitimisho",
-    "",
-    "Kazi imeshughulikiwa na Mtaalamu Smart Agentic Vision.",
-    "Maarifa yamehifadhiwa kwa matumizi ya baadaye.",
-    "",
-    "---",
-    "",
-    "*MTAALAMU SMART — production report*")
+  md <- c(md, "## 3. Scribe", "", "```", narration, "```", "")
   paste(md, collapse = "\n")
-}
-
-# ---- Digital Book: HTML (print-friendly / save as PDF via browser) ----
-build_digital_book_html <- function(session_id, user_msg, issues, log_lines, lang = "sw") {
-  ts <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
-  n <- length(issues %||% list())
-  esc <- function(x) {
-    x <- as.character(x %||% "")
-    x <- gsub("&", "&amp;", x, fixed = TRUE)
-    x <- gsub("<", "&lt;", x, fixed = TRUE)
-    x <- gsub(">", "&gt;", x, fixed = TRUE)
-    x
-  }
-  issue_html <- ""
-  if (n > 0) {
-    parts <- vapply(seq_along(issues), function(i) {
-      iss <- issues[[i]]
-      sprintf(
-        "<div class='card'><h3>%d. %s</h3><p>%s</p><p class='act'><b>Kitendo:</b> %s</p></div>",
-        i, esc(iss$title), esc(iss$desc), esc(iss$action))
-    }, character(1))
-    issue_html <- paste(parts, collapse = "\n")
-  }
-  log_pre <- paste(esc(log_lines %||% character(0)), collapse = "\n")
-
-  paste0(
-    "<!DOCTYPE html><html lang='", esc(lang), "'><head><meta charset='utf-8'/>",
-    "<title>MTAALAMU SMART — Ripoti ", esc(session_id), "</title>",
-    "<style>",
-    "body{font-family:system-ui,Segoe UI,sans-serif;background:#0a1628;color:#e0f7fa;margin:0;padding:24px}",
-    "h1{color:#00e5ff;border-bottom:2px solid #00e5ff44;padding-bottom:8px}",
-    "h2{color:#69f0ae;margin-top:28px}",
-    ".meta{color:#90a4ae;font-size:14px}",
-    ".card{background:#0d2137;border:1px solid #00e5ff33;border-radius:10px;padding:14px 16px;margin:10px 0}",
-    ".act{color:#ffc107}",
-    "pre{background:#050d18;padding:14px;border-radius:8px;overflow:auto;font-size:12px;line-height:1.45}",
-    "blockquote{border-left:4px solid #00e5ff;margin:12px 0;padding:8px 16px;background:#0d2137}",
-    "@media print{body{background:#fff;color:#111} h1,h2{color:#033} .card{border-color:#ccc}}",
-    "</style></head><body>",
-    "<h1>🇹🇿 MTAALAMU SMART — Kitabu Kidigitali</h1>",
-    "<p class='meta'>Session: <b>", esc(session_id), "</b> · ", esc(ts), "</p>",
-    "<h2>Sura 1 — Tatizo</h2>",
-    "<blockquote>", esc(user_msg), "</blockquote>",
-    "<h2>Sura 2 — Ugunduzi (Vision)</h2>",
-    "<p>Matatizo: <b>", n, "</b></p>",
-    issue_html,
-    "<h2>Sura 3 — Mpango PIITVD</h2>",
-    "<ol><li>Panga</li><li>Tambua</li><li>Tekeleza (HITL)</li><li>Jaribu</li><li>Thibitisha</li><li>Andika</li></ol>",
-    "<h2>Sura 4 — Log</h2><pre>", log_pre, "</pre>",
-    "<h2>Sura 5 — Hitimisho</h2>",
-    "<p>Kazi imeshughulikiwa na <b>Mtaalamu Smart Agentic Vision</b>. Maarifa yamehifadhiwa.</p>",
-    "<p class='meta'>Print → Save as PDF kwa kitabu cha PDF.</p>",
-    "</body></html>"
-  )
 }

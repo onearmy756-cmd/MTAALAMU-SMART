@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "title_sw": "Ripoti ya Mtaalamu Smart — Kitabu Kidigitali",
+  "title_en": "Mtaalamu Smart Report — Digital Book",
+  "chapters": [
+    {"id": "cover", "title_sw": "Jalada", "fields": ["session_id", "date", "time"]},
+    {"id": "problem", "title_sw": "Sura 1 — Tatizo", "fields": ["user_message"]},
+    {"id": "discovery", "title_sw": "Sura 2 — Ugunduzi", "fields": ["issues"]},
+    {"id": "plan", "title_sw": "Sura 3 — Mpango", "fields": ["plan_steps"]},
+    {"id": "execution", "title_sw": "Sura 4 — Utekelezaji", "fields": ["actions"]},
+    {"id": "verification", "title_sw": "Sura 5 — Uthibitisho", "fields": ["verified"]},
+    {"id": "conclusion", "title_sw": "Sura 6 — Hitimisho", "fields": ["summary_sw"]}
+  ]
+}
