@@ -6,13 +6,18 @@
 //!   mtaalamu diagnose electrical --symptoms breaker_trips,sparks
 //!   mtaalamu tree car --answers true,true,true
 //!   mtaalamu rules --data "{\"vd_pct\":4.0}"
-//!   mtaalamu test          # endesha test cases zote za JSON
+//!   mtaalamu test
+//!   mtaalamu geo --q Kariakoo
+//!   mtaalamu nav --maneuver left --distance 200
+//!   mtaalamu hazards
 //!
 //! Data: inatafuta data/ kutoka cwd au engine-rust/.
 
 use mtaalamu_engine::{
-    BayesianDiagnoser, DecisionTree, FormulaEngine, I18n, KnowledgeBase, RulesEngine,
+    BayesianDiagnoser, DecisionTree, FormulaEngine, GeoEngine, HazardsEngine, I18n,
+    KnowledgeBase, NavigationEngine, RulesEngine,
 };
+use std::path::Path;
 
 fn data_path(name: &str) -> String {
     let candidates = [
@@ -23,8 +28,17 @@ fn data_path(name: &str) -> String {
     ];
     candidates
         .into_iter()
-        .find(|p| std::path::Path::new(p).exists())
+        .find(|p| Path::new(p).exists())
         .unwrap_or_else(|| format!("data/{}", name))
+}
+
+fn data_root() -> String {
+    for c in ["data", "../data", "../../data"] {
+        if Path::new(c).exists() {
+            return c.to_string();
+        }
+    }
+    "data".to_string()
 }
 
 fn load_formulas() -> Result<FormulaEngine, String> {
@@ -32,7 +46,7 @@ fn load_formulas() -> Result<FormulaEngine, String> {
     let mut any = false;
     for d in ["data/formulas", "data/formulas_network"] {
         for candidate in [d.to_string(), format!("../{}", d), format!("../../{}", d)] {
-            let p = std::path::Path::new(&candidate);
+            let p = Path::new(&candidate);
             if p.exists() {
                 engine.load_dir(p)?;
                 any = true;
@@ -40,10 +54,9 @@ fn load_formulas() -> Result<FormulaEngine, String> {
             }
         }
     }
-    // fallback: file moja ya zamani (demo)
     if !any {
         let f = data_path("formulas.json");
-        engine.load_file(std::path::Path::new(&f))?;
+        engine.load_file(Path::new(&f))?;
     }
     Ok(engine)
 }
@@ -90,7 +103,7 @@ fn main() {
                 .filter(|s| !s.is_empty())
                 .collect();
             let mut d = BayesianDiagnoser::new();
-            d.load_file(std::path::Path::new(&data_path("diagnosis.json")))
+            d.load_file(Path::new(&data_path("diagnosis.json")))
                 .unwrap_or_else(|e| fail(&e));
             d.diagnose(model, &ids).unwrap_or_else(|e| fail(&e))
         }
@@ -110,7 +123,7 @@ fn main() {
                 })
                 .collect();
             let path = format!("data/decision_trees/{}.json", name);
-            let t = DecisionTree::load_file(std::path::Path::new(&path))
+            let t = DecisionTree::load_file(Path::new(&path))
                 .unwrap_or_else(|e| fail(&e));
             t.walk(&answers).unwrap_or_else(|e| fail(&e))
         }
@@ -119,7 +132,7 @@ fn main() {
             let data: serde_json::Value = serde_json::from_str(&data)
                 .unwrap_or_else(|e| fail(&format!("--data si JSON sahihi: {}", e)));
             let path = data_path("rules/rules_electrical.json");
-            let r = RulesEngine::load_file(std::path::Path::new(&path))
+            let r = RulesEngine::load_file(Path::new(&path))
                 .unwrap_or_else(|e| fail(&e));
             serde_json::json!({
                 "trade": r.trade(),
@@ -136,7 +149,7 @@ fn main() {
                 .filter(|s| !s.is_empty())
                 .collect();
             let mut k = KnowledgeBase::new();
-            k.load_file(std::path::Path::new(&data_path("problems.json")))
+            k.load_file(Path::new(&data_path("problems.json")))
                 .unwrap_or_else(|e| fail(&e));
             serde_json::json!({
                 "problems": k.problem_count(),
@@ -156,12 +169,76 @@ fn main() {
             let mut i = I18n::new();
             let lang = parse_flag(&args, "--lang").unwrap_or_else(|| "sw".to_string());
             i.set_lang(&lang);
-            let n = i.load_file(std::path::Path::new(&data_path("locales/sw.json")))
+            let n = i
+                .load_file(Path::new(&data_path("locales/sw.json")))
                 .unwrap_or_else(|e| fail(&e));
             serde_json::json!({
                 "keys": n,
                 "lang": i.lang().code(),
                 "sample": i.bi("calc.button"),
+            })
+        }
+        // === LOCATION & NAVIGATION ===
+        "geo" => {
+            let q = parse_flag(&args, "--q").unwrap_or_default();
+            let limit: usize = parse_flag(&args, "--limit")
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(15);
+            let root = data_root();
+            let eng = GeoEngine::load(Path::new(&root)).unwrap_or_else(|e| fail(&e));
+            let hits: Vec<_> = eng
+                .search(&q, limit)
+                .iter()
+                .map(|p| {
+                    serde_json::json!({
+                        "id": p.id,
+                        "name_sw": p.name_sw,
+                        "name_en": p.name_en,
+                        "level": p.level,
+                        "region_id": p.region_id,
+                        "district_id": p.district_id,
+                    })
+                })
+                .collect();
+            serde_json::json!({
+                "query": q,
+                "total_places": eng.count(),
+                "hits": hits,
+            })
+        }
+        "nav" => {
+            let maneuver = parse_flag(&args, "--maneuver").unwrap_or_else(|| "continue".into());
+            let distance: Option<f64> = parse_flag(&args, "--distance").and_then(|s| s.parse().ok());
+            let root = data_root();
+            let eng = NavigationEngine::load(Path::new(&root)).unwrap_or_else(|e| fail(&e));
+            let text_sw = eng.instruction_sw(&maneuver, distance);
+            serde_json::json!({
+                "maneuver": maneuver,
+                "distance_m": distance,
+                "instruction_sw": text_sw,
+                "voice_prompts_loaded": eng.prompt_count(),
+                "start": eng.voice("start_nav", &[]),
+                "arrived": eng.voice("arrived", &[]),
+            })
+        }
+        "hazards" => {
+            let root = data_root();
+            let eng = HazardsEngine::load(Path::new(&root)).unwrap_or_else(|e| fail(&e));
+            let list: Vec<_> = eng
+                .all()
+                .iter()
+                .map(|h| {
+                    serde_json::json!({
+                        "id": h.id,
+                        "name_sw": h.name_sw,
+                        "severity": h.severity,
+                        "voice_sw": h.voice_sw,
+                    })
+                })
+                .collect();
+            serde_json::json!({
+                "count": eng.count(),
+                "types": list,
             })
         }
         "help" | "--help" | "-h" => serde_json::json!({
@@ -173,7 +250,10 @@ fn main() {
                 "rules --data '{...}'              - tathmini rules",
                 "knowledge --trade umeme --symptoms a,b - knowledge base",
                 "test                              - endesha test cases zote",
-                "i18n --lang sw|en                 - jaribu translations"
+                "i18n --lang sw|en                 - jaribu translations",
+                "geo --q <jina> [--limit N]        - tafuta mahali (Tanzania)",
+                "nav --maneuver left --distance 200 - maelekezo Kiswahili",
+                "hazards                           - orodha ya aina za hatari"
             ]
         }),
         other => fail(&format!("Amri '{}' haipo. Tumia 'help'.", other)),
