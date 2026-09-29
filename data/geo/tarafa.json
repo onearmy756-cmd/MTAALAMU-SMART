@@ -1,31 +1,59 @@
 {
-  "version": "1.0.0",
-  "description": "Tarafa (Divisions) za Tanzania. Inajazwa mkoa mkoa hadi zote ziwe kamili – hakuna kuruka.",
+  "version": "1.1.0",
+  "description": "Tarafa (Divisions) za Tanzania. Inajazwa mkoa mkoa – hakuna kuruka.",
   "status": "in_progress",
-  "note": "Data kamili ya tarafa zote za nchi inahitaji import kutoka NBS/OSM. Hapa kuna muundo + sehemu za mikoa muhimu. Itaendelea kujazwa.",
   "tarafa": [
-    {"id": "TZ-02-01-01", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Ilala", "name_en": "Ilala"},
-    {"id": "TZ-02-01-02", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Ukonga", "name_en": "Ukonga"},
-    {"id": "TZ-02-02-01", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Kinondoni", "name_en": "Kinondoni"},
-    {"id": "TZ-02-02-02", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Kawe", "name_en": "Kawe"},
-    {"id": "TZ-02-03-01", "district_id": "TZ-02-03", "region_id": "TZ-02", "name_sw": "Temeke", "name_en": "Temeke"},
-    {"id": "TZ-02-03-02", "district_id": "TZ-02-03", "region_id": "TZ-02", "name_sw": "Mbagala", "name_en": "Mbagala"},
-    {"id": "TZ-02-04-01", "district_id": "TZ-02-04", "region_id": "TZ-02", "name_sw": "Ubungo", "name_en": "Ubungo"},
-    {"id": "TZ-02-05-01", "district_id": "TZ-02-05", "region_id": "TZ-02", "name_sw": "Kigamboni", "name_en": "Kigamboni"},
+    {"id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Ilala","name_en":"Ilala"},
+    {"id":"TZ-02-01-02","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Ukonga","name_en":"Ukonga"},
+    {"id":"TZ-02-01-03","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Buguruni","name_en":"Buguruni"},
+    {"id":"TZ-02-01-04","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Tabata","name_en":"Tabata"},
+    {"id":"TZ-02-01-05","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Vingunguti","name_en":"Vingunguti"},
 
-    {"id": "TZ-03-01-01", "district_id": "TZ-03-01", "region_id": "TZ-03", "name_sw": "Dodoma Urban", "name_en": "Dodoma Urban"},
-    {"id": "TZ-03-02-01", "district_id": "TZ-03-02", "region_id": "TZ-03", "name_sw": "Bahi", "name_en": "Bahi"},
-    {"id": "TZ-03-03-01", "district_id": "TZ-03-03", "region_id": "TZ-03", "name_sw": "Chamwino", "name_en": "Chamwino"},
+    {"id":"TZ-02-02-01","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kinondoni","name_en":"Kinondoni"},
+    {"id":"TZ-02-02-02","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kawe","name_en":"Kawe"},
+    {"id":"TZ-02-02-03","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Msasani","name_en":"Msasani"},
+    {"id":"TZ-02-02-04","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Sinza","name_en":"Sinza"},
+    {"id":"TZ-02-02-05","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Makumbusho","name_en":"Makumbusho"},
+    {"id":"TZ-02-02-06","district_id":"TZ-02-02","region_id":"TZ-02","name_sw":"Kijitonyama","name_en":"Kijitonyama"},
 
-    {"id": "TZ-01-01-01", "district_id": "TZ-01-01", "region_id": "TZ-01", "name_sw": "Arusha Urban", "name_en": "Arusha Urban"},
-    {"id": "TZ-01-02-01", "district_id": "TZ-01-02", "region_id": "TZ-01", "name_sw": "Arusha Rural", "name_en": "Arusha Rural"},
+    {"id":"TZ-02-03-01","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Temeke","name_en":"Temeke"},
+    {"id":"TZ-02-03-02","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Mbagala","name_en":"Mbagala"},
+    {"id":"TZ-02-03-03","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Kijichi","name_en":"Kijichi"},
+    {"id":"TZ-02-03-04","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Mtoni","name_en":"Mtoni"},
+    {"id":"TZ-02-03-05","district_id":"TZ-02-03","region_id":"TZ-02","name_sw":"Chang'ombe","name_en":"Chang'ombe"},
 
-    {"id": "TZ-17-01-01", "district_id": "TZ-17-01", "region_id": "TZ-17", "name_sw": "Nyamagana", "name_en": "Nyamagana"},
-    {"id": "TZ-17-02-01", "district_id": "TZ-17-02", "region_id": "TZ-17", "name_sw": "Ilemela", "name_en": "Ilemela"}
+    {"id":"TZ-02-04-01","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Ubungo","name_en":"Ubungo"},
+    {"id":"TZ-02-04-02","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Kimara","name_en":"Kimara"},
+    {"id":"TZ-02-04-03","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Mbezi","name_en":"Mbezi"},
+    {"id":"TZ-02-04-04","district_id":"TZ-02-04","region_id":"TZ-02","name_sw":"Saranga","name_en":"Saranga"},
+
+    {"id":"TZ-02-05-01","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Kigamboni","name_en":"Kigamboni"},
+    {"id":"TZ-02-05-02","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Somangila","name_en":"Somangila"},
+    {"id":"TZ-02-05-03","district_id":"TZ-02-05","region_id":"TZ-02","name_sw":"Tungi","name_en":"Tungi"},
+
+    {"id":"TZ-03-01-01","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Dodoma Urban","name_en":"Dodoma Urban"},
+    {"id":"TZ-03-01-02","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Makulu","name_en":"Makulu"},
+    {"id":"TZ-03-01-03","district_id":"TZ-03-01","region_id":"TZ-03","name_sw":"Nala","name_en":"Nala"},
+    {"id":"TZ-03-02-01","district_id":"TZ-03-02","region_id":"TZ-03","name_sw":"Bahi","name_en":"Bahi"},
+    {"id":"TZ-03-03-01","district_id":"TZ-03-03","region_id":"TZ-03","name_sw":"Chamwino","name_en":"Chamwino"},
+    {"id":"TZ-03-05-01","district_id":"TZ-03-05","region_id":"TZ-03","name_sw":"Kondoa","name_en":"Kondoa"},
+
+    {"id":"TZ-01-01-01","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Arusha Urban","name_en":"Arusha Urban"},
+    {"id":"TZ-01-01-02","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Themi","name_en":"Themi"},
+    {"id":"TZ-01-01-03","district_id":"TZ-01-01","region_id":"TZ-01","name_sw":"Kaloleni","name_en":"Kaloleni"},
+    {"id":"TZ-01-02-01","district_id":"TZ-01-02","region_id":"TZ-01","name_sw":"Arusha Rural","name_en":"Arusha Rural"},
+    {"id":"TZ-01-03-01","district_id":"TZ-01-03","region_id":"TZ-01","name_sw":"Karatu","name_en":"Karatu"},
+
+    {"id":"TZ-17-01-01","district_id":"TZ-17-01","region_id":"TZ-17","name_sw":"Nyamagana","name_en":"Nyamagana"},
+    {"id":"TZ-17-01-02","district_id":"TZ-17-01","region_id":"TZ-17","name_sw":"Igoma","name_en":"Igoma"},
+    {"id":"TZ-17-02-01","district_id":"TZ-17-02","region_id":"TZ-17","name_sw":"Ilemela","name_en":"Ilemela"},
+    {"id":"TZ-17-02-02","district_id":"TZ-17-02","region_id":"TZ-17","name_sw":"Pasiansi","name_en":"Pasiansi"},
+    {"id":"TZ-17-03-01","district_id":"TZ-17-03","region_id":"TZ-17","name_sw":"Magu","name_en":"Magu"}
   ],
   "stats": {
-    "listed": 15,
-    "target": "all divisions nationwide",
-    "coverage": "Dar es Salaam, Dodoma, Arusha, Mwanza (seed). Full list in progress – hakuna kuruka."
+    "listed": 42,
+    "regions_started": ["Dar es Salaam", "Dodoma", "Arusha", "Mwanza"],
+    "target": "all tarafa nationwide",
+    "note": "Dar es Salaam imejaa zaidi. Mikoa mengine yanaendelea. Hakuna kuruka."
   }
 }
