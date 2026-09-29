@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "description": "Tarafa (Divisions) za Tanzania. Inajazwa mkoa mkoa hadi zote ziwe kamili – hakuna kuruka.",
+  "status": "in_progress",
+  "note": "Data kamili ya tarafa zote za nchi inahitaji import kutoka NBS/OSM. Hapa kuna muundo + sehemu za mikoa muhimu. Itaendelea kujazwa.",
+  "tarafa": [
+    {"id": "TZ-02-01-01", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Ilala", "name_en": "Ilala"},
+    {"id": "TZ-02-01-02", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Ukonga", "name_en": "Ukonga"},
+    {"id": "TZ-02-02-01", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Kinondoni", "name_en": "Kinondoni"},
+    {"id": "TZ-02-02-02", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Kawe", "name_en": "Kawe"},
+    {"id": "TZ-02-03-01", "district_id": "TZ-02-03", "region_id": "TZ-02", "name_sw": "Temeke", "name_en": "Temeke"},
+    {"id": "TZ-02-03-02", "district_id": "TZ-02-03", "region_id": "TZ-02", "name_sw": "Mbagala", "name_en": "Mbagala"},
+    {"id": "TZ-02-04-01", "district_id": "TZ-02-04", "region_id": "TZ-02", "name_sw": "Ubungo", "name_en": "Ubungo"},
+    {"id": "TZ-02-05-01", "district_id": "TZ-02-05", "region_id": "TZ-02", "name_sw": "Kigamboni", "name_en": "Kigamboni"},
+
+    {"id": "TZ-03-01-01", "district_id": "TZ-03-01", "region_id": "TZ-03", "name_sw": "Dodoma Urban", "name_en": "Dodoma Urban"},
+    {"id": "TZ-03-02-01", "district_id": "TZ-03-02", "region_id": "TZ-03", "name_sw": "Bahi", "name_en": "Bahi"},
+    {"id": "TZ-03-03-01", "district_id": "TZ-03-03", "region_id": "TZ-03", "name_sw": "Chamwino", "name_en": "Chamwino"},
+
+    {"id": "TZ-01-01-01", "district_id": "TZ-01-01", "region_id": "TZ-01", "name_sw": "Arusha Urban", "name_en": "Arusha Urban"},
+    {"id": "TZ-01-02-01", "district_id": "TZ-01-02", "region_id": "TZ-01", "name_sw": "Arusha Rural", "name_en": "Arusha Rural"},
+
+    {"id": "TZ-17-01-01", "district_id": "TZ-17-01", "region_id": "TZ-17", "name_sw": "Nyamagana", "name_en": "Nyamagana"},
+    {"id": "TZ-17-02-01", "district_id": "TZ-17-02", "region_id": "TZ-17", "name_sw": "Ilemela", "name_en": "Ilemela"}
+  ],
+  "stats": {
+    "listed": 15,
+    "target": "all divisions nationwide",
+    "coverage": "Dar es Salaam, Dodoma, Arusha, Mwanza (seed). Full list in progress – hakuna kuruka."
+  }
+}
