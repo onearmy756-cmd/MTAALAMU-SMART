@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="utf-8"/>
+<title>Fundi Deploy — Msimamizi</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#0a1628;color:#e0f7fa;margin:0;padding:20px}
+h1{color:#00e5ff}
+.card{background:#0d2137;border:1px solid #00e5ff33;border-radius:12px;padding:16px;margin:12px 0}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+button{background:#00e5ff;color:#042;border:0;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer}
+button.sec{background:#334;color:#e0f7fa}
+button.danger{background:#ff1744;color:#fff}
+.bar{height:8px;background:#1a2a3a;border-radius:4px;overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,#00e5ff,#00e676)}
+.badge{padding:2px 10px;border-radius:12px;font-size:12px}
+.awaiting_approval{background:#ffc107;color:#000}
+.running{background:#00e5ff;color:#000}
+.done{background:#00e676;color:#000}
+.failed,.cancelled{background:#ff1744}
+table{width:100%;border-collapse:collapse}
+td,th{padding:8px;border-bottom:1px solid #00e5ff22;text-align:left;font-size:14px}
+</style>
+</head>
+<body>
+<h1>Fundi Deploy — Msimamizi</h1>
+<p>Agent inafanya kazi. Wewe unathibitisha / kughairi tu.</p>
+<div class="row">
+  <button onclick="discover()">Gundua computers</button>
+  <button onclick="loadJobs()">Onyesha jobs</button>
+  <button class="sec" onclick="deploySelected()">Anza deploy (HITL)</button>
+  <button class="sec" onclick="deployAuto()">Deploy auto (lab)</button>
+</div>
+<div class="card" id="summary">—</div>
+<div class="card">
+  <h3>Computers</h3>
+  <div id="computers">Gundua kwanza…</div>
+</div>
+<div class="card">
+  <h3>Jobs</h3>
+  <table><thead><tr><th>PC</th><th>OS</th><th>Hali</th><th>%</th><th>Ujumbe</th><th></th></tr></thead>
+  <tbody id="jobs"></tbody></table>
+</div>
+<script>
+const API = '';
+let selected = [];
+async function discover(){
+  const r = await fetch(API+'/computers'); const d = await r.json();
+  const el = document.getElementById('computers');
+  selected = [];
+  el.innerHTML = (d.computers||[]).map(c =>
+    `<label style="display:block;margin:6px 0"><input type="checkbox" value="${c.mac}" data-name="${c.name}" onchange="tog(this)"/> <b>${c.name}</b> ${c.mac} ${c.ip||''}</label>`
+  ).join('') || 'Hakuna host (arp-scan/arp)';
+}
+function tog(cb){
+  const mac = cb.value, name = cb.dataset.name;
+  if(cb.checked) selected.push({mac,name});
+  else selected = selected.filter(x=>x.mac!==mac);
+}
+async function loadJobs(){
+  const s = await (await fetch(API+'/supervisor/summary')).json();
+  document.getElementById('summary').innerHTML =
+    `<b>Zinasubiri idhini:</b> ${s.awaiting_your_approval} · <b>Zinaendesha:</b> ${s.running} · <b>Zimekamilika:</b> ${s.done} · <b>Zimeshindwa:</b> ${s.failed}`;
+  const jobs = await (await fetch(API+'/jobs')).json();
+  document.getElementById('jobs').innerHTML = jobs.map(j => `
+    <tr>
+      <td>${j.device_name}<br/><small>${j.device_mac}</small></td>
+      <td>${j.os_type}</td>
+      <td><span class="badge ${j.status}">${j.status}</span> ${j.stage||''}</td>
+      <td><div class="bar"><div class="fill" style="width:${j.progress}%"></div></div> ${j.progress}%</td>
+      <td>${j.message||''}</td>
+      <td>
+        ${j.status==='awaiting_approval'?`<button onclick="approve('${j.id}')">RUHUSU</button>`:''}
+        ${j.status==='awaiting_approval'||j.status==='running'?`<button class="danger" onclick="cancel('${j.id}')">GHAIRI</button>`:''}
+      </td>
+    </tr>`).join('') || '<tr><td colspan="6">Hakuna jobs</td></tr>';
+}
+async function approve(id){ await fetch(API+'/jobs/'+id+'/approve',{method:'POST'}); loadJobs(); }
+async function cancel(id){ await fetch(API+'/jobs/'+id+'/cancel',{method:'POST'}); loadJobs(); }
+async function deploySelected(){
+  if(!selected.length){ alert('Chagua computers'); return; }
+  await fetch(API+'/deploy',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({computers:selected,os_type:'auto',auto_approve:false})});
+  loadJobs();
+}
+async function deployAuto(){
+  if(!selected.length){ alert('Chagua computers'); return; }
+  await fetch(API+'/deploy/auto',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({computers:selected,os_type:'auto'})});
+  loadJobs();
+}
+setInterval(loadJobs, 3000);
+loadJobs();
+</script>
+</body>
+</html>
