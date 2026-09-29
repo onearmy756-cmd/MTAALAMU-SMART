@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "2.0.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -10,15 +10,14 @@
   "levels": ["country", "region", "district", "division", "ward", "village", "vitongoji", "street", "road"],
   "stats": {
     "regions": 31,
-    "districts_listed": 120,
-    "districts_target": "169+",
+    "districts": 184,
     "divisions": null,
     "wards": null,
     "villages": null,
     "vitongoji": null,
     "streets": null,
     "roads": null,
-    "note": "Wilaya zimeanza (data/geo/districts.json). Lengo: Tanzania nzima, hakuna kimoja kirukwe."
+    "note": "Mikoa 31 + Wilaya 184 zimekamilika. Hatua inayofuata: Tarafa, Kata, Vijiji, Vitongoji, Mitaa, Barabara."
   },
   "regions": [
     { "id": "TZ-01", "name_sw": "Arusha", "name_en": "Arusha", "code": "01", "center": { "lat": -3.3869, "lng": 36.6830 } },
@@ -58,8 +57,9 @@
     "schema": "data/geo/SCHEMA.md"
   },
   "notes": [
-    "L1 inafanyika: wilaya ~120 zimeongezwa.",
-    "Lengo: Tanzania nzima (mkoa/wilaya/tarafa/kata/kijiji/kitongoji/mtaa/barabara) – hakuna kimoja kirukwe.",
-    "Kila node: name_sw (lazima) + name_en + geometry/labels."
+    "✅ Mikoa 31 kamili",
+    "✅ Wilaya 184 kamili (mikoa yote)",
+    "⏳ Inayofuata: Tarafa → Kata → Vijiji → Vitongoji → Mitaa → Barabara",
+    "Kila node ina name_sw (lazima) + name_en"
   ]
 }
