@@ -1,11 +1,11 @@
-//! mtaalamu — CLI ya mfumo wa MTAALAMU SMART.
-//!
-//!   mtaalamu agentic --msg "Kompyuta inaenda polepole" --approve
+//! mtaalamu — CLI
+//!   mtaalamu sysprobe [--top 10]
+//!   mtaalamu agentic --msg "..." --approve
 
 use mtaalamu_engine::{
     AgentOrchestrator, BayesianDiagnoser, DecisionTree, FormulaEngine, GeoEngine,
     HazardsEngine, I18n, KnowledgeBase, NavigationEngine, PipelineEngine, ReportEngine,
-    RulesEngine, VisionEngine, run_full,
+    RulesEngine, VisionEngine, probe_json, run_full,
 };
 use std::path::Path;
 
@@ -59,8 +59,7 @@ fn main() {
         "list" => {
             let eng = load_formulas().unwrap_or_else(|e| fail(&e));
             let by_trade: std::collections::BTreeMap<String, usize> = {
-                let mut m: std::collections::BTreeMap<String, usize> =
-                    std::collections::BTreeMap::new();
+                let mut m = std::collections::BTreeMap::new();
                 for t in eng.trades() {
                     m.insert(t.clone(), eng.by_trade(&t).len());
                 }
@@ -92,9 +91,8 @@ fn main() {
                     "false" | "0" | "no" | "hapana" | "n" => false,
                     other => fail(&format!("Jibu '{}'", other)),
                 }).collect();
-            let path = format!("data/decision_trees/{}.json", name);
-            DecisionTree::load_file(Path::new(&path)).unwrap_or_else(|e| fail(&e))
-                .walk(&answers).unwrap_or_else(|e| fail(&e))
+            DecisionTree::load_file(Path::new(&format!("data/decision_trees/{}.json", name)))
+                .unwrap_or_else(|e| fail(&e)).walk(&answers).unwrap_or_else(|e| fail(&e))
         }
         "rules" => {
             let data = parse_flag(&args, "--data").unwrap_or_else(|| "{}".into());
@@ -159,8 +157,7 @@ fn main() {
             let msg = parse_flag(&args, "--msg").unwrap_or_else(|| fail("Usage: agentic --msg \"...\" [--approve]"));
             let lang = parse_flag(&args, "--lang").unwrap_or_else(|| "sw".into());
             let approve = args.iter().any(|a| a == "--approve");
-            let root = data_root();
-            match run_full(Path::new(&root), &msg, &lang, approve) {
+            match run_full(Path::new(&data_root()), &msg, &lang, approve) {
                 Ok(r) => serde_json::json!({
                     "session": {
                         "id": r.session.id,
@@ -178,8 +175,10 @@ fn main() {
                 Err(e) => fail(&e),
             }
         }
-        "vision" => {
-            VisionEngine::load(Path::new(&data_root())).unwrap_or_else(|e| fail(&e)).to_json()
+        "vision" => VisionEngine::load(Path::new(&data_root())).unwrap_or_else(|e| fail(&e)).to_json(),
+        "sysprobe" | "probe" => {
+            let top: usize = parse_flag(&args, "--top").and_then(|s| s.parse().ok()).unwrap_or(10);
+            probe_json(top)
         }
         "pipeline" => {
             let eng = PipelineEngine::load(Path::new(&data_path("vision/pipeline.json"))).unwrap_or_else(|e| fail(&e));
@@ -213,7 +212,7 @@ fn main() {
             "usage": [
                 "list | calc | diagnose | tree | rules | knowledge | test | i18n",
                 "geo | nav | hazards",
-                "agents | agentic --msg '...' [--approve] | vision | pipeline | report",
+                "agents | agentic --msg '...' [--approve] | vision | sysprobe [--top N] | pipeline | report",
             ]
         }),
         other => fail(&format!("Amri '{}' haipo. Tumia 'help'.", other)),
