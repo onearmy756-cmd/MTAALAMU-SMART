@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "description_sw": "Ramani ya kifaa — sehemu zote labelled, status kutoka snapshot",
+  "layers": ["hardware", "os", "processes", "bus"],
+  "status_colors": {
+    "good": "#00e676",
+    "warning": "#ffc107",
+    "critical": "#ff1744",
+    "offline": "#78909c",
+    "unknown": "#90a4ae"
+  },
+  "component_catalog": [
+    {"id": "cpu", "name_sw": "Kichakato (CPU)", "name_en": "CPU", "icon": "🧠", "layer": "hardware", "bus": "system"},
+    {"id": "ram", "name_sw": "Kumbukumbu (RAM)", "name_en": "RAM", "icon": "💾", "layer": "hardware", "bus": "memory"},
+    {"id": "disk", "name_sw": "Diski / SSD", "name_en": "Storage", "icon": "🗄️", "layer": "hardware", "bus": "storage"},
+    {"id": "gpu", "name_sw": "Kadi ya Picha", "name_en": "GPU", "icon": "🎮", "layer": "hardware", "bus": "pcie"},
+    {"id": "motherboard", "name_sw": "Bodi Kuu", "name_en": "Motherboard", "icon": "🔩", "layer": "hardware", "bus": "system"},
+    {"id": "psu", "name_sw": "Chanzo cha Umeme", "name_en": "Power Supply", "icon": "⚡", "layer": "hardware", "bus": "power"},
+    {"id": "fan", "name_sw": "Kipengele cha Baridi", "name_en": "Cooling Fan", "icon": "🌀", "layer": "hardware", "bus": "thermal"},
+    {"id": "network", "name_sw": "Kadi ya Mtandao", "name_en": "Network", "icon": "🌐", "layer": "hardware", "bus": "network"},
+    {"id": "battery", "name_sw": "Betri", "name_en": "Battery", "icon": "🔋", "layer": "hardware", "bus": "power"},
+    {"id": "screen", "name_sw": "Skrini", "name_en": "Display", "icon": "🖥️", "layer": "hardware", "bus": "display"},
+    {"id": "usb", "name_sw": "Vituo vya USB", "name_en": "USB Ports", "icon": "🔌", "layer": "hardware", "bus": "usb"},
+    {"id": "sensor", "name_sw": "Sensa (joto/n.k.)", "name_en": "Sensors", "icon": "🌡️", "layer": "hardware", "bus": "thermal"},
+    {"id": "os_kernel", "name_sw": "Kernel ya OS", "name_en": "OS Kernel", "icon": "⚙️", "layer": "os", "bus": "system"},
+    {"id": "os_services", "name_sw": "Huduma za OS", "name_en": "OS Services", "icon": "📦", "layer": "os", "bus": "system"},
+    {"id": "os_userland", "name_sw": "Programu za Mtumiaji", "name_en": "Userland Apps", "icon": "👤", "layer": "os", "bus": "system"}
+  ],
+  "default_layout": {
+    "width": 640,
+    "height": 400,
+    "positions": {
+      "cpu": {"x": 300, "y": 180},
+      "ram": {"x": 180, "y": 120},
+      "disk": {"x": 180, "y": 260},
+      "gpu": {"x": 420, "y": 120},
+      "motherboard": {"x": 300, "y": 300},
+      "psu": {"x": 90, "y": 180},
+      "fan": {"x": 90, "y": 300},
+      "network": {"x": 510, "y": 180},
+      "battery": {"x": 510, "y": 300},
+      "screen": {"x": 420, "y": 260},
+      "usb": {"x": 180, "y": 40},
+      "sensor": {"x": 420, "y": 40},
+      "os_kernel": {"x": 300, "y": 80},
+      "os_services": {"x": 300, "y": 40},
+      "os_userland": {"x": 300, "y": 10}
+    }
+  }
+}

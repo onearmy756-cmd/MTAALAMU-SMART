@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "language": "sw",
+  "scripts": {
+    "agent.receptionist.greet": "Habari. Mimi ni Mtaalamu Smart. Niambie tatizo unalokumbana nalo, nitaanza kufanya kazi mara moja.",
+    "agent.vision.scanning": "Ninaangalia kifaa chako sasa: sehemu za maunzi, michakato, na miunganisho.",
+    "agent.diagnoser.found": "Nimegundua sababu zinazowezekana. Ninakupa muhtasari.",
+    "agent.planner.ready": "Nimeandaa mpango wa utatuzi wa hatua sita. Ninahitaji ruhusa yako kuendelea.",
+    "agent.solver.working": "Ninafanya kazi ya kurekebisha sasa. Tafadhali subiri.",
+    "agent.tester.running": "Ninajaribu mfumo ili kuhakikisha kila kitu kiko sawa.",
+    "agent.verifier.confirm": "Tafadhali thibitisha: je, tatizo limetatuliwa kwa kuridhisha?",
+    "agent.scribe.narrate": "Ninaandika maelezo ya kila hatua kwa Kiswahili.",
+    "agent.reporter.ready": "Ripoti yako kama kitabu kidigitali iko tayari.",
+    "agent.learner.saved": "Nimehifadhi maarifa haya ili nifanye kazi bora baadaye.",
+    "pipeline.plan": "Hatua ya kwanza: kupanga kazi.",
+    "pipeline.identify": "Hatua ya pili: kutambua sababu za tatizo.",
+    "pipeline.implement": "Hatua ya tatu: kutekeleza suluhisho.",
+    "pipeline.test": "Hatua ya nne: kujaribu matokeo.",
+    "pipeline.verify": "Hatua ya tano: kuthibitisha.",
+    "pipeline.document": "Hatua ya sita: kuandika ripoti kamili.",
+    "hitl.ask_fix": "Nimegundua matatizo. Je, unaniruhusu kuanza kurekebisha kiotomatiki?",
+    "hitl.approved": "Asante. Ninaendelea na utatuzi.",
+    "hitl.denied": "Sawa. Sitabadilisha chochote bila ruhusa yako.",
+    "auto.issues_found": "Nimegundua matatizo {count}. Ninakueleza moja baada ya nyingine.",
+    "session.complete": "Kazi imekamilika. Ripoti iko tayari, na maarifa yamehifadhiwa.",
+    "session.failed": "Kumekuwa na tatizo katika utatuzi. Tafadhali angalia maelezo au jaribu tena."
+  }
+}

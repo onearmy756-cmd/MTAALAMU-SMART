@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "title_sw": "Ripoti ya Mtaalamu Smart — Kitabu Kidigitali",
+  "title_en": "Mtaalamu Smart Report — Digital Book",
+  "style": {
+    "theme": "neon-cyan-hud",
+    "cover_gradient": ["#0a1628", "#00e5ff"],
+    "font_sw": "system-ui",
+    "page_size": "A4"
+  },
+  "chapters": [
+    {
+      "id": "cover",
+      "title_sw": "Jalada",
+      "fields": ["session_id", "date", "time", "customer", "device", "trade", "status"]
+    },
+    {
+      "id": "problem",
+      "title_sw": "Sura 1 — Tatizo",
+      "fields": ["user_message", "symptoms", "priority", "context"]
+    },
+    {
+      "id": "discovery",
+      "title_sw": "Sura 2 — Ugunduzi (Vision)",
+      "fields": ["components_summary", "processes_critical", "issues", "posteriors"]
+    },
+    {
+      "id": "plan",
+      "title_sw": "Sura 3 — Mpango (PIITVD)",
+      "fields": ["plan_steps", "risks", "estimated_time_min"]
+    },
+    {
+      "id": "execution",
+      "title_sw": "Sura 4 — Utekelezaji",
+      "fields": ["actions", "evidence", "timestamps"]
+    },
+    {
+      "id": "verification",
+      "title_sw": "Sura 5 — Uthibitisho",
+      "fields": ["before_metrics", "after_metrics", "test_results", "verified_by"]
+    },
+    {
+      "id": "conclusion",
+      "title_sw": "Sura 6 — Hitimisho",
+      "fields": ["summary_sw", "recommendations", "follow_up"]
+    },
+    {
+      "id": "appendix",
+      "title_sw": "Kiambatisho",
+      "fields": ["formulas_used", "knowledge_refs", "full_log"]
+    }
+  ],
+  "narration_style_sw": "Kiswahili fasaha, wazi, hatua kwa hatua, bila jargon isiyo ya lazima.",
+  "export_formats": ["json", "html", "markdown"]
+}

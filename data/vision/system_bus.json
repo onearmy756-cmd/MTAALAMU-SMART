@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "description_sw": "Michoro ya system bus — njia Input→Output (schematic + status)",
+  "buses": [
+    {
+      "id": "power",
+      "name_sw": "Bus ya Umeme",
+      "name_en": "Power Bus",
+      "path": ["psu", "motherboard", "cpu", "ram", "disk", "gpu", "fan", "usb"],
+      "metrics": ["voltage", "wattage", "stability"]
+    },
+    {
+      "id": "memory",
+      "name_sw": "Bus ya Kumbukumbu",
+      "name_en": "Memory Bus",
+      "path": ["cpu", "ram", "motherboard"],
+      "metrics": ["bandwidth_gbps", "latency_ns", "usage_pct"]
+    },
+    {
+      "id": "storage",
+      "name_sw": "Bus ya Hifadhi",
+      "name_en": "Storage Bus",
+      "path": ["cpu", "motherboard", "disk"],
+      "metrics": ["read_mb_s", "write_mb_s", "usage_pct"]
+    },
+    {
+      "id": "pcie",
+      "name_sw": "PCIe / GPU Bus",
+      "name_en": "PCIe Bus",
+      "path": ["cpu", "motherboard", "gpu", "network"],
+      "metrics": ["lanes", "throughput"]
+    },
+    {
+      "id": "network",
+      "name_sw": "Bus ya Mtandao",
+      "name_en": "Network Bus",
+      "path": ["network", "os_kernel", "os_services", "os_userland"],
+      "metrics": ["rx_mb_s", "tx_mb_s", "packet_loss"]
+    },
+    {
+      "id": "thermal",
+      "name_sw": "Bus ya Joto",
+      "name_en": "Thermal Path",
+      "path": ["cpu", "gpu", "sensor", "fan"],
+      "metrics": ["temp_c", "fan_rpm"]
+    },
+    {
+      "id": "usb",
+      "name_sw": "USB Bus",
+      "name_en": "USB Bus",
+      "path": ["motherboard", "usb", "os_kernel"],
+      "metrics": ["ports_active", "speed"]
+    },
+    {
+      "id": "system",
+      "name_sw": "System / OS Stack",
+      "name_en": "System Stack",
+      "path": ["os_userland", "os_services", "os_kernel", "motherboard", "cpu"],
+      "metrics": ["sys_load", "context_switches"]
+    }
+  ],
+  "data_flow_template": {
+    "direction": "input_to_output",
+    "stages": ["input", "bus", "process", "output"],
+    "animation": "pulse_along_edge"
+  }
+}

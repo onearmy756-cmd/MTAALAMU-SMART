@@ -1,0 +1,81 @@
+{
+  "version": "1.0.0",
+  "name": "PIITVD",
+  "name_sw": "Mpango wa Utatuzi wa Hatua Sita",
+  "steps": [
+    {
+      "id": "plan",
+      "code": "P",
+      "name_sw": "Panga",
+      "name_en": "Plan",
+      "description_sw": "Eleza lengo, rasilimali, hatari, na mpangilio wa kazi.",
+      "agent": "planner",
+      "requires_hitl": false,
+      "voice_key": "pipeline.plan"
+    },
+    {
+      "id": "identify",
+      "code": "I1",
+      "name_sw": "Tambua",
+      "name_en": "Identify",
+      "description_sw": "Tambua dalili, sababu zinazowezekana, na ushahidi kutoka Vision.",
+      "agent": "diagnoser",
+      "requires_hitl": false,
+      "voice_key": "pipeline.identify"
+    },
+    {
+      "id": "implement",
+      "code": "I2",
+      "name_sw": "Tekeleza",
+      "name_en": "Implement",
+      "description_sw": "Tekeleza suluhisho (software) au toa maelekezo (hardware). Hitaji ruhusa.",
+      "agent": "solver",
+      "requires_hitl": true,
+      "voice_key": "pipeline.implement"
+    },
+    {
+      "id": "test",
+      "code": "T",
+      "name_sw": "Jaribu",
+      "name_en": "Test",
+      "description_sw": "Jaribu mfumo baada ya suluhisho: metrics, afya, regression.",
+      "agent": "tester",
+      "requires_hitl": false,
+      "voice_key": "pipeline.test"
+    },
+    {
+      "id": "verify",
+      "code": "V",
+      "name_sw": "Thibitisha",
+      "name_en": "Verify",
+      "description_sw": "Thibitisha tatizo limetatuliwa. Mteja au mtaalamu anaweza kuthibitisha.",
+      "agent": "verifier",
+      "requires_hitl": true,
+      "voice_key": "pipeline.verify"
+    },
+    {
+      "id": "document",
+      "code": "D",
+      "name_sw": "Andika",
+      "name_en": "Document",
+      "description_sw": "Andika ripoti kama kitabu kidigitali na hifadhi maarifa.",
+      "agent": "reporter",
+      "requires_hitl": false,
+      "voice_key": "pipeline.document"
+    }
+  ],
+  "session_states": [
+    "created",
+    "scanning",
+    "diagnosing",
+    "planning",
+    "awaiting_hitl",
+    "implementing",
+    "testing",
+    "verifying",
+    "documenting",
+    "completed",
+    "failed",
+    "cancelled"
+  ]
+}

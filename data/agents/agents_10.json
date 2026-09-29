@@ -1,0 +1,126 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-09-29",
+  "orchestrator": {
+    "modes": ["pipeline", "parallel", "hierarchical", "collaborative"],
+    "default_mode": "pipeline",
+    "pipeline_order": [
+      "receptionist",
+      "vision",
+      "diagnoser",
+      "planner",
+      "solver",
+      "tester",
+      "verifier",
+      "scribe",
+      "reporter",
+      "learner"
+    ],
+    "hitl_gates": ["solver", "verifier"],
+    "timeout_sec": 30
+  },
+  "agents": [
+    {
+      "id": "receptionist",
+      "name_sw": "Mpokeaji",
+      "name_en": "Receptionist",
+      "role": "Pokea tatizo la mtumiaji, ainisha trade/kategoria, anza session",
+      "inputs": ["user_message", "language"],
+      "outputs": ["session_id", "trade", "symptoms", "priority"],
+      "voice_key": "agent.receptionist.greet",
+      "auto": true
+    },
+    {
+      "id": "vision",
+      "name_sw": "Muono",
+      "name_en": "Vision",
+      "role": "Live scan: hardware map, processes, topology, sensors, issues",
+      "inputs": ["session_id", "device_id"],
+      "outputs": ["snapshot", "components", "processes", "topology", "issues"],
+      "voice_key": "agent.vision.scanning",
+      "auto": true
+    },
+    {
+      "id": "diagnoser",
+      "name_sw": "Mgunduzi",
+      "name_en": "Diagnoser",
+      "role": "Bayesian + rules + knowledge → causes na confidence",
+      "inputs": ["symptoms", "snapshot", "trade"],
+      "outputs": ["causes", "posteriors", "matched_problems"],
+      "voice_key": "agent.diagnoser.found",
+      "auto": true
+    },
+    {
+      "id": "planner",
+      "name_sw": "Mpangaji",
+      "name_en": "Planner",
+      "role": "Unda mpango PIITVD: Plan Identify Implement Test Verify Document",
+      "inputs": ["causes", "issues"],
+      "outputs": ["plan_steps", "risks", "requires_hitl"],
+      "voice_key": "agent.planner.ready",
+      "auto": true
+    },
+    {
+      "id": "solver",
+      "name_sw": "Mtatuzi",
+      "name_en": "Solver",
+      "role": "Tekeleza suluhisho (software auto au maelekezo hardware)",
+      "inputs": ["plan_steps", "hitl_approved"],
+      "outputs": ["actions_done", "evidence"],
+      "voice_key": "agent.solver.working",
+      "auto": false,
+      "requires_hitl": true
+    },
+    {
+      "id": "tester",
+      "name_sw": "Mjaribu",
+      "name_en": "Tester",
+      "role": "Jaribu baada ya fix: metrics, regression, health checks",
+      "inputs": ["actions_done", "baseline_snapshot"],
+      "outputs": ["test_results", "passed"],
+      "voice_key": "agent.tester.running",
+      "auto": true
+    },
+    {
+      "id": "verifier",
+      "name_sw": "Mthibitishaji",
+      "name_en": "Verifier",
+      "role": "Thibitisha tatizo limetatuliwa; HITL kwa mteja/mtaalamu",
+      "inputs": ["test_results", "user_confirm"],
+      "outputs": ["verified", "residual_issues"],
+      "voice_key": "agent.verifier.confirm",
+      "auto": false,
+      "requires_hitl": true
+    },
+    {
+      "id": "scribe",
+      "name_sw": "Mwandishi",
+      "name_en": "Scribe",
+      "role": "AI Scribe: maelezo Kiswahili fasaha kwa kila hatua + visual frames",
+      "inputs": ["plan_steps", "evidence", "language"],
+      "outputs": ["narration_sw", "frames"],
+      "voice_key": "agent.scribe.narrate",
+      "auto": true
+    },
+    {
+      "id": "reporter",
+      "name_sw": "Mriporti",
+      "name_en": "Reporter",
+      "role": "Tengeneza ripoti kama kitabu kidigitali (jalada + sura + hitimisho)",
+      "inputs": ["session", "narration", "evidence", "metrics"],
+      "outputs": ["report_json", "report_html"],
+      "voice_key": "agent.reporter.ready",
+      "auto": true
+    },
+    {
+      "id": "learner",
+      "name_sw": "Mwanafunzi",
+      "name_en": "Learner",
+      "role": "Hifadhi maarifa, sasisha priors/knowledge, success rates",
+      "inputs": ["session", "verified", "causes"],
+      "outputs": ["knowledge_delta", "learning_log"],
+      "voice_key": "agent.learner.saved",
+      "auto": true
+    }
+  ]
+}
