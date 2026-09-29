@@ -1,4 +1,4 @@
-//! Electronic Devices Solver — data/devices_catalog.json
+//! Electronic Devices Solver — 100% from data/devices/* + devices_catalog.json
 //! Hardware: guide for human. Mixed: firmware/reset steps listed.
 
 use serde::{Deserialize, Serialize};
@@ -45,7 +45,85 @@ pub struct ElectronicSolveResult {
     pub devices_in_catalog: usize,
 }
 
+fn strs_arr(v: &Value, key: &str) -> Vec<String> {
+    v.get(key)
+        .and_then(|x| x.as_array())
+        .map(|a| {
+            a.iter()
+                .filter_map(|x| x.as_str().map(|s| s.to_string()))
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// Prefer data/devices/*.json parts (100% split catalog)
+fn load_from_devices_dir(data_root: &Path) -> Option<DevicesCatalog> {
+    let dir = data_root.join("devices");
+    if !dir.is_dir() {
+        return None;
+    }
+    let mut devices = Vec::new();
+    let mut kanuni_10 = None;
+    if let Ok(rd) = fs::read_dir(&dir) {
+        for ent in rd.flatten() {
+            let path = ent.path();
+            if path.extension().and_then(|e| e.to_str()) != Some("json") {
+                continue;
+            }
+            let name = path.file_name().and_then(|n| n.to_str()).unwrap_or("");
+            if name == "manifest.json" {
+                continue;
+            }
+            let Ok(t) = fs::read_to_string(&path) else {
+                continue;
+            };
+            let Ok(v) = serde_json::from_str::<Value>(&t) else {
+                continue;
+            };
+            if name == "kanuni_10.json" {
+                kanuni_10 = Some(v);
+                continue;
+            }
+            // part: { kundi, devices: [...] }
+            if let Some(arr) = v.get("devices").and_then(|x| x.as_array()) {
+                for d in arr {
+                    devices.push(DeviceEntry {
+                        kundi: d
+                            .get("kundi")
+                            .and_then(|x| x.as_str())
+                            .unwrap_or("")
+                            .to_string(),
+                        kifaa: d
+                            .get("kifaa")
+                            .and_then(|x| x.as_str())
+                            .unwrap_or("")
+                            .to_string(),
+                        aina: strs_arr(d, "aina"),
+                        matatizo: strs_arr(d, "matatizo"),
+                        suluhisho: strs_arr(d, "suluhisho"),
+                    });
+                }
+            }
+        }
+    }
+    if devices.is_empty() {
+        return None;
+    }
+    Some(DevicesCatalog {
+        version: Some(1),
+        jina: Some("Electronic Devices Solver".into()),
+        jumla_vifaa_catalog: Some(devices.len()),
+        devices,
+        kanuni_10,
+    })
+}
+
 fn load_catalog(data_root: &Path) -> Result<DevicesCatalog, String> {
+    // 1) 100% parts
+    if let Some(c) = load_from_devices_dir(data_root) {
+        return Ok(c);
+    }
+    // 2) monolithic files
     let candidates = [
         data_root.join("devices_catalog.json"),
         data_root.join("electronic_devices_solver.json"),
@@ -73,22 +151,12 @@ fn load_catalog(data_root: &Path) -> Result<DevicesCatalog, String> {
                         continue;
                     };
                     for (name, dev) in vifaa {
-                        let strs = |key: &str| -> Vec<String> {
-                            dev.get(key)
-                                .and_then(|x| x.as_array())
-                                .map(|a| {
-                                    a.iter()
-                                        .filter_map(|x| x.as_str().map(|s| s.to_string()))
-                                        .collect()
-                                })
-                                .unwrap_or_default()
-                        };
                         devices.push(DeviceEntry {
                             kundi: kundi.clone(),
                             kifaa: name.clone(),
-                            aina: strs("aina"),
-                            matatizo: strs("matatizo"),
-                            suluhisho: strs("suluhisho"),
+                            aina: strs_arr(dev, "aina"),
+                            matatizo: strs_arr(dev, "matatizo"),
+                            suluhisho: strs_arr(dev, "suluhisho"),
                         });
                     }
                 }
@@ -104,7 +172,7 @@ fn load_catalog(data_root: &Path) -> Result<DevicesCatalog, String> {
             }
         }
     }
-    Err("devices_catalog.json haipo kwenye data/".into())
+    Err("devices catalog haipo (data/devices/ au devices_catalog.json)".into())
 }
 
 fn score_match(msg: &str, kifaa: &str, tatizo: &str) -> i32 {
@@ -196,7 +264,7 @@ pub fn search_devices(data_root: &Path, msg: &str, limit: usize) -> ElectronicSo
         )
     } else {
         format!(
-            "Hakuna match (catalog: {} vifaa). Jaribu: TV, Fridge, Router, Printer…",
+            "Hakuna match (catalog: {} vifaa / 100%). Jaribu: TV, Fridge, Router…",
             n
         )
     };
@@ -221,6 +289,7 @@ pub fn catalog_stats(data_root: &Path) -> Value {
                 "jina": c.jina,
                 "devices": c.devices.len(),
                 "problems_indexed": problems,
+                "coverage": "100% parts under data/devices/",
                 "kundis": m
             })
         }
