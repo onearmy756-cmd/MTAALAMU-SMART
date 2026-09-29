@@ -1,92 +1,66 @@
 # 🇹🇿 MTAALAMU SMART — Intelligent System
 
-Mfumo wa **Rust (hesabu) + R (analytics) + R/Shiny (dashboard)** — vyote **data-driven** kwa JSON.
-Uwasilishaji ni sawa na "Agent Vision Live" dashboard (neon-cyan HUD).
+**Rust** (engine) + **R/Shiny** (dashboard) — data-driven JSON.
 
-**Moduli mpya (2026-09-29):** Location, Navigation, Voice (Kiswahili), Weather, Hazards — Tanzania kamili.
+## Production (Agentic Vision + OS probe)
 
-## 🌐 Lugha (LANGUAGE)
+```bash
+make build
+make health
+bash scripts/healthcheck.sh
 
-Dashboard ya `web-r/` ina **badilisho la lugha** kwenye header (🌐 LANGUAGE / LUGHA):
-**English** (msingi) ⇄ **Kiswahili**. Tafsiri zote zinatoka kwenye `data/locales/*.json`
-na `web-r/R/i18n.R`.
+# Deep OS probe (processes, disks, thermal, sockets on Linux)
+./engine-rust/target/release/mtaalamu deep --top 15
 
-## 🏗️ Muundo
+# Full agentic session (live vision + HITL + report)
+./engine-rust/target/release/mtaalamu agentic --msg "Kompyuta inaenda polepole" --approve
 
-```
-┌─────────────────────────────────────────────────────┐
-│  R/SHINY (web-r)     — UI / Dashboard               │
-│  • Live monitor, formula calculator, utambuzi       │
-│  • RAMANI + Navigation (turn-by-turn + sauti)       │
-│  • Lugha mbili: English ⇄ Kiswahili                 │
-├─────────────────────────────────────────────────────┤
-│  RUST (engine-rust) — Hesabu Halisi                 │
-│  • Formula engine + Bayesian diagnosis              │
-│  • (baadaye) geo / navigation helpers               │
-├─────────────────────────────────────────────────────┤
-│  R (analytics-r)   — Data Science                   │
-├─────────────────────────────────────────────────────┤
-│  DATA (data/)      — JSON ZOTE                      │
-│  • formulas, diagnosis, trades, professions...      │
-│  • geo/ (mikoa, wilaya, hierarkia)                  │
-│  • navigation/ (voice prompts, turn-by-turn, alarm) │
-│  • weather/ + hazards/                              │
-└─────────────────────────────────────────────────────┘
+# Safe remediation catalog
+./engine-rust/target/release/mtaalamu remediate
+./engine-rust/target/release/mtaalamu remediate --action report_top_cpu
 ```
 
-## 📍 Location & Navigation (MPYA)
+UI:
 
-| Kipengele | Hali |
-|-----------|------|
-| Mikoa 31 | ✅ |
-| Wilaya (~120+ listed, target 169+) | 🔄 L1 |
-| Tarafa / Kata / Vijiji / Vitongoji / Mitaa / Barabara | ⏳ |
-| Sauti (TTS) Kiswahili | ✅ prompts |
-| Turn-by-turn instructions | ✅ templates |
-| Alarm rules | ✅ |
-| Weather schema | ✅ |
-| Hazards types | ✅ |
-| Auto-location (GPS) | ⏳ |
-| Live route visuals | ⏳ |
-| Labels kamili kwenye ramani | ⏳ |
+```bash
+make run-ui
+# http://127.0.0.1:3838 → tab ◉ AGENTIC VISION
+```
 
-Tazama `PLAN.md` sehemu **1B** na `data/geo/SCHEMA.md` kwa maelezo kamili.
+Runbook: [`PRODUCTION.md`](PRODUCTION.md) · Scope: [`docs/PRODUCTION_CAPABILITIES.md`](docs/PRODUCTION_CAPABILITIES.md)
 
-## 🚀 Matumizi
+## Lugha
 
-### 1. Rust Engine
-```powershell
+Header: **English** ⇄ **Kiswahili** (`data/locales`, `web-r/R/i18n.R`).
+
+## Muundo
+
+```
+web-r/          R/Shiny dashboard (LIVE, AGENTIC, FORMULA, DIAG, MAP)
+engine-rust/    Rust CLI: calc, diagnose, agentic, deep, sysprobe, remediate
+data/           JSON (formulas, agents, vision, geo, …)
+```
+
+## Tabs
+
+1. **◉ LIVE MONITOR** — metrics (OS probe when available)
+2. **◉ AGENTIC VISION** — multi-agent, HITL, live map, scribe, kitabu HTML
+3. **🧮 FORMULA ENGINE**
+4. **🧠 UTAMBUZI (BAYES)**
+5. **🗺️ RAMANI / NAVIGATION**
+
+## Rust (examples)
+
+```bash
 cd engine-rust
-cargo run -- list
-cargo run -- calc voltage_drop --inputs '{"L":30,"I":16,"A":2.5,"V":230,"rho":0.0175,"M":2}'
-cargo run -- diagnose electrical --symptoms breaker_trips,sparks
+cargo run --release -- list
+cargo run --release -- calc voltage_drop --inputs '{"L":30,"I":16,"A":2.5,"V":230,"rho":0.0175,"M":2}'
+cargo run --release -- diagnose electrical --symptoms breaker_trips,sparks
 ```
 
-### 2. R Analytics
-```powershell
-Rscript analytics-r/analytics.R
-```
+## Muhimu
 
-### 3. R/Shiny Dashboard
-```powershell
-R -e "shiny::runApp('web-r', port = 3838)"
-```
-
-## 📺 Tabs za Dashboard
-
-1. **◉ LIVE MONITOR**
-2. **🧮 FORMULA ENGINE**
-3. **🧠 UTAMBUZI (BAYES)**
-4. **🗺️ RAMANI / NAVIGATION** (inaendelea — sauti + turn-by-turn + weather + hazards)
-
-## ➕ Kuongeza Formula Mpya (hakuna code)
-
-Ongeza kipengele kwenye `data/formulas.json` — Rust, R na Shiny zitasoma mara moja.
-
-## ⚠️ Muhimu
-
-- **Hesabu = Rust/math** (sahihi 100%)
-- **AI/LLM = tafsiri tu** — si hesabu
-- **Hali za mfumo = rules JSON**
-- **Location data = JSON/GeoJSON** — offline-first inapowezekana
-- **Sauti = Kiswahili kwanza**
+- Hesabu = Rust (deterministic)
+- Vision/probe = OS metrics za kweli (si JSON bandia)
+- HITL = ruhusa kabla ya remediation ya medium risk
+- Si scope: motherboard X-ray, kernel video, AGI
