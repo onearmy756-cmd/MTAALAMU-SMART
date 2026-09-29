@@ -1,4 +1,4 @@
-//! MTAALAMU SMART Engine — production observability + agentic
+//! MTAALAMU SMART Engine
 
 pub mod expr;
 pub mod formula_engine;
@@ -18,6 +18,7 @@ pub mod agentic_run;
 pub mod sysprobe;
 pub mod deep_probe;
 pub mod remediate;
+pub mod tools;
 
 pub use expr::{eval, eval_with, EvalError, Vars};
 pub use formula_engine::{FormulaEngine, CalcResult, Formula};
@@ -37,3 +38,4 @@ pub use agentic_run::{run_full, AgenticResult};
 pub use sysprobe::{probe, probe_json, SystemProbe};
 pub use deep_probe::{deep_probe, deep_probe_json, DeepSnapshot};
 pub use remediate::{catalog as remediation_catalog, run_action as run_remediation, log_result as log_remediation};
+pub use tools::{discover as discover_tools, run_diagnostic, auto_diagnose, ToolboxReport};
