@@ -1,0 +1,39 @@
+DEFAULT menu.c32
+PROMPT 0
+TIMEOUT 50
+MENU TITLE FUNDI DEPLOY — Chagua OS
+
+LABEL auto
+  MENU LABEL Auto (AI)
+  MENU DEFAULT
+  KERNEL fundi/vmlinuz
+  APPEND initrd=fundi/initrd.img quiet fundi.mode=auto
+
+LABEL win11
+  MENU LABEL Install Windows 11 Pro
+  KERNEL wimboot
+  APPEND initrd=win11/boot.wim
+
+LABEL win10
+  MENU LABEL Install Windows 10 Pro
+  KERNEL wimboot
+  APPEND initrd=win10/boot.wim
+
+LABEL ubuntu
+  MENU LABEL Install Ubuntu 22.04
+  KERNEL ubuntu/vmlinuz
+  APPEND initrd=ubuntu/initrd url=http://192.168.1.10/images/ubuntu/ubuntu.seed auto=true
+
+LABEL debian
+  MENU LABEL Install Debian 12
+  KERNEL debian/linux
+  APPEND initrd=debian/initrd.gz auto=true preseed/url=http://192.168.1.10/images/debian/preseed.cfg
+
+LABEL rescue
+  MENU LABEL Fundi Rescue
+  KERNEL fundi/vmlinuz
+  APPEND initrd=fundi/initrd.img fundi.mode=rescue
+
+LABEL local
+  MENU LABEL Boot local disk
+  LOCALBOOT 0
