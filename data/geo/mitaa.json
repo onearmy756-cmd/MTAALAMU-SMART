@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "description": "Mitaa (Streets / Neighborhoods) za Tanzania. Lengo: zote, hakuna kuruka.",
+  "status": "in_progress",
+  "note": "Mitaa ni maelfu/makumi ya maelfu. Muundo uko. Data inajazwa kutoka OpenStreetMap + sources rasmi region by region.",
+  "mitaa": [
+    {"id": "TZ-02-01-01-001-001", "vitongoji_id": "TZ-02-01-01-001", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Mtaa wa Congo", "name_en": "Congo Street"},
+    {"id": "TZ-02-01-01-001-002", "vitongoji_id": "TZ-02-01-01-001", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Mtaa wa Msimbazi", "name_en": "Msimbazi Street"},
+    {"id": "TZ-02-02-01-001-001", "vitongoji_id": "TZ-02-02-01-001", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Mtaa wa Shekilango", "name_en": "Shekilango Road"},
+    {"id": "TZ-02-02-01-002-001", "vitongoji_id": "TZ-02-02-01-002", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Mtaa wa Mwenge", "name_en": "Mwenge Street"},
+    {"id": "TZ-02-03-01-001-001", "vitongoji_id": "TZ-02-03-01-001", "district_id": "TZ-02-03", "region_id": "TZ-02", "name_sw": "Mtaa wa Kilwa", "name_en": "Kilwa Road"},
+    {"id": "TZ-03-01-01-001-001", "vitongoji_id": "TZ-03-01-01-001", "district_id": "TZ-03-01", "region_id": "TZ-03", "name_sw": "Mtaa wa Madukani", "name_en": "Madukani Street"},
+    {"id": "TZ-01-01-01-001-001", "vitongoji_id": "TZ-01-01-01-001", "district_id": "TZ-01-01", "region_id": "TZ-01", "name_sw": "Mtaa wa Sokoine", "name_en": "Sokoine Road"}
+  ],
+  "stats": {
+    "listed": 7,
+    "target": "all streets/mitaa nationwide",
+    "coverage": "Seed data (Dar, Dodoma, Arusha). Full OSM import planned – hakuna kuruka."
+  }
+}
