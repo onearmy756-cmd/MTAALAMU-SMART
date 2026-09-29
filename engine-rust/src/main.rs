@@ -10,12 +10,18 @@
 //!   mtaalamu geo --q Kariakoo
 //!   mtaalamu nav --maneuver left --distance 200
 //!   mtaalamu hazards
+//!   mtaalamu agents
+//!   mtaalamu agent --msg "Kompyuta inaenda polepole"
+//!   mtaalamu vision
+//!   mtaalamu pipeline --session AV-xxx
+//!   mtaalamu report --session AV-xxx
 //!
 //! Data: inatafuta data/ kutoka cwd au engine-rust/.
 
 use mtaalamu_engine::{
-    BayesianDiagnoser, DecisionTree, FormulaEngine, GeoEngine, HazardsEngine, I18n,
-    KnowledgeBase, NavigationEngine, RulesEngine,
+    AgentOrchestrator, BayesianDiagnoser, DecisionTree, FormulaEngine, GeoEngine,
+    HazardsEngine, I18n, KnowledgeBase, NavigationEngine, PipelineEngine, ReportEngine,
+    RulesEngine, VisionEngine,
 };
 use std::path::Path;
 
@@ -241,6 +247,136 @@ fn main() {
                 "types": list,
             })
         }
+        // === AGENTIC VISION ===
+        "agents" => {
+            let path = data_path("agents/agents_10.json");
+            let orch = AgentOrchestrator::load(Path::new(&path)).unwrap_or_else(|e| fail(&e));
+            let list: Vec<_> = orch
+                .list_agents()
+                .iter()
+                .map(|a| {
+                    serde_json::json!({
+                        "id": a.id,
+                        "name_sw": a.name_sw,
+                        "role": a.role,
+                        "auto": a.auto,
+                        "requires_hitl": a.requires_hitl,
+                    })
+                })
+                .collect();
+            serde_json::json!({
+                "summary": orch.summary(),
+                "agents": list,
+            })
+        }
+        "agent" => {
+            let msg = parse_flag(&args, "--msg").unwrap_or_else(|| {
+                fail("Usage: agent --msg \"tatizo lako\" [--lang sw] [--approve]")
+            });
+            let lang = parse_flag(&args, "--lang").unwrap_or_else(|| "sw".into());
+            let approve = args.iter().any(|a| a == "--approve");
+            let path = data_path("agents/agents_10.json");
+            let orch = AgentOrchestrator::load(Path::new(&path)).unwrap_or_else(|e| fail(&e));
+            let mut session = orch.start_session(&msg, &lang);
+
+            // Run pipeline steps (with optional HITL approve)
+            let mut steps_log = Vec::new();
+            for _ in 0..12 {
+                if approve && !session.hitl_approved {
+                    let ev = orch.approve_hitl(&mut session);
+                    steps_log.push(serde_json::to_value(&ev).unwrap());
+                }
+                match orch.advance(&mut session) {
+                    Ok(ev) => {
+                        steps_log.push(serde_json::to_value(&ev).unwrap());
+                        if session.state.as_str() == "completed"
+                            || session.state.as_str() == "failed"
+                        {
+                            break;
+                        }
+                        if session.state.as_str() == "awaiting_hitl" && !approve {
+                            break;
+                        }
+                    }
+                    Err(e) => {
+                        steps_log.push(serde_json::json!({"error": e}));
+                        break;
+                    }
+                }
+            }
+
+            // Attach vision snapshot
+            let root = data_root();
+            let vision_json = VisionEngine::load(Path::new(&root))
+                .map(|v| v.to_json())
+                .unwrap_or(serde_json::json!(null));
+
+            serde_json::json!({
+                "session": {
+                    "id": session.id,
+                    "state": session.state.as_str(),
+                    "trade": session.trade,
+                    "symptoms": session.symptoms,
+                    "hitl_approved": session.hitl_approved,
+                    "pipeline_index": session.pipeline_index,
+                },
+                "events": steps_log,
+                "vision": vision_json,
+            })
+        }
+        "vision" => {
+            let root = data_root();
+            let eng = VisionEngine::load(Path::new(&root)).unwrap_or_else(|e| fail(&e));
+            eng.to_json()
+        }
+        "pipeline" => {
+            let path = data_path("vision/pipeline.json");
+            let eng = PipelineEngine::load(Path::new(&path)).unwrap_or_else(|e| fail(&e));
+            let sid = parse_flag(&args, "--session").unwrap_or_else(|| "AV-demo".into());
+            let mut rt = eng.start(&sid);
+            // Demo: advance all non-HITL or with --approve
+            let approve = args.iter().any(|a| a == "--approve");
+            let mut log = Vec::new();
+            for _ in 0..eng.defs().len() {
+                match eng.advance(
+                    &mut rt,
+                    serde_json::json!({"ok": true}),
+                    "Hatua imekamilika.",
+                    approve,
+                ) {
+                    Ok(()) => log.push(serde_json::json!({
+                        "index": rt.current_index,
+                        "completed": rt.completed,
+                    })),
+                    Err(e) => {
+                        log.push(serde_json::json!({"blocked": e}));
+                        break;
+                    }
+                }
+            }
+            serde_json::json!({
+                "runtime": rt,
+                "log": log,
+            })
+        }
+        "report" => {
+            let path = data_path("vision/report_template.json");
+            let eng = ReportEngine::load(Path::new(&path)).unwrap_or_else(|e| fail(&e));
+            let sid = parse_flag(&args, "--session").unwrap_or_else(|| "AV-demo".into());
+            let ctx = serde_json::json!({
+                "user_message": "Kompyuta inaenda polepole",
+                "symptoms": ["slow_performance", "overheating"],
+                "status": "completed",
+                "summary_sw": "Tatizo limetatuliwa: michakato hatari imesitishwa, feni imesafishwa kwa maelekezo.",
+                "issues": ["CPU juu", "Diski imejaa"],
+            });
+            let report = eng.build(&sid, &ctx, "sw");
+            let md = eng.to_markdown(&report);
+            serde_json::json!({
+                "report": report,
+                "markdown_preview": md.chars().take(800).collect::<String>(),
+            })
+        }
         "help" | "--help" | "-h" => serde_json::json!({
             "usage": [
                 "list                              - orodha ya formula zote kwa trade",
@@ -253,7 +389,12 @@ fn main() {
                 "i18n --lang sw|en                 - jaribu translations",
                 "geo --q <jina> [--limit N]        - tafuta mahali (Tanzania)",
                 "nav --maneuver left --distance 200 - maelekezo Kiswahili",
-                "hazards                           - orodha ya aina za hatari"
+                "hazards                           - orodha ya aina za hatari",
+                "agents                            - orodha Multi-Agent 10",
+                "agent --msg 'tatizo' [--approve]  - anza session Agentic Vision",
+                "vision                            - live snapshot (ramani/processes/issues)",
+                "pipeline --session ID [--approve] - PIITVD pipeline",
+                "report --session ID               - digital book report"
             ]
         }),
         other => fail(&format!("Amri '{}' haipo. Tumia 'help'.", other)),
