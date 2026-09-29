@@ -1,67 +1,89 @@
 {
-  "version": "1.0.0",
-  "description": "Sheria za alarm (sauti + vibration + notification)",
-  "rules": [
+  "version": "2.0.0",
+  "description": "Sheria za alarm (sauti + vibration + onyo) wakati wa navigation",
+  "alarms": [
+    {
+      "id": "arrival_near",
+      "trigger": "distance_to_destination_m <= 100",
+      "priority": "high",
+      "voice_prompt": "alarm_arrival",
+      "vibration": true,
+      "repeat": false,
+      "message_sw": "Uko karibu na sehemu unayoenda"
+    },
     {
       "id": "arrival",
-      "trigger": "destination_reached",
-      "voice_key": "you_have_arrived",
-      "vibrate": true,
-      "priority": "high"
-    },
-    {
-      "id": "hazard_critical",
-      "trigger": "hazard_severity_critical",
-      "voice_key": "hazard_ahead",
-      "vibrate": true,
+      "trigger": "distance_to_destination_m <= 30",
       "priority": "critical",
-      "repeat": true
-    },
-    {
-      "id": "flood",
-      "trigger": "hazard_type_flood",
-      "voice_key": "flood_warning",
-      "vibrate": true,
-      "priority": "critical"
-    },
-    {
-      "id": "road_closed",
-      "trigger": "hazard_type_road_closed",
-      "voice_key": "road_closed",
-      "vibrate": true,
-      "priority": "high"
-    },
-    {
-      "id": "weather_severe",
-      "trigger": "weather_alert_high",
-      "voice_key": "weather_alert",
-      "vibrate": true,
-      "priority": "high"
-    },
-    {
-      "id": "gps_lost",
-      "trigger": "gps_signal_lost",
-      "voice_key": "gps_weak",
-      "vibrate": false,
-      "priority": "medium"
+      "voice_prompt": "arrived",
+      "vibration": true,
+      "repeat": false,
+      "message_sw": "Umefika"
     },
     {
       "id": "off_route",
-      "trigger": "user_off_route",
-      "voice_key": "recalculating",
-      "vibrate": true,
-      "priority": "medium"
+      "trigger": "distance_from_route_m > 50",
+      "priority": "high",
+      "voice_prompt": "off_route",
+      "vibration": true,
+      "repeat": true,
+      "repeat_interval_sec": 30,
+      "message_sw": "Umeondoka kwenye njia"
     },
     {
-      "id": "general",
-      "trigger": "manual_or_system",
-      "voice_key": "alarm_general",
-      "vibrate": true,
-      "priority": "medium"
+      "id": "hazard_nearby",
+      "trigger": "hazard_distance_m <= 200",
+      "priority": "critical",
+      "voice_prompt": "hazard_ahead",
+      "vibration": true,
+      "repeat": false,
+      "message_sw": "Hatari mbele"
+    },
+    {
+      "id": "weather_severe",
+      "trigger": "weather_severity >= 3",
+      "priority": "high",
+      "voice_prompt": "weather_alert",
+      "vibration": true,
+      "repeat": false,
+      "message_sw": "Onyo la hali ya hewa"
+    },
+    {
+      "id": "gps_lost",
+      "trigger": "gps_accuracy_m > 100 OR gps_unavailable",
+      "priority": "medium",
+      "voice_prompt": "gps_lost",
+      "vibration": false,
+      "repeat": true,
+      "repeat_interval_sec": 60,
+      "message_sw": "GPS imepotea"
+    },
+    {
+      "id": "turn_soon",
+      "trigger": "distance_to_next_maneuver_m <= 100",
+      "priority": "normal",
+      "voice_prompt": null,
+      "use_turn_instruction": true,
+      "vibration": false,
+      "repeat": false,
+      "message_sw": "Pinda karibu"
+    },
+    {
+      "id": "speed_limit",
+      "trigger": "speed_kmh > speed_limit_kmh + 10",
+      "priority": "medium",
+      "voice_prompt": null,
+      "vibration": true,
+      "repeat": true,
+      "repeat_interval_sec": 45,
+      "message_sw": "Umezidi kasi inayoruhusiwa"
     }
   ],
-  "notes": [
-    "Alarm inaweza kuwa sauti (TTS) + vibration + on-screen notification.",
-    "Priority: critical > high > medium > low."
-  ]
+  "priority_order": ["critical", "high", "medium", "normal", "low"],
+  "settings": {
+    "sound_enabled": true,
+    "vibration_enabled": true,
+    "voice_enabled": true,
+    "quiet_hours": null
+  }
 }
