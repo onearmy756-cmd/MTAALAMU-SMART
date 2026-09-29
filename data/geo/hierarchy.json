@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "country": {
+    "id": "TZ",
+    "name_sw": "Tanzania",
+    "name_en": "Tanzania",
+    "level": "country",
+    "center": { "lat": -6.3690, "lng": 34.8888 }
+  },
+  "levels": ["country", "region", "district", "division", "ward", "village", "vitongoji", "street", "road"],
+  "stats": {
+    "regions": 31,
+    "districts": null,
+    "divisions": null,
+    "wards": null,
+    "villages": null,
+    "vitongoji": null,
+    "streets": null,
+    "roads": null,
+    "note": "Stats zitasasishwa baada ya kujaza data kamili. Lengo: hakuna kimoja kirukwe."
+  },
+  "regions": [
+    { "id": "TZ-01", "name_sw": "Arusha", "name_en": "Arusha", "code": "01", "center": { "lat": -3.3869, "lng": 36.6830 } },
+    { "id": "TZ-02", "name_sw": "Dar es Salaam", "name_en": "Dar es Salaam", "code": "02", "center": { "lat": -6.7924, "lng": 39.2083 } },
+    { "id": "TZ-03", "name_sw": "Dodoma", "name_en": "Dodoma", "code": "03", "center": { "lat": -6.1630, "lng": 35.7516 } },
+    { "id": "TZ-04", "name_sw": "Geita", "name_en": "Geita", "code": "04", "center": { "lat": -2.8750, "lng": 32.2430 } },
+    { "id": "TZ-05", "name_sw": "Iringa", "name_en": "Iringa", "code": "05", "center": { "lat": -7.7667, "lng": 35.7000 } },
+    { "id": "TZ-06", "name_sw": "Kagera", "name_en": "Kagera", "code": "06", "center": { "lat": -1.9000, "lng": 31.5000 } },
+    { "id": "TZ-07", "name_sw": "Katavi", "name_en": "Katavi", "code": "07", "center": { "lat": -6.5000, "lng": 31.5000 } },
+    { "id": "TZ-08", "name_sw": "Kigoma", "name_en": "Kigoma", "code": "08", "center": { "lat": -4.8769, "lng": 29.6267 } },
+    { "id": "TZ-09", "name_sw": "Kilimanjaro", "name_en": "Kilimanjaro", "code": "09", "center": { "lat": -3.3333, "lng": 37.3333 } },
+    { "id": "TZ-10", "name_sw": "Lindi", "name_en": "Lindi", "code": "10", "center": { "lat": -9.9970, "lng": 39.7145 } },
+    { "id": "TZ-11", "name_sw": "Manyara", "name_en": "Manyara", "code": "11", "center": { "lat": -4.5000, "lng": 35.5000 } },
+    { "id": "TZ-12", "name_sw": "Mara", "name_en": "Mara", "code": "12", "center": { "lat": -1.8000, "lng": 34.0000 } },
+    { "id": "TZ-13", "name_sw": "Mbeya", "name_en": "Mbeya", "code": "13", "center": { "lat": -8.9094, "lng": 33.4608 } },
+    { "id": "TZ-14", "name_sw": "Mjini Magharibi", "name_en": "Mjini Magharibi (Zanzibar)", "code": "14", "center": { "lat": -6.1659, "lng": 39.2026 } },
+    { "id": "TZ-15", "name_sw": "Morogoro", "name_en": "Morogoro", "code": "15", "center": { "lat": -6.8167, "lng": 37.6667 } },
+    { "id": "TZ-16", "name_sw": "Mtwara", "name_en": "Mtwara", "code": "16", "center": { "lat": -10.2667, "lng": 40.1833 } },
+    { "id": "TZ-17", "name_sw": "Mwanza", "name_en": "Mwanza", "code": "17", "center": { "lat": -2.5164, "lng": 32.9175 } },
+    { "id": "TZ-18", "name_sw": "Njombe", "name_en": "Njombe", "code": "18", "center": { "lat": -9.3333, "lng": 34.7667 } },
+    { "id": "TZ-19", "name_sw": "Pemba Kaskazini", "name_en": "Pemba North", "code": "19", "center": { "lat": -5.0000, "lng": 39.7500 } },
+    { "id": "TZ-20", "name_sw": "Pemba Kusini", "name_en": "Pemba South", "code": "20", "center": { "lat": -5.4000, "lng": 39.7000 } },
+    { "id": "TZ-21", "name_sw": "Pwani", "name_en": "Pwani", "code": "21", "center": { "lat": -7.0000, "lng": 39.0000 } },
+    { "id": "TZ-22", "name_sw": "Rukwa", "name_en": "Rukwa", "code": "22", "center": { "lat": -8.0000, "lng": 31.5000 } },
+    { "id": "TZ-23", "name_sw": "Ruvuma", "name_en": "Ruvuma", "code": "23", "center": { "lat": -10.7500, "lng": 36.0000 } },
+    { "id": "TZ-24", "name_sw": "Shinyanga", "name_en": "Shinyanga", "code": "24", "center": { "lat": -3.6667, "lng": 33.4167 } },
+    { "id": "TZ-25", "name_sw": "Simiyu", "name_en": "Simiyu", "code": "25", "center": { "lat": -3.0000, "lng": 34.0000 } },
+    { "id": "TZ-26", "name_sw": "Singida", "name_en": "Singida", "code": "26", "center": { "lat": -4.8167, "lng": 34.7500 } },
+    { "id": "TZ-27", "name_sw": "Songwe", "name_en": "Songwe", "code": "27", "center": { "lat": -9.0000, "lng": 33.0000 } },
+    { "id": "TZ-28", "name_sw": "Tabora", "name_en": "Tabora", "code": "28", "center": { "lat": -5.0167, "lng": 32.8000 } },
+    { "id": "TZ-29", "name_sw": "Tanga", "name_en": "Tanga", "code": "29", "center": { "lat": -5.0667, "lng": 39.1000 } },
+    { "id": "TZ-30", "name_sw": "Unguja Kaskazini", "name_en": "Unguja North", "code": "30", "center": { "lat": -5.9000, "lng": 39.3000 } },
+    { "id": "TZ-31", "name_sw": "Unguja Kusini", "name_en": "Unguja South", "code": "31", "center": { "lat": -6.3000, "lng": 39.5000 } }
+  ],
+  "notes": [
+    "Hii ni skeleton. Data kamili ya wilaya, tarafa, kata, vijiji, vitongoji, mitaa na barabara itaongezwa hatua kwa hatua.",
+    "Lengo: Tanzania nzima, hakuna kimoja kirukwe.",
+    "Kila node itakuwa na name_sw (lazima) + name_en + geometry/labels."
+  ]
+}
