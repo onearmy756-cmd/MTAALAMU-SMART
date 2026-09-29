@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -10,14 +10,15 @@
   "levels": ["country", "region", "district", "division", "ward", "village", "vitongoji", "street", "road"],
   "stats": {
     "regions": 31,
-    "districts": null,
+    "districts_listed": 120,
+    "districts_target": "169+",
     "divisions": null,
     "wards": null,
     "villages": null,
     "vitongoji": null,
     "streets": null,
     "roads": null,
-    "note": "Stats zitasasishwa baada ya kujaza data kamili. Lengo: hakuna kimoja kirukwe."
+    "note": "Wilaya zimeanza (data/geo/districts.json). Lengo: Tanzania nzima, hakuna kimoja kirukwe."
   },
   "regions": [
     { "id": "TZ-01", "name_sw": "Arusha", "name_en": "Arusha", "code": "01", "center": { "lat": -3.3869, "lng": 36.6830 } },
@@ -52,9 +53,13 @@
     { "id": "TZ-30", "name_sw": "Unguja Kaskazini", "name_en": "Unguja North", "code": "30", "center": { "lat": -5.9000, "lng": 39.3000 } },
     { "id": "TZ-31", "name_sw": "Unguja Kusini", "name_en": "Unguja South", "code": "31", "center": { "lat": -6.3000, "lng": 39.5000 } }
   ],
+  "files": {
+    "districts": "data/geo/districts.json",
+    "schema": "data/geo/SCHEMA.md"
+  },
   "notes": [
-    "Hii ni skeleton. Data kamili ya wilaya, tarafa, kata, vijiji, vitongoji, mitaa na barabara itaongezwa hatua kwa hatua.",
-    "Lengo: Tanzania nzima, hakuna kimoja kirukwe.",
-    "Kila node itakuwa na name_sw (lazima) + name_en + geometry/labels."
+    "L1 inafanyika: wilaya ~120 zimeongezwa.",
+    "Lengo: Tanzania nzima (mkoa/wilaya/tarafa/kata/kijiji/kitongoji/mtaa/barabara) – hakuna kimoja kirukwe.",
+    "Kila node: name_sw (lazima) + name_en + geometry/labels."
   ]
 }
