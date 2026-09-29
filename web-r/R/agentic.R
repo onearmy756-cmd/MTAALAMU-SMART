@@ -1,5 +1,5 @@
 # ============================================================
-# agentic.R — Agentic Vision UI + AV4 Scribe/TTS + AV5 Digital Book
+# agentic.R — Agentic Vision UI + AV4/AV5/AV6 (sysprobe)
 # ============================================================
 
 load_agentic_data <- function() {
@@ -46,71 +46,53 @@ agentic_device_map_svg <- function(components, width = 640, height = 360) {
     col <- status_color(c$status %||% "unknown")
     name <- htmltools::htmlEscape(c$name %||% c$id %||% "?")
     icon <- c$icon %||% "•"
-    paste0(
-      "<g transform='translate(", x, ",", y, ")'>",
-      "<circle r='28' fill='#0a1628' stroke='", col, "' stroke-width='2'/>",
-      "<text text-anchor='middle' y='5' font-size='16'>", icon, "</text>",
-      "<text text-anchor='middle' y='48' fill='", col, "' font-size='10'>", name, "</text>",
-      "</g>"
-    )
+    paste0("<g transform='translate(", x, ",", y, ")'>",
+           "<circle r='28' fill='#0a1628' stroke='", col, "' stroke-width='2'/>",
+           "<text text-anchor='middle' y='5' font-size='16'>", icon, "</text>",
+           "<text text-anchor='middle' y='48' fill='", col, "' font-size='10'>", name, "</text></g>")
   }, character(1))
-  paste0(
-    "<svg viewBox='0 0 ", width, " ", height,
-    "' width='100%' height='", height,
-    "' style='background:#050d18;border-radius:8px'>",
-    paste(nodes, collapse = ""), "</svg>"
-  )
+  paste0("<svg viewBox='0 0 ", width, " ", height, "' width='100%' height='", height,
+         "' style='background:#050d18;border-radius:8px'>", paste(nodes, collapse = ""), "</svg>")
 }
 
 agentic_topology_svg <- function(topology) {
-  if (is.null(topology) || is.null(topology$nodes)) {
+  if (is.null(topology) || is.null(topology$nodes))
     return("<div style='color:#78909c;padding:12px'>Hakuna topology</div>")
-  }
   nodes <- topology$nodes
   edges <- topology$edges %||% list()
   edge_lines <- vapply(edges, function(e) {
     a <- Find(function(n) identical(n$id, e$from), nodes)
     b <- Find(function(n) identical(n$id, e$to), nodes)
     if (is.null(a) || is.null(b)) return("")
-    paste0("<line x1='", a$x, "' y1='", a$y, "' x2='", b$x, "' y2='", b$y,
-           "' stroke='#00e5ff55' stroke-width='2'/>")
+    paste0("<line x1='", a$x, "' y1='", a$y, "' x2='", b$x, "' y2='", b$y, "' stroke='#00e5ff55' stroke-width='2'/>")
   }, character(1))
   node_els <- vapply(nodes, function(n) {
     col <- status_color(n$status %||% "online")
     lab <- htmltools::htmlEscape(n$label %||% n$id)
-    paste0(
-      "<g transform='translate(", n$x, ",", n$y, ")'>",
-      "<rect x='-40' y='-16' width='80' height='32' rx='6' fill='#0a1628' stroke='", col, "'/>",
-      "<text text-anchor='middle' y='5' fill='", col, "' font-size='11'>", lab, "</text></g>"
-    )
+    paste0("<g transform='translate(", n$x, ",", n$y, ")'>",
+           "<rect x='-40' y='-16' width='80' height='32' rx='6' fill='#0a1628' stroke='", col, "'/>",
+           "<text text-anchor='middle' y='5' fill='", col, "' font-size='11'>", lab, "</text></g>")
   }, character(1))
-  paste0(
-    "<svg viewBox='0 0 620 380' width='100%' height='280' style='background:#050d18;border-radius:8px'>",
-    paste(edge_lines, collapse = ""), paste(node_els, collapse = ""), "</svg>"
-  )
+  paste0("<svg viewBox='0 0 620 380' width='100%' height='280' style='background:#050d18;border-radius:8px'>",
+         paste(edge_lines, collapse = ""), paste(node_els, collapse = ""), "</svg>")
 }
 
 agentic_processes_el <- function(processes, lang) {
-  if (is.null(processes) || length(processes) == 0) {
+  if (is.null(processes) || length(processes) == 0)
     return(tags$div(style = "color:var(--dim)", tr("av.no_proc", lang)))
-  }
-  tags$div(class = "proc-list",
-    lapply(processes, function(p) {
-      st <- p$status %||% "good"
-      tags$div(class = paste("proc-row", if (st == "critical") "danger"),
-        tags$div(
-          tags$div(class = "proc-name", p$name %||% "?"),
-          tags$div(class = "proc-pid", paste0("CPU ", p$cpu %||% 0, "% · RAM ", p$ram %||% 0, "%"))),
-        tags$div(
-          meter_el(p$cpu %||% 0, (p$cpu %||% 0) >= 70),
-          tags$span(class = paste("badge", if (st == "critical") "crit" else if (st == "warning") "warn" else "ok"), st)))
-    }))
+  tags$div(class = "proc-list", lapply(processes, function(p) {
+    st <- p$status %||% "good"
+    tags$div(class = paste("proc-row", if (st == "critical") "danger"),
+      tags$div(tags$div(class = "proc-name", p$name %||% "?"),
+               tags$div(class = "proc-pid", paste0("CPU ", p$cpu %||% 0, "% · RAM ", p$ram %||% 0, "%"))),
+      tags$div(meter_el(p$cpu %||% 0, (p$cpu %||% 0) >= 70),
+               tags$span(class = paste("badge", if (st == "critical") "crit" else if (st == "warning") "warn" else "ok"), st)))
+  }))
 }
 
 agentic_issues_el <- function(issues, lang) {
-  if (is.null(issues) || length(issues) == 0) {
+  if (is.null(issues) || length(issues) == 0)
     return(tags$div(class = "status-banner INFO", tr("av.no_issues", lang)))
-  }
   tags$div(lapply(issues, function(iss) {
     tags$div(class = "issue warn",
       tags$span(class = "ico", "⚠"),
@@ -176,10 +158,14 @@ view_agentic <- function(lang, data, session_state = NULL) {
             onclick = "Shiny.setInputValue('av_scan', Date.now(), {priority:'event'})",
             tr("av.btn.scan", lang)),
           tags$button(class = "trade-pill",
-            onclick = "if(window.mtaalamuSpeakLog){mtaalamuSpeakLog('#av_narration_text');}else if(window.speechSynthesis){var t=document.getElementById('av_narration_text');var u=new SpeechSynthesisUtterance((t&&t.innerText)||'Habari');u.lang='sw';speechSynthesis.speak(u);}",
+            onclick = "if(window.mtaalamuSpeakLog){mtaalamuSpeakLog('#av_narration_text');}",
             tr("av.btn.voice", lang))),
         tags$div(id = "av_voice_text", style = "display:none", greet),
         uiOutput("av_session_status"))),
+
+    # AV6 — OS probe live
+    panel_el("⚡ OS PROBE (HALISI)", "CPU · RAM · Disk · Health — sysprobe",
+      uiOutput("av_sysprobe")),
 
     panel_el(tr("av.agents.title", lang), tr("av.agents.meta", lang),
       agentic_agents_el(data$agents, lang)),
