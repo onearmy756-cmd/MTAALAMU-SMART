@@ -2,54 +2,60 @@
 
 ## Lengo
 Kufunika **Tanzania nzima** bila kuruka hata kimoja:
-Mkoa → Wilaya → Tarafa → Kata → Kijiji → Kitongoji → Mtaa → Barabara
+**Mkoa → Wilaya → Tarafa → Kata → Kijiji → Kitongoji → Mtaa → Barabara**
 
 ## Viwango (Levels)
 
-| Level | Jina (SW) | Jina (EN) | Key |
-|-------|-----------|-----------|-----|
-| 0 | Nchi | Country | country |
-| 1 | Mkoa | Region | region |
-| 2 | Wilaya | District | district |
-| 3 | Tarafa | Division | division |
-| 4 | Kata | Ward | ward |
-| 5 | Kijiji | Village | village |
-| 6 | Kitongoji | Hamlet / Sub-village | vitongoji |
-| 7 | Mtaa | Street / Neighborhood | street |
-| 8 | Barabara | Road | road |
+| Level | Jina (SW) | Jina (EN) | Key | Status |
+|-------|-----------|-----------|-----|--------|
+| 0 | Nchi | Country | country | ✅ |
+| 1 | Mkoa | Region | region | ✅ 31 |
+| 2 | Wilaya | District | district | ✅ 184 |
+| 3 | Tarafa | Division | tarafa / division | 🔄 in_progress |
+| 4 | Kata | Ward | ward / kata | ⏳ |
+| 5 | Kijiji | Village | village | ⏳ |
+| 6 | Kitongoji | Hamlet | vitongoji | 🔄 seed |
+| 7 | Mtaa | Street | mtaa / street | 🔄 seed |
+| 8 | Barabara | Road | road / barabara | ⏳ |
 
-## Schema ya kila node (JSON)
+## Faili
+
+| Faili | Maudhui |
+|-------|---------|
+| `hierarchy.json` | Root index (mikoa + stats) |
+| `districts.json` | Wilaya 184 (kamili) |
+| `tarafa.json` | Tarafa (inajazwa) |
+| `vitongoji.json` | Vitongoji (seed + inajazwa) |
+| `mitaa.json` | Mitaa (seed + inajazwa) |
+| `SCHEMA.md` | Hii |
+
+## Schema ya kila node
 
 ```json
 {
-  "id": "string (unique, e.g. TZ-01-03-02)",
-  "level": "region|district|division|ward|village|vitongoji|street|road",
-  "name_sw": "Jina la Kiswahili",
-  "name_en": "English name (optional)",
-  "parent_id": "id ya parent au null",
-  "code": "official code kama ipo",
+  "id": "string (unique, hierarchical e.g. TZ-02-01-01-001)",
+  "level": "region|district|tarafa|ward|village|vitongoji|mtaa|road",
+  "name_sw": "Jina la Kiswahili (lazima)",
+  "name_en": "English name",
+  "parent_id": "id ya parent",
+  "region_id": "TZ-XX",
+  "district_id": "TZ-XX-YY",
   "center": { "lat": 0.0, "lng": 0.0 },
-  "bbox": [minLng, minLat, maxLng, maxLat],
-  "geojson_ref": "path to GeoJSON file or null",
-  "children_count": 0,
-  "labels": ["label1", "label2"],
-  "metadata": {}
+  "geojson_ref": "path or null",
+  "labels": []
 }
 ```
 
-## Faili zinazohitajika
-
-- `hierarchy.json` — root index (mikoa zote + stats)
-- `regions/*.json` au GeoJSON
-- `districts/`, `divisions/`, `wards/`, `villages/`, `vitongoji/`, `streets/`, `roads/`
-- `labels.json` — labels zote za ramani (name_sw + name_en + position)
-
 ## Kanuni
-- Hakuna hard-coded names kwenye code — yote kutoka JSON.
-- Kila node iwe na `name_sw` (lazima).
-- Offline-first: data iweze kuhifadhiwa ndani.
-- Sources: NBS Tanzania, OpenStreetMap, HDX, official gazetteers.
+- **Hakuna kuruka** – lengo ni data kamili.
+- Data ya chini (tarafa → mtaa) inajazwa **region by region** kutoka NBS + OpenStreetMap.
+- Offline-first, JSON/GeoJSON.
+- `name_sw` ni lazima.
 
-## Status
-- L0: SCHEMA hii + skeleton folders ✅
-- L1+: kujaza data kamili (inakuja)
+## Status ya sasa
+- ✅ Mikoa 31
+- ✅ Wilaya 184
+- 🔄 Tarafa, Vitongoji, Mitaa – muundo + seed data (Dar, Dodoma, Arusha, Mwanza). Full fill inaendelea.
+- ⏳ Kata, Vijiji, Barabara
+
+**Ahadi**: Tutajaza zote hatua kwa hatua bila kuruka. Data kamili ya mitaa/vitongoji nchi nzima inahitaji import kubwa (OSM) – muundo tayari unaruhusu hilo.
