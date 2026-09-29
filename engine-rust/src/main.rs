@@ -1,13 +1,11 @@
-//! mtaalamu CLI — production + OS toolbox
-//!   mtaalamu tools
-//!   mtaalamu diagnose-os
-//!   mtaalamu tool-run --id df
+//! mtaalamu CLI
+//!   mtaalamu solve --msg "..." --approve
 
 use mtaalamu_engine::{
     AgentOrchestrator, BayesianDiagnoser, FormulaEngine, GeoEngine, PipelineEngine,
     ReportEngine, VisionEngine, auto_diagnose, deep_probe_json, discover_tools,
     log_remediation, probe_json, remediation_catalog, run_diagnostic, run_full,
-    run_remediation,
+    run_remediation, solve_message,
 };
 use std::path::Path;
 
@@ -58,10 +56,10 @@ fn main() {
     let out = match cmd {
         "list" => {
             let eng = load_formulas().unwrap_or_else(|e| fail(&e));
-            serde_json::json!({"total": eng.count(), "ids": eng.ids()})
+            serde_json::json!({"total": eng.count()})
         }
         "calc" => {
-            let id = args.get(2).unwrap_or_else(|| fail("calc <id> --inputs '{...}'"));
+            let id = args.get(2).unwrap_or_else(|| fail("calc <id> --inputs"));
             let inputs = parse_flag(&args, "--inputs").unwrap_or_else(|| "{}".into());
             let inputs: serde_json::Value =
                 serde_json::from_str(&inputs).unwrap_or_else(|e| fail(&format!("{}", e)));
@@ -71,16 +69,11 @@ fn main() {
                 .unwrap_or_else(|e| fail(&e))
         }
         "diagnose" => {
-            let model = args.get(2).unwrap_or_else(|| fail("diagnose <model> --symptoms a,b"));
+            let model = args.get(2).unwrap_or_else(|| fail("diagnose <model> --symptoms"));
             let syms = parse_flag(&args, "--symptoms").unwrap_or_default();
-            let ids: Vec<String> = syms
-                .split(',')
-                .map(|s| s.trim().into())
-                .filter(|s: &String| !s.is_empty())
-                .collect();
+            let ids: Vec<String> = syms.split(',').map(|s| s.trim().into()).filter(|s: &String| !s.is_empty()).collect();
             let mut d = BayesianDiagnoser::new();
-            d.load_file(Path::new(&data_path("diagnosis.json")))
-                .unwrap_or_else(|e| fail(&e));
+            d.load_file(Path::new(&data_path("diagnosis.json"))).unwrap_or_else(|e| fail(&e));
             d.diagnose(model, &ids).unwrap_or_else(|e| fail(&e))
         }
         "agents" => {
@@ -89,8 +82,7 @@ fn main() {
             serde_json::json!({"summary": orch.summary()})
         }
         "agent" | "agentic" => {
-            let msg = parse_flag(&args, "--msg")
-                .unwrap_or_else(|| fail("agentic --msg \"...\" [--approve]"));
+            let msg = parse_flag(&args, "--msg").unwrap_or_else(|| fail("agentic --msg"));
             let lang = parse_flag(&args, "--lang").unwrap_or_else(|| "sw".into());
             let approve = args.iter().any(|a| a == "--approve");
             match run_full(Path::new(&data_root()), &msg, &lang, approve) {
@@ -98,12 +90,17 @@ fn main() {
                     "session": { "id": r.session.id, "state": r.session.state.as_str(),
                                   "hitl_approved": r.session.hitl_approved },
                     "vision": r.vision,
-                    "diagnosis": r.diagnosis_hits,
-                    "pipeline": r.pipeline,
-                    "report_md_preview": r.report_md.chars().take(500).collect::<String>(),
+                    "report_md_preview": r.report_md.chars().take(400).collect::<String>(),
                 }),
                 Err(e) => fail(&e),
             }
+        }
+        "solve" => {
+            let msg = parse_flag(&args, "--msg")
+                .unwrap_or_else(|| fail("solve --msg \"...\" [--approve]"));
+            let approve = args.iter().any(|a| a == "--approve");
+            let result = solve_message(Path::new(&data_root()), &msg, approve);
+            serde_json::to_value(&result).unwrap_or(serde_json::Value::Null)
         }
         "vision" => VisionEngine::load(Path::new(&data_root()))
             .unwrap_or_else(|e| fail(&e))
@@ -112,17 +109,17 @@ fn main() {
             let top: usize = parse_flag(&args, "--top").and_then(|s| s.parse().ok()).unwrap_or(10);
             probe_json(top)
         }
-        "deep" | "deepprobe" => {
+        "deep" => {
             let top: usize = parse_flag(&args, "--top").and_then(|s| s.parse().ok()).unwrap_or(15);
             deep_probe_json(top)
         }
-        "tools" | "toolbox" => serde_json::to_value(discover_tools()).unwrap_or(serde_json::Value::Null),
-        "diagnose-os" | "os-diagnose" | "autodiag" => auto_diagnose(),
+        "tools" => serde_json::to_value(discover_tools()).unwrap_or(serde_json::Value::Null),
+        "diagnose-os" => auto_diagnose(),
         "tool-run" => {
             let id = parse_flag(&args, "--id").unwrap_or_else(|| fail("tool-run --id df"));
             serde_json::to_value(run_diagnostic(&id)).unwrap_or(serde_json::Value::Null)
         }
-        "remediate" | "fix" => {
+        "remediate" => {
             let action = parse_flag(&args, "--action").unwrap_or_default();
             if action.is_empty() {
                 serde_json::json!({"actions": remediation_catalog()})
@@ -133,46 +130,15 @@ fn main() {
                 serde_json::to_value(&result).unwrap_or(serde_json::Value::Null)
             }
         }
-        "pipeline" => {
-            let eng = PipelineEngine::load(Path::new(&data_path("vision/pipeline.json")))
-                .unwrap_or_else(|e| fail(&e));
-            let mut rt = eng.start("AV");
-            let approve = args.iter().any(|a| a == "--approve");
-            for _ in 0..eng.defs().len() {
-                if eng.advance(&mut rt, serde_json::json!({"ok": true}), "ok", approve).is_err() {
-                    break;
-                }
-            }
-            serde_json::to_value(&rt).unwrap_or(serde_json::Value::Null)
-        }
-        "report" => {
-            let eng = ReportEngine::load(Path::new(&data_path("vision/report_template.json")))
-                .unwrap_or_else(|e| fail(&e));
-            let report = eng.build("AV", &serde_json::json!({
-                "user_message": "probe", "status": "completed", "summary_sw": "OK", "issues": []
-            }), "sw");
-            serde_json::json!({"markdown": eng.to_markdown(&report).chars().take(400).collect::<String>()})
-        }
-        "geo" => {
-            let q = parse_flag(&args, "--q").unwrap_or_default();
-            let eng = GeoEngine::load(Path::new(&data_root())).unwrap_or_else(|e| fail(&e));
-            serde_json::json!({"hits": eng.search(&q, 10).len(), "total": eng.count()})
-        }
         "help" | "--help" | "-h" => serde_json::json!({
-            "commands": {
-                "tools": "Gundua zana kwenye PATH + download hints",
-                "diagnose-os": "Endesha diagnostics kwa zana zilizopo (allowlist)",
-                "tool-run --id df": "Endesha zana moja (df, free, ss, smartctl, ...)",
-                "deep / sysprobe / vision / agentic": "Probe + agentic",
-                "remediate [--action ID] [--approve]": "Fix salama"
-            },
-            "policy": [
-                "Hakuna auto-download ya binary — fungua download_url mwenyewe",
-                "Allowlist tu — si shell arbitrary",
-                "smartctl/sensors/osquery: install kwa mkono kisha tools itazigundua"
-            ]
+            "commands": [
+                "solve --msg '...' [--approve]  — software execute / hardware guide",
+                "agentic --msg '...' [--approve]",
+                "tools | diagnose-os | deep | remediate | sysprobe"
+            ],
+            "policy": "Software: allowlist after HITL. Hardware: human only."
         }),
-        other => fail(&format!("Amri '{}' haipo. Tumia help.", other)),
+        other => fail(&format!("Amri '{}' haipo.", other)),
     };
 
     println!("{}", serde_json::to_string_pretty(&out).unwrap());
