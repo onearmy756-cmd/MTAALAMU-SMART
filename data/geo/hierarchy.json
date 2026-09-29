@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "country": {
     "id": "TZ",
     "name_sw": "Tanzania",
@@ -15,9 +15,9 @@
     "kata_listed": 70,
     "vijiji_listed": 40,
     "vitongoji_listed": 95,
-    "mitaa_listed": 65,
+    "mitaa_listed": 80,
     "barabara_listed": 40,
-    "note": "Hierarkia yote imeanza. Mikoa + Wilaya kamili. Tarafa: mikoa yote. Kata 70+. Vitongoji 95+ (mikoa 28+). Vijiji/Mitaa/Barabara zinaendelea. Hakuna kuruka."
+    "note": "Hierarkia yote imeanza. Mikoa + Wilaya kamili. Tarafa: mikoa yote. Kata 70+. Vitongoji 95+. Mitaa 80+ (mikoa 28+). Vijiji/Barabara zinaendelea. Hakuna kuruka."
   },
   "files": {
     "districts": "data/geo/districts.json",
@@ -36,7 +36,7 @@
     "🔄 Kata 70+",
     "🔄 Vijiji 40+",
     "🔄 Vitongoji 95+",
-    "🔄 Mitaa 65+",
+    "🔄 Mitaa 80+",
     "🔄 Barabara 40+",
     "Inaendelea – hakuna kuruka"
   ]
