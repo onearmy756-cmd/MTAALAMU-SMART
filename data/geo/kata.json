@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "description": "Kata (Wards) za Tanzania. Inajazwa mkoa mkoa – hakuna kuruka.",
+  "version": "1.2.0",
+  "description": "Kata (Wards) za Tanzania. Inajazwa – hakuna kuruka.",
   "status": "in_progress",
   "kata": [
     {"id":"TZ-02-01-01-K01","tarafa_id":"TZ-02-01-01","district_id":"TZ-02-01","region_id":"TZ-02","name_sw":"Kariakoo","name_en":"Kariakoo"},
@@ -43,31 +43,41 @@
     {"id":"TZ-09-01-01-K01","tarafa_id":"TZ-09-01-01","district_id":"TZ-09-01","region_id":"TZ-09","name_sw":"Moshi Mjini","name_en":"Moshi Town"},
     {"id":"TZ-14-01-01-K01","tarafa_id":"TZ-14-01-01","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Stone Town","name_en":"Stone Town"},
     {"id":"TZ-14-01-01-K02","tarafa_id":"TZ-14-01-01","district_id":"TZ-14-01","region_id":"TZ-14","name_sw":"Malindi","name_en":"Malindi"},
-
     {"id":"TZ-21-01-01-K01","tarafa_id":"TZ-21-01-01","district_id":"TZ-21-01","region_id":"TZ-21","name_sw":"Kibaha Mjini","name_en":"Kibaha Town"},
     {"id":"TZ-21-03-01-K01","tarafa_id":"TZ-21-03-01","district_id":"TZ-21-03","region_id":"TZ-21","name_sw":"Bagamoyo Mjini","name_en":"Bagamoyo Town"},
     {"id":"TZ-21-06-01-K01","tarafa_id":"TZ-21-06-01","district_id":"TZ-21-06","region_id":"TZ-21","name_sw":"Mkuranga","name_en":"Mkuranga"},
-
     {"id":"TZ-04-01-01-K01","tarafa_id":"TZ-04-01-01","district_id":"TZ-04-01","region_id":"TZ-04","name_sw":"Geita Mjini","name_en":"Geita Town"},
     {"id":"TZ-04-03-01-K01","tarafa_id":"TZ-04-03-01","district_id":"TZ-04-03","region_id":"TZ-04","name_sw":"Chato","name_en":"Chato"},
-
     {"id":"TZ-28-01-01-K01","tarafa_id":"TZ-28-01-01","district_id":"TZ-28-01","region_id":"TZ-28","name_sw":"Tabora Mjini","name_en":"Tabora Town"},
     {"id":"TZ-28-04-01-K01","tarafa_id":"TZ-28-04-01","district_id":"TZ-28-04","region_id":"TZ-28","name_sw":"Nzega","name_en":"Nzega"},
-
     {"id":"TZ-24-01-01-K01","tarafa_id":"TZ-24-01-01","district_id":"TZ-24-01","region_id":"TZ-24","name_sw":"Shinyanga Mjini","name_en":"Shinyanga Town"},
     {"id":"TZ-24-03-01-K01","tarafa_id":"TZ-24-03-01","district_id":"TZ-24-03","region_id":"TZ-24","name_sw":"Kahama Mjini","name_en":"Kahama Town"},
-
     {"id":"TZ-06-01-01-K01","tarafa_id":"TZ-06-01-01","district_id":"TZ-06-01","region_id":"TZ-06","name_sw":"Bukoba Mjini","name_en":"Bukoba Town"},
     {"id":"TZ-12-01-01-K01","tarafa_id":"TZ-12-01-01","district_id":"TZ-12-01","region_id":"TZ-12","name_sw":"Musoma Mjini","name_en":"Musoma Town"},
     {"id":"TZ-23-01-01-K01","tarafa_id":"TZ-23-01-01","district_id":"TZ-23-01","region_id":"TZ-23","name_sw":"Songea Mjini","name_en":"Songea Town"},
     {"id":"TZ-05-01-01-K01","tarafa_id":"TZ-05-01-01","district_id":"TZ-05-01","region_id":"TZ-05","name_sw":"Iringa Mjini","name_en":"Iringa Town"},
     {"id":"TZ-26-01-01-K01","tarafa_id":"TZ-26-01-01","district_id":"TZ-26-01","region_id":"TZ-26","name_sw":"Singida Mjini","name_en":"Singida Town"},
-    {"id":"TZ-22-01-01-K01","tarafa_id":"TZ-22-01-01","district_id":"TZ-22-01","region_id":"TZ-22","name_sw":"Sumbawanga Mjini","name_en":"Sumbawanga Town"}
+    {"id":"TZ-22-01-01-K01","tarafa_id":"TZ-22-01-01","district_id":"TZ-22-01","region_id":"TZ-22","name_sw":"Sumbawanga Mjini","name_en":"Sumbawanga Town"},
+
+    {"id":"TZ-08-01-01-K01","tarafa_id":"TZ-08-01-01","district_id":"TZ-08-01","region_id":"TZ-08","name_sw":"Kigoma-Ujiji","name_en":"Kigoma-Ujiji"},
+    {"id":"TZ-08-03-01-K01","tarafa_id":"TZ-08-03-01","district_id":"TZ-08-03","region_id":"TZ-08","name_sw":"Kasulu","name_en":"Kasulu"},
+    {"id":"TZ-11-01-01-K01","tarafa_id":"TZ-11-01-01","district_id":"TZ-11-01","region_id":"TZ-11","name_sw":"Babati Mjini","name_en":"Babati Town"},
+    {"id":"TZ-11-03-01-K01","tarafa_id":"TZ-11-03-01","district_id":"TZ-11-03","region_id":"TZ-11","name_sw":"Hanang","name_en":"Hanang"},
+    {"id":"TZ-18-01-01-K01","tarafa_id":"TZ-18-01-01","district_id":"TZ-18-01","region_id":"TZ-18","name_sw":"Njombe Mjini","name_en":"Njombe Town"},
+    {"id":"TZ-10-01-01-K01","tarafa_id":"TZ-10-01-01","district_id":"TZ-10-01","region_id":"TZ-10","name_sw":"Lindi Mjini","name_en":"Lindi Town"},
+    {"id":"TZ-16-01-01-K01","tarafa_id":"TZ-16-01-01","district_id":"TZ-16-01","region_id":"TZ-16","name_sw":"Mtwara Mjini","name_en":"Mtwara Town"},
+    {"id":"TZ-07-01-01-K01","tarafa_id":"TZ-07-01-01","district_id":"TZ-07-01","region_id":"TZ-07","name_sw":"Mpanda","name_en":"Mpanda"},
+    {"id":"TZ-25-01-01-K01","tarafa_id":"TZ-25-01-01","district_id":"TZ-25-01","region_id":"TZ-25","name_sw":"Bariadi","name_en":"Bariadi"},
+    {"id":"TZ-27-01-01-K01","tarafa_id":"TZ-27-01-01","district_id":"TZ-27-01","region_id":"TZ-27","name_sw":"Songwe","name_en":"Songwe"},
+    {"id":"TZ-19-01-01-K01","tarafa_id":"TZ-19-01-01","district_id":"TZ-19-01","region_id":"TZ-19","name_sw":"Wete","name_en":"Wete"},
+    {"id":"TZ-20-01-01-K01","tarafa_id":"TZ-20-01-01","district_id":"TZ-20-01","region_id":"TZ-20","name_sw":"Chake Chake","name_en":"Chake Chake"},
+    {"id":"TZ-30-01-01-K01","tarafa_id":"TZ-30-01-01","district_id":"TZ-30-01","region_id":"TZ-30","name_sw":"Kaskazini A","name_en":"North A"},
+    {"id":"TZ-31-01-01-K01","tarafa_id":"TZ-31-01-01","district_id":"TZ-31-01","region_id":"TZ-31","name_sw":"Kati","name_en":"Central"}
   ],
   "stats": {
-    "listed": 55,
-    "regions_started": 18,
+    "listed": 70,
+    "regions_started": 28,
     "target": "all wards (kata) nationwide",
-    "note": "Kata zinaendelea. Hakuna kuruka."
+    "note": "Kata zinaendelea kwa mikoa yote. Hakuna kuruka."
   }
 }
