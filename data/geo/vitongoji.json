@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "description": "Vitongoji (Hamlets / Sub-villages) za Tanzania. Lengo: zote, hakuna kuruka.",
+  "status": "in_progress",
+  "note": "Vitongoji ni maelfu nchi nzima. Muundo uko. Data inajazwa region/district by district kutoka sources rasmi + OSM.",
+  "vitongoji": [
+    {"id": "TZ-02-01-01-001", "tarafa_id": "TZ-02-01-01", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Kariakoo", "name_en": "Kariakoo"},
+    {"id": "TZ-02-01-01-002", "tarafa_id": "TZ-02-01-01", "district_id": "TZ-02-01", "region_id": "TZ-02", "name_sw": "Gerezani", "name_en": "Gerezani"},
+    {"id": "TZ-02-02-01-001", "tarafa_id": "TZ-02-02-01", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Sinza", "name_en": "Sinza"},
+    {"id": "TZ-02-02-01-002", "tarafa_id": "TZ-02-02-01", "district_id": "TZ-02-02", "region_id": "TZ-02", "name_sw": "Kijitonyama", "name_en": "Kijitonyama"},
+    {"id": "TZ-02-03-01-001", "tarafa_id": "TZ-02-03-01", "district_id": "TZ-02-03", "region_id": "TZ-02", "name_sw": "Mbagala Kuu", "name_en": "Mbagala Kuu"},
+    {"id": "TZ-03-01-01-001", "tarafa_id": "TZ-03-01-01", "district_id": "TZ-03-01", "region_id": "TZ-03", "name_sw": "Makulu", "name_en": "Makulu"},
+    {"id": "TZ-01-01-01-001", "tarafa_id": "TZ-01-01-01", "district_id": "TZ-01-01", "region_id": "TZ-01", "name_sw": "Sekei", "name_en": "Sekei"}
+  ],
+  "stats": {
+    "listed": 7,
+    "target": "all vitongoji nationwide",
+    "coverage": "Seed data (Dar, Dodoma, Arusha). Full population in progress – hakuna kuruka."
+  }
+}
