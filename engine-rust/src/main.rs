@@ -1,12 +1,10 @@
-//! mtaalamu CLI
-//!   mtaalamu knowledge --msg "virus polepole"
-//!   mtaalamu device-solve --msg "TV haiwaki"
+//! mtaalamu CLI — reason / knowledge / devices / solve / agentic
 
 use mtaalamu_engine::{
     AgentOrchestrator, BayesianDiagnoser, FormulaEngine, auto_diagnose, deep_probe_json,
-    devices_catalog_stats, discover_tools, knowledge_search, knowledge_stats, log_remediation,
-    probe_json, remediation_catalog, run_diagnostic, run_full, run_remediation, search_devices,
-    solve_message,
+    devices_catalog_stats, discover_tools, grounded_reason_json, knowledge_search, knowledge_stats,
+    log_remediation, probe_json, remediation_catalog, run_diagnostic, run_full, run_remediation,
+    search_devices, solve_message,
 };
 use std::path::Path;
 
@@ -87,17 +85,26 @@ fn main() {
                 .unwrap_or_else(|e| fail(&e));
             serde_json::json!({"summary": orch.summary()})
         }
+        "reason" | "think" | "fikiri" => {
+            let msg = parse_flag(&args, "--msg")
+                .unwrap_or_else(|| fail("reason --msg \"...\""));
+            grounded_reason_json(Path::new(&data_root()), &msg)
+        }
         "agent" | "agentic" => {
             let msg = parse_flag(&args, "--msg").unwrap_or_else(|| fail("agentic --msg"));
             let lang = parse_flag(&args, "--lang").unwrap_or_else(|| "sw".into());
             let approve = args.iter().any(|a| a == "--approve");
             match run_full(Path::new(&data_root()), &msg, &lang, approve) {
                 Ok(r) => serde_json::json!({
-                    "session": { "id": r.session.id, "state": r.session.state.as_str(),
-                                  "hitl_approved": r.session.hitl_approved },
+                    "session": {
+                        "id": r.session.id,
+                        "state": r.session.state.as_str(),
+                        "hitl_approved": r.session.hitl_approved
+                    },
                     "vision": r.vision,
                     "knowledge": knowledge_search(Path::new(&data_root()), &msg, 5),
                     "devices": search_devices(Path::new(&data_root()), &msg, 5),
+                    "grounded": grounded_reason_json(Path::new(&data_root()), &msg),
                 }),
                 Err(e) => fail(&e),
             }
@@ -130,6 +137,7 @@ fn main() {
                 "software_solve": solve_message(Path::new(&data_root()), &msg, approve),
                 "knowledge": knowledge_search(Path::new(&data_root()), &msg, 5),
                 "devices": search_devices(Path::new(&data_root()), &msg, 5),
+                "grounded": grounded_reason_json(Path::new(&data_root()), &msg),
             })
         }
         "sysprobe" | "probe" => {
@@ -159,12 +167,13 @@ fn main() {
         }
         "help" | "--help" | "-h" => serde_json::json!({
             "commands": [
-                "knowledge --msg '...' — search ALL knowledge (problems, diagnosis, trades, services, professions, devices)",
-                "knowledge-stats",
+                "reason --msg '...' — fikra + calculus + jibu refu (no hallucination)",
+                "knowledge --msg '...'",
                 "devices | device-solve --msg '...'",
                 "solve --msg '...' [--approve]",
                 "agentic --msg '...' [--approve]"
-            ]
+            ],
+            "policy": "Evidence + calculus only. Hardware = human guide."
         }),
         other => fail(&format!("Amri '{}' haipo.", other)),
     };
