@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "description": "Aina zote za hatari zinazoonyeshwa kwenye ramani na navigation",
+  "types": [
+    {
+      "id": "road_damage",
+      "name_sw": "Barabara mbaya / iliyoharibika",
+      "name_en": "Damaged road",
+      "severity": ["low", "medium", "high", "critical"],
+      "icon": "road-barrier",
+      "color": "#FF6B00",
+      "voice_key": "hazard_ahead"
+    },
+    {
+      "id": "flood",
+      "name_sw": "Mafuriko",
+      "name_en": "Flood",
+      "severity": ["medium", "high", "critical"],
+      "icon": "water",
+      "color": "#0077B6",
+      "voice_key": "flood_warning"
+    },
+    {
+      "id": "crime",
+      "name_sw": "Uhalifu / eneo hatari",
+      "name_en": "Crime / high-risk area",
+      "severity": ["medium", "high", "critical"],
+      "icon": "alert",
+      "color": "#D00000",
+      "voice_key": "hazard_ahead"
+    },
+    {
+      "id": "electrical",
+      "name_sw": "Hatari ya umeme",
+      "name_en": "Electrical hazard",
+      "severity": ["medium", "high", "critical"],
+      "icon": "bolt",
+      "color": "#FFD60A",
+      "voice_key": "hazard_ahead"
+    },
+    {
+      "id": "accident",
+      "name_sw": "Ajali",
+      "name_en": "Accident",
+      "severity": ["medium", "high", "critical"],
+      "icon": "car-crash",
+      "color": "#E63946",
+      "voice_key": "hazard_ahead"
+    },
+    {
+      "id": "road_closed",
+      "name_sw": "Barabara imefungwa",
+      "name_en": "Road closed",
+      "severity": ["high", "critical"],
+      "icon": "ban",
+      "color": "#6C757D",
+      "voice_key": "road_closed"
+    },
+    {
+      "id": "weather",
+      "name_sw": "Hali mbaya ya hewa",
+      "name_en": "Severe weather",
+      "severity": ["medium", "high", "critical"],
+      "icon": "cloud-storm",
+      "color": "#4A4E69",
+      "voice_key": "weather_alert"
+    },
+    {
+      "id": "construction",
+      "name_sw": "Ujenzi wa barabara",
+      "name_en": "Road construction",
+      "severity": ["low", "medium", "high"],
+      "icon": "construction",
+      "color": "#F77F00",
+      "voice_key": "hazard_ahead"
+    },
+    {
+      "id": "animals",
+      "name_sw": "Wanyama barabarani",
+      "name_en": "Animals on road",
+      "severity": ["low", "medium"],
+      "icon": "paw",
+      "color": "#2A9D8F",
+      "voice_key": "hazard_ahead"
+    },
+    {
+      "id": "other",
+      "name_sw": "Hatari nyingine",
+      "name_en": "Other hazard",
+      "severity": ["low", "medium", "high", "critical"],
+      "icon": "warning",
+      "color": "#9B2226",
+      "voice_key": "hazard_ahead"
+    }
+  ],
+  "notes": [
+    "Kila hatari inaweza kuwa na location (lat/lng), radius, severity, timestamp, source.",
+    "Itaonyeshwa kwenye ramani + sauti kulingana na voice_key."
+  ]
+}
