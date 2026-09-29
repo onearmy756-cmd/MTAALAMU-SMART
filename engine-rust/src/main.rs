@@ -95,17 +95,39 @@ fn main() {
             let lang = parse_flag(&args, "--lang").unwrap_or_else(|| "sw".into());
             let approve = args.iter().any(|a| a == "--approve");
             match run_full(Path::new(&data_root()), &msg, &lang, approve) {
-                Ok(r) => serde_json::json!({
-                    "session": {
-                        "id": r.session.id,
-                        "state": r.session.state.as_str(),
-                        "hitl_approved": r.session.hitl_approved
-                    },
-                    "vision": r.vision,
-                    "knowledge": knowledge_search(Path::new(&data_root()), &msg, 5),
-                    "devices": search_devices(Path::new(&data_root()), &msg, 5),
-                    "grounded": grounded_reason_json(Path::new(&data_root()), &msg),
-                }),
+                Ok(r) => {
+                    let solve_json = r.solve.as_ref().map(|s| {
+                        serde_json::json!({
+                            "domain": s.plan.domain,
+                            "summary_sw": s.summary_sw,
+                            "executed": s.executed.iter().map(|a| {
+                                serde_json::json!({
+                                    "id": a.action_id,
+                                    "ok": a.ok,
+                                    "message_sw": a.message_sw
+                                })
+                            }).collect::<Vec<_>>(),
+                            "skipped": s.skipped,
+                            "hitl_approved": s.hitl_approved,
+                        })
+                    });
+                    serde_json::json!({
+                        "session": {
+                            "id": r.session.id,
+                            "state": r.session.state.as_str(),
+                            "hitl_approved": r.session.hitl_approved,
+                            "trade": r.session.trade,
+                            "symptoms": r.session.symptoms,
+                        },
+                        "role": "Agent inafanya kazi; msimamizi anaruhusu (--approve) tu",
+                        "vision": r.vision,
+                        "solve": solve_json,
+                        "knowledge": knowledge_search(Path::new(&data_root()), &msg, 5),
+                        "devices": search_devices(Path::new(&data_root()), &msg, 5),
+                        "grounded": grounded_reason_json(Path::new(&data_root()), &msg),
+                        "report_preview": r.report,
+                    })
+                }
                 Err(e) => fail(&e),
             }
         }
@@ -171,9 +193,9 @@ fn main() {
                 "knowledge --msg '...'",
                 "devices | device-solve --msg '...'",
                 "solve --msg '...' [--approve]",
-                "agentic --msg '...' [--approve]"
+                "agentic --msg '...' [--approve]  — agent inafanya kazi; --approve = msimamizi"
             ],
-            "policy": "Evidence + calculus only. Hardware = human guide."
+            "policy": "Evidence + calculus only. Hardware = human guide. Agent works; supervisor approves."
         }),
         other => fail(&format!("Amri '{}' haipo.", other)),
     };
