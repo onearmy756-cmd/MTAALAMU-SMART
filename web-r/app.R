@@ -1,22 +1,13 @@
 # ============================================================
-# MTAALAMU SMART — UI kwa R / Shiny (badala ya React)
-#
-#   Endesha:   R -e "shiny::runApp('web-r', port = 3838)"
-#   au ndani ya folder hii:  shiny::runApp('.')
-#
-# Kila kitu kimebakia kama kilivyo (data, formulas, diagnosis, mwonekano),
-# ila lugha inabadilishwa kwa kipengele cha LANGUAGE / LUGHA (sw | en).
-# + AGENTIC VISION tab (Multi-Agent, Live Vision, HITL, PIITVD, Report)
+# MTAALAMU SMART — UI (R/Shiny) + AGENTIC VISION (AV4/AV5)
 # ============================================================
 
-# --- maktabo ya user (R haiwezi kuandika kwenye Program Files) ---
 .libPaths(c(file.path(Sys.getenv("USERPROFILE"), "Documents", "R", "win-library",
                       paste0(R.version$major, ".", R.version$minor)),
             .libPaths()))
 
 suppressPackageStartupMessages(library(shiny))
 
-# --- mahali pa app (iwe endpoint ya Shiny au Rscript) -------------
 APP_DIR <- local({
   a <- commandArgs(trailingOnly = FALSE)
   f <- sub("^--file=", "", grep("^--file=", a, value = TRUE)[1])
@@ -40,6 +31,7 @@ source(p_app("R", "charts.R"), local = FALSE)
 source(p_app("R", "views.R"), local = FALSE)
 source(p_app("R", "agentic.R"), local = FALSE)
 source(p_app("R", "agentic_i18n_patch.R"), local = FALSE)
+source(p_app("R", "scribe.R"), local = FALSE)
 
 library(jsonlite)
 FDOC      <- fromJSON(p_app("data", "formulas.json"), simplifyVector = FALSE)
@@ -52,8 +44,7 @@ AGENTIC  <- tryCatch(load_agentic_data(), error = function(e) list(
   device_map = list(), system_bus = list(), voice = list(), report_tpl = list()))
 
 GEO     <- fromJSON(p_app("data", "geo.json"), simplifyVector = FALSE)
-GEO_TXT <- paste(readLines(p_app("data", "geo.json"), encoding = "UTF-8", warn = FALSE),
-                 collapse = "\n")
+GEO_TXT <- paste(readLines(p_app("data", "geo.json"), encoding = "UTF-8", warn = FALSE), collapse = "\n")
 bound_src <- p_app("data", "tz_regions.geojson")
 bound_dst <- p_app("www", "tz_regions.geojson")
 if (file.exists(bound_src)) {
@@ -75,7 +66,8 @@ ui <- fluidPage(
     tags$link(rel = "stylesheet", type = "text/css", href = "leaflet/leaflet.css"),
     tags$script(src = "leaflet/leaflet.js"),
     tags$script(src = "map.js"),
-    tags$script(HTML("\n      $(document).on('input', '#av_msg', function(){\n        Shiny.setInputValue('av_msg', $(this).val());\n      });\n    "))
+    tags$script(src = "agentic_voice.js"),
+    tags$script(HTML("$(document).on('input','#av_msg',function(){Shiny.setInputValue('av_msg',$(this).val());});"))
   ),
   tags$div(class = "dashboard",
     tags$header(class = "hud-header",
@@ -115,11 +107,11 @@ server <- function(input, output, session) {
     isolate({
       s <- stats()
       stats(list(
-        cpu     = max(5,  min(99, s$cpu     + round((runif(1) - 0.5) * 8))),
-        ram     = max(20, min(99, s$ram     + round((runif(1) - 0.5) * 4))),
-        disk    = 94,
-        gpu     = max(10, min(99, s$gpu     + round((runif(1) - 0.5) * 10))),
-        latency = max(3,  min(80, s$latency + round((runif(1) - 0.5) * 6)))))
+        cpu = max(5, min(99, s$cpu + round((runif(1) - 0.5) * 8))),
+        ram = max(20, min(99, s$ram + round((runif(1) - 0.5) * 4))),
+        disk = 94,
+        gpu = max(10, min(99, s$gpu + round((runif(1) - 0.5) * 10))),
+        latency = max(3, min(80, s$latency + round((runif(1) - 0.5) * 6)))))
       uptime(uptime() + 1L)
       tick(tick() + 1L)
     })
@@ -131,63 +123,64 @@ server <- function(input, output, session) {
   output$hud_pill2 <- renderUI({ tags$span(class = "pill secure", HTML(l("hdr.secure"))) })
   output$hud_meta  <- renderUI({
     tick()
-    stamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
-    tags$div(class = "hud-meta", paste0(stamp, "UTC ", l("hdr.meta")))
+    tags$div(class = "hud-meta", paste0(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "UTC ", l("hdr.meta")))
   })
 
-  output$tabs <- renderUI({
-    tabs_el(lang(), length(FORMULAS), length(MODEL_IDS), input$tab %||% "live")
-  })
-
+  output$tabs <- renderUI(tabs_el(lang(), length(FORMULAS), length(MODEL_IDS), input$tab %||% "live"))
   output$live <- renderUI(view_live(stats(), NET, lang()))
 
-  # ---- AGENTIC VISION ----
-  av_state <- reactiveVal(list(pipe_idx = 0L, status = "ready", log = character(0)))
+  # ---- AGENTIC VISION + SCRIBE + BOOK ----
+  av_state <- reactiveVal(list(
+    pipe_idx = 0L, status = "ready", log = character(0),
+    msg = "", narration = "", session_id = paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
+  ))
 
-  output$agentic <- renderUI({
-    view_agentic(lang(), AGENTIC, av_state())
-  })
+  output$agentic <- renderUI(view_agentic(lang(), AGENTIC, av_state()))
 
   observeEvent(input$av_start, {
     msg <- isolate(as.character(input$av_msg %||% ""))
     if (!nzchar(trimws(msg))) msg <- "Tatizo la kifaa — scan automatic (Vision)"
     issues <- AGENTIC$agent_data$issues %||% list()
-    n <- length(issues)
-    titles <- if (n > 0) vapply(issues, function(x) as.character(x$title %||% ""), character(1)) else character(0)
+    sid <- paste0("AV-", format(Sys.time(), "%Y%m%d-%H%M%S"))
+    narr <- build_scribe_narration(msg, issues, "hitl")
+    greet <- av_voice_script(AGENTIC, "agent.receptionist.greet")
+    hitl_q <- av_voice_script(AGENTIC, "hitl.ask_fix")
     lines <- c(
-      paste0("Session imeanza: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S")),
+      paste0("Session: ", sid),
       paste0("Ujumbe: ", msg),
-      paste0("Vision: matatizo ", n, " yamegunduliwa"),
-      if (n > 0) paste0("  - ", titles[seq_len(min(3L, n))]) else NULL,
-      "Pipeline: Panga -> Tambua",
-      "Hali: inasubiri RUHUSU (HITL) kabla ya kutekeleza"
+      paste0("Vision: matatizo ", length(issues)),
+      "--- SCRIBE ---",
+      narr,
+      "",
+      "Hali: inasubiri RUHUSU (HITL)"
     )
-    av_state(list(pipe_idx = 1L, status = "hitl", log = as.character(unlist(lines))))
+    av_state(list(pipe_idx = 1L, status = "hitl", log = lines, msg = msg,
+                  narration = narr, session_id = sid))
+    # Auto TTS
+    session$sendCustomMessage("mtaalamu_speak", list(text = paste(greet, hitl_q, sep = " ")))
   }, ignoreInit = TRUE)
 
   observeEvent(input$av_approve, {
     st <- av_state()
-    lines <- c(
-      st$log %||% character(0),
-      paste0("HITL: ruhusa imetolewa @ ", format(Sys.time(), "%H:%M:%S")),
-      "Tekeleza -> Jaribu -> Thibitisha -> Andika",
-      "Ripoti: kitabu kidigitali kiko tayari",
-      "Learner: maarifa yamehifadhiwa"
-    )
-    av_state(list(pipe_idx = 6L, status = "done", log = as.character(lines)))
+    issues <- AGENTIC$agent_data$issues %||% list()
+    msg <- st$msg %||% "Tatizo"
+    narr <- build_scribe_narration(msg, issues, "done")
+    done_v <- av_voice_script(AGENTIC, "session.complete")
+    lines <- c(st$log %||% character(0), "", "=== BAADA YA HITL ===", narr)
+    av_state(list(pipe_idx = 6L, status = "done", log = lines, msg = msg,
+                  narration = narr, session_id = st$session_id %||% "AV-done"))
+    session$sendCustomMessage("mtaalamu_speak", list(text = done_v))
   }, ignoreInit = TRUE)
 
   observeEvent(input$av_scan, {
     st <- av_state()
-    lines <- c(
-      st$log %||% character(0),
-      paste0("Scan upya @ ", format(Sys.time(), "%H:%M:%S")),
-      paste0("Components: ", length(AGENTIC$agent_data$components %||% list())),
-      paste0("Processes: ", length(AGENTIC$agent_data$processes %||% list()))
-    )
-    av_state(list(pipe_idx = as.integer(st$pipe_idx %||% 0L),
-                  status = st$status %||% "running",
-                  log = as.character(lines)))
+    scan_v <- av_voice_script(AGENTIC, "agent.vision.scanning")
+    lines <- c(st$log %||% character(0),
+               paste0("Scan @ ", format(Sys.time(), "%H:%M:%S")),
+               paste0("Components: ", length(AGENTIC$agent_data$components %||% list())),
+               paste0("Processes: ", length(AGENTIC$agent_data$processes %||% list())))
+    av_state(modifyList(st, list(log = lines)))
+    session$sendCustomMessage("mtaalamu_speak", list(text = scan_v))
   }, ignoreInit = TRUE)
 
   output$av_session_status <- renderUI({
@@ -204,32 +197,57 @@ server <- function(input, output, session) {
     st <- av_state()
     log <- st$log %||% character(0)
     if (length(log) == 0) {
-      msg <- tryCatch(tr("av.session.ready", lang()), error = function(e) "Tayari")
-      return(tags$div(style = "color:var(--dim)", msg))
+      return(tags$div(style = "color:var(--dim)",
+                      tryCatch(tr("av.session.ready", lang()), error = function(e) "Tayari")))
     }
-    tags$pre(style = "white-space:pre-wrap;color:#b2ebf2;font-size:12px;background:#050d18;padding:12px;border-radius:8px",
+    tags$pre(style = "white-space:pre-wrap;color:#b2ebf2;font-size:12px;background:#050d18;padding:12px;border-radius:8px;max-height:420px;overflow:auto",
              paste(log, collapse = "\n"))
   })
 
-  # ---- FORMULA ----
+  output$av_narration_plain <- renderText({
+    st <- av_state()
+    st$narration %||% paste(st$log %||% "", collapse = "\n")
+  })
+
+  output$av_book_html <- downloadHandler(
+    filename = function() {
+      st <- av_state()
+      paste0(st$session_id %||% "AV-report", "-kitabu.html")
+    },
+    content = function(file) {
+      st <- av_state()
+      issues <- AGENTIC$agent_data$issues %||% list()
+      html <- build_digital_book_html(
+        session_id = st$session_id %||% "AV",
+        msg = st$msg %||% "",
+        issues = issues,
+        narration = st$narration %||% paste(st$log, collapse = "\n"),
+        lang = lang()
+      )
+      writeLines(html, file, useBytes = TRUE)
+    }
+  )
+
+  # Custom message handler registration for TTS
+  observe({
+    session$onFlushed(function() {
+      # inject handler once
+    }, once = TRUE)
+  })
+
+  # ---- FORMULA (condensed) ----
   sel_id <- reactiveVal(NULL)
   filtered_formulas <- reactive({
     tf <- input$fx_trade %||% "all"
     q  <- tolower(trimws(input$fx_search %||% ""))
     Filter(function(f) {
-      ok_trade <- identical(tf, "all") || identical(f$trade, tf)
-      ok_search <- !nzchar(q) ||
-        grepl(q, tolower(f$name$sw   %||% ""), fixed = TRUE) ||
-        grepl(q, tolower(f$name$en   %||% ""), fixed = TRUE) ||
-        grepl(q, tolower(f$formula   %||% ""), fixed = TRUE) ||
-        grepl(q, tolower(f$trade     %||% ""), fixed = TRUE)
-      ok_trade && ok_search
+      (identical(tf, "all") || identical(f$trade, tf)) &&
+        (!nzchar(q) || grepl(q, tolower(paste(f$name$sw %||% "", f$name$en %||% "", f$formula %||% "")), fixed = TRUE))
     }, FORMULAS)
   })
   observeEvent(input$fx_sel, sel_id(input$fx_sel), ignoreInit = TRUE)
   observeEvent(filtered_formulas(), {
-    f <- filtered_formulas()
-    if (length(f) == 0) return()
+    f <- filtered_formulas(); if (length(f) == 0) return()
     ids <- vapply(f, function(x) x$id, character(1))
     if (is.null(sel_id()) || !(sel_id() %in% ids)) sel_id(ids[[1]])
   }, ignoreInit = FALSE)
@@ -238,12 +256,6 @@ server <- function(input, output, session) {
     if (!is.null(id)) for (f in FORMULAS) if (identical(f$id, id)) return(f)
     FORMULAS[[1]]
   })
-  current_vals <- reactive({
-    sel <- selected_formula(); req(sel)
-    iv <- list()
-    for (inp in sel$inputs) iv[[inp$name]] <- input[[paste0("f_", inp$name)]]
-    iv
-  })
   formula_result <- reactive({
     sel <- selected_formula(); req(sel)
     iv <- list()
@@ -251,10 +263,9 @@ server <- function(input, output, session) {
       v <- input[[paste0("f_", inp$name)]]
       iv[[inp$name]] <- if (is.null(v) || (length(v) == 1 && is.na(v))) inp$default else v
     }
-    tryCatch(calculate(sel, iv, CONSTANTS),
-             error = function(e) list(error = err_msg(e, lang())))
+    tryCatch(calculate(sel, iv, CONSTANTS), error = function(e) list(error = err_msg(e, lang())))
   })
-  output$formula    <- renderUI(formula_panel_el(lang(), length(FORMULAS)))
+  output$formula <- renderUI(formula_panel_el(lang(), length(FORMULAS)))
   output$fx_searchbox <- renderUI({
     tags$input(class = "search-box", type = "text", placeholder = l("f.search"),
                value = isolate(input$fx_search %||% ""),
@@ -264,17 +275,15 @@ server <- function(input, output, session) {
   output$fx_list   <- renderUI(formula_list_el(lang(), filtered_formulas(), sel_id()))
   output$fx_inputs <- renderUI({
     sel <- selected_formula(); req(sel)
-    formula_inputs_el(lang(), sel, isolate(current_vals()))
+    iv <- list(); for (inp in sel$inputs) iv[[inp$name]] <- input[[paste0("f_", inp$name)]]
+    formula_inputs_el(lang(), sel, iv)
   })
   output$fx_results <- renderUI(formula_results_el(lang(), formula_result()))
 
   # ---- DIAGNOSIS ----
   model_id <- reactiveVal(NULL)
-  on_sym   <- reactiveVal(list())
-  current_model <- reactive({
-    mid <- model_id() %||% MODEL_IDS[[1]]
-    DIAGNOSIS$models[[mid]]
-  })
+  on_sym <- reactiveVal(list())
+  current_model <- reactive({ DIAGNOSIS$models[[model_id() %||% MODEL_IDS[[1]]]] })
   observeEvent(input$dx_model, { model_id(input$dx_model); on_sym(list()) }, ignoreInit = TRUE)
   observeEvent(input$sym_toggle, {
     id <- input$sym_toggle; cur <- on_sym()
@@ -287,16 +296,15 @@ server <- function(input, output, session) {
     chs <- MODEL_IDS
     names(chs) <- vapply(MODEL_IDS, function(id)
       paste0(bi(DIAGNOSIS$models[[id]]$title, lg), " (", id, ")"), character(1))
-    tags$div(class = "field",
-      tags$label(l("d.model")),
-      selectInput("dx_model", label = NULL, choices = chs, selected = mid, width = "100%"))
+    tags$div(class = "field", tags$label(l("d.model")),
+      selectInput("dx_model", NULL, choices = chs, selected = mid, width = "100%"))
   })
   output$dx_symptoms <- renderUI({
     lg <- lang(); m <- current_model(); cur <- on_sym()
     tags$div(
-      tags$div(style = "display:flex;justify-content:space-between;align-items:center;margin-top:10px",
-        tags$label(style = "font-size:12px;color:var(--dim);letter-spacing:1px",
-          sprintf("%s (%d / %d):", l("d.symptoms"), length(cur), length(m$symptoms))),
+      tags$div(style = "display:flex;justify-content:space-between;margin-top:10px",
+        tags$label(style = "font-size:12px;color:var(--dim)",
+          sprintf("%s (%d/%d)", l("d.symptoms"), length(cur), length(m$symptoms))),
         if (length(cur) > 0)
           tags$button(class = "clear-btn",
             onclick = "Shiny.setInputValue('sym_clear', Date.now(), {priority:'event'})", l("d.clear"))),
@@ -304,27 +312,19 @@ server <- function(input, output, session) {
         lapply(m$symptoms, function(s) {
           is_on <- s$id %in% cur
           tags$div(class = paste("symptom", if (is_on) "on"),
-            title = bi(s$name, other_lang(lg)),
             onclick = sprintf("Shiny.setInputValue('sym_toggle','%s',{priority:'event'})", s$id),
             paste(if (is_on) "\u2611" else "\u2610", bi(s$name, lg)))
         })))
   })
   output$dx_results <- renderUI({
-    lg <- lang(); m <- current_model(); res <- bayes_causes(m, on_sym())
+    lg <- lang(); res <- bayes_causes(current_model(), on_sym())
     tags$div(class = "result-card",
       tags$div(class = "formula-line", l("d.causes")),
       lapply(res, function(r) {
-        show <- !is.null(r$prob) && r$prob > 3
         tags$div(class = "prob-row",
           tags$div(class = "prob-top",
-            tags$span(HTML(paste0(esc(bi(r$name, lg)),
-              ' <span class="en-hint">(', esc(bi(r$name, other_lang(lg))), ")</span>"))),
-            tags$span(class = "pct", paste0(r$prob, "%"))),
-          meter_el(r$prob, r$prob >= 50),
-          if (show) tags$div(class = "prob-fix",
-            HTML(paste0("\u27a1 ", esc(bi(r$fix, lg)))),
-          if (show) tags$div(class = "prob-cost",
-            paste0(l("d.cost"), " ", format(r$cost_tzs, big.mark = ",", scientific = FALSE, trim = TRUE))))
+            tags$span(bi(r$name, lg)), tags$span(class = "pct", paste0(r$prob, "%"))),
+          meter_el(r$prob, r$prob >= 50))
       }))
   })
 
@@ -336,5 +336,8 @@ server <- function(input, output, session) {
     outputOptions(output, nm, suspendWhenHidden = FALSE)
   }
 }
+
+# Register JS handler for TTS custom messages
+shiny::addResourcePath("www", file.path(normalizePath(APP_DIR), "www"))
 
 shinyApp(ui = ui, server = server)
