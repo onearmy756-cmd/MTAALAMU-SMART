@@ -35,6 +35,8 @@ source(p_app("R", "agentic_i18n_patch.R"), local = FALSE)
 source(p_app("R", "scribe.R"), local = FALSE)
 source(p_app("R", "sysprobe.R"), local = FALSE)
 source(p_app("R", "solve.R"), local = FALSE)
+source(p_app("R", "fundi.R"), local = FALSE)
+source(p_app("R", "mobile.R"), local = FALSE)
 
 library(jsonlite)
 
@@ -90,6 +92,7 @@ ui <- fluidPage(
     tags$script(src = "leaflet/leaflet.js"),
     tags$script(src = "map.js"),
     tags$script(src = "agentic_voice.js"),
+    fundi_js(),
     tags$script(HTML("$(document).on('input','#av_msg',function(){Shiny.setInputValue('av_msg',$(this).val());});"))
   ),
   tags$div(class = "dashboard",
@@ -113,6 +116,22 @@ ui <- fluidPage(
     conditionalPanel(condition = "input.tab == 'diag'", uiOutput("diagnosis")),
     conditionalPanel(condition = "input.tab == 'viz'", uiOutput("viz")),
     conditionalPanel(condition = "input.tab == 'map'", uiOutput("map")),
+    conditionalPanel(condition = "input.tab == 'nav'",
+      tags$div(class = "panel",
+        tags$div(class = "panel-head",
+          tags$h2("\U0001f9ed NAVIGATION — Kiswahili + Sauti"),
+          tags$span(class = "meta", "GPS · OSRM · sauti sw-TZ · hatari · live")),
+        tags$div(class = "panel-body",
+          tags$div(style = "display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap",
+            tags$button(class = "btn", onclick = "window.open('ramani-nav.html','_blank')",
+                        "\u25b6 Fungua Navigation kwa skrini kamili"),
+            tags$span(class = "meta",
+              "Turn-by-turn kwa Kiswahili, sauti (sw-TZ), hali ya hewa, hatari, na watu kwenye njia (live).")),
+          tags$iframe(src = "ramani-nav.html", style = paste0("width:100%;height:72vh;border:1px solid #00e5ff33;",
+            "border-radius:12px;background:#0b1220"), loading = "lazy"))))
+    ,
+    conditionalPanel(condition = "input.tab == 'fundi'", uiOutput("fundi")),
+    conditionalPanel(condition = "input.tab == 'mobile'", uiOutput("mobile")),
     uiOutput("statusbar")
   )
 )
@@ -179,6 +198,124 @@ server <- function(input, output, session) {
   })
 
   output$av_sysprobe <- renderUI(sysprobe_panel_el(probe_snap(), lang()))
+
+  # ---- SYSTEM WIRING (HALISI) + AUTO-WORK + SCRIBE ----
+  wiring_rv <- reactiveVal(list(nodes = list(), edges = list(), flows = list(),
+                                buses = list(), source = "bado"))
+  autowork_rv <- reactiveVal(list(frames = list(), summary_sw = NULL, findings = list()))
+
+  .wiring_refresh <- function() {
+    w <- tryCatch(wiring_snapshot(10), error = function(e) NULL)
+    if (!is.null(w) && length(w$nodes %||% list()) > 0) wiring_rv(w)
+    invisible(w)
+  }
+  .wiring_refresh()
+
+  output$av_wiring_svg <- renderUI(HTML(wiring_svg(wiring_rv())))
+  output$av_wiring_meta <- renderUI({
+    w <- wiring_rv()
+    paste0("source: ", w$source %||% "?", " · nodes ", length(w$nodes %||% list()),
+           " · flows ", length(w$flows %||% list()), " · ", w$hostname %||% "")
+  })
+  output$av_wiring_flows <- renderUI(wiring_flows_el(wiring_rv()))
+  output$av_wiring_buses <- renderUI({
+    w <- wiring_rv()
+    if (length(w$buses %||% list()) == 0) return(tags$div(class = "meta", "—"))
+    tags$div(style = "display:flex;flex-wrap:wrap;gap:8px",
+      lapply(w$buses, function(b) {
+        col <- switch(b$health %||% "good", critical = "#ff1744", warning = "#ffc107", "#00e676")
+        tags$div(style = "border:1px solid #00e5ff33;border-radius:6px;padding:8px 12px;background:#0a1628;min-width:200px",
+          tags$div(style = "color:var(--cyan);font-size:12px;font-weight:700", b$name_sw %||% b$id),
+          tags$div(style = "font-size:10px;color:var(--dim)", b$throughput_note %||% ""),
+          tags$div(style = paste0("font-size:10px;color:", col), paste0("health: ", b$health %||% "?")))
+      }))
+  })
+
+  observeEvent(input$av_wiring_refresh, {
+    .wiring_refresh()
+    session$sendCustomMessage("mtaalamu_speak",
+      list(text = "Nimeonyesha upya wiring halisi ya kifaa: vifaa vyote na miunganisho yake."))
+  })
+
+  output$av_scribe <- renderUI(scribe_strip_el(autowork_rv()$frames))
+
+  # Kitabu kidigitali cha auto-work (HTML download)
+  output$av_autowork_book <- downloadHandler(
+    filename = function() paste0("autowork-", format(Sys.time(), "%Y%m%d-%H%M%S"), ".html"),
+    content = function(file) {
+      aw <- autowork_rv()
+      aw$session_id <- paste0("AW-", format(Sys.time(), "%Y%m%d-%H%M%S"))
+      writeLines(autowork_book_html(aw), file, useBytes = TRUE)
+    }
+  )
+
+  # Wiring inaji-refresh yenyewe (live, kila 8s — real-time kama spec inavyotaka)
+  observe({
+    invalidateLater(8000, session)
+    if (identical(input$tab %||% "live", "agentic")) .wiring_refresh()
+  })
+  output$av_autowork <- renderUI({
+    aw <- autowork_rv()
+    if (is.null(aw$summary_sw))
+      return(tags$div(class = "meta",
+        "Bonyeza AUTO-WORK: agent itachanganua kifaa, kugundua matatizo, na kuomba ruhusa yako (HITL)."))
+    tags$div(
+      tags$div(class = "status-banner INFO", aw$summary_sw),
+      if (length(aw$findings %||% list()) > 0) {
+        tags$div(style = "margin-top:8px", lapply(aw$findings, function(f) {
+          col <- switch(f$severity %||% "info", critical = "#ff1744", warning = "#ffc107", "#00e676")
+          tags$div(style = paste0("border-left:3px solid ", col, ";padding:6px 10px;margin:4px 0;background:#0a1628;font-size:12px"),
+            tags$b(f$title %||% "?"),
+            tags$span(style = paste0("color:", col, ";margin-left:8px;font-size:10px"), toupper(f$severity %||% "?")),
+            if (isTRUE(f$hitl_requested) && !isTRUE(f$approved))
+              tags$div(style = "font-size:10px;color:#ffc107", "\U0001f510 inasubiri RUHUSU (HITL)"),
+            tags$div(style = "font-size:10px;color:var(--dim)", f$action_hint_sw %||% ""))
+        }))
+      })
+  })
+
+  observeEvent(input$av_auto, {
+    bin <- c("../engine-rust/target/release/mtaalamu", "engine-rust/target/release/mtaalamu.exe",
+             "engine-rust/target/release/mtaalamu")
+    bin <- Filter(file.exists, bin)
+    rep <- if (length(bin)) {
+      out <- tryCatch(
+        suppressWarnings(system(paste(bin[1], "av-auto"), intern = TRUE, timeout = 60)),
+        error = function(e) NULL)
+      if (!is.null(out) && length(out) > 0)
+        tryCatch(jsonlite::fromJSON(paste(out, collapse = "\n"), simplifyVector = FALSE),
+                 error = function(e) NULL)
+      else NULL
+    } else NULL
+    if (is.null(rep)) {
+      # Fallback: R auto-work (scan halisi + frames za scribe bila Rust)
+      snap <- sysprobe_snapshot()
+      issues <- as.character(unlist(snap$issues %||% list()))
+      f <- list()
+      f[[1]] <- list(step_code = "SCAN", step_name_sw = "Uchanganuzi",
+        narration_sw = sprintf("Nimechanganua kifaa: issues %s.", length(issues)),
+        voice_sw = "Ninaangalia kifaa chako sasa.", visual_note = "Wiring halisi", evidence = list())
+      f[[2]] <- list(step_code = "I", step_name_sw = "Utambuzi",
+        narration_sw = if (length(issues)) paste(issues, collapse = "; ") else "Hakuna tatizo",
+        voice_sw = if (length(issues)) "Nimegundua matatizo." else "Kila kitu kiko sawa.",
+        visual_note = "Issues overlay", evidence = list())
+      autowork_rv(list(frames = f, findings = list(),
+                        summary_sw = "(R fallback) Scan imekamilika — anzisha Rust binary kwa solve halisi"))
+    } else {
+      autowork_rv(list(
+        frames = rep$scribe %||% list(),
+        findings = rep$findings %||% list(),
+        summary_sw = rep$summary_sw %||% "Auto-work imekamilika"))
+    }
+    # Sauti: voice script ya scribe
+    txt <- if (!is.null(rep) && !is.null(rep$voice_script_sw) && nzchar(rep$voice_script_sw)) {
+      rep$voice_script_sw
+    } else {
+      paste(vapply(autowork_rv()$frames, function(x) x$voice_sw %||% "", character(1)), collapse = " ")
+    }
+    if (nzchar(txt)) session$sendCustomMessage("mtaalamu_speak", list(text = txt))
+    .wiring_refresh()
+  })
 
   output$av_knowledge <- renderUI({
     st <- av_state()
@@ -420,9 +557,14 @@ server <- function(input, output, session) {
 
   output$viz <- renderUI(view_viz(lang()))
   output$map <- renderUI(view_map(lang(), GEO, map_payload(lang(), GEO_TXT)))
+  output$nav <- renderUI(NULL)
+  output$fundi <- renderUI(fundi_tab_el(lang()))
+  fundi_server(input, output, session)
+  output$mobile <- renderUI(mobile_tab_el(lang()))
+  mobile_server(input, output, session)
   output$statusbar <- renderUI(status_bar_el(lang(), stats(), uptime()))
 
-  for (nm in c("live", "agentic", "formula", "diagnosis", "viz", "statusbar", "tabs")) {
+  for (nm in c("live", "agentic", "formula", "diagnosis", "viz", "statusbar", "tabs", "fundi", "mobile", "nav")) {
     outputOptions(output, nm, suspendWhenHidden = FALSE)
   }
 }

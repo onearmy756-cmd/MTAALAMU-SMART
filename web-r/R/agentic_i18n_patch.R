@@ -33,4 +33,8 @@ AV_STR <- list(
   "av.session.hitl"    = list(sw = "Inasubiri ruhusa yako (HITL)", en = "Waiting for approval (HITL)"),
   "av.session.done"    = list(sw = "Imemaliza — pakua kitabu", en = "Done — download book")
 )
-if (exists("STR")) for (nm in names(AV_STR)) STR[[nm]] <<- AV_STR[[nm]]
+if (!exists(".STR_KEYS", envir = .GlobalEnv)) assign(".STR_KEYS", character(0), envir = .GlobalEnv)
+for (nm in names(AV_STR)) {
+  assign(nm, AV_STR[[nm]], envir = .GlobalEnv)
+  .STR_KEYS <<- c(.STR_KEYS, nm)
+}

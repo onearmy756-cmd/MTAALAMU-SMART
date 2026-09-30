@@ -1,0 +1,38 @@
+┌──────────────────────────────────────────────────────────────┐
+│  FUNDI MOBILE — RUHUSA YA KAZI  (HITL / CONSENT FORM)         │
+│                                                              │
+│  Tarehe: ______________   Namba ya Kazi: ____________        │
+│                                                              │
+│  Jina la Mteja: _____________________________________        │
+│  Namba ya Simu: _____________________________________        │
+│  Namba ya Kitambulisho (NIDA/Passport): _______________      │
+│                                                              │
+│  SIMU:                                                       │
+│  Aina:  ☐ Android   ☐ iPhone   ☐ Button phone                │
+│  Brand: ____________  Model: ____________                    │
+│  IMEI (*#06#): _____________________________________         │
+│                                                              │
+│  KAZI INAYOTAKIWA (weka alama):                              │
+│  ☐ Reset Password            ☐ Reset Pattern                 │
+│  ☐ Bypass FRP                ☐ Flash Firmware                │
+│  ☐ Update OS                 ☐ Backup Data                   │
+│  ☐ Master Reset (button)     ☐ Nyingine: ______________      │
+│                                                              │
+│  DATA:                                                       │
+│  ☐ Data itabaki (ADB method)                                 │
+│  ☐ Data YOTE itapotea (recovery/flash/button reset)          │
+│                                                              │
+│  NAKIRI:                                                     │
+│  1. Simu hii ni ya mimi mwenyewe AU nina ruhusa ya mmiliki.  │
+│  2. Ninaelewa kama data itafutwa, HAITARUDI.                 │
+│  3. Fundi anaweza kufuta data kama kazi itahitaji.           │
+│  4. Fundi hahusiki na hasara baada ya kazi kukamilika.        │
+│  5. Ninalipa TZS __________________ kwa kazi hii.            │
+│                                                              │
+│  Mteja:  Sahihi ________________  Tarehe ____________        │
+│  Fundi:  Sahihi ________________  Tarehe ____________        │
+│                                                              │
+│  ⚖️  Sheria ya Makosa ya Jinai Tanzania, Kifungu 267:         │
+│  Kazi kwenye simu isiyokuwa na ruhusa = kosa la jinai.       │
+│  Hii fomu inalinda wewe NA mteja wako. Hifadhi kwa miaka 2.  │
+└──────────────────────────────────────────────────────────────┘

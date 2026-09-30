@@ -37,8 +37,10 @@ Header: **English** ⇄ **Kiswahili** (`data/locales`, `web-r/R/i18n.R`).
 
 ```
 web-r/          R/Shiny dashboard (LIVE, AGENTIC, FORMULA, DIAG, MAP)
-engine-rust/    Rust CLI: calc, diagnose, agentic, deep, sysprobe, remediate
-data/           JSON (formulas, agents, vision, geo, …)
+engine-rust/    Rust CLI: calc, diagnose, agentic, deep, sysprobe, remediate, wiring, deploy
+fundi-mobile/   🩺 FUNDI MOBILE — daktari wa simu (agentic, HITL consent, Android/iPhone/button)
+fundi-deploy/   💻 Fundi Deploy — LAN imaging (P2+P3 kamili)
+data/           JSON (formulas, agents, vision, geo, mobile/…)
 ```
 
 ## Tabs

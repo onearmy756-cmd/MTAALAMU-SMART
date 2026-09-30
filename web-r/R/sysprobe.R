@@ -2,7 +2,11 @@
 # sysprobe.R — metrics HALISI za OS + live agent_data + learner
 # ============================================================
 
-`%||%` <- function(a, b) if (is.null(a) || length(a) == 0 || (is.character(a) && !nzchar(a))) b else a
+`%||%` <- function(a, b) {
+  if (is.null(a) || length(a) == 0) return(b)
+  if (is.character(a) && length(a) == 1 && !nzchar(a)) return(b)
+  a
+}
 
 .sysprobe_run <- function(cmd) {
   tryCatch({
@@ -25,7 +29,7 @@ sysprobe_cpu_pct <- function() {
       }
     }
   } else {
-    t <- .sysprobe_run("top -bn1 2>/dev/null | grep -E 'Cpu\(s\)|%Cpu' | head -1")
+    t <- .sysprobe_run(r"{top -bn1 2>/dev/null | grep -E 'Cpu\(s\)|%Cpu' | head -1}")
     if (!is.null(t)) {
       m <- regmatches(t, regexpr("[0-9]+\\.[0-9]+", t))
       if (length(m)) return(as.numeric(m[1]))

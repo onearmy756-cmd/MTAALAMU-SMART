@@ -1,0 +1,172 @@
+{
+  "kind": "fundi-pro-services",
+  "version": "1.0.0",
+  "note": "Catalog ya FUNDI PRO — huduma za ofisi ya fundi (remote + onsite), bei TZS, muda, na hatua halisi za kila huduma. Data-driven: UI na CLI zote hii hapa.",
+  "services": [
+    {
+      "id": "email_troubleshooting",
+      "icon": "📧",
+      "name_sw": "Email Troubleshooting",
+      "mode": "remote",
+      "price_min_tzs": 20000,
+      "price_max_tzs": 80000,
+      "minutes_min": 15,
+      "minutes_max": 120,
+      "problems": [
+        "Nimesahau password",
+        "Email haifunguki",
+        "Siwezi kutuma email",
+        "Siwezi kupokea email",
+        "Email inaingia kwenye spam",
+        "Ninapata email nyingi za spam",
+        "Email yangu imejaa (storage)",
+        "Nimehackiwa",
+        "Email inafanya kazi polepole",
+        "Siwezi kuunganisha kwenye simu",
+        "Namba ya simu imebadilika",
+        "Nimefungiwa (suspended)",
+        "Email imefutwa",
+        "Ninapata phishing",
+        "2FA haifanyi kazi"
+      ],
+      "steps_sw": [
+        "Sikiliza tatizo (dakika 5): nini, lini, nani",
+        "Thibitisha umiliki wa account (ID / recovery info)",
+        "Rekebisha: password reset / filters / storage / 2FA",
+        "Verify: test kutuma na kupokea",
+        "Kinga: fundisha mteja + weka password manager"
+      ],
+      "tools": ["Browser", "AnyDesk/TeamViewer", "Password manager (Bitwarden)", "IMAP/SMTP checker"]
+    },
+    {
+      "id": "government_applications",
+      "icon": "🏛️",
+      "name_sw": "Government Applications",
+      "mode": "remote",
+      "price_min_tzs": 30000,
+      "price_max_tzs": 100000,
+      "minutes_min": 30,
+      "minutes_max": 120,
+      "systems": [
+        { "id": "nida", "name": "NIDA", "url": "nida.go.tz", "price_tzs": 30000, "minutes": 30 },
+        { "id": "tra", "name": "TRA (TIN)", "url": "tra.go.tz", "price_tzs": 50000, "minutes": 60 },
+        { "id": "brela", "name": "BRELA (Biashara)", "url": "brela.go.tz", "price_tzs": 80000, "minutes": 120 },
+        { "id": "nssf", "name": "NSSF", "url": "nssf.go.tz", "price_tzs": 40000, "minutes": 45 },
+        { "id": "heslb", "name": "HESLB", "url": "heslb.go.tz", "price_tzs": 60000, "minutes": 60 },
+        { "id": "rita", "name": "RITA (Vitabu vya kuzaliwa)", "url": "rita.go.tz", "price_tzs": 40000, "minutes": 45 },
+        { "id": "immigration", "name": "Immigration (Passport)", "url": "immigration.go.tz", "price_tzs": 80000, "minutes": 90 }
+      ],
+      "steps_sw": [
+        "Chagua mfumo (NIDA/TRA/BRELA...)",
+        "Tengeneza account au ingia",
+        "Jaza form + upload documents (pamoja na mteja kwa screen sharing)",
+        "Lipa ada ya mfumo (mteja analipa yeye mwenyewe)",
+        "Fuatilia status + mwelekeo wa ofisi (kama fingerprint inahitajika)"
+      ]
+    },
+    {
+      "id": "hacked_account_recovery",
+      "icon": "🔓",
+      "name_sw": "Hacked Account Recovery",
+      "mode": "remote",
+      "price_min_tzs": 50000,
+      "price_max_tzs": 200000,
+      "minutes_min": 60,
+      "minutes_max": 4320,
+      "targets": [
+        { "id": "email", "name": "Email (Gmail/Yahoo/Outlook)", "price_tzs": 50000 },
+        { "id": "facebook", "name": "Facebook", "price_tzs": 80000 },
+        { "id": "instagram", "name": "Instagram", "price_tzs": 80000 },
+        { "id": "whatsapp", "name": "WhatsApp", "price_tzs": 30000 },
+        { "id": "tiktok", "name": "TikTok", "price_tzs": 60000 },
+        { "id": "bank", "name": "Bank account", "price_tzs": 150000 },
+        { "id": "mobile_money", "name": "M-Pesa / Tigo Pesa", "price_tzs": 100000 }
+      ],
+      "steps_sw": [
+        "Sikiliza (dakika 5): lini, nani, umepoteza pesa?",
+        "Thibitisha mmiliki (ID + password ya zamani + recovery info)",
+        "Rekebisha: badilisha password, ondoa devices za hacker, ondoa recovery za hacker",
+        "Washa 2FA + angalia active sessions",
+        "Kinga: fundisha mteja + password manager + antivirus scan"
+      ],
+      "warning_sw": "SIMULIZA PESA YA MWISHO KABLA HUJALIPA — wahalifu hutuma 'recovery agents' wa uongo."
+    },
+    {
+      "id": "data_recovery",
+      "icon": "💾",
+      "name_sw": "Data Recovery",
+      "mode": "partial_remote",
+      "price_min_tzs": 30000,
+      "price_max_tzs": 300000,
+      "minutes_min": 60,
+      "minutes_max": 10080,
+      "cases": [
+        { "id": "flash_delete", "name": "Kufuta kwa bahati (flash)", "price_tzs": 30000, "hours": "1-2" },
+        { "id": "flash_format", "name": "Format (flash)", "price_tzs": 50000, "hours": "2-4" },
+        { "id": "hdd_format", "name": "Format (HDD/SSD)", "price_tzs": 100000, "hours": "4-8" },
+        { "id": "dying_disk", "name": "Disk inakufa", "price_tzs": 200000, "hours": "siku 1-3" },
+        { "id": "water_damage", "name": "Water damage", "price_tzs": 300000, "hours": "siku 3-7" },
+        { "id": "ransomware", "name": "Ransomware", "price_tzs": 150000, "hours": "4-8" }
+      ],
+      "steps_sw": [
+        "STOP: usiandike chochote kwenye kifaa — uwezekano wa recovery unapungua kila sekunde",
+        "Chunguza: kifaa gani, kinaonekana, kinasikika (click = disk inakufa)",
+        "Fanya image ya kifaa (kama kinachunguza) — kazi yote kwenye image, si kwenye original",
+        "Recover: PhotoRec (bure) → EaseUS/R-Studio (kama inahitajika)",
+        "Kurudisha: panga files, gawa kwa mteja + tengeneza backup ya kwanza",
+        "Bei: emergency (haraka) +50%; kama haipatikani chochote — refund 50%"
+      ],
+      "rule_sw": "SHERIA YA DHABABU: kazi yote kwenye IMAGE, si kwenye kifaa halisi."
+    },
+    {
+      "id": "backup_services",
+      "icon": "☁️",
+      "name_sw": "Backup Services",
+      "mode": "remote",
+      "price_min_tzs": 50000,
+      "price_max_tzs": 1000000,
+      "minutes_min": 60,
+      "minutes_max": 2880,
+      "options": [
+        { "id": "cloud", "name": "Cloud (Google Drive/OneDrive)", "price_tzs": 50000, "recurrence": "mara moja" },
+        { "id": "external", "name": "External drive", "price_tzs": 50000, "recurrence": "mara moja" },
+        { "id": "nas", "name": "Local NAS (kampuni)", "price_tzs": 1000000, "recurrence": "mara moja" },
+        { "id": "managed", "name": "Backup ya mwezi (managed)", "price_tzs": 20000, "recurrence": "mwezi" },
+        { "id": "restore", "name": "Restore (kurejesha data)", "price_tzs": 50000, "recurrence": "mara moja" }
+      ],
+      "steps_sw": [
+        "Pima data: GB ngapi, faili gani muhimu",
+        "Chagua njia: cloud / external / NAS / hybrid (mbili = salama)",
+        "Setup + encrypt (kama data ni nyeti)",
+        "Fanya backup ya kwanza + verify (fungua faili 3 BAHATI)",
+        "Fundi mwezi: schedule + alerts kama backup imeshindikana"
+      ]
+    },
+    {
+      "id": "security_privacy",
+      "icon": "🛡️",
+      "name_sw": "Security & Privacy",
+      "mode": "remote",
+      "price_min_tzs": 30000,
+      "price_max_tzs": 300000,
+      "minutes_min": 30,
+      "minutes_max": 480,
+      "items": [
+        { "id": "antivirus", "name": "Kuweka antivirus", "price_tzs": 30000, "minutes": 30 },
+        { "id": "vpn", "name": "Kuweka VPN", "price_tzs": 40000, "minutes": 60 },
+        { "id": "password_manager", "name": "Password manager", "price_tzs": 50000, "minutes": 60 },
+        { "id": "twofa", "name": "2FA kila account", "price_tzs": 80000, "minutes": 120 },
+        { "id": "audit_personal", "name": "Security audit (mtu)", "price_tzs": 100000, "minutes": 120 },
+        { "id": "audit_company", "name": "Security audit (kampuni)", "price_tzs": 1000000, "minutes": 480 },
+        { "id": "package_all", "name": "Package kamili (mtu)", "price_tzs": 300000, "minutes": 240 }
+      ],
+      "steps_sw": [
+        "Audit: wapi mteja anaweza kuibiwa (passwords, 2FA, backups, WiFi)",
+        "Washa 2FA kwenye email + bank + mobile money KWANZA",
+        "Weka password manager + migrate passwords zote",
+        "Antivirus + scan kamili + ondoa malware",
+        "Fundisha: phishing ni nini, jinsi ya kutambua uongo"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "kind": "fundi-telecom-formulas",
+  "version": "1.0.0",
+  "note": "Formula library ya telecoms + network engineering. Kila formula ina: id, kundi, jina, formula (text), inputs (id, unit, default), na compute key inayotumika na netcalc.rs (Rust kikokotoo halisi). Matatizo + suluhisho pia.",
+  "groups": [
+    {
+      "id": "signal_power",
+      "icon": "📶",
+      "name_sw": "Signal & Power",
+      "formulas": [
+        { "id": "dbm_to_mw", "name_sw": "dBm → mW", "formula": "P_mW = 10^(dBm/10)", "inputs": [ { "id": "dbm", "unit": "dBm", "default": 20 } ], "compute": "dbm_to_mw" },
+        { "id": "mw_to_dbm", "name_sw": "mW → dBm", "formula": "dBm = 10 × log10(P_mW)", "inputs": [ { "id": "mw", "unit": "mW", "default": 100 } ], "compute": "mw_to_dbm" },
+        { "id": "noise_floor", "name_sw": "Noise Floor", "formula": "NF = -174 + 10×log10(BW_Hz) + NF dB", "inputs": [ { "id": "bw_hz", "unit": "Hz", "default": 20000000 }, { "id": "nf", "unit": "dB", "default": 5 } ], "compute": "noise_floor" },
+        { "id": "snr", "name_sw": "SNR", "formula": "SNR = P_signal - P_noise", "inputs": [ { "id": "signal_dbm", "unit": "dBm", "default": -60 }, { "id": "noise_dbm", "unit": "dBm", "default": -95 } ], "compute": "snr" }
+      ]
+    },
+    {
+      "id": "propagation",
+      "icon": "📡",
+      "name_sw": "Propagation & Link Budget",
+      "formulas": [
+        { "id": "fspl", "name_sw": "Free Space Path Loss", "formula": "FSPL = 32.45 + 20×log10(d_km) + 20×log10(f_MHz)", "inputs": [ { "id": "d_km", "unit": "km", "default": 5 }, { "id": "f_mhz", "unit": "MHz", "default": 2400 } ], "compute": "fspl" },
+        { "id": "eirp", "name_sw": "EIRP", "formula": "EIRP = P_tx + G_tx - L_cable", "inputs": [ { "id": "p_tx", "unit": "dBm", "default": 20 }, { "id": "g_tx", "unit": "dBi", "default": 15 }, { "id": "l_cable", "unit": "dB", "default": 2 } ], "compute": "eirp" },
+        { "id": "rsl", "name_sw": "Received Signal Level", "formula": "RSL = EIRP + G_rx - FSPL - L_rx", "inputs": [ { "id": "eirp_dbm", "unit": "dBm", "default": 33 }, { "id": "g_rx", "unit": "dBi", "default": 15 }, { "id": "fspl_db", "unit": "dB", "default": 114 }, { "id": "l_rx", "unit": "dB", "default": 2 } ], "compute": "rsl" },
+        { "id": "link_margin", "name_sw": "Link Margin", "formula": "Margin = RSL - Sensitivity (target ≥ 10 dB)", "inputs": [ { "id": "rsl_dbm", "unit": "dBm", "default": -68 }, { "id": "sens_dbm", "unit": "dBm", "default": -85 } ], "compute": "link_margin" },
+        { "id": "fresnel", "name_sw": "Fresnel Zone radius", "formula": "r = 17.32 × sqrt(d1×d2/(f_GHz×D))", "inputs": [ { "id": "d1_km", "unit": "km", "default": 2 }, { "id": "d2_km", "unit": "km", "default": 3 }, { "id": "f_ghz", "unit": "GHz", "default": 5.8 }, { "id": "d_km", "unit": "km", "default": 5 } ], "compute": "fresnel" },
+        { "id": "wavelength", "name_sw": "Wavelength", "formula": "λ = 300 / f_MHz (m)", "inputs": [ { "id": "f_mhz", "unit": "MHz", "default": 2400 } ], "compute": "wavelength" },
+        { "id": "dish_gain", "name_sw": "Parabolic Dish Gain", "formula": "G = 10×log10(η × (π×D/λ)²)", "inputs": [ { "id": "d_m", "unit": "m", "default": 1.2 }, { "id": "f_mhz", "unit": "MHz", "default": 5800 }, { "id": "eff", "unit": "0-1", "default": 0.6 } ], "compute": "dish_gain" }
+      ]
+    },
+    {
+      "id": "capacity",
+      "icon": "🚀",
+      "name_sw": "Capacity & Modulation",
+      "formulas": [
+        { "id": "shannon", "name_sw": "Shannon Capacity", "formula": "C = BW × log2(1 + SNR_linear)", "inputs": [ { "id": "bw_mhz", "unit": "MHz", "default": 20 }, { "id": "snr_db", "unit": "dB", "default": 20 } ], "compute": "shannon" },
+        { "id": "ofdm_subcarriers", "name_sw": "OFDM Subcarriers", "formula": "N = BW / Δf", "inputs": [ { "id": "bw_khz", "unit": "kHz", "default": 20000 }, { "id": "df_khz", "unit": "kHz", "default": 15 } ], "compute": "ofdm_subcarriers" },
+        { "id": "mimo", "name_sw": "MIMO Capacity", "formula": "C = B × min(Nt,Nr) × log2(1+SNR/N)", "inputs": [ { "id": "bw_mhz", "unit": "MHz", "default": 20 }, { "id": "streams", "unit": "n", "default": 2 }, { "id": "snr_db", "unit": "dB", "default": 20 } ], "compute": "mimo" }
+      ]
+    },
+    {
+      "id": "traffic",
+      "icon": "📞",
+      "name_sw": "Traffic Engineering",
+      "formulas": [
+        { "id": "erlangs", "name_sw": "Erlangs (traffic)", "formula": "A = λ × T", "inputs": [ { "id": "calls_per_hour", "unit": "n", "default": 100 }, { "id": "call_min", "unit": "min", "default": 3 } ], "compute": "erlangs" },
+        { "id": "erlang_b", "name_sw": "Erlang B (blocking)", "formula": "B = (A^N/N!) / Σ(A^k/k!)", "inputs": [ { "id": "erlangs", "unit": "A", "default": 5 }, { "id": "channels", "unit": "N", "default": 10 } ], "compute": "erlang_b" },
+        { "id": "trunk_util", "name_sw": "Trunk Utilization", "formula": "U = (A/N) × 100", "inputs": [ { "id": "erlangs", "unit": "A", "default": 5 }, { "id": "channels", "unit": "N", "default": 10 } ], "compute": "trunk_util" }
+      ]
+    },
+    {
+      "id": "subnetting",
+      "icon": "🌐",
+      "name_sw": "Subnetting (IPv4)",
+      "formulas": [
+        { "id": "subnet", "name_sw": "Subnet Calculator", "formula": "Network = IP AND Mask; Hosts = 2^h - 2", "inputs": [ { "id": "ip", "unit": "a.b.c.d", "default": "192.168.1.100" }, { "id": "cidr", "unit": "/n", "default": 24 } ], "compute": "subnet" }
+      ]
+    },
+    {
+      "id": "throughput",
+      "icon": "🚦",
+      "name_sw": "Bandwidth & Latency",
+      "formulas": [
+        { "id": "bdp", "name_sw": "Bandwidth-Delay Product", "formula": "BDP = BW × RTT", "inputs": [ { "id": "bw_mbps", "unit": "Mbps", "default": 100 }, { "id": "rtt_ms", "unit": "ms", "default": 50 } ], "compute": "bdp" },
+        { "id": "tcp_window", "name_sw": "Optimal TCP Window", "formula": "W = BW × RTT", "inputs": [ { "id": "bw_mbps", "unit": "Mbps", "default": 1000 }, { "id": "rtt_ms", "unit": "ms", "default": 100 } ], "compute": "bdp" },
+        { "id": "bw_per_user", "name_sw": "BW per User", "formula": "BW/user = Total / Users", "inputs": [ { "id": "total_mbps", "unit": "Mbps", "default": 1000 }, { "id": "users", "unit": "n", "default": 100 } ], "compute": "bw_per_user" },
+        { "id": "capacity_plan", "name_sw": "Capacity Planning", "formula": "Req = Users × BW/user × utilization", "inputs": [ { "id": "users", "unit": "n", "default": 1000 }, { "id": "bw_user_mbps", "unit": "Mbps", "default": 5 }, { "id": "util", "unit": "0-1", "default": 0.7 } ], "compute": "capacity_plan" },
+        { "id": "prop_delay", "name_sw": "Propagation Delay (fiber)", "formula": "t = d / 200000 km/s", "inputs": [ { "id": "d_km", "unit": "km", "default": 1000 } ], "compute": "prop_delay" },
+        { "id": "mos", "name_sw": "MOS (voice quality, E-model R)", "formula": "MOS = 1 + 0.035R + 7e-6 × R(R-60)(100-R)", "inputs": [ { "id": "r_factor", "unit": "0-100", "default": 90 } ], "compute": "mos" }
+      ]
+    },
+    {
+      "id": "fiber",
+      "icon": "💡",
+      "name_sw": "Fiber Optics",
+      "formulas": [
+        { "id": "fiber_budget", "name_sw": "Optical Budget / Max Length", "formula": "L = (P_tx - Sens - Margin) / Attenuation", "inputs": [ { "id": "p_tx_dbm", "unit": "dBm", "default": 0 }, { "id": "sens_dbm", "unit": "dBm", "default": -28 }, { "id": "margin_db", "unit": "dB", "default": 3 }, { "id": "att_dbkm", "unit": "dB/km", "default": 0.35 } ], "compute": "fiber_budget" },
+        { "id": "fiber_loss", "name_sw": "Total Fiber Loss", "formula": "Loss = att×L + splices×0.1 + connectors×0.5", "inputs": [ { "id": "len_km", "unit": "km", "default": 10 }, { "id": "att_dbkm", "unit": "dB/km", "default": 0.35 }, { "id": "splices", "unit": "n", "default": 4 }, { "id": "connectors", "unit": "n", "default": 2 } ], "compute": "fiber_loss" }
+      ]
+    }
+  ],
+  "problems": [
+    { "layer": "L1 Physical", "items": [
+      { "p": "Cable haijaunganishwa", "s": "Chomeka cable, angalia LED za port" },
+      { "p": "Cable imekatika", "s": "Badilisha; test kwa cable tester" },
+      { "p": "Duplex mismatch", "s": "Weka auto-negotiate pande zote" },
+      { "p": "Cable ndefu sana (>100m)", "s": "Punguza urefu au weka switch ya katikati" },
+      { "p": "Fiber connector chafu", "s": "Safisha kwa alcohol + lint-free wipe" },
+      { "p": "SFP mbovu", "s": "Badilisha SFP module" }
+    ]},
+    { "layer": "L2 Data Link", "items": [
+      { "p": "VLAN mismatch", "s": "Weka VLAN ile ile kwenye trunk zote" },
+      { "p": "STP loop / broadcast storm", "s": "Washa STP, weka storm control" },
+      { "p": "MAC flooding", "s": "Weka port security (max MACs)" },
+      { "p": "ARP issues", "s": "Clear ARP cache; angalia ARP spoofing (DAI)" }
+    ]},
+    { "layer": "L3 Network", "items": [
+      { "p": "Hakuna IP / DHCP imekataa", "s": "Angalia DHCP scope; weka static kwa muda" },
+      { "p": "Gateway haipatikani", "s": "Ping gateway; angalia router/cable" },
+      { "p": "DNS haifanyi kazi", "s": "Badilisha DNS: 8.8.8.8 / 1.1.1.1" },
+      { "p": "IP conflict", "s": "Tafuta kifaa chenye IP ile ile; tumia DHCP reservations" },
+      { "p": "MTU issues (PPPoE)", "s": "Weka MTU 1492 + MSS clamping" }
+    ]},
+    { "layer": "L4 Transport", "items": [
+      { "p": "Port imefungwa", "s": "Fungua kwenye firewall; test kwa telnet/TCP" },
+      { "p": "Retransmissions nyingi", "s": "Angalia packet loss; weka QoS" },
+      { "p": "TCP window ndogo", "s": "Washa window scaling (BDP kubwa → window kubwa)" }
+    ]},
+    { "layer": "L7 Application", "items": [
+      { "p": "SSL/TLS certificate error", "s": "Angalia tarehe ya PC + certificate chain" },
+      { "p": "HTTP 5xx", "s": "Angalia server logs/backend" },
+      { "p": "DNS resolve fail (browser tu)", "s": "Flush DNS cache: ipconfig /flushdns" }
+    ]},
+    { "layer": "Wireless", "items": [
+      { "p": "Signal ndogo", "s": "Sogeza AP karibu; ongeza AP; antenna bora" },
+      { "p": "Interference 2.4 GHz", "s": "Tumia channels 1/6/11 au 5 GHz" },
+      { "p": "DHCP pool imejaa", "s": "Ongeza pool; punguza lease time" },
+      { "p": "Roaming hazei", "s": "SSID ile ile + power tuning + same VLAN" }
+    ]}
+  ]
+}

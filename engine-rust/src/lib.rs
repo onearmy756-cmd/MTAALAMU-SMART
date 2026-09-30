@@ -23,6 +23,9 @@ pub mod solve;
 pub mod electronic_solver;
 pub mod knowledge_hub;
 pub mod grounded_reason;
+pub mod deploy;
+pub mod wiring;
+pub mod scribe;
 
 pub use expr::{eval, eval_with, EvalError, Vars};
 pub use formula_engine::{FormulaEngine, CalcResult, Formula};
@@ -47,3 +50,7 @@ pub use solve::{solve_message, plan_from_problem, execute_plan, SolveResult, Sol
 pub use electronic_solver::{search_devices, catalog_stats as devices_catalog_stats, ElectronicSolveResult};
 pub use knowledge_hub::{search_all as knowledge_search, knowledge_stats, KnowledgeSearchResult};
 pub use grounded_reason::{reason as grounded_reason, reason_json as grounded_reason_json, GroundedAnswer};
+pub use wiring::{system_wiring, system_wiring_json, SystemWiring};
+pub use scribe::{
+    auto_watch, auto_work_once, load_sessions, save_session, AutoWorkReport, Scribe, ScribeFrame,
+};

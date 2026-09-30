@@ -1,0 +1,42 @@
+[
+  {
+    "brand": "generic",
+    "job_id": "FM-20260930173320-reset_password_adb",
+    "learned_sw": "Njia bado — thibitisha consent/driver kabla.",
+    "model": "unknown",
+    "problem": "tatizo haijaelezwa",
+    "service": "reset_password_adb",
+    "status": "awaiting_consent",
+    "ts": 1790778800
+  },
+  {
+    "brand": "generic",
+    "job_id": "FM-20260930173325-reset_password_adb",
+    "learned_sw": "Njia bado — thibitisha consent/driver kabla.",
+    "model": "unknown",
+    "problem": "tatizo haijaelezwa",
+    "service": "reset_password_adb",
+    "status": "awaiting_consent",
+    "ts": 1790778805
+  },
+  {
+    "brand": "generic",
+    "job_id": "FM-20260930173334-reset_password_adb",
+    "learned_sw": "Njia bado — thibitisha consent/driver kabla.",
+    "model": "unknown",
+    "problem": "tatizo haijaelezwa",
+    "service": "reset_password_adb",
+    "status": "awaiting_consent",
+    "ts": 1790778814
+  },
+  {
+    "brand": "generic",
+    "job_id": "FM-20260930173337-reset_password_adb",
+    "learned_sw": "Njia bado — thibitisha consent/driver kabla.",
+    "model": "unknown",
+    "problem": "tatizo haijaelezwa",
+    "service": "reset_password_adb",
+    "status": "awaiting_consent",
+    "ts": 1790778817
+  }
+]

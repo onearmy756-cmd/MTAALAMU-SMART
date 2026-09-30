@@ -522,10 +522,10 @@
       "formula": "Wh = Σ (P × H)",
       "description": { "sw": "Jumla ya mzigo wa siku kwa off-grid", "en": "Sum daily off-grid load in Wh" },
       "inputs": [
-        { "name": "n_light", "label": { "sw": "Taa LED × saa", "en": "LED lights × hrs" }, "unit": "W×h", "default": 5 * 6, "min": 0, "max": 10000 },
-        { "name": "tv", "label": { "sw": "TV × saa", "en": "TV × hrs" }, "unit": "W×h", "default": 80 * 4, "min": 0, "max": 10000 },
+        { "name": "n_light", "label": { "sw": "Taa LED × saa", "en": "LED lights × hrs" }, "unit": "W×h", "default": 30, "min": 0, "max": 10000 },
+        { "name": "tv", "label": { "sw": "TV × saa", "en": "TV × hrs" }, "unit": "W×h", "default": 320, "min": 0, "max": 10000 },
         { "name": "fridge", "label": { "sw": "Fridge 24h (W)", "en": "Fridge 24h (W)" }, "unit": "Wh", "default": 800, "min": 0, "max": 10000 },
-        { "name": "pump", "label": { "sw": "Pampu × saa", "en": "Pump × hrs" }, "unit": "W×h", "default": 250 * 1, "min": 0, "max": 10000 },
+        { "name": "pump", "label": { "sw": "Pampu × saa", "en": "Pump × hrs" }, "unit": "W×h", "default": 250, "min": 0, "max": 10000 },
         { "name": "other", "label": { "sw": "Vingine (Wh)", "en": "Other (Wh)" }, "unit": "Wh", "default": 300, "min": 0, "max": 50000 }
       ],
       "outputs": [

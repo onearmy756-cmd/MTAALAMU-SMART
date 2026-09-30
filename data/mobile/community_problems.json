@@ -1,0 +1,57 @@
+{
+  "kind": "fundi-community-problems",
+  "version": "1.0.0",
+  "note": "Matatizo halisi ya jamii yatakayosaidiwa na FUNDI: kila kimoja na steps halisi + namba/links rasmi. Agent (govagent.rs jamii mode) anaweza kuelekeza + kuandaa barua/ripoti.",
+  "categories": [
+    {
+      "id": "social_protection",
+      "icon": "🤝",
+      "name_sw": "Usalama wa Jamii & Ustahimilivu",
+      "problems": [
+        { "p": "Mtoto yuno hana shule / alikatishwa", "s": "1) Tangaza kwenye Social Welfare (ofisi ya wilaya) — ni wajibu wao; 2) TASAF/PSSN: nenda ofisi ya kata kwa usajili; 3) Shule za kata: mwalimu mkuu + fee exemptions (Pwani/Dodoma pia WFP shule); 4) NGO: Save the Children TZ, Child in the Sun (Dar)", "contacts": ["Social Welfare - wilaya", "TASAF - kata/mtaa", "Wazazi/mwalimu mkuu"] },
+        { "p": "Mtu mzima anahitaji msaada (uzee/ulemavu)", "s": "1) Uzeeni: TASAF/Ofisi ya wilaya; 2) Ulemavu: National Council for Persons with Disabilities (NCPD) — ofisi ya mkoa; 3) Lena za huduma: 116 (Child helpline), 112 (police/ems)", "contacts": ["NCPD - mkoa", "116 / 112"] },
+        { "p": "Umepoteza kitambulisho (NIDA/passport) na unahitaji kusafiri/dhahiri", "s": "1) Police loss declaration (polisi station — PF3/loss report); 2) NIDA: itifaki ya kurejesha (govagent nida mode); 3) Kama dharura: temporary identification kutoka ward office", "contacts": ["Police (loss report)", "NIDA"] }
+      ]
+    },
+    {
+      "id": "health_access",
+      "icon": "🏥",
+      "name_sw": "Afya & Msaada wa Kwanza",
+      "problems": [
+        { "p": "Mgonjwa dharura (hospitali ya karibu haijui)", "s": "1) 112 (dharura) au 114 (ambulance); 2) Government hospital ya mkoa/wilaya inatoa huduma ya dharura BURE (Health Sector Reform); 3) NHIF/CHF: fungua ofisi ya wilaya kwa wazazi; 4) Kama huna pesa: social welfare + hospital social work unit", "contacts": ["112", "114", "Hospital social work"] },
+        { "p": "Dawa/mtaalamu hazipatikani karibu", "s": "1) Health facility ya karibu (dispensary→health centre→hospital); 2) Tanzania Medicines & Medical Devices Authority (TMDA): dawa halali; 3) Telemedicine: E-daktari, MyDaktari (app)", "contacts": ["TMDA", "E-daktari/MyDaktari"] },
+        { "p": "NHIF/CHF hazijulikani / hazifanyi kazi", "s": "1) NHIF: nhif.or.tz / ofisi ya mkoa (wafanyakazi); 2) CHF: kwa wafamilia — ofisi ya wilaya/council (TZS 30,000/mwaka familia); 3) govagent inakusaidia kujaza fomu", "contacts": ["NHIF", "CHF - wilaya"] }
+      ]
+    },
+    {
+      "id": "rights_disputes",
+      "icon": "⚖️",
+      "name_sw": "Haki, Migogoro & Sheria",
+      "problems": [
+        { "p": "Ajira: mshahara hachukuliwi / kupingwa bila sababu", "s": "1) Tangaza kwenye Labour Office (ofisi ya mkoa) — conciliation BURE; 2) Commission for Mediation and Arbitration (CMA); 3) Kama kampuni: Labour Commissioner; 4) Document yote: contract, payslips, messages", "contacts": ["Labour Office - mkoa", "CMA"] },
+        { "p": "Ardhi/familia: mgogoro wa eneo au urithi", "s": "1) Ward Tribunal (kata) — mwanzo; 2) District Land & Housing Tribunal; 3) Family: District Court; 4) Legal aid BURE: Legal and Human Rights Centre (LHRC), Tanganyika Law Society (TLS) pro bono", "contacts": ["Ward Tribunal", "LHRC", "TLS"] },
+        { "p": "Unasumbuliwa polisi / haki zako zimetangazwa", "s": "1) PPF: 112 au checkeni ya karibu; 2) Ethics: PCCB (114 au ofisi); 3) Legal aid: LHRC; 4) Document kila kitu (tarehe, majina, namba za kesi)", "contacts": ["112", "PCCB", "LHRC"] }
+      ]
+    },
+    {
+      "id": "livelihood",
+      "icon": "🌾",
+      "name_sw": "Maendeleo & Kipato",
+      "problems": [
+        { "p": "Mkulima: mazao hayana soko / bei ndogo", "s": "1) Tanzania Mercantile Exchange (TME) — auction halali; 2) Warehouse Receipt System (WRS) — ofisi ya Sido; 3) Co-operative (AMCOS) ya eneo lako; 4) Soko digital: Kilimo Trust, eSoko", "contacts": ["SIDO", "AMCOS", "TME"] },
+        { "p": "Kijana anahitaji mkopo/biashara", "s": "1) SIDO: trainings + loans za vijana; 2) NMB/CRDB: microloans; 3) Youth fund: TIB/VCUM (Vijana Uchumi); 4) govagent: BRELA + TIN + LESHA bundle (siku 1-3)", "contacts": ["SIDO", "NMB/CRDB", "BRELA"] },
+        { "p": "Mama Biashara anahitaji leshea + TIN", "s": "1) BRELA Business Name (ORS online, siku 1-3); 2) TIN (TRA OTRS — bure, online); 3) LESHA (council — kwa biashara ya eneo); 4) govagent inajaza zote mbili kwa dakika 30", "contacts": ["BRELA", "TRA", "Council (lesha)"] }
+      ]
+    },
+    {
+      "id": "digital_inclusion",
+      "icon": "📱",
+      "name_sw": "Digital Inclusion & Usalama Mtandaoni",
+      "problems": [
+        { "p": "Mtu mzima/kijana hatoi SIM card / M-Pesa", "s": "1) NIDA lazima kwanza (govagent nida); 2) SIM registration: duka la kampuni (Vodacom/Airtel/Tigo) + NIDA; 3) Mobile money: NIDA + SIM", "contacts": ["NIDA", "Campuni za simu"] },
+        { "p": "Online scam imepata mtu (pesa/impegnation)", "s": "1) Usilipe zaidi — scam ya pili ('recovery agents') ni WAPYA zaidi; 2) Report: TCRA + police cybercrime unit (Interpol TZ); 3) Block + report kwenye platform; 4) Badilisha passwords + 2FA (shield.rs ina audit)", "contacts": ["TCRA", "Police cybercrime", "FUNDI SHIELD"] },
+        { "p": "Watoto wanatumia mtandao bila usalama", "s": "1) Parental controls: Google Family Link (Android), Screen Time (iOS); 2) Router-level: OpenDNS FamilyShield; 3) TCRA guidelines; 4) Fundi: shield audit + parent training", "contacts": ["Family Link", "OpenDNS", "TCRA"] }
+      ]
+    }
+  ]
+}

@@ -83,6 +83,7 @@
       <button type="button" id="btnRoute" class="sec">🛣️ Njia</button>
       <button type="button" id="btnNav" class="sec">▶️ Anza</button>
       <button type="button" id="btnSpeak" class="sec">🔊 Sauti</button>
+      <button type="button" id="btnVoice" class="sec" title="Washa/zima sauti ya maelekezo (sw-TZ)">🔈 Sauti: ON</button>
       <button type="button" id="btnWeather" class="sec">☁️ Hewa</button>
       <button type="button" id="btnHazards" class="sec">⚠️ Hatari</button>
       <button type="button" id="btnLive" class="sec">🚶 Live</button>
@@ -230,11 +231,19 @@ let peopleLayer=L.layerGroup().addTo(map);
 let currentPos=null, destination=null, routeSteps=[], routeCoords=[];
 let navigating=false, watchId=null, stepIndex=0, lastSpokenStep=-1;
 let hazardsOn=false, liveOn=false, peopleTimer=null;
+let voiceOn=true; /* sauti ya maelekezo: inabadilishwa na kitufe btnVoice */
 let lastInstruction=VOICE_PROMPTS.welcome;
 
 function setInstruction(text){ lastInstruction=text; document.getElementById("instruction").textContent=text; }
+/* SAUTI (VOICE) — jinsi inavyofanya kazi:
+ * 1) Browser ina Web Speech API (speechSynthesis) — bure, ndani ya kifaa.
+ * 2) Tunauliza voice ya Kiswahili (lang inaanza na "sw" au ina "Swahili").
+ *    Kama hakuna, browser inatumia voice yoyote inayopatikana (matamshi yanabaki).
+ * 3) Kitufe "Sauti: ON/OFF" kinafungua/kuzima kabisa (voiceOn).
+ * 4) Kila hatua ya njia inasemwa wakati unafika karibu nayo (80m) — kama Google Maps.
+ */
 function speak(text){
-  if(!window.speechSynthesis||!text) return;
+  if(!voiceOn||!window.speechSynthesis||!text) return;
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
   u.lang="sw-TZ"; u.rate=0.92;
@@ -244,6 +253,14 @@ function speak(text){
   speechSynthesis.speak(u);
 }
 if(window.speechSynthesis) speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+document.getElementById("btnVoice").onclick=()=>{
+  voiceOn=!voiceOn;
+  const b=document.getElementById("btnVoice");
+  b.textContent=voiceOn?"🔊 Sauti: ON":"🔈 Sauti: OFF";
+  b.classList.toggle("on",voiceOn);
+  if(voiceOn) speak("Sauti imewashwa.");
+  else if(window.speechSynthesis) speechSynthesis.cancel();
+};
 
 function distM(a,b){
   const R=6371000, toR=x=>x*Math.PI/180;
@@ -478,6 +495,14 @@ document.getElementById("btnLive").onclick=()=>{
   speak("Unaona watu kwenye njia.");
 };
 
+/* Maelezo ya sauti kwa mtumiaji (badge inayobadilika) */
+(function(){
+  const b=document.getElementById("btnVoice");
+  if(!window.speechSynthesis){ b.textContent="🚫 Sauti haiwezi"; b.disabled=true; return; }
+  const check=()=>{ const vs=speechSynthesis.getVoices()||[]; const has=vs.some(v=>(v.lang||"").toLowerCase().startsWith("sw"));
+    b.title=has?"Voice ya Kiswahili ipo — itasoma maelekezo":"Hakuna voice ya sw kwenye browser hii — itatumia voice nyingine"; };
+  check(); if(speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged=check;
+})();
 setTimeout(()=>speak(VOICE_PROMPTS.welcome),600);
 </script>
 </body>

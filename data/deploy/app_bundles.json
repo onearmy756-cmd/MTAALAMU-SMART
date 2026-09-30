@@ -1,0 +1,68 @@
+{
+  "kind": "fundi-app-bundles",
+  "version": "1.0.0",
+  "note": "Bundles za apps muhimu agent inayosakinisha BAADA ya OS (winget kwa Windows, apt kwa Linux/Debian, flatpak optional). Data-driven; ongeza bundle yoyote hapa na agent inaifata.",
+  "bundles": [
+    {
+      "id": "home",
+      "name_sw": "Nyumbani (Msingi)",
+      "description": "Apps za kila mtu: browser, security, media, office reader",
+      "apps": [
+        { "id": "chrome", "name": "Google Chrome", "winget": "Google.Chrome", "apt": "chromium-browser", "critical": true },
+        { "id": "vlc", "name": "VLC Media Player", "winget": "VideoLAN.VLC", "apt": "vlc", "critical": false },
+        { "id": "7zip", "name": "7-Zip", "winget": "7zip.7zip", "apt": "p7zip-full", "critical": false },
+        { "id": "pdf", "name": "Adobe Reader", "winget": "Adobe.Acrobat.Reader.64-bit", "apt": "evince", "critical": true },
+        { "id": "defender-config", "name": "Windows Defender (verify)", "winget": null, "apt": null, "critical": true }
+      ]
+    },
+    {
+      "id": "office",
+      "name_sw": "Ofisi/Biashara",
+      "description": "Kampuni: office suite, email, chat, printing",
+      "apps": [
+        { "id": "libreoffice", "name": "LibreOffice", "winget": "TheDocumentFoundation.LibreOffice", "apt": "libreoffice", "critical": true },
+        { "id": "chrome", "name": "Google Chrome", "winget": "Google.Chrome", "apt": "chromium-browser", "critical": true },
+        { "id": "teams", "name": "Microsoft Teams", "winget": "Microsoft.Teams", "apt": null, "critical": false },
+        { "id": "zoom", "name": "Zoom", "winget": "Zoom.Zoom", "apt": "zoom", "critical": false },
+        { "id": "whatsapp", "name": "WhatsApp Desktop", "winget": "WhatsApp.Whatsapp", "apt": null, "critical": false },
+        { "id": "7zip", "name": "7-Zip", "winget": "7zip.7zip", "apt": "p7zip-full", "critical": false }
+      ]
+    },
+    {
+      "id": "developer",
+      "name_sw": "Developer",
+      "description": "Coding: editor, git, runtimes",
+      "apps": [
+        { "id": "vscode", "name": "VS Code", "winget": "Microsoft.VisualStudioCode", "apt": "code", "critical": true },
+        { "id": "git", "name": "Git", "winget": "Git.Git", "apt": "git", "critical": true },
+        { "id": "node", "name": "Node.js LTS", "winget": "OpenJS.NodeJS.LTS", "apt": "nodejs npm", "critical": false },
+        { "id": "python", "name": "Python 3", "winget": "Python.Python.3.12", "apt": "python3 python3-pip", "critical": false },
+        { "id": "docker", "name": "Docker Desktop", "winget": "Docker.DockerDesktop", "apt": "docker.io", "critical": false }
+      ]
+    },
+    {
+      "id": "school",
+      "name_sw": "Shule/Mafunzo",
+      "description": "Lab ya shule: browser, office, media, michezo midogo si muhimu",
+      "apps": [
+        { "id": "chrome", "name": "Google Chrome", "winget": "Google.Chrome", "apt": "chromium-browser", "critical": true },
+        { "id": "libreoffice", "name": "LibreOffice", "winget": "TheDocumentFoundation.LibreOffice", "apt": "libreoffice", "critical": true },
+        { "id": "vlc", "name": "VLC", "winget": "VideoLAN.VLC", "apt": "vlc", "critical": false },
+        { "id": "gimp", "name": "GIMP", "winget": "GIMP.GIMP", "apt": "gimp", "critical": false }
+      ]
+    },
+    {
+      "id": "cybercafe",
+      "name_sw": "Cyber/Cafe",
+      "description": "Cyber: kila kitu cha wateja + print",
+      "apps": [
+        { "id": "chrome", "name": "Google Chrome", "winget": "Google.Chrome", "apt": "chromium-browser", "critical": true },
+        { "id": "libreoffice", "name": "LibreOffice", "winget": "TheDocumentFoundation.LibreOffice", "apt": "libreoffice", "critical": true },
+        { "id": "vlc", "name": "VLC", "winget": "VideoLAN.VLC", "apt": "vlc", "critical": false },
+        { "id": "7zip", "name": "7-Zip", "winget": "7zip.7zip", "apt": "p7zip-full", "critical": false },
+        { "id": "pdf", "name": "Adobe Reader", "winget": "Adobe.Acrobat.Reader.64-bit", "apt": "evince", "critical": true },
+        { "id": "anydesk", "name": "AnyDesk", "winget": "AnyDeskSoftwareGmbH.AnyDesk", "apt": null, "critical": true }
+      ]
+    }
+  ]
+}

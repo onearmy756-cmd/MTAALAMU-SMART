@@ -1,5 +1,5 @@
-# --- Rust (engine-rust) ---
-engine-rust/target/
+# --- Rust (all crates) ---
+target/
 
 # --- Node ---
 node_modules/
@@ -24,3 +24,6 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# --- Freebuff local state ---
+.freebuff/

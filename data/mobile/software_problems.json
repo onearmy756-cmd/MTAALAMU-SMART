@@ -1,0 +1,83 @@
+{
+  "kind": "fundi-software-problems",
+  "version": "1.0.0",
+  "note": "Matatizo YOTE ya software: maintenance, computer, email, social media — kila kimoja na suluhisho la hatua kwa hatua (Kiswahili). Data-driven: UI na CLI zinaisoma hii.",
+  "categories": [
+    {
+      "id": "software_maintenance",
+      "icon": "🧰",
+      "name_sw": "Software Maintenance",
+      "problems": [
+        { "p": "PC inapolepolea (slow)", "s": "1) Futa temp: Settings→Storage→Temp files; 2) Zima startup programs (Task Manager→Startup); 3) Futa apps hazitumiki; 4) Kama RAM <8GB — ongeza RAM au SSD", "minutes": 45 },
+        { "p": "Windows Update imekwama", "s": "1) Windows Troubleshooter (Settings→System→Troubleshoot); 2) Futa C:\\Windows\\SoftwareDistribution\\Download; 3) Restart kisha update tena", "minutes": 60 },
+        { "p": "Program inafunguka kisha inajifunga (crash)", "s": "1) Update program; 2) Reinstall safi (uninstall→restart→install); 3) Angalia .NET/Visual C++ redistributables", "minutes": 40 },
+        { "p": "BSOD (skrini ya bluu)", "s": "1) Soma code ya kosa (e.g. MEMORY_MANAGEMENT); 2) Angalia RAM kwa mscd/Windows Memory Diagnostic; 3) Update drivers; 4) Check disk: chkdsk /f /r", "minutes": 90 },
+        { "p": "Driver hazipatikani / device haijulikani", "s": "1) Device Manager→Update driver; 2) Tumia Snappy Driver Installer (offline); 3) Tovuti ya mtengenezaji", "minutes": 30 },
+        { "p": "PC inajiwasha polepole (slow boot)", "s": "1) Zima startup apps; 2) Fast Startup: Control Panel→Power Options; 3) HDD→SSD upgrade (badiliko kubwa)", "minutes": 30 },
+        { "p": "Password ya Windows imesahaulika", "s": "1) Password reset disk (kama ulitengeneza); 2) Microsoft account: password reset online; 3) Local account: install media → reset utility (mmiliki tu)", "minutes": 60 },
+        { "p": "Disk imejaa (C: full)", "s": "1) Disk Cleanup→Clean system files; 2) Hamisha files kwenye D:/cloud; 3) Compact OS / Uninstall apps kubwa; 4) Storage Sense ON", "minutes": 40 },
+        { "p": "File association zimeharibika", "s": "Settings→Apps→Default apps → weka defaults sahihi; au Right-click→Open with→Always", "minutes": 15 },
+        { "p": "Taskbar/Start hazifanyi kazi", "s": "1) Restart Windows Explorer (Task Manager); 2) SFC: sfc /scannow; 3) Re-register Start: PowerShell command rasmi", "minutes": 30 },
+        { "p": "Registry issues", "s": "USITUMIE 'registry cleaners' za bahati nasibu; tumia sfc /scannow + DISM /Online /Cleanup-Image /RestoreHealth", "minutes": 60 },
+        { "p": "Backup haipo / data haina nakala", "s": "1) File History au OneDrive ON; 2) External drive + weekly schedule; 3) Angalia restore mara moja", "minutes": 45 }
+      ]
+    },
+    {
+      "id": "computer_problems",
+      "icon": "💻",
+      "name_sw": "Computer Problems",
+      "problems": [
+        { "p": "PC haiwaki kabisa", "s": "1) Angalia power cable/battery; 2) Jaribu socket nyingine; 3) Kama desktop: reseat RAM + power cycle (bata 30s bila power)", "minutes": 30 },
+        { "p": "Inawaka lakini hakuna display", "s": "1) Angalia cable ya monitor + input source; 2) Reseat RAM; 3) Jaribu monitor nyingine; 4) Beep codes → RAM/GPU", "minutes": 40 },
+        { "p": "Inazima yenyewe (shutdown ya kushtua)", "s": "1) Joto: futa kizingiti, taja thermal paste; 2) PSU dhaifu; 3) Event Viewer→Critical errors", "minutes": 60 },
+        { "p": "Fan ina kelele kubwa", "s": "1) Futa vumbi (compressed air); 2) Badilisha fan kama bearing imekufa; 3) Fan curves kwenye BIOS", "minutes": 30 },
+        { "p": "WiFi haionekani", "s": "1) Airplane mode OFF; 2) WiFi adapter ON (Fn key au Settings); 3) Network reset: Settings→Network→Advanced→Reset", "minutes": 20 },
+        { "p": "USB hazitambuliki", "s": "1) Jaribu port nyingine; 2) Device Manager→Uninstall device→rescan; 3) Zima USB selective suspend", "minutes": 20 },
+        { "p": "Audio haipo", "s": "1) Volume mixer + default device; 2) Audio troubleshooter; 3) Reinstall audio driver (Realtek)", "minutes": 20 },
+        { "p": "Bluetooth haipatikani", "s": "1) Bluetooth ON + pair mode; 2) Remove device→pair upya; 3) Driver update", "minutes": 20 },
+        { "p": "Battery haishiki (laptop)", "s": "1) Battery report: powercfg /batteryreport; 2) Kama capacity <60% — badilisha battery", "minutes": 30 },
+        { "p": "Screen imeanguka/menyooka (laptop)", "s": "Hinges/cable — hii ni hardware repair onsite; angalia cable kabla ya kubadilisha screen", "minutes": 90 },
+        { "p": "Keyboard fulani haziandiki", "s": "1) Futa kwa compressed air; 2) On-screen keyboard kwa muda; 3) Badilisha keyboard (laptop ribbon)", "minutes": 40 },
+        { "p": "Clock/tarehe zinajirudia vibaya", "s": "1) Badilisha CMOS battery (CR2032, TZS 2,000); 2) Time sync ON: Settings→Time", "minutes": 15 }
+      ]
+    },
+    {
+      "id": "email_problems",
+      "icon": "📧",
+      "name_sw": "Email Problems",
+      "problems": [
+        { "p": "Nimesahau password ya Gmail", "s": "accounts.google.com/signin/recovery → jibu maswali (password ya mwisho, recovery phone/email, tarehe); kama imeshindikana → Google Support (siku 3-5)", "minutes": 30 },
+        { "p": "Email haifunguki (login fail)", "s": "1) Angalia password manager; 2) App Password (2FA users); 3) Hakikisha huna CAPS/keyboard language; 4) Incognito test", "minutes": 20 },
+        { "p": "Siwezi kutuma (sending fail)", "s": "1) Angalia SMTP settings (port 587 STARTTLS); 2) Kikomo cha siku cha Gmail (500/day); 3) Hakikisha attachment si kubwa (>25MB → tumia Drive link)", "minutes": 30 },
+        { "p": "Siwezi kupokea (receiving fail)", "s": "1) Angalia storage (Gmail 15GB); 2) Angalia filters zinazofuta; 3) Forwarding settings; 4) Angalia spam folder", "minutes": 25 },
+        { "p": "Email zangu zinaingia spam kwa wengine", "s": "1) Omba waongeze kwenye contacts; 2) Angalia SPF/DKIM/DMARC (domain owners); 3) Usitume mass emails bila unsubscribe", "minutes": 40 },
+        { "p": "Ninapata spam nyingi", "s": "1) Report spam + Block sender; 2) Unda filters; 3) Usifungue links za spam; 4) Unsubscribe rasmi kwa newsletter halali", "minutes": 20 },
+        { "p": "Gmail imejaa (storage full)", "s": "1) one.google.com/storage — angalia nini inatumia; 2) Futa Trash+Spam; 3) Tafuta attachments kubwa (has:attachment larger:10M); 4) Google One 100GB", "minutes": 40 },
+        { "p": "Outlook haiunganishi (send/receive error)", "s": "1) Angalia IMAP/SMTP settings (imap.gmail.com:993 SSL, smtp.gmail.com:587); 2) App password (si password kuu); 3) Repair profile: Control Panel→Mail→Show Profiles", "minutes": 40 },
+        { "p": "2FA haifanyi kazi", "s": "1) Tumia backup codes; 2) Authenticator time sync; 3) Recovery phone/email; 4) Google Account→Security→2-Step→Replace authenticator", "minutes": 30 },
+        { "p": "Account imefungiwa (suspended)", "s": "1) Soma reason kwenye email ya Google; 2) Appeal form (support.google.com/accounts/contact/suspended); 3) Subiri siku 3-7", "minutes": 30 },
+        { "p": "Nimehackiwa (email)", "s": "HARAKA: 1) Badilisha password kutoka kifaa salama; 2) Ondoa devices zote (Security→Your devices); 3) Ondoa recovery za hacker; 4) Washa 2FA; 5) Angalia filters/forwarding za hacker; 6) Arifu contacts (phishing kwa jina lako)", "minutes": 90 },
+        { "p": "Emails zimefutwa bahati mbaya", "s": "1) Trash (siku 30); 2) Admin console (kwa workspace); 3) Google Vault (kama ipo); baada ya hapo hazirudi", "minutes": 30 }
+      ]
+    },
+    {
+      "id": "social_media_problems",
+      "icon": "📱",
+      "name_sw": "Social Media Problems",
+      "problems": [
+        { "p": "Facebook imehackiwa", "s": "1) facebook.com/hacked → 'My account is compromised'; 2) Thibitisha kwa ID/upload; 3) Badilisha password + logout all devices; 4) Washa 2FA; 5) Ondoa apps za hacker", "minutes": 90 },
+        { "p": "Instagram imehackiwa", "s": "1) On screen: 'Get help logging in'; 2) Video selfie verification; 3) Email ya security code ya awali (help.instagram.com); 4) Washa 2FA baada ya kupata", "minutes": 120 },
+        { "p": "WhatsApp imehackiwa / namba imechukuliwa", "s": "1) Ingia kwa namba yako kwenye simu (SMS code inamtoa hacker AUTOMATIC); 2) Washa 2FA ya WhatsApp (Settings→Account); 3) Arifu contacts (wasitume pesa)", "minutes": 30 },
+        { "p": "TikTok imehackiwa", "s": "1) Report kwenye app (Feedback); 2) support.tiktok.com → hacked account form; 3) Washa 2FA; angalia linked devices", "minutes": 90 },
+        { "p": "Account imefungiwa (ban/suspended)", "s": "1) Soma reason (community guidelines?); 2) Appeal form rasmi (in-app au help center); 3) Usitengeneze account mpya ukiwa umezuiwa (inazidisha)", "minutes": 45 },
+        { "p": "Nimesahau password (FB/IG)", "s": "1) 'Forgot password' → email/SMS code; 2) Kama email imebadilishwa na hacker → facebook.com/login/identify + trusted contacts", "minutes": 30 },
+        { "p": "Page/Group imenipokonya (admin)", "s": "1) Angalia Page roles (Settings→Page roles); 2) Kama hacker wamebadilisha: Page support form + business verification", "minutes": 60 },
+        { "p": "Nimefunzwa pesa (scam ya buy/sell)", "s": "1) Report seller + transaction; 2) Kama ulipa M-Pesa: ripoti kwa provider (kuna window ya kuzuia); 3) Usipeleke 'agents' wa kurecover pesa — ni scam ya pili", "minutes": 45 },
+        { "p": "Impersonation (wameiga jina langu)", "s": "1) Report profile/page: 'Pretending to be someone'; 2) Verify identity yako (ID upload); 3) Weka verified badge kama ni biashara", "minutes": 45 },
+        { "p": "Maid hachukui messages (business)", "s": "1) Meta Business Suite: assign roles; 2) Saved replies + automated responses; 3) Muundo wa inbox (labels)", "minutes": 40 },
+        { "p": "Content yangu imefutwa kosa", "s": "1) Support inbox: 'We removed your content' → Request review; 2) Kama ni kosa la AI — review mara nyingi inarudisha", "minutes": 30 },
+        { "p": "WhatsApp Business setup", "s": "1) WhatsApp Business app (bure): profile, catalog, labels; 2) Quick replies + greeting; 3) Link kwenye Facebook Page", "minutes": 45 }
+      ]
+    }
+  ]
+}

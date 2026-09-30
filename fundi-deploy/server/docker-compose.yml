@@ -39,9 +39,14 @@ services:
     volumes:
       - ./data:/data
       - ./tftp:/var/lib/tftpboot
+      - ./images:/images
     environment:
-      - FUNDI_CLOUD_URL=${FUNDI_CLOUD_URL:-https://api.fundiai.co.tz}
+      - FUNDI_CLOUD_URL=${FUNDI_CLOUD_URL:-disabled}
+      - FUNDI_TENANT_ID=${FUNDI_TENANT_ID:-local}
       - FUNDI_TOKEN=${FUNDI_TOKEN:-}
+      - FUNDI_BACKUP_MODE=${FUNDI_BACKUP_MODE:-stub}
+      - FUNDI_IMAGES=/images
+      - FUNDI_DEMO_HOSTS=${FUNDI_DEMO_HOSTS:-1}
       - DATABASE_URL=sqlite:///data/fundi.db
       - RUST_LOG=info
     restart: unless-stopped

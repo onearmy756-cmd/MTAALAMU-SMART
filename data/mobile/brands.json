@@ -1,0 +1,58 @@
+{
+  "_comment": "FUNDI MOBILE — brands: recovery/download combos, flash tools, na SIMU ZA BUTTON (master reset codes). Zote data-driven.",
+  "smartphones": {
+    "samsung": { "recovery_combo_sw": "Volume Up + Home + Power (kama haina Home: Volume Up + Power)", "download_mode": "Volume Down + Home + Power, kisha Volume Up", "flash_tool": "Odin", "firmware_site": "sammobile.com", "drivers": "Samsung USB Drivers" },
+    "xiaomi": { "recovery_combo_sw": "Volume Up + Power", "download_mode": "Volume Down + Power (Fastboot)", "flash_tool": "Mi Flash Tool", "firmware_site": "xiaomifirmwareupdater.com", "drivers": "Xiaomi USB Drivers" },
+    "huawei": { "recovery_combo_sw": "Volume Up + Power", "download_mode": "Volume Down + Power (kwa cable yamechomekwa)", "flash_tool": "HiSuite / SP Flash", "firmware_site": "firmwarefile.com", "drivers": "HiSuite" },
+    "techno": { "recovery_combo_sw": "Volume Up + Volume Down + Power (shikilia mpaka logo)", "download_mode": "Volume Up + Power (bila battery)", "flash_tool": "SP Flash Tool (MediaTek)", "firmware_site": "firmwarefile.com", "drivers": "MTK Preloader" },
+    "infinix": { "recovery_combo_sw": "Volume Up + Volume Down + Power", "download_mode": "Volume Up + Power", "flash_tool": "SP Flash Tool (MediaTek)", "firmware_site": "firmwarefile.com", "drivers": "MTK Preloader" },
+    "oppo": { "recovery_combo_sw": "Volume Down + Power", "download_mode": "Volume Up + Volume Down + Power (yamezimwa)", "flash_tool": "MSM Download Tool / SP Flash", "firmware_site": "oppofirmware.com", "drivers": "Oppo USB" },
+    "vivo": { "recovery_combo_sw": "Volume Down + Power", "download_mode": "Volume Up + Volume Down + Power", "flash_tool": "SP Flash / QFIL", "firmware_site": "firmwarefile.com", "drivers": "Vivo USB" },
+    "pixel": { "recovery_combo_sw": "Volume Down + Power", "download_mode": "Volume Down + Power (Fastboot halisi)", "flash_tool": "fastboot (Android Flash Tool)", "firmware_site": "developers.google.com/android/images", "drivers": "Google USB" }
+  },
+  "button_phones": {
+    "_note_sw": "Simu za button (feature phones): master reset codes + key combos. Zinafuta kila kitu (factory reset).",
+    "nokia": {
+      "master_codes": ["*#7370#", "*#7780#"],
+      "hard_reset_sw": "Zima simu → shikilia Power + Volume Up + (* au # kwa model nyingine) mpaka uone logo → subiri format",
+      "flash_tool": "InfinityBox / Miracle Box (SPD/MTK)",
+      "firmware_site": "firmwarefile.com"
+    },
+    "techno_button": {
+      "master_codes": ["*#66*#", "*#3646633# (engineering)"],
+      "hard_reset_sw": "Power + * kwa pamoja (models nyingi) au: Zima → shikilia Power + Volume Up",
+      "flash_tool": "Miracle Box / CM2 (SPD/MTK)",
+      "firmware_site": "firmwarefile.com"
+    },
+    "itel": {
+      "master_codes": ["*#7370#", "*#8378# (engineering)"],
+      "hard_reset_sw": "Zima → shikilia Power + Volume Up mpaka logo",
+      "flash_tool": "Miracle Box / SPD Research Download",
+      "firmware_site": "firmwarefile.com"
+    },
+    "alcatel": {
+      "master_codes": ["###337*07#", "*#7370#"],
+      "hard_reset_sw": "Volume Up + Power (yamezimwa) au kupitia menu: Settings → Restore",
+      "flash_tool": "InfinityBox / CM2",
+      "firmware_site": "alcatelfirmware.com"
+    },
+    "symphony": {
+      "master_codes": ["*#7370#", "*#87#"],
+      "hard_reset_sw": "Power + Volume Up (yamezimwa)",
+      "flash_tool": "SPD Research Download / SP Flash",
+      "firmware_site": "firmwarefile.com"
+    },
+    "generic_mtk": {
+      "master_codes": ["*#8378# (MTK engineering)", "*#3646633#"],
+      "hard_reset_sw": "Power + Volume Up au Power + Volume Down (kulingana na model)",
+      "flash_tool": "SP Flash Tool / CM2",
+      "firmware_site": "firmwarefile.com"
+    },
+    "generic_spd": {
+      "master_codes": ["*#7370#", "*#66*#"],
+      "hard_reset_sw": "Power + Volume Up (shikilia 10s)",
+      "flash_tool": "SPD Research Download",
+      "firmware_site": "firmwarefile.com"
+    }
+  }
+}

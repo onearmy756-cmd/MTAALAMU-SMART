@@ -1,0 +1,63 @@
+{
+  "kind": "fundi-more-problems",
+  "version": "1.0.0",
+  "categories": [
+    {
+      "id": "networking_software",
+      "icon": "🌐",
+      "name_sw": "Networking (Software)",
+      "problems": [
+        { "p": "WiFi imeunganishwa lakini 'No internet'", "s": "1) netdiag (L1-L7); 2) ipconfig /release + /renew; 3) Badilisha DNS 8.8.8.8; 4) Angalia captive portal ya ISP", "minutes": 20 },
+        { "p": "Internet inakatika-katika (drops)", "s": "1) Reboot modem/router (30s bila power); 2) Angalia cables/LAN ports; 3) Update router firmware; 4) Kama ISP — angalia outage + signal (fiber light)", "minutes": 30 },
+        { "p": "IP conflict (duplicate IP)", "s": "1) ipconfig /release + /renew; 2) Weka DHCP (auto) badala ya static; 3) Kama static ni lazima — chagua IP nje ya DHCP pool", "minutes": 15 },
+        { "p": "VPN haiunganishi", "s": "1) Badilisha protocol (WireGuard/OpenVPN/IKEv2); 2) Angalia firewall port 1194/51820; 3) Kama ISP inazuia — tumia port 443/TCP", "minutes": 30 },
+        { "p": "Remote Desktop haifanyi kazi", "s": "1) Washa Remote Desktop (Settings→System); 2) Angalia firewall port 3389; 3) Angalia user iko Remote Desktop Users group; 4) Windows Home: tumia RustDesk/AnyDesk", "minutes": 30 },
+        { "p": "Printersharing/SMB haifanyi kazi", "s": "1) Washa Network Discovery + File Sharing; 2) SMB1 ni HATARI — tumia SMB2/3; 3) Credentials: \\PC\\username; 4) Angalia same workgroup", "minutes": 30 },
+        { "p": "Speed ndogo kuliko iliyolipwa", "s": "1) Test speedtest.net kwa kebo + WiFi; 2) Angalia WiFi band (2.4 vs 5GHz); 3) Router location; 4) Kama kebo nayo ndogo — ISP issue (piga simu)", "minutes": 20 },
+        { "p": "Port forwarding haifanyi kazi", "s": "1) Static IP kwa kifaa; 2) Router: forward port → IP ya ndani; 3) Firewall ya PC ifungue port; 4) Test: canyouseeme.org", "minutes": 30 },
+        { "p": "DNS ndiyo tatizo (sites hazifunguki kwa majina)", "s": "1) ipconfig /flushdns; 2) Badilisha DNS (8.8.8.8/1.1.1.1); 3) ANGALIA hosts file (malware!); 4) netdiag L3", "minutes": 15 },
+        { "p": "Ethernet haionekani kabisa", "s": "1) Device Manager: adapter ipo? driver? 2) Cable/Port swap test; 3) Network reset kubwa: Settings→Network→Advanced→Network reset", "minutes": 20 },
+        { "p": "Hotspot ya simu haifanyi kazi na PC", "s": "1) Reboot simu + PC; 2) Band 2.4GHz kwa compatibility; 3) Usahau network kwenye PC kisha reconnect; 4) Angalia data bundle imeisha", "minutes": 15 },
+        { "p": "Bluetooth pairing inashindikana", "s": "1) Pairing mode ya kifaa (LED inapiga); 2) Remove old pairing kwanza; 3) Bluetooth Support service (services.msc); 4) Driver update", "minutes": 20 },
+        { "p": "Email haipati mtandao (client only)", "s": "1) email check <provider> (FUNDI) — IMAP/SMTP ports; 2) Antivirus email scanning OFF kwa test; 3) App password (2FA)", "minutes": 20 },
+        { "p": "Pinge ya WiFi ya wageni (guest network)", "s": "1) Router: weka guest SSID tofauti + password; 2) Client isolation ON; 3) Bandwidth limit", "minutes": 20 },
+        { "p": "Captive portal (hotel/campus) haifunguki", "s": "1) Fungua browser → login page au 1.1.1.1 manually; 2) Zima VPN kwanza; 3) Random MAC (iOS/Android 10+) — zima kwa network hii", "minutes": 15 },
+        { "p": "Latency kubwa kwenye games/calls", "s": "1) Kebo badala ya WiFi; 2) QoS kwenye router (priority); 3) Angalia background downloads; 4) Server karibu zaidi", "minutes": 20 },
+        { "p": "NAS/cloud drive haionekani kwenye network", "s": "1) IP static kwa NAS; 2) \\NAS-IP\\share kwenye Explorer; 3) Map network drive; 4) Firewall/SMB versions", "minutes": 25 },
+        { "p": "Two routers (wanakidhibiti network pamoja vibaya)", "s": "1) Router 2 → Access Point mode (AP/bridge); 2) DHCP kwenye router 1 PEKEE; 3) Different channels (1/6/11)", "minutes": 30 },
+        { "p": "MAC filtering imezuia kifaa", "s": "1) Router admin: ongeza MAC ya kifaa kwenye allowlist; 2) Au zima MAC filtering", "minutes": 10 },
+        { "p": "Firmware ya router inahitaji update (uslao)", "s": "1) Angalia model + tovuti ya manufacturer; 2) Download firmware SAHIHI; 3) Upload kupitia admin panel; USIOWESHE power wakati wa update", "minutes": 30 }
+      ]
+    },
+    {
+      "id": "printer_scanner",
+      "icon": "🖨️",
+      "name_sw": "Printers & Scanners",
+      "problems": [
+        { "p": "Printer haipati print (queue imeshikilia)", "s": "1) services.msc → Print Spooler → Restart; 2) Futa queue: PRINTERS folder (C:\\Windows\\System32\\spool\\PRINTERS); 3) Reboot", "minutes": 15 },
+        { "p": "Driver ya printer haipo/haifanyi", "s": "1) Tovuti ya manufacturer (HP/Canon/Epson/Lexmark) — model kamili; 2) Universal driver (HP UPD/PCL); 3) Windows Update optional drivers", "minutes": 30 },
+        { "p": "WiFi printer haionekani", "s": "1) Printer + PC kwenye WiFi MOJA; 2) Print IP ya printer (menu ya printer) kisha Add printer → TCP/IP port; 3) Printer reboot", "minutes": 25 },
+        { "p": "Print imekatikatika (half page)", "s": "1) Head cleaning (Epson/Canon utility); 2) Nozzle check; 3) Kama laser — drum/toner; 4) Kama inkjet muda mrefu — head imekauka", "minutes": 30 },
+        { "p": "Paper jam (karatasi imekatika ndani)", "s": "1) Zima printer; 2) Futa kwa utaratibu: rear panel → cartridge area → tray; USIVUTE kwa nguvu; 3) Angalia sensor", "minutes": 20 },
+        { "p": "Scanner haifanyi kazi", "s": "1) WIA/TWAIN driver; 2) Windows Scan app au tovuti ya manufacturer; 3) USB kebo moja kwa moja (si hub)", "minutes": 25 },
+        { "p": "Multiple copies huchapishwa kosa", "s": "1) Futa print queue + restart spooler; 2) Collate setting kwenye app; 3) Driver settings reset", "minutes": 15 },
+        { "p": "Printer inasema 'offline'", "s": "1) Use Printer Offline checkbox OFF (Settings); 2) SNMP status enabled kwenye port config; 3) Reboot printer + PC", "minutes": 15 },
+        { "p": "Mobile printing (WhatsApp/print kwa simu)", "s": "1) Mopria/manufacturer app (HP Smart, Canon PRINT); 2) Google Cloud Printime imefwa — tumia manufacturer; 3) Same WiFi", "minutes": 20 },
+        { "p": "Duplex (pande mbili) haifanyi kazi", "s": "1) Driver: duplex unit enabled? 2) Au manual duplex (odd→even pages); 3) Kama unit haipo — hardware limitation", "minutes": 15 }
+      ]
+    },
+    {
+      "id": "activation_licensing",
+      "icon": "🔑",
+      "name_sw": "Activation & Licensing (HALALI)",
+      "problems": [
+        { "p": "Windows haijaactivate (watermark)", "s": "1) license status → fundi-mobile license status; 2) slmgr /ato (activation rasmi kwa key iliyopo); 3) Kama key haipo — NUNUA GENUINE (Microsoft Store/applicable reseller); 4) Troubleshooter: Settings→Activation", "minutes": 20 },
+        { "p": "Hardware imebadilishwa, license imepotea", "s": "1) Kama digital license + Microsoft account: Settings→Activation→Troubleshoot→'I changed hardware'; 2) Kama retail key: reinstall + activate", "minutes": 30 },
+        { "p": "'Windows license expiring soon'", "s": "1) Kama Kampuni (volume license): re-arm au renew na IT; 2) Kama binafsi — key ya KMS ya mtu mwingine NI HARAMU; pata genuine key", "minutes": 15 },
+        { "p": "Office haijaactivate", "s": "1) license office-status; 2) Sign in na account iliyonunua Office (Microsoft 365); 3) Kama key: File→Account→Activate; 4) ospp /act (Volume)", "minutes": 20 },
+        { "p": "Nataka key halali kwa bei nafuu", "s": "1) Microsoft 365 Personal (chini ya TZS 35K/mwezi, apps zote + 1TB); 2) Office Home & Student one-time; 3) Windows 11 Home/Pro kwa Microsoft Store; 4) Students: Azure for Students (bure $100)", "minutes": 15 },
+        { "p": "Unataka kuthibitisha license ni genuine", "s": "1) license status (slmgr /dli — Partial Product Key + channel); 2) Retail/OEM/Volume channel; 3) Kama 'MAK' au channel isiyojulikana kwa PC ya kibinafsi — chunguza chanzo", "minutes": 10 }
+      ]
+    }
+  ]
+}

@@ -154,7 +154,11 @@ for (lg in c("sw", "en")) {
 cat("\n[4b] MAP DATA\n")
 BOUNDS <- fromJSON(file.path(APP, "data", "tz_regions.geojson"), simplifyVector = FALSE)
 ok(length(GEO$basemaps) >= 4, sprintf("basemaps >= 4 (%d)", length(GEO$basemaps)))
+ok(any(vapply(GEO$basemaps, function(b) grepl("World_Street_Map", b$tiles, fixed = TRUE), logical(1))),
+   "kuna basemap ya mitaa (Esri Street Map)")
 ok(length(GEO$overlays) >= 5, sprintf("overlays >= 5 (%d)", length(GEO$overlays)))
+ok(any(vapply(GEO$overlays, function(o) identical(o$id, "live"), logical(1))), "overlay ya live (magari + watu) ipo")
+ok(any(vapply(GEO$overlays, function(o) identical(o$id, "photos"), logical(1))), "overlay ya picha halisi ipo")
 ok(length(GEO$regions) >= 25, sprintf("mikoa >= 25 (%d)", length(GEO$regions)))
 ok(length(GEO$markers) >= 10, sprintf("alama (wataalamu/wateja/kazi) >= 10 (%d)", length(GEO$markers)))
 ok(length(GEO$routes) >= 4, sprintf("njia za OSRM >= 4 (%d)", length(GEO$routes)))
@@ -177,6 +181,7 @@ ok(any(vapply(GEO$basemaps, function(b) grepl("arcgisonline", b$tiles, fixed = T
 ok(any(vapply(GEO$basemaps, function(b) grepl("openstreetmap", b$tiles, fixed = TRUE), logical(1))),
    "kana tiles za OSM")
 ok(!is.null(GEO$license$sources) && nzchar(GEO$license$sources), "leseni/attribution imeandikwa")
+ok(grepl("Wikimedia", GEO$license$sources, fixed = TRUE), "attribution ya picha (Wikimedia) ipo")
 ok(!is.null(GEO$boundaries_url) && nzchar(GEO$boundaries_url),
    "boundaries_url imewekwa (GeoJSON inapakuliwa kama faili)")
 ok(file.exists(file.path(APP, "data", "tz_regions.geojson")), "GeoJSON ya mipaka ipo")

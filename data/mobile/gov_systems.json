@@ -1,0 +1,146 @@
+{
+  "kind": "fundi-gov-systems",
+  "version": "1.0.0",
+  "note": "Mifumo ya serikali ya TZ: fields zinazohitajika, hatua halisi, ada. GOV AGENT inauliza fields zisizopo, inajaza, inaandaa fomu (print-ready) na kumwelekeza mteja kwa maandishi + SAUTI. SearXNG inatafuta updates za mifumo.",
+  "systems": [
+    {
+      "id": "nida",
+      "name": "NIDA (Kitambulisho cha Taifa)",
+      "url": "nida.go.tz",
+      "portal": "https://www.nida.go.tz",
+      "fee_tzs": 30000,
+      "minutes": 30,
+      "fields": [
+        { "id": "jina_kamili", "label_sw": "Jina kamili (kama kwenye cheti)", "kind": "text", "required": true },
+        { "id": "tarehe_kuzaliwa", "label_sw": "Tarehe ya kuzaliwa (YYYY-MM-DD)", "kind": "date", "required": true },
+        { "id": "mkoa", "label_sw": "Mkoa", "kind": "text", "required": true },
+        { "id": "wilaya", "label_sw": "Wilaya", "kind": "text", "required": true },
+        { "id": "kata", "label_sw": "Kata", "kind": "text", "required": true },
+        { "id": "namba_simu", "label_sw": "Namba ya simu", "kind": "text", "required": true },
+        { "id": "aina_ya_ombi", "label_sw": "Aina ya ombi", "kind": "select", "required": true, "options": ["Mpya (first time)", "Ku-update (kubadilisha taarifa)", "Kurejesha (imepotea)"] },
+        { "id": "namba_ya_zamani", "label_sw": "Namba ya NIDA ya zamani (kama ipo)", "kind": "text", "required": false }
+      ],
+      "documents_sw": ["Cheti cha kuzaliwa AU namba ya RITA", "Kitambulisho cha shule/kazi (kama ipo)", "Picha 2 za passport size", "Malipo ya ada"],
+      "steps_sw": ["Kamilisha fields zote (agent inakusaidia)", "Lipa ada (bank/mobile — hakikisha receipt)", "Nenda kituo cha NIDA cha wilaya na documents", "Fingerprint + picha ya siku", "Fuatilia status kwa namba ya ombi (siku 30-90)"],
+      "search_query": "NIDA Tanzania ombi la kitambulisho hatua 2026"
+    },
+    {
+      "id": "tra_tin",
+      "name": "TRA (TIN — namba ya kodi)",
+      "url": "tra.go.tz",
+      "portal": "https://otrs.tra.go.tz",
+      "fee_tzs": 0,
+      "minutes": 60,
+      "fields": [
+        { "id": "jina_kamili", "label_sw": "Jina kamili", "kind": "text", "required": true },
+        { "id": "nida_namba", "label_sw": "Namba ya NIDA", "kind": "text", "required": true },
+        { "id": "namba_simu", "label_sw": "Namba ya simu", "kind": "text", "required": true },
+        { "id": "email", "label_sw": "Email", "kind": "text", "required": true },
+        { "id": "aina_ya_biashara", "label_sw": "Aina", "kind": "select", "required": true, "options": ["Binafsi (individual)", "Kampuni (company)"] },
+        { "id": "mkoa", "label_sw": "Mkoa wa biashara/makazi", "kind": "text", "required": true }
+      ],
+      "documents_sw": ["NIDA", "Kama kampuni: Certificate ya BRELA", "Lease/ownership ya biashara (kama ipo)"],
+      "steps_sw": ["Jisajili OTRS (otrs.tra.go.tz) — agent inakusaidia kujaza", "Jaza TIN application online", "Attach NIDA + documents", "TIN inatoka ndani ya siku 1-3 (online, bure)"],
+      "search_query": "TRA TIN registration Tanzania online OTRS hatua"
+    },
+    {
+      "id": "brela",
+      "name": "BRELA (Kusajili biashara/kampuni)",
+      "url": "brela.go.tz",
+      "portal": "https://ors.brela.go.tz",
+      "fee_tzs": 80000,
+      "minutes": 120,
+      "fields": [
+        { "id": "jina_la_biashara", "label_sw": "Jina la biashara (name search kwanza!)", "kind": "text", "required": true },
+        { "id": "aina", "label_sw": "Aina ya usajili", "kind": "select", "required": true, "options": ["Business Name (binafsi)", "Company (Ltd)", "Partnership"] },
+        { "id": "wamiliki", "label_sw": "Majina ya wamiliki (yote, koma-koma)", "kind": "text", "required": true },
+        { "id": "nida_namba", "label_sw": "NIDA ya mmiliki mkuu", "kind": "text", "required": true },
+        { "id": "shughuli", "label_sw": "Shughuli za biashara (mfano: duka la vifaa)", "kind": "text", "required": true },
+        { "id": "mkoa", "label_sw": "Mkoa", "kind": "text", "required": true },
+        { "id": "anwani", "label_sw": "Anwani kamili ( Physical + Postal)", "kind": "text", "required": true }
+      ],
+      "documents_sw": ["NIDA za wamiliki wote", "Jina la biashara lisitumike (name search ORS)", "Malipo (ORS online)"],
+      "steps_sw": ["Name search ORS (ors.brela.go.tz) — agent inapendekeza majina mbadala", "Jaza form online + pay (TISCAN/control number)", "Certificate inatoka (siku 1-3 kwa Business Name)", "Baada: TIN + LESHA (lesha ya biashara)"],
+      "search_query": "BRELA ORS online business name registration Tanzania hatua 2026"
+    },
+    {
+      "id": "nssf",
+      "name": "NSSF (Usajili wa wafanyakazi)",
+      "url": "nssf.go.tz",
+      "portal": "https://www.nssf.or.tz",
+      "fee_tzs": 40000,
+      "minutes": 45,
+      "fields": [
+        { "id": "jina_kamili", "label_sw": "Jina kamili la mfanyakazi", "kind": "text", "required": true },
+        { "id": "nida_namba", "label_sw": "Namba ya NIDA", "kind": "text", "required": true },
+        { "id": "tarehe_kuzaliwa", "label_sw": "Tarehe ya kuzaliwa", "kind": "date", "required": true },
+        { "id": "jina_la_kampuni", "label_sw": "Jina la kampuni/ajira", "kind": "text", "required": true },
+        { "id": "namba_simu", "label_sw": "Namba ya simu", "kind": "text", "required": true },
+        { "id": "mshahara", "label_sw": "Mshahara (TZS)", "kind": "number", "required": true }
+      ],
+      "documents_sw": ["NIDA", "Contract/letter ya ajira", "Passport photo"],
+      "steps_sw": ["Kampuni ina-employer number? (kama hapana — sajisiri kwanza)", "Jaza form ya usajili wa mfanyakazi", "Mchango: 10% (mwezi; 5% mteja + 5% kampuni)"],
+      "search_query": "NSSF Tanzania employee registration online hatua"
+    },
+    {
+      "id": "heslb",
+      "name": "HESLB (Mkopo wa elimu ya juu)",
+      "url": "heslb.go.tz",
+      "portal": "https://olas.heslb.go.tz",
+      "fee_tzs": 0,
+      "minutes": 60,
+      "fields": [
+        { "id": "jina_kamili", "label_sw": "Jina kamili", "kind": "text", "required": true },
+        { "id": "index_number", "label_sw": "Index number (NECTA)", "kind": "text", "required": true },
+        { "id": "nida_namba", "label_sw": "Namba ya NIDA", "kind": "text", "required": true },
+        { "id": "namba_simu", "label_sw": "Namba ya simu", "kind": "text", "required": true },
+        { "id": "email", "label_sw": "Email", "kind": "text", "required": true },
+        { "id": "chuo", "label_sw": "Chuo kilichopokea", "kind": "text", "required": true },
+        { "id": "kozi", "label_sw": "Kozi", "kind": "text", "required": true },
+        { "id": "mwaka", "label_sw": "Mwaka wa mkopo", "kind": "select", "required": true, "options": ["2026/2027", "2027/2028"] }
+      ],
+      "documents_sw": ["NIDA", "Admission letter", "Vitu vya mapato ya wazazi (payslips/TIN/lesha)"],
+      "steps_sw": ["Fungua OLAS (olas.heslb.go.tz) — agent inakusaidia", "Jaza form + attach documents", "Submit kabla ya deadline ya window", "Fuatilia status (allocation) kwenye OLAS"],
+      "search_query": "HESLB OLAS loan application window Tanzania hatua 2026"
+    },
+    {
+      "id": "rita_birth",
+      "name": "RITA (Cheti cha kuzaliwa)",
+      "url": "rita.go.tz",
+      "portal": "https://rita.go.tz",
+      "fee_tzs": 40000,
+      "minutes": 45,
+      "fields": [
+        { "id": "jina_la_mtoto", "label_sw": "Jina la mtoto/mwombaji", "kind": "text", "required": true },
+        { "id": "tarehe_kuzaliwa", "label_sw": "Tarehe ya kuzaliwa", "kind": "date", "required": true },
+        { "id": "mahali_kuzaliwa", "label_sw": "Mahali pa kuzaliwa (hospitali/kijiji)", "kind": "text", "required": true },
+        { "id": "jina_la_baba", "label_sw": "Jina la baba", "kind": "text", "required": true },
+        { "id": "jina_la_mama", "label_sw": "Jina la mama", "kind": "text", "required": true },
+        { "id": "aina_ya_ombi", "label_sw": "Aina", "kind": "select", "required": true, "options": ["Kuingiza (late registration)", "Nakala (copy)", "Kubadilisha jina"] }
+      ],
+      "documents_sw": ["Confirmation ya hospitali/kijiji", "NIDA za wazazi", "Baptism/school documents (kama zipo)"],
+      "steps_sw": ["Fanya late registration form (RITA au regional office)", "Attach documents za uthibitisho", "Malipo + subiri (siku 14-90 kwa late registration)"],
+      "search_query": "RITA birth certificate late registration Tanzania hatua"
+    },
+    {
+      "id": "immigration_passport",
+      "name": "Immigration (Passport)",
+      "url": "immigration.go.tz",
+      "portal": "https://www.immigration.go.tz",
+      "fee_tzs": 150000,
+      "minutes": 90,
+      "fields": [
+        { "id": "jina_kamili", "label_sw": "Jina kamili", "kind": "text", "required": true },
+        { "id": "nida_namba", "label_sw": "Namba ya NIDA", "kind": "text", "required": true },
+        { "id": "tarehe_kuzaliwa", "label_sw": "Tarehe ya kuzaliwa", "kind": "date", "required": true },
+        { "id": "aina_ya_pasipoti", "label_sw": "Aina", "kind": "select", "required": true, "options": ["Mpya (32 pages)", "Mpya (48 pages)", "Renewal"] },
+        { "id": "mkoa", "label_sw": "Mkoa wa makazi", "kind": "text", "required": true },
+        { "id": "namba_simu", "label_sw": "Namba ya simu", "kind": "text", "required": true },
+        { "id": "email", "label_sw": "Email", "kind": "text", "required": true }
+      ],
+      "documents_sw": ["NIDA", "Cheti cha kuzaliwa (RITA)", "Passport photos 4", "Introduction letter (kwa wanaojifunzia/kazi)", "Malipo (control number)"],
+      "steps_sw": ["Jisajili passport portal (immigration.go.tz)", "Jaza form + pay kwa control number", "Book biometric appointment (fingerprint)", "Nenda ofisi ya immigration ya mkoa siku ya appointment", "Subiri production (wiki 2-8)"],
+      "search_query": "Tanzania passport application online immigration portal hatua 2026"
+    }
+  ]
+}

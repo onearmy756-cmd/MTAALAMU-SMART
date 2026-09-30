@@ -44,13 +44,16 @@ view_map <- function(lang, geo, payload) {
     customers  = tr("map.ov.customers", lang),
     jobs       = tr("map.ov.jobs", lang),
     corridors  = tr("map.ov.corridors", lang),
-    labels     = tr("map.ov.labels", lang)
+    labels     = tr("map.ov.labels", lang),
+    cities     = "\U0001f3d9\ufe0f Miji", 
+    hazards    = "\u26a0\ufe0f Hatari"
   )
 
   # default on/off from geo$overlays
   ov_on <- list(
     boundaries = TRUE, choropleth = TRUE, techs = TRUE,
-    customers = TRUE, jobs = TRUE, corridors = FALSE, labels = TRUE
+    customers = TRUE, jobs = TRUE, corridors = FALSE, labels = TRUE,
+    cities = TRUE, hazards = FALSE
   )
   if (!is.null(geo$overlays) && length(geo$overlays) > 0) {
     for (o in geo$overlays) {
@@ -82,8 +85,23 @@ view_map <- function(lang, geo, payload) {
   else
     c("Dar es Salaam", "Dodoma", "Arusha", "Mwanza", "Mbeya", "Zanzibar")
 
-  from <- if ("Dar es Salaam" %in% city_names) "Dar es Salaam" else city_names[1]
-  to   <- if ("Dodoma" %in% city_names) "Dodoma" else city_names[min(2L, length(city_names))]
+  # MIKOA YOTE 31 YA TANZANIA — zote zinaonekana kwenye route (from/to).
+  # Zinatokana na geo$regions (chaguo la kwanza la data) — kama haipo, list ya 31.
+  TZ_REGIONS_31 <- c(
+    "Arusha", "Dar es Salaam", "Dodoma", "Geita", "Iringa", "Kagera",
+    "Katavi", "Kigoma", "Kilimanjaro", "Lindi", "Manyara", "Mara",
+    "Mbeya", "Morogoro", "Mtwara", "Mwanza", "Njombe", "Pwani",
+    "Rukwa", "Ruvuma", "Shinyanga", "Simiyu", "Singida", "Songwe",
+    "Tabora", "Tanga", "Zanzibar North", "Zanzibar South & Central",
+    "Zanzibar Urban/West", "Unguja North", "Unguja South"
+  )
+  region_names <- if (!is.null(geo$regions) && length(geo$regions) > 0)
+    sort(names(geo$regions)) else TZ_REGIONS_31
+  # panga region label: mkoa + (mji kama ipo) — kutoka regions lat/lng kwa choropleth
+  place_choices <- unique(c(city_names, region_names))
+
+  from <- if ("Dar es Salaam" %in% place_choices) "Dar es Salaam" else place_choices[1]
+  to   <- if ("Dodoma" %in% place_choices) "Dodoma" else place_choices[min(2L, length(place_choices))]
 
   controls <- tags$div(class = "map-bar",
     tags$div(class = "map-ctl",
@@ -104,14 +122,35 @@ view_map <- function(lang, geo, payload) {
     tags$div(class = "map-ctl map-ctl-route",
       tags$label(tr("map.route", lang)),
       tags$div(class = "route-row",
-        selectInput("map_from", label = NULL, choices = city_names, selected = from,
+        selectInput("map_from", label = NULL, choices = place_choices, selected = from,
                     selectize = FALSE, width = "100%"),
         tags$span(class = "route-arrow", HTML("\u2192")),
-        selectInput("map_to", label = NULL, choices = city_names, selected = to,
+        selectInput("map_to", label = NULL, choices = place_choices, selected = to,
                     selectize = FALSE, width = "100%"),
         tags$button(type = "button", id = "map_route_btn", class = "map-go",
                     tr("map.route.go", lang))),
-      tags$div(id = "route_info", class = "route-info", HTML("\u2014"))))
+      tags$div(style = "font-size:10px;color:#7dd3fc;margin-top:2px",
+        sprintf("Mikoa yote %d ya Tanzania zipo kwenye machaguo (From/To).", length(region_names))),
+      tags$div(style = "display:flex;gap:6px;margin-top:6px",
+        tags$button(type = "button", id = "map_locate_btn", class = "map-go",
+                    style = "flex:1", "\U0001f4cd Niko wapi (GPS)"),
+        tags$button(type = "button", id = "map_near_btn", class = "map-go",
+                    style = "flex:1", "\U0001f50d Karibu nami"),
+        tags$button(type = "button", id = "map_full_btn", class = "map-go",
+                    style = "flex:1", "\u26f6 Full")),
+      tags$div(style = "display:flex;gap:6px;margin-top:6px",
+        tags$button(type = "button", id = "map_voice_btn", class = "map-go",
+                    style = "flex:1", "\U0001f50a Sauti (Kiswahili)"),
+        tags$button(type = "button", id = "map_live_btn", class = "map-go",
+                    style = "flex:1", "\U0001f6f7\ufe0f Live: magari + watu"),
+        tags$button(type = "button", id = "map_photo_btn", class = "map-go",
+                    style = "flex:1", "\U0001f4f8 Picha halisi")),
+      tags$div(style = "display:flex;gap:6px;margin-top:6px",
+        tags$input(id = "map_search", type = "text", placeholder = "\U0001f50e Tafuta mahali (mf. Mwenge, Mbeya)...",
+                   style = "flex:1;font-size:12px;padding:6px 8px;background:#0a1628;color:#e0f7fa;border:1px solid #00e5ff44;border-radius:6px"),
+        tags$button(type = "button", id = "map_search_btn", class = "map-go", "\u23ce")),
+      tags$div(id = "route_info", class = "route-info", HTML("\u2014")),
+      tags$div(id = "map_photos", style = "display:none;margin-top:8px")))
 
   legend <- tags$div(class = "map-legend",
     tags$span(class = "lg", tags$i(class = "dot-tech"), tr("map.leg.tech", lang)),
@@ -131,6 +170,8 @@ view_map <- function(lang, geo, payload) {
     tags$div(class = "ml-row",
       tags$b(paste0(tr("map.lic.route", lang), ": ")),
       lic$routing %||% "OSRM (ODbL)"),
+    if (!is.null(lic$search_weather))
+      tags$div(class = "ml-row", lic$search_weather),
     tags$div(class = "ml-row", tr("map.lic.privacy", lang)))
 
   # Ensure payload is character

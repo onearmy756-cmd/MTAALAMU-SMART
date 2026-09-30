@@ -29,6 +29,23 @@ Kipengele **🌐 LANGUAGE / LUGHA** kwenye header kinaleta badilisho la lugha:
 Kila kitu cha UI (tabs, vichujio, jedwali, istilahi za diagnosis, kadi za status)
 kinabadilika papo hapo — sw na en zote zipo.
 
+## Agentic Vision — WIRING + AUTO-WORK (AV7/AV8)
+
+Tab **AGENTIC VISION** ina sasa:
+
+| Panel | Kazi | Data source |
+|-------|------|-------------|
+| ⚡ OS PROBE | CPU/RAM/disk gauge | `sysprobe.R` (halisi) |
+| 🔌 SYSTEM WIRING | Ramani ya vifaa + bus lanes + DATA FLOW (Input→Output) — inaji-refresh kila 8s | `mtaalamu wiring` (Rust) au R fallback |
+| 🤖 AUTO-WORK + AI SCRIBE | Agent inagundua matatizo yenyewe → HITL → solve → frames za Kiswahili | `mtaalamu av-auto` (Rust) au R fallback |
+| 📕 Kitabu cha Auto-Work | Download HTML: tatizo → njia → suluhisho → tarehe/muda | scribe frames |
+
+**Rust binary (inapendekezwa):** `cd engine-rust && cargo build --release` — bila hiyo
+fallback ya R inatumia sysprobe tu (bila PCI/USB, bila solve halisi).
+
+**Sauti:** kila auto-work inaeleza kwa Kiswahili (Web Speech API `sw`); bonyeza SAUTI
+ku-speak-tena narration yote.
+
 Vyanzo vya tafsiri:
 
 - `R/i18n.R` → kisanduku `STR` (misimu ya dashboard)

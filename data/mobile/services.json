@@ -1,0 +1,24 @@
+{
+  "_comment": "FUNDI MOBILE — huduma zote ni BURE ndani ya mfumo (KANUNI MPYA YA MMILIKI: agent ifanye vitu vyote bila malipo; mfumo HAUpigi pesani). Bei ya kazi kwa mteja wa nje ni uamuzi wa fundi mwenyewe — anaweza kutumia 'b2b quote/invoice' kuandika bei yake kwa kampuni. Malipo ya MMILIKI wa mfumo yanakuja kwa subscription/license (license.rs), si kwa kutumia tools.",
+  "pricing_mode": "free",
+  "currency": "TZS",
+  "services": [
+    { "id": "reset_password_adb", "name_sw": "Futa Password (ADB — data inabaki)", "price": 0, "free": true, "minutes": 10, "risk": "low", "requires_consent": true, "destroys_data": false },
+    { "id": "reset_password_recovery", "name_sw": "Futa Password (Recovery — data inapotea)", "price": 0, "free": true, "minutes": 15, "risk": "medium", "requires_consent": true, "destroys_data": true },
+    { "id": "reset_button_code", "name_sw": "Futa Password (Simu za Button — master reset codes)", "price": 0, "free": true, "minutes": 10, "risk": "low", "requires_consent": true, "destroys_data": true },
+    { "id": "button_hard_reset", "name_sw": "Hard Reset (Button — key combos)", "price": 0, "free": true, "minutes": 15, "risk": "medium", "requires_consent": true, "destroys_data": true },
+    { "id": "bypass_frp", "name_sw": "Bypass FRP (Android 5-10)", "price": 0, "free": true, "minutes": 20, "risk": "high", "requires_consent": true, "destroys_data": false },
+    { "id": "bypass_frp_new", "name_sw": "Bypass FRP (Android 11+)", "price": 0, "free": true, "minutes": 40, "risk": "high", "requires_consent": true, "destroys_data": false },
+    { "id": "flash_firmware", "name_sw": "Flash Firmware (Android)", "price": 0, "free": true, "minutes": 45, "risk": "high", "requires_consent": true, "destroys_data": true },
+    { "id": "flash_button_phone", "name_sw": "Flash Simu ya Button (SPD/MTK)", "price": 0, "free": true, "minutes": 30, "risk": "high", "requires_consent": true, "destroys_data": true },
+    { "id": "update_os", "name_sw": "Update OS", "price": 0, "free": true, "minutes": 30, "risk": "medium", "requires_consent": true, "destroys_data": false },
+    { "id": "backup_data", "name_sw": "Backup Data", "price": 0, "free": true, "minutes": 30, "risk": "low", "requires_consent": true, "destroys_data": false },
+    { "id": "diagnostics", "name_sw": "Diagnostics (battery/storage/IMEI)", "price": 0, "free": true, "minutes": 10, "risk": "low", "requires_consent": false, "destroys_data": false },
+    { "id": "iphone_reset", "name_sw": "iPhone Reset (iTunes/Recovery)", "price": 0, "free": true, "minutes": 30, "risk": "high", "requires_consent": true, "destroys_data": true },
+    { "id": "iphone_dfu", "name_sw": "iPhone DFU Mode Restore", "price": 0, "free": true, "minutes": 45, "risk": "high", "requires_consent": true, "destroys_data": true },
+    { "id": "package_reset_backup", "name_sw": "Package (Reset + Backup)", "price": 0, "free": true, "minutes": 45, "risk": "medium", "requires_consent": true, "destroys_data": true },
+    { "id": "package_full", "name_sw": "Package (Full Service)", "price": 0, "free": true, "minutes": 120, "risk": "high", "requires_consent": true, "destroys_data": true }
+  ],
+  "legal_note_sw": "Kufuta password ya simu ya mtu mwingine bila ruhusa = kosa la jinai (Sheria ya Makosa ya Jinai Tanzania, Kifungu 267). Kila mteja LAZIMA asaini consent form — hii ni sheria, si pesa.",
+  "penalty_sw": "Faini TZS 500,000+ au jela miaka 2+"
+}

@@ -2,45 +2,216 @@
 <html lang="sw">
 <head>
 <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Fundi Deploy — Msimamizi</title>
 <style>
-body{font-family:system-ui,sans-serif;background:#0a1628;color:#e0f7fa;margin:0;padding:20px}
-h1{color:#00e5ff}
-.card{background:#0d2137;border:1px solid #00e5ff33;border-radius:12px;padding:16px;margin:12px 0}
-.row{display:flex;gap:12px;flex-wrap:wrap}
-button{background:#00e5ff;color:#042;border:0;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer}
-button.sec{background:#334;color:#e0f7fa}
-button.danger{background:#ff1744;color:#fff}
-.bar{height:8px;background:#1a2a3a;border-radius:4px;overflow:hidden}
-.fill{height:100%;background:linear-gradient(90deg,#00e5ff,#00e676)}
-.badge{padding:2px 10px;border-radius:12px;font-size:12px}
-.awaiting_approval{background:#ffc107;color:#000}
-.running{background:#00e5ff;color:#000}
-.done{background:#00e676;color:#000}
-.failed,.cancelled{background:#ff1744}
+:root{--bg:#0a1628;--card:#0d2137;--line:#00e5ff33;--cyan:#00e5ff;--green:#00e676;--amber:#ffc107;--red:#ff5252;--dim:#78909c;--text:#e0f7fa}
+*{box-sizing:border-box}
+body{font-family:system-ui,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0}
+header{background:linear-gradient(90deg,#050d18,#0d2137);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{color:var(--cyan);font-size:20px;margin:0}
+header .sub{color:var(--dim);font-size:12px}
+header .live{margin-left:auto;background:#050d18;border:1px solid var(--green);color:var(--green);border-radius:12px;padding:3px 12px;font-size:12px}
+nav{display:flex;gap:6px;padding:10px 20px;background:#050d18;border-bottom:1px solid var(--line);flex-wrap:wrap}
+nav button{background:#0d2137;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+nav button:hover{border-color:var(--cyan)}
+main{max-width:1100px;margin:0 auto;padding:16px 20px 60px}
+.hero{background:linear-gradient(135deg,#0d2137,#050d18);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.hero h2{color:var(--cyan);margin:0 0 6px;font-size:18px}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:12px}
+.role{background:#0a1628;border:1px solid var(--line);border-radius:10px;padding:12px}
+.role b{color:var(--cyan)}
+.role .who{font-size:15px;font-weight:700;margin-bottom:4px}
+.role ul{margin:6px 0 0;padding-left:18px;font-size:12px;color:#b2ebf2}
+.role li{margin:3px 0}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.step{background:#0a1628;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px}
+.step .n{display:inline-block;background:var(--cyan);color:#042;font-weight:800;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;margin-right:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.card>h3{color:var(--cyan);margin:0 0 4px;font-size:15px}
+.card .hint{color:var(--dim);font-size:12px;margin:0 0 10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{background:var(--cyan);color:#042;border:0;padding:9px 16px;border-radius:8px;font-weight:700;cursor:pointer}
+button:hover{filter:brightness(1.1)}
+button.sec{background:#283593;color:#e0f7fa}
+button.danger{background:var(--red);color:#fff}
+input,select{background:#0a1628;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+input:focus,select:focus{outline:1px solid var(--cyan)}
+.bar{height:8px;background:#1a2a3a;border-radius:4px;overflow:hidden;min-width:80px}
+.fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .6s}
+.badge{padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600}
+.awaiting_approval{background:var(--amber);color:#000}
+.running{background:var(--cyan);color:#000}
+.done{background:var(--green);color:#000}
+.failed,.cancelled{background:var(--red);color:#fff}
+.requested{background:#546e7a;color:#fff}
+.installing_os{background:#ff9800;color:#000}
+.installing_apps{background:#26c6da;color:#000}
 table{width:100%;border-collapse:collapse}
-td,th{padding:8px;border-bottom:1px solid #00e5ff22;text-align:left;font-size:14px}
+td,th{padding:8px;border-bottom:1px solid #00e5ff22;text-align:left;font-size:13px}
+.meta{color:var(--dim);font-size:12px}
+.ok{color:var(--green)}.warn{color:var(--amber)}.err{color:var(--red)}
+#agent_feed{max-height:260px;overflow-y:auto;font-size:12px}
+.feed-item{padding:6px 8px;border-left:3px solid var(--cyan);margin:6px 0;background:#0a1628;border-radius:0 8px 8px 0}
+.feed-item.t{border-color:var(--amber)}
+.badge.info{background:#26c6da;color:#000}
+details>summary{cursor:pointer;color:var(--cyan);font-weight:600}
+details p{font-size:13px;color:#b2ebf2}
 </style>
 </head>
 <body>
-<h1>Fundi Deploy — Msimamizi</h1>
-<p>Agent inafanya kazi. Wewe unathibitisha / kughairi tu.</p>
-<div class="row">
-  <button onclick="discover()">Gundua computers</button>
-  <button onclick="loadJobs()">Onyesha jobs</button>
-  <button class="sec" onclick="deploySelected()">Anza deploy (HITL)</button>
-  <button class="sec" onclick="deployAuto()">Deploy auto (lab)</button>
+<header>
+  <h1>🚀 FUNDI DEPLOY</h1>
+  <span class="sub">OS + Apps deployment · agent inafanya kazi, wewe unaidhinisha (HITL)</span>
+  <span class="live">● LIVE</span>
+</header>
+
+<nav>
+  <button onclick="location.hash='#start'">⭐ MWANZO</button>
+  <button onclick="location.hash='#computers_card'">🖥️ Computers</button>
+  <button onclick="location.hash='#os_card'">🤖 OS Chagua</button>
+  <button onclick="location.hash='#jobs_card'">📋 Jobs</button>
+  <button onclick="location.hash='#osi_card'">💿 OS INSTALL (Remote)</button>
+  <button onclick="location.hash='#agent_card'">🧠 Agent</button>
+  <button onclick="location.hash='#tools'">🧰 Zana</button>
+</nav>
+
+<main>
+
+<!-- ⭐ MWANZO HAPA -->
+<div class="hero" id="start">
+  <h2>⭐ MWANZO HAPA — Mfumo unafanyaje kazi (dakika 2)</h2>
+  <p class="hint">Wachezaji <b>3</b>: <b>Wewe</b> (msimamizi/mtaalamu), <b>Mteja</b> (anayetaka OS), na <b>Agent</b> (AI inayofanya kazi nzito). Agent HAIWEZI kuanza kitu bila idhini yako — hii ni HITL (Human-In-The-Loop).</p>
+  <div class="roles">
+    <div class="role"><div class="who">👤 Wewe — Mtaalamu/Msimamizi</div>
+      <ul><li>Unagundua computers za mtandao</li><li>Unachagua OS na <b>unaidhinisha</b> deploy (kitufe RUHUSU)</li><li>Unafuatilia progress na unaweza GHAIRI wakati wowote</li></ul></div>
+    <div class="role"><div class="who">🧑‍💻 Mteja</div>
+      <ul><li>Anaomba OS mpya → anapata <b>code RMT-XXXX-XXXX</b></li><li>Anafuatilia session yake kwa code (status inajionekana)</li><li>Hana uwezo wa kuanza install pekee yake</li></ul></div>
+    <div class="role"><div class="who">🤖 Agent (AI)</div>
+      <ul><li>Inachanganua specs → inapendekeza OS sahihi</li><li>Baada ya idhini: inasakinisha OS → apps ZOTE za bundle kiotomatiki</li><li>Kila hatua inaandikwa kwenye feed ya chini (🧠 Agent Live)</li></ul></div>
+  </div>
+  <div class="steps">
+    <div class="step"><span class="n">1</span><b>Gundua computers</b> — chagua tab Computers, bonyeza "Gundua"</div>
+    <div class="step"><span class="n">2</span><b>Chagua OS</b> — AI inapendekeza kulingana na specs + mahitaji</div>
+    <div class="step"><span class="n">3</span><b>Anza deploy</b> — job inasubiri → bonyeza <b>RUHUSU</b> (HITL)</div>
+    <div class="step"><span class="n">4</span><b>Fuatilia</b> — Jobs + Agent Live zinaonyesha kila hatua mpaka done</div>
+  </div>
+  <details style="margin-top:10px"><summary>❓ Maswali ya kawaida</summary>
+    <p><b>Deploy ni nini?</b> Kusakinisha OS (Windows/Ubuntu) + programs muhimu kwenye computer moja au nyingi kwa mtandao.<br/>
+    <b>Hitilafu ikitokea?</b> Job inaonyesha "failed" na sababu — rekebisha kisha anzisha upya.<br/>
+    <b>Naweza kusimamisha?</b> Ndiyo — kitufe GHAIRI kwenye kila job inayoendesha.<br/>
+    <b>Apps ni zipi zinawekwa?</b> Bundles: home/office/developer/school/cybercafe (Chrome, LibreOffice, VS Code n.k.) — zinaonekana kwenye OS INSTALL.</p></details>
 </div>
-<div class="card" id="summary">—</div>
+
+<!-- COMPUTERS -->
+<div class="card" id="computers_card">
+  <h3>🖥️ HATUA 1 — Computers za mtandao</h3>
+  <p class="hint">Agent inascan LAN na kuonyesha vifaa vyote. ✔ chagua zile unazotaka ku-deploy.</p>
+  <div class="row">
+    <button onclick="discover()">🔄 Gundua computers</button>
+    <span class="meta" id="disc_count"></span>
+  </div>
+  <div id="computers" style="margin-top:10px">Bonyeza "Gundua computers"…</div>
+</div>
+
+<!-- OS SELECTION -->
+<div class="card" id="os_card">
+  <h3>🤖 HATUA 2 — OS Selection (AI + rules)</h3>
+  <p class="hint">Andika specs za PC + mahitaji ya mteja — AI inapendekeza OS na sababu zake.</p>
+  <div class="row">
+    <input id="os_specs" placeholder="Specs: 8gb ram 4 cores 256 ssd" style="flex:1;min-width:200px"/>
+    <input id="os_need" placeholder="Mahitaji: office / developer / shule" style="flex:1;min-width:180px"/>
+    <button onclick="osSelect()">💡 Pendekeza OS</button>
+  </div>
+  <div id="os_result" class="meta" style="margin-top:8px">—</div>
+</div>
+
+<!-- DEPLOY ACTIONS -->
+<div class="card" id="jobs_card">
+  <h3>📋 HATUA 3+4 — Deploy + Jobs (live)</h3>
+  <p class="hint">Baada ya kuchagua computers: anzisha deploy. Job itasimama kwenye <b>awaiting_approval</b> — bonyeza RUHUSU kuidhinisha (HITL).</p>
+  <div class="row" style="margin-bottom:10px">
+    <button onclick="deploySelected()">▶ Anza deploy (HITL)</button>
+    <button class="sec" onclick="deployAuto()">⚡ Deploy auto (lab tu)</button>
+    <button class="sec" onclick="loadJobs()">🔄 Onyesha jobs</button>
+    <button class="sec" onclick="window.open('/report/pdf','_blank')">📑 Ripoti PDF</button>
+  </div>
+  <div class="card" id="summary" style="margin:0 0 10px;background:#0a1628">—</div>
+  <table><thead><tr><th>PC</th><th>OS</th><th>Hali</th><th>%</th><th>Ujumbe</th><th>Vitendo</th></tr></thead>
+  <tbody id="jobs"><tr><td colspan="6">Bonyeza "Onyesha jobs"…</td></tr></tbody></table>
+</div>
+
+<!-- REMOTE OS INSTALL -->
+<div class="card" id="osi_card">
+  <h3>💿 REMOTE OS INSTALL — mteja ↔ mtaalamu (code)</h3>
+  <p class="hint"><b>Kwa mteja:</b> jaza jina + PC yako + OS + bundle → bonyeza <b>Omba</b> → pata code RMT-… → ituma kwa mtaalamu.<br/>
+  <b>Kwa mtaalamu:</b> weka code → <b>IDHINISHA</b> → agent inasakinisha OS + apps zote za bundle kiotomatiki.</p>
+  <div class="row">
+    <input id="osi_customer" placeholder="Jina la mteja" style="flex:1;min-width:150px"/>
+    <input id="osi_pc" placeholder="PC/hostname ya mteja" style="flex:1;min-width:150px"/>
+    <select id="osi_os">
+      <option value="windows11">Windows 11</option>
+      <option value="windows10">Windows 10</option>
+      <option value="ubuntu">Ubuntu 24.04</option>
+      <option value="auto">Auto (AI)</option>
+    </select>
+    <select id="osi_bundle"></select>
+    <button onclick="osiRequest()">📨 Omba (code)</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <input id="osi_code" placeholder="Code: RMT-XXXX-XXXX" style="flex:1;min-width:170px"/>
+    <button onclick="osiStatus()">🔎 Hali ya session</button>
+    <button onclick="osiApprove()">🚀 IDHINISHA (install OS + apps)</button>
+    <button class="danger" onclick="osiCancel()">✖ GHAIRI</button>
+  </div>
+  <div id="osi_result" class="meta" style="margin-top:8px">Mteja anaomba → mtaalamu anaidhinisha → agent inasakinisha OS → apps zote muhimu (bundle) kiotomatiki.</div>
+  <div id="osi_sessions" style="margin-top:6px"></div>
+</div>
+
+<!-- AGENT LIVE -->
+<div class="card" id="agent_card">
+  <h3>🧠 AGENT LIVE — agent anafanya nini sasa?</h3>
+  <p class="hint">Feed hii inaonyesha kila hatua agent inayofanya (scan, install, apps) kwa lugha rahisi.</p>
+  <div class="row" style="margin-bottom:8px">
+    <button class="sec" onclick="loadAgents()">🧠 Agents wanaotumika</button>
+    <button class="sec" onclick="orchTasks()">📋 Tasks za orchestrator</button>
+  </div>
+  <div id="agents" style="margin-bottom:8px"></div>
+  <div id="agent_feed"><div class="feed-item">Inasubiri kazi… anzisha deploy au OS install.</div></div>
+</div>
+
+<!-- TOOLS -->
+<div class="card" id="tools">
+  <h3>🧰 Zana za ziada</h3>
+  <p class="hint">Images, backups, LAN remote, orchestrator — kila kimoja kwa kitufe chake.</p>
+  <div class="row">
+    <button class="sec" onclick="loadImages()">💾 Images za OS</button>
+    <button class="sec" onclick="loadBackups()">🗂️ Backups</button>
+    <button class="sec" onclick="loadOsProfiles()">🤖 OS Profiles</button>
+    <button class="sec" onclick="lanScan()">🌐 Scan LAN (remote)</button>
+    <button class="sec" onclick="lanGuide()">📖 Mwongozo remote</button>
+  </div>
+  <div id="lan_result" class="meta" style="margin-top:8px">—</div>
+</div>
+
+<div class="card" id="card_images" style="display:none"><h3>💾 Images za OS</h3><div id="images">—</div></div>
+<div class="card" id="card_backups" style="display:none"><h3>🗂️ Backups</h3><div id="backups">—</div></div>
+<div class="card" id="card_profiles" style="display:none"><h3>🤖 OS Profiles</h3><div id="profiles">—</div></div>
+<div class="card" id="card_agents" style="display:none"><h3>🧠 Agents</h3><div id="agents_full">—</div></div>
 <div class="card">
-  <h3>Computers</h3>
-  <div id="computers">Gundua kwanza…</div>
+  <h3>⚡ Orchestrator (multi-agent, PCs nyingi)</h3>
+  <p class="hint">Andika targets (mac au hostname, koma) → Launch → Run. Agent wengi wanaendesha sambamba.</p>
+  <div class="row">
+    <input id="orch_targets" placeholder="targets: aa-bb-cc-dd-ee-ff, PC-LAB02" style="flex:1;min-width:220px"/>
+    <button onclick="orchLaunch()">🚀 Launch</button>
+    <button class="sec" onclick="orchRun()">▶ Run</button>
+    <button class="sec" onclick="orchTasks()">📋 Tasks</button>
+  </div>
+  <div id="orch_result" class="meta" style="margin-top:8px">—</div>
+  <div id="orch_tasks" style="margin-top:8px"></div>
 </div>
-<div class="card">
-  <h3>Jobs</h3>
-  <table><thead><tr><th>PC</th><th>OS</th><th>Hali</th><th>%</th><th>Ujumbe</th><th></th></tr></thead>
-  <tbody id="jobs"></tbody></table>
-</div>
+
+</main>
 <script>
 const API = '';
 let selected = [];
@@ -51,6 +222,7 @@ async function discover(){
   el.innerHTML = (d.computers||[]).map(c =>
     `<label style="display:block;margin:6px 0"><input type="checkbox" value="${c.mac}" data-name="${c.name}" onchange="tog(this)"/> <b>${c.name}</b> ${c.mac} ${c.ip||''}</label>`
   ).join('') || 'Hakuna host (arp-scan/arp)';
+  document.getElementById('disc_count').textContent = `${(d.computers||[]).length} vifaa`;
 }
 function tog(cb){
   const mac = cb.value, name = cb.dataset.name;
@@ -60,7 +232,7 @@ function tog(cb){
 async function loadJobs(){
   const s = await (await fetch(API+'/supervisor/summary')).json();
   document.getElementById('summary').innerHTML =
-    `<b>Zinasubiri idhini:</b> ${s.awaiting_your_approval} · <b>Zinaendesha:</b> ${s.running} · <b>Zimekamilika:</b> ${s.done} · <b>Zimeshindwa:</b> ${s.failed}`;
+    `<b>Zinasubiri idhini yako:</b> <span class="warn">${s.awaiting_your_approval}</span> · <b>Zinaendesha:</b> ${s.running} · <b>Zimekamilika:</b> <span class="ok">${s.done}</span> · <b>Zimeshindwa:</b> <span class="err">${s.failed}</span>`;
   const jobs = await (await fetch(API+'/jobs')).json();
   document.getElementById('jobs').innerHTML = jobs.map(j => `
     <tr>
@@ -70,27 +242,175 @@ async function loadJobs(){
       <td><div class="bar"><div class="fill" style="width:${j.progress}%"></div></div> ${j.progress}%</td>
       <td>${j.message||''}</td>
       <td>
-        ${j.status==='awaiting_approval'?`<button onclick="approve('${j.id}')">RUHUSU</button>`:''}
+        ${j.status==='awaiting_approval'?`<button onclick="approve('${j.id}')">✓ RUHUSU</button>`:''}
         ${j.status==='awaiting_approval'||j.status==='running'?`<button class="danger" onclick="cancel('${j.id}')">GHAIRI</button>`:''}
       </td>
-    </tr>`).join('') || '<tr><td colspan="6">Hakuna jobs</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="6">Hakuna jobs — anzisha kwenye HATUA 3</td></tr>';
+  renderAgentFeed(jobs);
+}
+// AGENT LIVE feed: tafsiri jobs → lugha rahisi
+function renderAgentFeed(jobs){
+  const feed = (jobs||[]).slice(-8).reverse().map(j=>{
+    const msg = {
+      awaiting_approval: `⏸ Inasubiri IDHINI yako — ${j.device_name} (${j.os_type})`,
+      running: `⚙️ Inaendelea: ${j.device_name} — ${j.stage||'install'} ${j.progress}%`,
+      done: `✅ Imekamilika: ${j.device_name} (${j.os_type})`,
+      failed: `❌ Imeshindwa: ${j.device_name} — ${j.message||'angalia log'}`
+    }[j.status] || `• ${j.device_name}: ${j.status}`;
+    const cls = j.status==='failed'?'t':'';
+    return `<div class="feed-item ${cls}"><b>${msg}</b><br/><small>${j.message||''}</small></div>`;
+  });
+  document.getElementById('agent_feed').innerHTML = feed.join('') || '<div class="feed-item">Hakuna kazi bado.</div>';
+}
+async function osSelect(){
+  const specs = document.getElementById('os_specs').value || '8gb ram 4 cores 256 ssd';
+  const need = document.getElementById('os_need').value || 'office';
+  const r = await fetch(API+'/os/select',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({specs, user_need: need})});
+  const d = await r.json();
+  const dec = d.decision || {};
+  document.getElementById('os_result').innerHTML =
+    `<span class="ok"><b>${dec.os||'?'}</b></span> — confidence ${Math.round((dec.confidence||0)*100)}% · njia: ${dec.method||'?'}<br/><small>${(dec.reasons||[]).join(' • ')||''}</small>`;
 }
 async function approve(id){ await fetch(API+'/jobs/'+id+'/approve',{method:'POST'}); loadJobs(); }
 async function cancel(id){ await fetch(API+'/jobs/'+id+'/cancel',{method:'POST'}); loadJobs(); }
+async function loadImages(){
+  const d = await (await fetch(API+'/images')).json();
+  document.getElementById('card_images').style.display='';
+  document.getElementById('images').innerHTML = d.images && d.images.length
+    ? d.images.map(i=>`<div style="margin:4px 0">💾 <b>${i.name||i.file||'?'}</b> — ${(i.size_mb||0).toFixed?i.size_mb+' MB':''} ${i.valid?'<span class="badge done">halali</span>':'<span class="badge failed">batili</span>'} ${i.sha256?`<small>${String(i.sha256).slice(0,12)}…</small>`:''}</div>`).join('')
+    : `Hakuna images kwenye ${d.path||'/images'} — weka ISO/WIM kisha verify.`;
+}
+async function loadBackups(){
+  const d = await (await fetch(API+'/backups')).json();
+  document.getElementById('card_backups').style.display='';
+  document.getElementById('backups').innerHTML = d.backups && d.backups.length
+    ? d.backups.map(b=>`<div style="margin:4px 0">🗂️ <b>${b.mac||b.host||'?'}</b> — ${b.finished||b.started||''} · files ${b.files_count!=null?b.files_count:(b.files?b.files.length:'?')} · mode ${b.mode||'?'}</div>`).join('')
+    : `Hakuna backups (${d.count||0}) — root: ${d.root||'?'}`;
+}
+async function loadOsProfiles(){
+  const d = await (await fetch(API+'/os/profiles')).json();
+  document.getElementById('card_profiles').style.display='';
+  const p = (d.catalog&&d.catalog.profiles)||d.profiles||[];
+  const rows = Array.isArray(p)
+    ? p.map(x=>`<div style="margin:4px 0">🤖 <b>${x.os||x.id||'?'}</b> — ${(x.best_for||x.best_for_sw||[]).join? (x.best_for||x.best_for_sw||[]).join(', ') : ''}</div>`)
+    : Object.keys(p).map(k=>`<div style="margin:4px 0">🤖 <b>${k}</b> — ${(p[k].best_for||[]).join(', ')}</div>`);
+  document.getElementById('profiles').innerHTML = rows.join('') || JSON.stringify(p).slice(0,300);
+}
+async function loadAgents(){
+  const d = await (await fetch(API+'/agents')).json();
+  document.getElementById('card_agents').style.display='';
+  document.getElementById('agents').innerHTML = (d.agents||[])
+    .map(a=>`<span class="badge info" style="margin:2px">${a.name||a.id} (${a.id}) · ${a.status||''}</span>`).join(' ');
+  document.getElementById('agents_full').innerHTML = (d.agents||[])
+    .map(a=>`<div style="margin:4px 0">🧠 <b>${a.name||a.id}</b> — ${a.status||''}</div>`).join('');
+}
 async function deploySelected(){
-  if(!selected.length){ alert('Chagua computers'); return; }
+  if(!selected.length){ alert('Chagua computers kwanza (HATUA 1)'); return; }
   await fetch(API+'/deploy',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({computers:selected,os_type:'auto',auto_approve:false})});
   loadJobs();
+  document.getElementById('agent_feed').insertAdjacentHTML('afterbegin','<div class="feed-item">🚀 Deploy imeombwa — job inasubiri IDHINI yako (HITL).</div>');
 }
 async function deployAuto(){
-  if(!selected.length){ alert('Chagua computers'); return; }
+  if(!selected.length){ alert('Chagua computers kwanza (HATUA 1)'); return; }
   await fetch(API+'/deploy/auto',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({computers:selected,os_type:'auto'})});
   loadJobs();
 }
+// ---------- FUNDI MAP ----------
+async function mapScan(){
+  document.getElementById('lan_result').innerHTML = '⏳ Inascan vifaa…';
+  const d = await (await fetch(API+'/api/map/scan')).json();
+  const cpu = (d.cpu&&(d.cpu.brand||'?'))||'?';
+  const cores = (d.cpu&&d.cpu.cores_logical)||'?';
+  const ram = (d.memory&&d.memory.total_gb)||'?';
+  const disks = (d.storage&&d.storage.disks?d.storage.disks.length:0)||0;
+  const gpus = (d.gpu&&d.gpu.gpus?d.gpu.gpus.map(g=>g.name).join(', '):'')||'—';
+  const nets = (d.network&&d.network.adapters?d.network.adapters.length:0)||0;
+  document.getElementById('lan_result').innerHTML =
+    `🧠 <b>${cpu}</b> (${cores} cores) · 💾 <b>${ram} GB</b> RAM · 💿 <b>${disks}</b> disks · 🎮 ${gpus} · 🌐 ${nets} adapters<br/><small>Chanzo: ${d.cpu&&d.cpu.source||'?'}</small>`;
+}
+// ---------- MULTI-AGENT ----------
+async function orchLaunch(){
+  const raw = (document.getElementById('orch_targets').value||'').split(',').map(s=>s.trim()).filter(Boolean);
+  if(!raw.length){ alert('Andika targets kwanza'); return; }
+  const d = await (await fetch(API+'/api/orch/launch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({targets:raw,max_concurrent:32})})).json();
+  document.getElementById('orch_result').innerHTML = `✅ Tasks ${d.launched} zimeanzishwa — <small>${d.note||''}</small>`;
+}
+async function orchRun(){
+  const d = await (await fetch(API+'/api/orch/run',{method:'POST'})).json();
+  document.getElementById('orch_result').innerHTML = `🚀 launched ${d.launched} · ✅ success ${d.success} · ❌ failed ${d.failed} (max ${d.max_concurrent} sambamba)`;
+  orchTasks();
+}
+async function orchTasks(){
+  const d = await (await fetch(API+'/api/orch/tasks')).json();
+  document.getElementById('orch_tasks').innerHTML = (d||[]).map(t=>{
+    const color = t.status==='success'?'#4caf50':t.status==='failed'?'#f44336':t.status==='running'?'#ff9800':'#8899aa';
+    return `<div style="margin:4px 0"><span style="color:${color}">●</span> <b>${t.agent_type}</b> ${t.target} — ${t.status} (${t.progress}%)<br/><small>${t.message||''}</small></div>`;
+  }).join('') || 'Hakuna tasks bado.';
+}
+// ---------- LAN REMOTE ----------
+async function lanScan(){
+  document.getElementById('lan_result').innerHTML = '⏳ Inascan /24 (sekunde chache)…';
+  const d = await (await fetch(API+'/api/lan/scan')).json();
+  const rows = (d.hosts||[]).map(h=>`<div style="margin:4px 0">🖥️ <b>${h.ip}</b> — ${(h.services||[]).join(', ')} → <span style="color:#00e5ff">${h.recommend||''}</span></div>`).join('') || 'Hakuna host yenye service ya remote.';
+  document.getElementById('lan_result').innerHTML = `<b>Alive: ${d.hosts_alive}</b> (kati ya ${d.hosts_scanned})<br/>${rows}`;
+}
+async function lanGuide(){
+  const d = await (await fetch(API+'/api/lan/guide')).json();
+  document.getElementById('lan_result').innerHTML = `<pre style="white-space:pre-wrap;margin:0">${d.guide||''}</pre>`;
+}
+// ---------- REMOTE OS INSTALL ----------
+async function osiLoadBundles(){
+  const d = await (await fetch(API+'/osinstall/bundles')).json();
+  const sel = document.getElementById('osi_bundle');
+  sel.innerHTML = (d.bundles||[]).map(b=>`<option value="${b.id}">${b.name_sw} (${b.apps} apps)</option>`).join('') || '<option value="home">Nyumbani</option>';
+}
+async function osiRequest(){
+  const d = await (await fetch(API+'/osinstall/request',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({customer:v('osi_customer'),pc:v('osi_pc'),os:val('osi_os'),bundle:val('osi_bundle')})})).json();
+  document.getElementById('osi_result').innerHTML = `✅ Code ya session: <b style="color:#00e5ff;font-size:18px">${d.code}</b><br/><small>${d.message||''} — ITUMA code hii kwa mtaalamu.</small>`;
+  osiSessions();
+}
+function v(id){ return document.getElementById(id).value; }
+function val(id){ return document.getElementById(id).value; }
+async function osiStatus(){
+  const code = v('osi_code'); if(!code){ alert('Andika code'); return; }
+  const d = await (await fetch(API+'/osinstall/status?code='+encodeURIComponent(code))).json();
+  if(!d.found){ document.getElementById('osi_result').innerHTML = `❌ ${d.error}`; return; }
+  const s = d.session;
+  document.getElementById('osi_result').innerHTML = osiCard(s);
+}
+function osiCard(s){
+  const color = s.status==='done'?'#4caf50':s.status==='cancelled'||s.status==='failed'?'#f44336':s.status==='requested'?'#8899aa':'#ff9800';
+  return `<div style="border:1px solid ${color}55;border-radius:8px;padding:10px;margin:6px 0">
+    <b>${s.code}</b> · ${s.customer} · ${s.pc} · ${s.os} · bundle: ${s.bundle}<br/>
+    <span style="color:${color}">● ${s.status}</span> (${s.progress}%) — ${s.message}<br/>
+    <div style="height:6px;background:#0a1628;border-radius:3px;margin-top:6px"><div style="width:${s.progress}%;height:100%;background:${color};border-radius:3px"></div></div>
+  </div>`;
+}
+async function osiApprove(){
+  const code = v('osi_code'); if(!code){ alert('Andika code ya session'); return; }
+  const d = await (await fetch(API+'/osinstall/approve',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({code,technician:'mtaalamu (dashboard)'})})).json();
+  document.getElementById('osi_result').innerHTML = d.ok ? `🚀 ${code}: ${d.status} — agent inasakinisha OS + apps. Fuatilia chini (Agent Live).` : `❌ ${d.error}`;
+  osiStatus();
+}
+async function osiCancel(){
+  const code = v('osi_code'); if(!code){ alert('Andika code'); return; }
+  await fetch(API+'/osinstall/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})});
+  osiStatus();
+}
+async function osiSessions(){
+  const d = await (await fetch(API+'/osinstall/sessions')).json();
+  document.getElementById('osi_sessions').innerHTML = (d||[]).slice(-4).reverse().map(s=>osiCard(s)).join('') || '';
+}
+osiLoadBundles();
+setInterval(()=>{ if(document.getElementById('osi_sessions')) osiSessions(); }, 4000);
+osiSessions();
 setInterval(loadJobs, 3000);
 loadJobs();
+discover();
 </script>
 </body>
 </html>

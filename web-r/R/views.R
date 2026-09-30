@@ -20,16 +20,19 @@ if (!exists(".MTAALAMU_VIEWS_LOADED", inherits = TRUE)) {
   assign(".MTAALAMU_VIEWS_LOADED", TRUE, envir = globalenv())
 }
 
-# Override tabs_el — ongeza AGENTIC VISION
+# Override tabs_el — ongeza AGENTIC VISION + FUNDI DEPLOY + NAVIGATION
 tabs_el <- function(lang, n_formula, n_diag, current) {
-  ids <- c("live", "agentic", "formula", "diag", "viz", "map")
+  ids <- c("live", "agentic", "formula", "diag", "viz", "map", "nav", "fundi", "mobile")
   labels <- c(
     tr("tabs.live", lang),
     if (!is.null(STR[["tabs.agentic"]])) tr("tabs.agentic", lang) else "AGENTIC VISION",
     paste0(tr("tabs.formula", lang), " (", n_formula, ")"),
     paste0(tr("tabs.diag", lang), " (", n_diag, ")"),
     paste0(tr("tabs.viz", lang), " (6)"),
-    tr("tabs.map", lang))
+    tr("tabs.map", lang),
+    "\U0001f9ed NAVIGATION",
+    "FUNDI DEPLOY",
+    "\U0001fa7a FUNDI MOBILE")
   tab_click <- function(id) {
     sprintf(paste0("window.mtTab ? mtTab('%s') : ",
                    "Shiny.setInputValue('tab','%s',{priority:'event'})"), id, id)

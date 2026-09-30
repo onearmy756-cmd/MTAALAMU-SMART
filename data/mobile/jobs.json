@@ -1,0 +1,338 @@
+[
+  {
+    "id": "FM-20260930173320-reset_password_adb",
+    "customer": "Mteja",
+    "phone": "",
+    "brand": "generic",
+    "model": "unknown",
+    "imei": "",
+    "service_id": "reset_password_adb",
+    "problem": "tatizo haijaelezwa",
+    "status": "awaiting_consent",
+    "consent_id": null,
+    "frames": [
+      {
+        "agent": "receptionist",
+        "code": "P",
+        "evidence": {
+          "problem": "tatizo haijaelezwa"
+        },
+        "sw": "Karibu! Nimepokea tatizo lako: tatizo haijaelezwa. Kifaa: generic unknown (IMEI ).",
+        "ts": 1790778800
+      },
+      {
+        "agent": "vision",
+        "code": "P",
+        "evidence": {
+          "props": [
+            [
+              "ro.product.brand",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.product.model",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.build.version.release",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.serialno",
+              "? (adb shell fail: program not found)"
+            ]
+          ]
+        },
+        "sw": "Nimechanganua simu kupitia ADB: props, battery, storage zimekaguliwa.",
+        "ts": 1790778800
+      },
+      {
+        "agent": "diagnoser",
+        "code": "I",
+        "evidence": {
+          "service": "reset_password_adb"
+        },
+        "sw": "Tatizo linaeleweka: 'tatizo haijaelezwa'. Njia iliyopendekezwa: reset_password_adb.",
+        "ts": 1790778800
+      },
+      {
+        "agent": "hitl",
+        "code": "H",
+        "evidence": {
+          "blocked": true
+        },
+        "sw": "KAZI IMESIMAMISHWA: Hakuna consent kwa IMEI hii. Mteja LAZIMA asaini fomu ya ruhusa (fund-mobile consent add). Kufanya bila ruhusa = kosa la jinai (Kifungu 267).",
+        "ts": 1790778800
+      },
+      {
+        "agent": "scribe",
+        "code": "D",
+        "evidence": {},
+        "sw": "Nimeandika ripoti kamili (kitabu kidigitali) kwa Kiswahili.",
+        "ts": 1790778800
+      },
+      {
+        "agent": "learner",
+        "code": "D",
+        "evidence": {},
+        "sw": "Maarifa ya session hii yamehifadhiwa kwenye learning_log.json.",
+        "ts": 1790778800
+      }
+    ],
+    "summary_sw": "Inasubiri consent (HITL). Nimeandaa mwongozo kamili wa kutekeleza kwa usalama.",
+    "created_ts": 1790778800,
+    "ended_ts": 1790778800
+  },
+  {
+    "id": "FM-20260930173325-reset_password_adb",
+    "customer": "Mteja",
+    "phone": "",
+    "brand": "generic",
+    "model": "unknown",
+    "imei": "",
+    "service_id": "reset_password_adb",
+    "problem": "tatizo haijaelezwa",
+    "status": "awaiting_consent",
+    "consent_id": null,
+    "frames": [
+      {
+        "agent": "receptionist",
+        "code": "P",
+        "evidence": {
+          "problem": "tatizo haijaelezwa"
+        },
+        "sw": "Karibu! Nimepokea tatizo lako: tatizo haijaelezwa. Kifaa: generic unknown (IMEI ).",
+        "ts": 1790778805
+      },
+      {
+        "agent": "vision",
+        "code": "P",
+        "evidence": {
+          "props": [
+            [
+              "ro.product.brand",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.product.model",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.build.version.release",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.serialno",
+              "? (adb shell fail: program not found)"
+            ]
+          ]
+        },
+        "sw": "Nimechanganua simu kupitia ADB: props, battery, storage zimekaguliwa.",
+        "ts": 1790778805
+      },
+      {
+        "agent": "diagnoser",
+        "code": "I",
+        "evidence": {
+          "service": "reset_password_adb"
+        },
+        "sw": "Tatizo linaeleweka: 'tatizo haijaelezwa'. Njia iliyopendekezwa: reset_password_adb.",
+        "ts": 1790778805
+      },
+      {
+        "agent": "hitl",
+        "code": "H",
+        "evidence": {
+          "blocked": true
+        },
+        "sw": "KAZI IMESIMAMISHWA: Hakuna consent kwa IMEI hii. Mteja LAZIMA asaini fomu ya ruhusa (fund-mobile consent add). Kufanya bila ruhusa = kosa la jinai (Kifungu 267).",
+        "ts": 1790778805
+      },
+      {
+        "agent": "scribe",
+        "code": "D",
+        "evidence": {},
+        "sw": "Nimeandika ripoti kamili (kitabu kidigitali) kwa Kiswahili.",
+        "ts": 1790778805
+      },
+      {
+        "agent": "learner",
+        "code": "D",
+        "evidence": {},
+        "sw": "Maarifa ya session hii yamehifadhiwa kwenye learning_log.json.",
+        "ts": 1790778805
+      }
+    ],
+    "summary_sw": "Inasubiri consent (HITL). Nimeandaa mwongozo kamili wa kutekeleza kwa usalama.",
+    "created_ts": 1790778805,
+    "ended_ts": 1790778805
+  },
+  {
+    "id": "FM-20260930173334-reset_password_adb",
+    "customer": "Mteja",
+    "phone": "",
+    "brand": "generic",
+    "model": "unknown",
+    "imei": "",
+    "service_id": "reset_password_adb",
+    "problem": "tatizo haijaelezwa",
+    "status": "awaiting_consent",
+    "consent_id": null,
+    "frames": [
+      {
+        "agent": "receptionist",
+        "code": "P",
+        "evidence": {
+          "problem": "tatizo haijaelezwa"
+        },
+        "sw": "Karibu! Nimepokea tatizo lako: tatizo haijaelezwa. Kifaa: generic unknown (IMEI ).",
+        "ts": 1790778814
+      },
+      {
+        "agent": "vision",
+        "code": "P",
+        "evidence": {
+          "props": [
+            [
+              "ro.product.brand",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.product.model",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.build.version.release",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.serialno",
+              "? (adb shell fail: program not found)"
+            ]
+          ]
+        },
+        "sw": "Nimechanganua simu kupitia ADB: props, battery, storage zimekaguliwa.",
+        "ts": 1790778814
+      },
+      {
+        "agent": "diagnoser",
+        "code": "I",
+        "evidence": {
+          "service": "reset_password_adb"
+        },
+        "sw": "Tatizo linaeleweka: 'tatizo haijaelezwa'. Njia iliyopendekezwa: reset_password_adb.",
+        "ts": 1790778814
+      },
+      {
+        "agent": "hitl",
+        "code": "H",
+        "evidence": {
+          "blocked": true
+        },
+        "sw": "KAZI IMESIMAMISHWA: Hakuna consent kwa IMEI hii. Mteja LAZIMA asaini fomu ya ruhusa (fund-mobile consent add). Kufanya bila ruhusa = kosa la jinai (Kifungu 267).",
+        "ts": 1790778814
+      },
+      {
+        "agent": "scribe",
+        "code": "D",
+        "evidence": {},
+        "sw": "Nimeandika ripoti kamili (kitabu kidigitali) kwa Kiswahili.",
+        "ts": 1790778814
+      },
+      {
+        "agent": "learner",
+        "code": "D",
+        "evidence": {},
+        "sw": "Maarifa ya session hii yamehifadhiwa kwenye learning_log.json.",
+        "ts": 1790778814
+      }
+    ],
+    "summary_sw": "Inasubiri consent (HITL). Nimeandaa mwongozo kamili wa kutekeleza kwa usalama.",
+    "created_ts": 1790778814,
+    "ended_ts": 1790778814
+  },
+  {
+    "id": "FM-20260930173337-reset_password_adb",
+    "customer": "Mteja",
+    "phone": "",
+    "brand": "generic",
+    "model": "unknown",
+    "imei": "",
+    "service_id": "reset_password_adb",
+    "problem": "tatizo haijaelezwa",
+    "status": "awaiting_consent",
+    "consent_id": null,
+    "frames": [
+      {
+        "agent": "receptionist",
+        "code": "P",
+        "evidence": {
+          "problem": "tatizo haijaelezwa"
+        },
+        "sw": "Karibu! Nimepokea tatizo lako: tatizo haijaelezwa. Kifaa: generic unknown (IMEI ).",
+        "ts": 1790778817
+      },
+      {
+        "agent": "vision",
+        "code": "P",
+        "evidence": {
+          "props": [
+            [
+              "ro.product.brand",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.product.model",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.build.version.release",
+              "? (adb shell fail: program not found)"
+            ],
+            [
+              "ro.serialno",
+              "? (adb shell fail: program not found)"
+            ]
+          ]
+        },
+        "sw": "Nimechanganua simu kupitia ADB: props, battery, storage zimekaguliwa.",
+        "ts": 1790778817
+      },
+      {
+        "agent": "diagnoser",
+        "code": "I",
+        "evidence": {
+          "service": "reset_password_adb"
+        },
+        "sw": "Tatizo linaeleweka: 'tatizo haijaelezwa'. Njia iliyopendekezwa: reset_password_adb.",
+        "ts": 1790778817
+      },
+      {
+        "agent": "hitl",
+        "code": "H",
+        "evidence": {
+          "blocked": true
+        },
+        "sw": "KAZI IMESIMAMISHWA: Hakuna consent kwa IMEI hii. Mteja LAZIMA asaini fomu ya ruhusa (fund-mobile consent add). Kufanya bila ruhusa = kosa la jinai (Kifungu 267).",
+        "ts": 1790778817
+      },
+      {
+        "agent": "scribe",
+        "code": "D",
+        "evidence": {},
+        "sw": "Nimeandika ripoti kamili (kitabu kidigitali) kwa Kiswahili.",
+        "ts": 1790778817
+      },
+      {
+        "agent": "learner",
+        "code": "D",
+        "evidence": {},
+        "sw": "Maarifa ya session hii yamehifadhiwa kwenye learning_log.json.",
+        "ts": 1790778817
+      }
+    ],
+    "summary_sw": "Inasubiri consent (HITL). Nimeandaa mwongozo kamili wa kutekeleza kwa usalama.",
+    "created_ts": 1790778817,
+    "ended_ts": 1790778817
+  }
+]

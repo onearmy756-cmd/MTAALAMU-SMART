@@ -2,8 +2,9 @@
   "center": { "lat": -6.37, "lng": 34.89, "zoom": 6 },
   "boundaries_url": "tz_regions.geojson",
   "license": {
-    "sources": "Google Satellite · NASA EOSDIS GIBS (MODIS Terra) · Esri World Imagery · © OpenStreetMap contributors",
+    "sources": "Google Satellite · NASA EOSDIS GIBS (MODIS Terra) · Esri World Imagery & Street Map · © OpenStreetMap contributors · Picha za sehemu: Wikimedia Commons",
     "routing": "OSRM — Open Source Routing Machine (ODbL)",
+    "search_weather": "Utafutaji: Nominatim (© OpenStreetMap) · Hali ya hewa: Open-Meteo (CC-BY 4.0, bure bila key)",
     "note": "Data za ramani hutoka kwa watoa huduma hao; timiza masharti ya leseni na uonyeshe attribution. Vifaa vya watu binafsi vinaonekana tu kwa ruhusa (Data Protection Act 2022)."
   },
   "basemaps": [
@@ -44,6 +45,13 @@
       "maxZoom": 19
     },
     {
+      "id": "esri_street",
+      "label": "Esri Street Map (mitaa — barabara + majina)",
+      "tiles": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      "attr": "© Esri, Maxar, Earthstar Geographics",
+      "maxZoom": 19
+    },
+    {
       "id": "esri_labels",
       "label": "Esri Roads & Labels",
       "tiles": "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
@@ -58,7 +66,23 @@
     { "id": "techs", "on": true },
     { "id": "customers", "on": true },
     { "id": "jobs", "on": true },
-    { "id": "corridors", "on": false }
+    { "id": "corridors", "on": false },
+    { "id": "cities", "on": true },
+    { "id": "hazards", "on": false },
+    { "id": "live", "on": false },
+    { "id": "photos", "on": true }
+  ],
+  "live": {
+    "note_sw": "Simulasi ya magari + watu kwenye njia kuu (live). Eneo la GPS binafsi linaonekana kwa ruhusa tu.",
+    "vehicles": 6,
+    "people": 8,
+    "tick_ms": 900
+  },
+  "hazards": [
+    { "id": "HZ-01", "type": "mafuriko", "severity": "high", "name": "Mafuriko ya Msimu wa Vulio", "place": "Msimbazi, Dar es Salaam", "lat": -6.87, "lng": 39.26, "note_sw": "Mto Msimbazi hujaa — epuka kuvuka asubuhi" },
+    { "id": "HZ-02", "type": "barabara", "severity": "medium", "name": "Barabara Ibovu (doido)", "place": "Kibaha — Morogoro Rd", "lat": -6.78, "lng": 38.95, "note_sw": "Sehemu ya km 12 ina doido msimu wa vulio" },
+    { "id": "HZ-03", "type": "umeme", "severity": "high", "name": "Mstari wa umeme umeanguka", "place": "Njiro, Arusha", "lat": -3.38, "lng": 36.68, "note_sw": "Lini ya umeme imeanguka juu ya barabara" },
+    { "id": "HZ-04", "type": "uhalifu", "severity": "medium", "name": "Eneo la uangalifu usiku", "place": "Kariakoo, Dar es Salaam", "lat": -6.825, "lng": 39.27, "note_sw": "Weka vifaa salama, epuka usiku" }
   ],
   "regions": {
     "Arusha": { "lat": -3.316, "lng": 36.058, "jobs": 69, "techs": 18, "customers": 44 },
@@ -85,9 +109,12 @@
     "Shinyanga": { "lat": -3.802, "lng": 33.135, "jobs": 36, "techs": 9, "customers": 23 },
     "Simiyu": { "lat": -3.272, "lng": 33.889, "jobs": 25, "techs": 6, "customers": 16 },
     "Singida": { "lat": -5.779, "lng": 34.435, "jobs": 27, "techs": 7, "customers": 17 },
+    "Songwe": { "lat": -7.85, "lng": 33.35, "jobs": 15, "techs": 4, "customers": 9 },
     "South Pemba": { "lat": -5.341, "lng": 39.728, "jobs": 16, "techs": 4, "customers": 10 },
     "Tabora": { "lat": -4.454, "lng": 33.077, "jobs": 34, "techs": 8, "customers": 21 },
     "Tanga": { "lat": -5.105, "lng": 38.956, "jobs": 52, "techs": 13, "customers": 33 },
+    "Unguja North": { "lat": -5.871, "lng": 39.25, "jobs": 13, "techs": 3, "customers": 8 },
+    "Unguja South": { "lat": -6.35, "lng": 39.4, "jobs": 14, "techs": 4, "customers": 9 },
     "Zanzibar North": { "lat": -5.871, "lng": 39.25, "jobs": 26, "techs": 7, "customers": 17 },
     "Zanzibar South & Central": { "lat": -6.274, "lng": 39.429, "jobs": 24, "techs": 6, "customers": 15 },
     "Zanzibar Urban/West": { "lat": -6.219, "lng": 39.246, "jobs": 41, "techs": 11, "customers": 26 }

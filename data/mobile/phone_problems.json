@@ -1,0 +1,73 @@
+{
+  "kind": "fundi-phone-problems",
+  "version": "1.0.0",
+  "note": "Matatizo YOTE ya software ya simu (Android + iPhone + button). Kila kimoja na suluhisho hatua kwa hatua.",
+  "categories": [
+    {
+      "id": "android_software",
+      "icon": "🤖",
+      "name_sw": "Android Software",
+      "problems": [
+        { "p": "Simu inapolepolea (lagging)", "s": "1) Restart; 2) Futa cache ya apps (Settings→Storage→Cached data); 3) Uninstall apps zisizotumika; 4) Zima animations (Developer options); 5) Lite versions (Facebook Lite, Messenger Lite)", "minutes": 30 },
+        { "p": "Battery inamaliza haraka", "s": "1) Settings→Battery — angalia culprit app; 2) Zima background activity za apps mbaya; 3) Dark mode + adaptive battery; 4) Kama battery health < 80% — badilisha battery (hardware)", "minutes": 25 },
+        { "p": "Storage imejaa (imeshindwa kusasisha)", "s": "1) Files by Google → Clean; 2) Futa WhatsApp media duplicates; 3) Hamisha photos kwenye SD/cloud; 4) Clear data ya apps kubwa (Facebook/Chrome)", "minutes": 30 },
+        { "p": "App inajifunga (crash)", "s": "1) Settings→Apps→[app]→Clear cache; 2) Kama inaendelea: Clear data + login tena; 3) Update app; 4) Uninstall→reinstall; 5) Angalia Android version compatibility", "minutes": 20 },
+        { "p": "Play Store haifanyi kazi", "s": "1) Settings→Apps→Google Play Store→Clear cache + data; 2) Kama inaendelea: Play Services pia clear cache; 3) Angalia tarehe/saa; 4) Remove + re-add Google account", "minutes": 25 },
+        { "p": "Simu imejaa ads (adware)", "s": "1) Angalia apps za hivi karibuni — uninstall zisizojulikana; 2) Play Protect scan; 3) Zima 'Install unknown apps' kwa browsers; 4) Kama inaendelea: factory reset (backup kwanza)", "minutes": 40 },
+        { "p": "Hotspot haifanyi kazi", "s": "1) Settings→Network→Hotspot ON + angalia password; 2) Kama client haipati — restart simu + set band 2.4GHz; 3) Data saver OFF; 4) Kama carrier inazuia — data plan check", "minutes": 20 },
+        { "p": "IMEI haionekani (*#06# tupu)", "s": "HII NI HATARI (clone/fake device) — usinunue/usiuze; 1) Angalia box + receipt; 2) Kama imepotea baada ya flash — reflash firmware rasmi ya brand (procedures.rs flash_firmware)", "minutes": 30 },
+        { "p": "Software update imekwama (ota stuck)", "s": "1) Hakikisha battery 50%+ + WiFi; 2) Storage 5GB+ free; 3) Restart kisha try tena; 4) Kama imekwama sana — flash firmware rasmi (brands::flash_info)", "minutes": 60 },
+        { "p": "Bootloop (inafika logo kisha inazima)", "s": "1) Recovery mode → Wipe cache partition (kama ipo); 2) Kama inaendelea: factory reset (data inaenda); 3) Kama inaendelea: flash firmware rasmi; 4) Hardware? (eMMC kufa) — repair shop", "minutes": 60 },
+        { "p": "Google account verification (FRP) baada ya reset", "s": " recover frp-aftermath --imei ... — MMILIKI anaingia account yake; hakuna njia rasmi nyingine", "minutes": 30 },
+        { "p": "Simu imefungiwa na password/PIN", "s": " recover samsung/xiaomi/huawei/google-remote → recovery-reset (data inaenda, consent HITL)", "minutes": 45 },
+        { "p": "M-Pesa/Tigo Pesa haiwakiki SMS ya confirmation", "s": "1) Storage ya SMS imejaa? futa mazee; 2) SMS app default? weka default app; 3) Spam filter ya SMS app — angalia blocked; 4) Carrier issue — piga simu 100/100/100", "minutes": 15 },
+        { "p": "WhatsApp media hazipakii/haitumiki", "s": "1) Storage full? (futa + 1GB free); 2) WhatsApp → Settings → Storage and Data → Media auto-download settings; 3) Kama video hazichezeki — player codec issue (tumia VLC); 4) Date/time sahihi?", "minutes": 20 },
+        { "p": "WhatsApp backup haihifadhi Google Drive", "s": "1) Google account ile ile kwenye simu? 2) Drive space (15GB pamoja na Gmail!); 3) WiFi tu setting? badilisha; 4) Backup manually: Settings→Chats→Backup→Back up now", "minutes": 20 },
+        { "p": "Two SIM cards, moja haionekani", "s": "1) SIM tray: weka vizuri + safisha contacts; 2) Settings→SIM cards → ON; 3) Kama SIM imekufa — test kwenye simu nyingine; 4) Dual-SIM config: default for calls/data/SMS", "minutes": 15 },
+        { "p": "Screen mirroring/OTG haifanyi kazi", "s": "1) OTG: Settings→OTG ON (kama ipo) + adapter halali; 2) Mirroring: Same WiFi + Chromecast/TV app rasmi; 3) USB debugging kwa scrcpy (dev)", "minutes": 25 },
+        { "p": "Kamera haifunguki (camera error)", "s": "1) Clear cache/data ya Camera app; 2) Safe mode test (kama inafanya — app ya mtu wa tatu ndiyo tatizo); 3) Kama hardware — repair shop", "minutes": 20 },
+        { "p": "Sauti ndogo kwenye calls", "s": "1) Volume call + speaker cleaning; 2) Safe mode test; 3) Kila call app (Truecaller) inaingilia? uninstall test; 4) Kama hardware — mic/speaker repair", "minutes": 20 },
+        { "p": "Simu inajizungusha (auto-rotate imekaa)", "s": "1) Quick settings: Auto-rotate ON; 2) G-sensor calibration (secret menu au app); 3) Kama imeanguka — hardware", "minutes": 15 }
+      ]
+    },
+    {
+      "id": "iphone_software",
+      "icon": "🍎",
+      "name_sw": "iPhone Software",
+      "problems": [
+        { "p": "iPhone inapolepolea", "s": "1) Restart; 2) Offload unused apps (Settings→General→iPhone Storage); 3) Reduce Motion + Background App Refresh OFF; 4) Battery health: kama <80% — badilisha (performance throttling)", "minutes": 25 },
+        { "p": "iOS update imekwama", "s": "1) WiFi + 50% battery + storage 10GB+; 2) Kama imekwama: computer + Finder/iTunes → Update (HAIFUTI data); 3) Recovery mode kama inahitajika", "minutes": 45 },
+        { "p": "Activation lock (Apple ID ya mwingine)", "s": "1) MMILIKI anaingia Apple ID yake (icloud.com/find — Remove from account); 2) Kama ni ya mtu mwingine — hakuna njia rasmi; rudisha kwa mmiliki", "minutes": 30 },
+        { "p": "Apple ID password imesahaulika", "s": "1) iforgot.apple.com; 2) Trusted device/phone number; 3) Account recovery (siku chache) kama 2FA info imepotea", "minutes": 30 },
+        { "p": "iCloud storage imejaa", "s": "1) Settings→[jina]→iCloud→Manage Storage; 2) Futa old backups za devices zamani; 3) Photo library optimize; 4) 50GB plan (chini ya TZS 5K/mwezi)", "minutes": 20 },
+        { "p": "App Store haiwakiki/download inashindikana", "s": "1) Sign out/in Apple ID; 2) Tarehe/saa Auto ON; 3) Network settings reset; 4) Payment method issue — remove/update", "minutes": 20 },
+        { "p": "FaceTime/iMessage haioneshi namba", "s": "1) Settings→FaceTime/iMessage → Apple ID + namba ON; 2) Subiri activation (24h kwa nyingine nchi); 3) Carrier settings update", "minutes": 20 },
+        { "p": "Hotspot haionekani kwenye PC", "s": "1) Allow Others to Join ON; 2) Maximize Compatibility (2.4GHz) ON; 3) USB: trust computer + drivers (Apple support)", "minutes": 20 },
+        { "p": "AirDrop haipatikani", "s": "1) AirDrop: Everyone for 10 min; 2) WiFi + Bluetooth zote ON; 3) Personal Hotspot OFF; 4) Kifaa kiko Lock screen? — checkeni", "minutes": 15 },
+        { "p": "Siri haifanyi kazi", "s": "1) Settings→Siri→Listen ON; 2) Kama 'Hey Siri' haipatikani — re-train voice; 3) Screen Time restrictions check", "minutes": 15 },
+        { "p": "Battery health dhaifu (draining)", "s": "1) Settings→Battery→Battery Health — capacity?; 2) Peak Performance Capability message? — throttling ipo kwa sababu; 3) Badilisha battery (Apple au authorized)", "minutes": 20 },
+        { "p": "Data transfer kwenye iPhone mpya imekwama", "s": "1) Quick Start: karibu na simu ya zamani + WiFi moja; 2) Kama imekwama — iCloud/Finder backup kisha restore; 3) Usitumie simu wakati wa transfer", "minutes": 60 },
+        { "p": "Purge ya apps (offload) ilifuta data yangu?", "s": "Offload inaondoa app TU — data inabaki. Reinstall → data inarudi (kama app inatumia iCloud/local storage). Kama ulifuta (Delete) — data ya local imeenda (kama hakuna backup)", "minutes": 15 },
+        { "p": "Keyboard imejitokeza vibaya / autocorrect mbaya", "s": "1) Settings→General→Keyboard; 2) Text replacement zako; 3) Reset Keyboard Dictionary; 4) Kama keyboard ya mtu wa tatu — reinstall", "minutes": 15 },
+        { "p": "Simu imefungiwa na passcode", "s": "1) Kama ilikuwa synced na computer: Finder/iTunes → Restore (data ya backup inarudi); 2) Kama hakuna backup: Recovery mode → Restore (data INAENDA); 3) Activation lock: Apple ID ya mmiliki", "minutes": 60 }
+      ]
+    },
+    {
+      "id": "button_phone_software",
+      "icon": "☎️",
+      "name_sw": "Button Phones (Kabambe)",
+      "problems": [
+        { "p": "Simu imefungiwa na password/privacy lock", "s": "1) Master reset codes (fundi-mobile button <brand>); 2) Hard reset: Power+* au Power+# kulingana na brand; 3) Kama inaendelea: flash tool ya brand (Spreadtrum/MTK)", "minutes": 20 },
+        { "p": "IMEI imepotea (N/A kwenye *#06#)", "s": "1) Reflash firmware rasmi ( SPD/MTK flash tool); 2) Kama imebaki N/A — board/software issue; 3) HII SI YA KUREKEBISHA KWA NAMBA — usiitumie kwenye network kama IMEI N/A (inaweza kuzuiwa TCRA)", "minutes": 40 },
+        { "p": "Haioni SIM cards zote mbili", "s": "1) SIM swap test; 2) Settings→Dual SIM→ON; 3) Kama network mode vibaya — 2G/3G only setting; 4) Kama hardware: SIM socket solder — repair", "minutes": 20 },
+        { "p": "FM radio haiwaki", "s": "1) Earphones plugged (antenna); 2) Kama inaendelea: firmware region? reflash; 3) Hardware antenna — repair", "minutes": 15 },
+        { "p": "Battery inaonyesha % vibaya", "s": "1) Full charge → full drain → full charge (calibration); 2) Kama inaendelea: battery mpya (fake batteries ni nyingi!)", "minutes": 60 },
+        { "p": "Haitambui memory card", "s": "1) Format kwenye PC (FAT32) kisha simu; 2) Kama inaendelea: card slot cleaning/reseat; 3) Card mbovu — test nyingine", "minutes": 15 },
+        { "p": "Torch/flashlight haifanyi kazi", "s": "1) Feature ni software toggle — angalia menu; 2) Kama hardware: LED/switch — repair (cheap fix)", "minutes": 10 },
+        { "p": "Inapokea calls lakini haipigi simu (outgoing fail)", "s": "1) Call barring ON? (#33*PIN# off); 2) Fixed dialing ON? — OFF; 3) Carrier: airtime/outgoing bundle; 4) Kama inaendelea: network settings reset", "minutes": 15 },
+        { "p": "Speaker inakelele wakati wa media tu", "s": "1) Earpiece vs loudspeaker switch; 2) Kama loudspeaker tu mbovu — hardware repair (sawa, cheap)", "minutes": 10 },
+        { "p": "Simu imejilock kwenye network moja (SIM lock)", "s": "1) Kama ilinunuliwa kwa mkopo carrier — malipo yaliokamilika? omba unlock code kwa carrier; 2) Unlock code rasmi kwa IMEI (tz carriers); 3) Services za unlock ni GHALI na si rasmi — angalizo", "minutes": 30 }
+      ]
+    }
+  ]
+}

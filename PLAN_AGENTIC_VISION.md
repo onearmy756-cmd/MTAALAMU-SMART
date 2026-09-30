@@ -168,12 +168,30 @@ WS   /ws/agent/:session_id       — agent events + voice cues
 | Phase | Kazi | Hali |
 |-------|------|------|
 | **AV0** | PLAN + data schemas (agents, vision, pipeline, report, voice) | ✅ |
-| **AV1** | Rust: agents.rs + vision.rs + pipeline.rs + report.rs + CLI | 🔄 |
-| **AV2** | Integrate knowledge/bayes/rules into pipeline | ⏳ |
-| **AV3** | Shiny: Live Vision tab + Q&A + HITL + step strip | ⏳ |
-| **AV4** | Voice TTS + Scribe narration SW | ⏳ |
-| **AV5** | Digital book export (HTML/PDF) + learner store | ⏳ |
-| **AV6** | Real OS probe module (sysinfo) + production hardening | ⏳ |
+| **AV1** | Rust: agents.rs + vision.rs + pipeline.rs + report.rs + CLI | ✅ |
+| **AV2** | Integrate knowledge/bayes/rules into pipeline (solve.rs HITL) | ✅ |
+| **AV3** | Shiny: Live Vision tab + Q&A + HITL + step strip | ✅ |
+| **AV4** | Voice TTS + Scribe narration SW (scribe.rs + mtaalamu_speak) | ✅ |
+| **AV5** | Digital book export (HTML) + learner store (learning_log + sessions) | ✅ |
+| **AV6** | Real OS probe (sysinfo + deep_probe) + production hardening | ✅ |
+| **AV7** | **SYSTEM WIRING halisi** (wiring.rs: PCI/USB/DMI/disk/net/thermal + flows) + Shiny panel + live refresh 8s | ✅ |
+| **AV8** | **AUTO-WORK loop** (scan→HITL→solve→document) + auto_watch daemon + av-* CLI + kitabu cha auto-work + learning loop | ✅ |
+
+## Utekelezaji wa AV7/AV8 (2026-09-30)
+
+- `engine-rust/src/wiring.rs` — ramani + miunganisho HALISI: nodes kutoka sysinfo
+  (CPU cores/RAM/disks/net + traffic), `lspci`/`wmic` (PCI+GPU), `lsusb`/`wmic` (USB),
+  DMI board, thermals; edges zenye bus halisi; **DataFlow** (disk I/O, net RX/TX,
+  process CPU, sockets). Tests: nodes>=5, flows zina path.
+- `engine-rust/src/scribe.rs` — AI Scribe: frame kwa kila hatua PIITVD
+  (narration_sw + voice_sw + visual_note + evidence halisi); **auto_work_once**
+  (scan → findings na HITL request → solve kama approved → test upya → document);
+  session store (`data/agentic_sessions.json`); `auto_watch` daemon loop.
+- CLI: `mtaalamu wiring`, `av-auto [--approve]`, `av-watch --interval N [--runs M]`,
+  `av-sessions`.
+- Shiny (web-r): panels **SYSTEM WIRING (HALISI)** (SVG + DATA FLOW + BUS HALISI),
+  **AUTO-WORK + AI SCRIBE** (video-strip ya frames + voice sw); buttons AUTO-WORK /
+  WIRING LIVE; fallback R-sysprobe endapo Rust binary haipo (bila kuonyesha data ya uongo).
 
 ---
 

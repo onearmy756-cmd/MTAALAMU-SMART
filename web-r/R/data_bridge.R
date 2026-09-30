@@ -232,7 +232,7 @@ knowledge_catalog_summary_el <- function(kb, lang = "sw") {
   if (is.null(kb)) return(NULL)
   tags$div(style = "display:flex;flex-wrap:wrap;gap:8px",
     tags$div(style = "border:1px solid #00e5ff33;padding:8px 12px;border-radius:8px;background:#0a1628",
-      tags$div(style = "color:var(--cyan);font-weight:700", kb$problems_count %||% 0),
+      tags$div(style = "color:var(--cyan);font-weight:700", as.character(kb$problems_count %||% 0)),
       tags$div(style = "font-size:10px;color:var(--dim)", "problems.json")),
     tags$div(style = "border:1px solid #00e5ff33;padding:8px 12px;border-radius:8px;background:#0a1628",
       tags$div(style = "color:var(--cyan);font-weight:700", length(kb$diagnosis_models %||% list())),

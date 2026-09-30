@@ -90,8 +90,7 @@ build_digital_book_html <- function(session_id, msg, issues, narration, lang = "
   title <- if (identical(lang, "en")) "Mtaalamu Smart — Digital Report Book" else
     "Mtaalamu Smart — Kitabu Kidigitali cha Ripoti"
 
-  sprintf(''
-<!DOCTYPE html>
+  sprintf(r'{<!DOCTYPE html>
 <html lang="%s">
 <head>
 <meta charset="utf-8"/>
@@ -153,7 +152,7 @@ build_digital_book_html <- function(session_id, msg, issues, narration, lang = "
 </div>
 </body>
 </html>
-', lang, title, title, htmltools::htmlEscape(session_id),
+}', lang, title, title, htmltools::htmlEscape(session_id),
      format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
      htmltools::htmlEscape(msg),
      issue_rows,

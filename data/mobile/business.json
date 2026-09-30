@@ -1,0 +1,15 @@
+{
+  "_comment": "FUNDI MOBILE — profile ya BIASHARA ya fundi (inatokea kwenye logo ya quotes/invoices/PDF). Badilisha kwa taarifa zako. color = hex ya brand yako; initials = monogram kwenye logo.",
+  "name": "FUNDI MOBILE",
+  "tagline": "Daktari wa Simu — Repair & Maintenance",
+  "initials": "FM",
+  "color": "#00838f",
+  "fundi": "Jina la Fundi",
+  "phone": "+255 7xx xxx xxx",
+  "email": "fundi@example.co.tz",
+  "address": "Kariakoo, Dar es Salaam",
+  "tin": "",
+  "brella_id": "",
+  "payments_sw": "M-Pesa: 07xx xxx xxx · Tigo Pesa: 07xx xxx xxx · Benki: CRDB 01xxxxxxx (Jina la Fundi)",
+  "terms_sw": "Malipo yanakamilika kabla ya kurejesha kifaa. Dhamana ya kazi: siku 14."
+}

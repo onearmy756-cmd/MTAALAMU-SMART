@@ -1,10 +1,11 @@
 //! mtaalamu CLI — reason / knowledge / devices / solve / agentic
 
 use mtaalamu_engine::{
-    AgentOrchestrator, BayesianDiagnoser, FormulaEngine, auto_diagnose, deep_probe_json,
-    devices_catalog_stats, discover_tools, grounded_reason_json, knowledge_search, knowledge_stats,
-    log_remediation, probe_json, remediation_catalog, run_diagnostic, run_full, run_remediation,
-    search_devices, solve_message,
+    AgentOrchestrator, BayesianDiagnoser, FormulaEngine, auto_diagnose, auto_watch, auto_work_once,
+    deep_probe_json, deploy, devices_catalog_stats, discover_tools, grounded_reason_json,
+    knowledge_search, knowledge_stats, load_sessions, log_remediation, probe_json,
+    remediation_catalog, run_diagnostic, run_full, run_remediation, save_session, search_devices,
+    solve_message, system_wiring_json,
 };
 use std::path::Path;
 
@@ -187,13 +188,93 @@ fn main() {
                 serde_json::to_value(&result).unwrap_or(serde_json::Value::Null)
             }
         }
+        "wiring" => {
+            // Ramani + miunganisho HALISI ya vifaa (P: spec ya Agentic Vision)
+            let top: usize = parse_flag(&args, "--top").and_then(|s| s.parse().ok()).unwrap_or(10);
+            system_wiring_json(top)
+        }
+        "av-auto" => {
+            // Auto-work mara moja: scan → HITL → solve (lab: --approve)
+            let approve = args.iter().any(|a| a == "--approve");
+            let sid = format!(
+                "AW-{}",
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .map(|d| d.as_secs())
+                    .unwrap_or(0)
+            );
+            let rep = auto_work_once(Path::new(&data_root()), &sid, approve);
+            let _ = save_session(
+                Path::new(&data_root()),
+                &sid,
+                &serde_json::to_value(&rep).unwrap_or(serde_json::Value::Null),
+            );
+            serde_json::to_value(&rep).unwrap_or(serde_json::Value::Null)
+        }
+        "av-watch" => {
+            // Auto-work loop: kila N sekunde (production daemon)
+            let secs: u64 = parse_flag(&args, "--interval").and_then(|s| s.parse().ok()).unwrap_or(60);
+            let runs: Option<u32> = parse_flag(&args, "--runs").and_then(|s| s.parse().ok());
+            let approve = args.iter().any(|a| a == "--approve");
+            auto_watch(Path::new(&data_root()), secs, approve, runs);
+            serde_json::json!({"ok": true})
+        }
+        "av-sessions" => serde_json::to_value(load_sessions(Path::new(&data_root())))
+            .unwrap_or(serde_json::Value::Null),
+        "deploy" => {
+            // Fundi Deploy integration — `mtaalamu deploy <sub> [...flags]`
+            let sub = args.get(2).map(|s| s.as_str()).unwrap_or("summary");
+            match sub {
+                "hosts" | "discover" => deploy::discover().unwrap_or_else(|e| fail(&e)),
+                "jobs" => deploy::jobs().unwrap_or_else(|e| fail(&e)),
+                "images" => deploy::images().unwrap_or_else(|e| fail(&e)),
+                "summary" => deploy::summary().unwrap_or_else(|e| fail(&e)),
+                "cloud" => deploy::cloud_status().unwrap_or_else(|e| fail(&e)),
+                "os" => {
+                    let specs = parse_flag(&args, "--specs").unwrap_or_default();
+                    let need = parse_flag(&args, "--need").unwrap_or_else(|| "office".into());
+                    deploy::os_select(&specs, &need).unwrap_or_else(|e| fail(&e))
+                }
+                "start" => {
+                    let macs = parse_flag(&args, "--macs").unwrap_or_default();
+                    if macs.is_empty() {
+                        fail("deploy start --macs aa:bb:cc:dd:ee:01,aa:bb:... [--os auto] [--need office]");
+                    }
+                    let computers: Vec<serde_json::Value> = macs
+                        .split(',')
+                        .map(|m| serde_json::json!({ "mac": m.trim(), "name": format!("PC-{}", m.trim().replace(':', "")) }))
+                        .collect();
+                    let os = parse_flag(&args, "--os").unwrap_or_else(|| "auto".into());
+                    let need = parse_flag(&args, "--need").unwrap_or_else(|| "office".into());
+                    deploy::deploy_hitl(serde_json::Value::Array(computers), &os, &need)
+                        .unwrap_or_else(|e| fail(&e))
+                }
+                "approve" => {
+                    let id = parse_flag(&args, "--id").unwrap_or_else(|| fail("deploy approve --id <job_id>"));
+                    deploy::approve(&id).unwrap_or_else(|e| fail(&e))
+                }
+                "cancel" => {
+                    let id = parse_flag(&args, "--id").unwrap_or_else(|| fail("deploy cancel --id <job_id>"));
+                    deploy::cancel(&id).unwrap_or_else(|e| fail(&e))
+                }
+                other => fail(&format!("deploy sub '{}' haipo (hosts|jobs|images|summary|cloud|os|start|approve|cancel)", other)),
+            }
+        }
         "help" | "--help" | "-h" => serde_json::json!({
             "commands": [
                 "reason --msg '...' — fikra + calculus + jibu refu (no hallucination)",
                 "knowledge --msg '...'",
                 "devices | device-solve --msg '...'",
                 "solve --msg '...' [--approve]",
-                "agentic --msg '...' [--approve]  — agent inafanya kazi; --approve = msimamizi"
+                "agentic --msg '...' [--approve]  — agent inafanya kazi; --approve = msimamizi",
+                "wiring — ramani + miunganisho HALISI ya vifaa (PCI/USB/disk/net/thermal)",
+                "av-auto [--approve] — auto-work: scan → gundua → HITL → solve",
+                "av-watch --interval 60 [--runs 5] — auto-work loop (daemon)",
+                "av-sessions — sessions zilizohifadhiwa",
+                "deploy hosts|jobs|images|summary|cloud — Fundi Deploy status",
+                "deploy os --specs '8gb ram i5' --need office — pendekezo la OS",
+                "deploy start --macs aa:bb:... --os auto — anza deploy (HITL)",
+                "deploy approve|cancel --id <job> — msimamizi anaruhusu/ghairi"
             ],
             "policy": "Evidence + calculus only. Hardware = human guide. Agent works; supervisor approves."
         }),

@@ -1,0 +1,71 @@
+{
+  "_comment": "FUNDI PAY — providers za malipo. Kanuni: credentials hazipo kwenye code (env vars tu). Provider yenye 'mode': stk = API halisi; manual = USSD/malipo ya mkononi + confirm kwa reference; http = aggregator (weka endpoint + creds env).",
+  "currency": "TZS",
+  "business": {
+    "name_sw": "FUNDI MOBILE",
+    "_note_sw": "Kabla ya kupokea malipo kama BIASHARA: BRELA (jina la biashara), TIN (TRA), namba ya simu ya kampuni. Aggregator (Selcom/Baobab/Flutterwave) inahitaji ile pia. BOT PSP license ni tu kama unapokea kwa ajili ya watu wengine."
+  },
+  "providers": [
+    {
+      "id": "mpesa",
+      "name": "M-Pesa (Vodacom)",
+      "mode": "stk",
+      "ussd": "*150*00#",
+      "api_env": {
+        "key": "FUNDI_MPESA_KEY",
+        "secret": "FUNDI_MPESA_SECRET",
+        "shortcode": "FUNDI_MPESA_SHORTCODE",
+        "passkey": "FUNDI_MPESA_PASSKEY",
+        "env": "FUNDI_MPESA_ENV"
+      },
+      "sandbox_url": "https://sandbox.safaricom.co.ke",
+      "production_url": "https://api.safaricom.co.ke",
+      "notes_sw": "Daraja Express (STK push): mteja anapokea prompt kwenye simu → anaweka PIN. Inahitaji Daraja app credentials."
+    },
+    {
+      "id": "tigo",
+      "name": "Tigo Pesa / Mixx by Yas",
+      "mode": "manual",
+      "ussd": "*150*01#",
+      "receiver": "FUNDI_PAY_TIGO_MSISDN",
+      "notes_sw": "Mteja anatumia USSD au app kutuma kwa namba yako; thibitisha kwa SMS/confirmation code kwenye UI. API ya moja kwa moja inahitaji kampuni iliyosajiliwa (aggregator au Yas merchant)."
+    },
+    {
+      "id": "airtel",
+      "name": "Airtel Money",
+      "mode": "manual",
+      "ussd": "*150*60#",
+      "receiver": "FUNDI_PAY_AIRTEL_MSISDN",
+      "notes_sw": "Kama tigo: USSD/app + confirm kwa reference. Merchant API kupitia Airtel Business."
+    },
+    {
+      "id": "halopesa",
+      "name": "Halo Pesa",
+      "mode": "manual",
+      "ussd": "*150*88#",
+      "receiver": "FUNDI_PAY_HALO_MSISDN",
+      "notes_sw": "HaloPesa merchant API ipo kwa kampuni; kwa sasa manual + confirm."
+    },
+    {
+      "id": "bank",
+      "name": "Benki (CRDB / NMB)",
+      "mode": "manual",
+      "receiver": "FUNDI_PAY_BANK_ACCOUNT",
+      "notes_sw": "Malipo ya benki (kwa makampuni): mteja/kampuni inalipa kwenye account yako; thibitisha kwenye statement/alert, weka reference ya slip."
+    },
+    {
+      "id": "card",
+      "name": "Kadi / Kimataifa (Flutterwave/Paystack)",
+      "mode": "http",
+      "endpoint_env": "FUNDI_PAY_CARD_ENDPOINT",
+      "key_env": "FUNDI_PAY_CARD_KEY",
+      "notes_sw": "Kwa wateja wa nje ya Tanzania: aggregator (Flutterwave n.k.) inatoa card + PayPal + Apple Pay. Weka endpoint + key kwenye env."
+    },
+    {
+      "id": "cash",
+      "name": "Cash (fedha taslimu)",
+      "mode": "manual",
+      "notes_sw": "Pokea fedha, andika namba ya receipt kwenye confirm."
+    }
+  ]
+}

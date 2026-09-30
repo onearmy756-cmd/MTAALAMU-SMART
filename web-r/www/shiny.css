@@ -133,6 +133,18 @@ select.form-control option { background: #04121a; color: var(--text); }
 .route-info .mt-err { color: #f87171; }
 .route-info .mt-busy { color: var(--cyan); }
 
+/* --- ramani: miji + hatari + tracking (map.js features mpya) --- */
+.mt-city-tip {
+  background: rgba(5, 18, 27, .9); color: #e2e8f0; border: 1px solid rgba(0, 229, 255, .35);
+  font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px;
+  box-shadow: none;
+}
+.mt-city-tip::before { display: none; }
+.mt-hz { filter: drop-shadow(0 0 5px rgba(255, 23, 68, .5)); }
+.mt-pin { font-size: 24px; line-height: 26px; }
+.tzmap:fullscreen { height: 100vh; max-height: none; border: 0; }
+.tzmap:-webkit-full-screen { height: 100vh; max-height: none; }
+
 /* --- kichwa cha ramani --- */
 .tzmap {
   height: 58vh; min-height: 420px; max-height: 720px; width: 100%;

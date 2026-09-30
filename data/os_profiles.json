@@ -1,0 +1,130 @@
+{
+  "_comment": "Fundi Deploy — OS profiles (data-driven). Kanuni: code haisemi OS gani; faili hii ndiyo kanuni. Ongeza profile mpya bila kugusa code.",
+  "profiles": [
+    {
+      "id": "win11",
+      "min_ram_gb": 8,
+      "min_cpu_cores": 4,
+      "min_disk_gb": 64,
+      "tpm_required": true,
+      "secure_boot": true,
+      "license_cost": "paid",
+      "weights": {
+        "office": 3.0,
+        "windows": 4.0,
+        "excel": 2.5,
+        "quickbooks": 2.5,
+        "autocad": 2.0,
+        "gaming": 2.0,
+        "printer": 1.5,
+        "pos": 2.0,
+        "biashara": 2.5
+      },
+      "best_for": ["office", "biashara", "accounting", "gaming"],
+      "notes_sw": "Windows 11: inahitaji TPM 2.0 + SecureBoot; RAM 8GB+"
+    },
+    {
+      "id": "win10",
+      "min_ram_gb": 4,
+      "min_cpu_cores": 2,
+      "min_disk_gb": 32,
+      "tpm_required": false,
+      "secure_boot": false,
+      "license_cost": "paid",
+      "weights": {
+        "office": 2.0,
+        "windows": 3.5,
+        "old": 2.5,
+        "legacy": 2.5,
+        "4gb": 2.0,
+        "school": 2.0,
+        "shule": 2.0,
+        "printer": 1.0
+      },
+      "best_for": ["PC za zamani", "shule", "office nyepesi"],
+      "notes_sw": "Windows 10: kwa PC zamani (RAM 4GB); support inaisha 2025"
+    },
+    {
+      "id": "ubuntu",
+      "min_ram_gb": 4,
+      "min_cpu_cores": 2,
+      "min_disk_gb": 25,
+      "tpm_required": false,
+      "secure_boot": false,
+      "license_cost": "free",
+      "weights": {
+        "linux": 4.0,
+        "developer": 4.0,
+        "docker": 3.5,
+        "python": 3.0,
+        "server": 2.5,
+        "free": 2.5,
+        "bure": 2.5,
+        "programming": 3.5,
+        "internet cafe": 2.0
+      },
+      "best_for": ["developers", "servers", "internet cafe", "gharama ndogo"],
+      "notes_sw": "Ubuntu LTS: bure, salama, nzuri kwa dev na server"
+    },
+    {
+      "id": "debian",
+      "min_ram_gb": 2,
+      "min_cpu_cores": 1,
+      "min_disk_gb": 10,
+      "tpm_required": false,
+      "secure_boot": false,
+      "license_cost": "free",
+      "weights": {
+        "linux": 3.0,
+        "server": 4.0,
+        "stability": 3.5,
+        "imara": 3.5,
+        "old pc": 3.0,
+        "lightweight": 3.0,
+        "kiosk": 2.5,
+        "bure": 2.0
+      },
+      "best_for": ["servers imara", "PC zamani sana", "kiosk"],
+      "notes_sw": "Debian: imara sana, inafanya kazi hata RAM 2GB"
+    },
+    {
+      "id": "fedora",
+      "min_ram_gb": 4,
+      "min_cpu_cores": 2,
+      "min_disk_gb": 20,
+      "tpm_required": false,
+      "secure_boot": false,
+      "license_cost": "free",
+      "weights": {
+        "linux": 3.5,
+        "developer": 3.0,
+        "latest": 3.0,
+        "modern": 3.0,
+        "containers": 2.5,
+        "kubernetes": 3.0,
+        "opensource": 2.5
+      },
+      "best_for": ["dev za kisasa", "containers", "tech za hivi karibuni"],
+      "notes_sw": "Fedora: kernels na tools mpya zaidi, cycle ya miezi 6"
+    }
+  ],
+  "skip_rules": [
+    "ram error",
+    "smart fail",
+    "smart error",
+    "disk fail",
+    "hdd fail",
+    "bad sectors",
+    "no boot device"
+  ],
+  "parse_patterns": {
+    "ssd": 0.5,
+    "nvme": 0.7,
+    "i5": 0.8,
+    "i7": 1.0,
+    "ryzen": 0.8,
+    "xeon": 0.9,
+    "tpm": 0.6,
+    "uefi": 0.4
+  }
+}

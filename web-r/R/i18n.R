@@ -14,6 +14,7 @@
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0) b else a
 
 # --- mistari ya UI (kila kitu na sw + en) --------------------
+# Tumia .GlobalEnv waziwazi — source(local=FALSE) ndani ya runApp inaweza kupoteza scope
 STR <- list(
   # --- header ---
   "brand.title"       = list(sw = "MTAALAMU SMART", en = "MTAALAMU SMART"),
@@ -237,9 +238,11 @@ STR <- list(
   "st.in_progress"    = list(sw = "INAENDELEA", en = "IN PROGRESS"),
   "st.pending"        = list(sw = "INASUBIRI", en = "PENDING")
 )
+for (nm in names(STR)) assign(nm, STR[[nm]], envir = .GlobalEnv)
+assign(".STR_KEYS", names(STR), envir = .GlobalEnv)
 
 tr <- function(key, lang) {
-  x <- STR[[key]]
+  x <- if (exists(".STR_KEYS", envir = .GlobalEnv)) get(key, envir = .GlobalEnv) else STR[[key]]
   if (is.null(x)) return(key)
   x[[lang]] %||% x[["en"]] %||% key
 }
