@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "vertical": "kilimo",
   "updated": "2026-10-02",
   "projects": [
@@ -16,40 +16,76 @@
       "priority": 1
     },
     {
-      "id": "openag-vera",
-      "name": "OpenAg Food Computer",
-      "repo": "https://github.com/OpenAgriculture/Personal_Food_Computer",
-      "license": "GPL-3.0",
-      "language": "Python",
-      "purpose": {"sw": "Food computer — controlled environment kwa mazao (sensor + actuator).", "en": "Food computer — controlled environment for crops."},
-      "contributes": ["env_sensors", "env_actuators"],
-      "integration": {"type": "adapter", "protocol": "MQTT/Serial", "note_sw": "Adapter ya sensor/actuator zake kwenye devices.json."},
-      "upstream_dir": "upstream/openag",
+      "id": "farmbot",
+      "name": "FarmBot",
+      "repo": "https://github.com/FarmBot/Farmbot-Web-App",
+      "license": "see repo LICENSE",
+      "language": "TypeScript",
+      "purpose": {"sw": "Roboti ya bustani — kupanda, kumwagilia, kutoa magugu kwa sensors.", "en": "Garden robot — planting, watering, weeding with sensors."},
+      "contributes": ["env_sensors", "env_actuators", "sequences"],
+      "integration": {"type": "adapter", "protocol": "MQTT/REST", "note_sw": "Sequences za FarmBot zinaweza kuamshwa na HERMES kwa HITL."},
+      "upstream_dir": "upstream/farmbot",
       "priority": 2
     },
     {
-      "id": "openirrigation",
-      "name": "Open Irrigation Controller",
-      "repo": "https://github.com/dgomes/irrigration_control",
-      "license": "GPL-3.0 (see repo LICENSE)",
-      "language": "Arduino/C++",
-      "purpose": {"sw": "Controller ya udhuwilishaji ya chini ya gharama.", "en": "Low-cost irrigation controller."},
-      "contributes": ["irrigation_valves"],
-      "integration": {"type": "adapter", "protocol": "MQTT/Modbus", "note_sw": "Valve states zinatumwa kwa MQTT — actuation kwa HITL."},
-      "upstream_dir": "upstream/openirrigation",
+      "id": "opensprinkler",
+      "name": "OpenSprinkler",
+      "repo": "https://github.com/OpenSprinkler/OpenSprinkler-Firmware",
+      "license": "see repo LICENSE",
+      "language": "C/C++",
+      "purpose": {"sw": "Controller ya udhuwilishaji ya wazi — valves, majadiliano ya mvua.", "en": "Open irrigation controller — valves, rain scheduling."},
+      "contributes": ["irrigation_valves", "schedules"],
+      "integration": {"type": "mqtt", "protocol": "HTTP API/MQTT", "note_sw": "Valve states zinatumwa kwa gateway — actuation kwa HITL."},
+      "upstream_dir": "upstream/opensprinkler",
       "priority": 3
     },
     {
-      "id": "smartfarmer",
-      "name": "Smart Farmer Mesh",
-      "repo": "https://github.com/kimundo/SmartFarmerMesh",
-      "license": "MIT (see repo LICENSE)",
+      "id": "meshtastic",
+      "name": "Meshtastic Firmware",
+      "repo": "https://github.com/meshtastic/firmware",
+      "license": "GPL-3.0",
       "language": "C++",
-      "purpose": {"sw": "Mesh ya sensors za shamba (LoRa/ESP-NOW) — hali ya hewa na udongo.", "en": "Farm sensor mesh (LoRa/ESP-NOW) — weather and soil."},
-      "contributes": ["soil_sensors", "weather_nodes"],
-      "integration": {"type": "mqtt", "protocol": "MQTT bridge", "note_sw": "Mesh bridge inatuma kwenye root ya MTAALAMU."},
-      "upstream_dir": "upstream/smartfarmer",
+      "purpose": {"sw": "Mesh ya LoRa — nodes za shamba (udongo, hali ya hewa) bila simcard/internet.", "en": "LoRa mesh — farm nodes (soil, weather) without SIM/internet."},
+      "contributes": ["soil_sensors", "weather_nodes", "mesh_bridge"],
+      "integration": {"type": "mqtt", "protocol": "MQTT bridge", "note_sw": "Meshtastic gateway inatuma telemetry kwenye root ya MTAALAMU."},
+      "upstream_dir": "upstream/meshtastic",
       "priority": 4
+    },
+    {
+      "id": "openweedlocator",
+      "name": "OpenWeedLocator",
+      "repo": "https://github.com/geezacoleman/OpenWeedLocator",
+      "license": "see repo LICENSE",
+      "language": "Python",
+      "purpose": {"sw": "Kutambua magugu kwa kamera kwa gharama ndogo — punguza dawa.", "en": "Low-cost camera weed detection — reduce herbicide."},
+      "contributes": ["weed_detection", "camera_ai"],
+      "integration": {"type": "adapter", "protocol": "GPIO/MQTT", "note_sw": "Events za magugu zinaandikishwa kwenye mission memory ya HERMES."},
+      "upstream_dir": "upstream/openweedlocator",
+      "priority": 5
+    },
+    {
+      "id": "tania",
+      "name": "Tania",
+      "repo": "https://github.com/Tanibox/tania-core",
+      "license": "see repo LICENSE",
+      "language": "Go",
+      "purpose": {"sw": "Usimamizi wa shamba (Go) — mazao, majaribio, kazi.", "en": "Farm management (Go) — crops, trials, tasks."},
+      "contributes": ["fields", "crops", "tasks"],
+      "integration": {"type": "api", "protocol": "REST", "note_sw": "API ya REST kwa logs na mazao."},
+      "upstream_dir": "upstream/tania",
+      "priority": 6
+    },
+    {
+      "id": "openfarm",
+      "name": "OpenFarm",
+      "repo": "https://github.com/openfarmcc/OpenFarm",
+      "license": "see repo LICENSE",
+      "language": "Ruby",
+      "purpose": {"sw": "Maarifa ya kupanda kwa jumuiya — crop guides za wazi.", "en": "Community growing knowledge — open crop guides."},
+      "contributes": ["crop_guides"],
+      "integration": {"type": "api", "protocol": "REST", "note_sw": "Guides zinaweza kuingizwa kwenye knowledge hub offline."},
+      "upstream_dir": "upstream/openfarm",
+      "priority": 7
     },
     {
       "id": "kiwix-farm",
@@ -61,7 +97,7 @@
       "contributes": ["offline_knowledge"],
       "integration": {"type": "reference", "protocol": "—", "note_sw": "Inajumuishwa kwenye knowledge hub ya offline."},
       "upstream_dir": "upstream/kiwix",
-      "priority": 5
+      "priority": 8
     }
   ]
 }

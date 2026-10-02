@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "vertical": "nyumbani",
   "updated": "2026-10-02",
   "projects": [
@@ -52,16 +52,40 @@
       "priority": 4
     },
     {
-      "id": "shelly-action",
-      "name": "Shelly MQTT",
-      "repo": "https://github.com/YOURLS/YOURLS",
-      "license": "MIT (sample adapter)",
-      "language": "Shell",
-      "purpose": {"sw": "Mfano wa adapter ya sockets za Shelly (MQTT).", "en": "Sample adapter for Shelly sockets (MQTT)."},
-      "contributes": ["sockets"],
-      "integration": {"type": "adapter", "protocol": "MQTT", "note_sw": "Mfano tu — badilisha na adapter yako ya Shelly."},
-      "upstream_dir": "upstream/shelly-adapter",
+      "id": "node-red",
+      "name": "Node-RED",
+      "repo": "https://github.com/node-red/node-red",
+      "license": "Apache-2.0",
+      "language": "JavaScript",
+      "purpose": {"sw": "Flows za automation — adapter halisi kwa Shelly/Tasmota/HA na API zote.", "en": "Automation flows — real adapter for Shelly/Tasmota/HA and any API."},
+      "contributes": ["flows", "adapters"],
+      "integration": {"type": "adapter", "protocol": "MQTT/HTTP", "note_sw": "Flow ya Node-RED inatuma Shelly sockets kwenye topic ya MTAALAMU."},
+      "upstream_dir": "upstream/node-red",
       "priority": 5
+    },
+    {
+      "id": "openhab",
+      "name": "openHAB Core",
+      "repo": "https://github.com/openhab/openhab-core",
+      "license": "EPL-2.0",
+      "language": "Java",
+      "purpose": {"sw": "Shina la pili la automation — bindings nyingi za vifaa.", "en": "Second automation hub — many device bindings."},
+      "contributes": ["devices", "things"],
+      "integration": {"type": "mqtt", "protocol": "MQTT (openHAB items)", "note_sw": "Items za openHAB zinaweza kupangwa kwenye topic ya MTAALAMU."},
+      "upstream_dir": "upstream/openhab",
+      "priority": 6
+    },
+    {
+      "id": "homebridge",
+      "name": "Homebridge",
+      "repo": "https://github.com/homebridge/homebridge",
+      "license": "Apache-2.0",
+      "language": "TypeScript",
+      "purpose": {"sw": "Plugin ecosystem — vifaa vya vendor vinazungumza MQTT/HomeKit.", "en": "Plugin ecosystem — vendor devices speak MQTT/HomeKit."},
+      "contributes": ["plugins", "accessories"],
+      "integration": {"type": "adapter", "protocol": "MQTT plugins", "note_sw": "Plugin ya MQTT inaunganisha vifaa vya vendor na gateway."},
+      "upstream_dir": "upstream/homebridge",
+      "priority": 7
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "vertical": "afya",
   "updated": "2026-10-02",
   "projects": [
@@ -52,16 +52,64 @@
       "priority": 4
     },
     {
-      "id": "chispito",
-      "name": "Chispito Wind Generator",
-      "repo": "https://github.com/aqeelat/Chispito-Wind-Generator",
-      "license": "GPL (see repo LICENSE)",
-      "language": "Docs/Hardware",
-      "purpose": {"sw": "Nishati mbadala ya vifaa vya kliniki (wijini ya upepo ya DIY).", "en": "Alternative power for clinic devices (DIY wind turbine)."},
+      "id": "librehealth",
+      "name": "LibreHealth Toolkit",
+      "repo": "https://github.com/LibreHealthIO/lh-toolkit",
+      "license": "MPL-2.0 (see repo LICENSE)",
+      "language": "Java",
+      "purpose": {"sw": "Zana ya EHR ya wazi — msingi wa kliniki na hospitali ndogo.", "en": "Open EHR toolkit — base for clinics and small hospitals."},
+      "contributes": ["patients", "clinical_data"],
+      "integration": {"type": "api", "protocol": "REST", "note_sw": "API ya REST kwa wagonjwa na data ya kliniki."},
+      "upstream_dir": "upstream/librehealth",
+      "priority": 5
+    },
+    {
+      "id": "openemr",
+      "name": "OpenEMR",
+      "repo": "https://github.com/openemr/openemr",
+      "license": "GPL-3.0 (see repo LICENSE)",
+      "language": "PHP",
+      "purpose": {"sw": "EHR kamili yenye billing na FHIR API — tayari kwa kliniki.", "en": "Full EHR with billing and FHIR API — clinic ready."},
+      "contributes": ["patients", "billing", "fhir_api"],
+      "integration": {"type": "api", "protocol": "FHIR/REST", "note_sw": "FHIR API ya OpenEMR kwa uhamishaji wa data."},
+      "upstream_dir": "upstream/openemr",
+      "priority": 6
+    },
+    {
+      "id": "hospitalrun",
+      "name": "HospitalRun",
+      "repo": "https://github.com/HospitalRun/hospitalrun-frontend",
+      "license": "MIT (see repo LICENSE)",
+      "language": "TypeScript",
+      "purpose": {"sw": "Mfumo wa hospitali kwa maeneo yenye internet hafifu (offline-first).", "en": "Hospital system for low-connectivity settings (offline-first)."},
+      "contributes": ["patients", "appointments", "offline_sync"],
+      "integration": {"type": "api", "protocol": "REST/CouchDB sync", "note_sw": "Sync ya offline inafaa maeneo yenye mtandao dhaifu."},
+      "upstream_dir": "upstream/hospitalrun",
+      "priority": 7
+    },
+    {
+      "id": "bahmni",
+      "name": "Bahmni",
+      "repo": "https://github.com/Bahmni/bahmni-core",
+      "license": "see repo LICENSE",
+      "language": "Java/JS",
+      "purpose": {"sw": "Hospitali kamili ya wazi (OpenMRS + Odoo) — dawa, maabara, bima.", "en": "Full open hospital (OpenMRS + Odoo) — meds, lab, billing."},
+      "contributes": ["patients", "pharmacy", "lab_orders"],
+      "integration": {"type": "api", "protocol": "REST", "note_sw": "Inaunganisha OpenMRS na Odoo kwa mzunguko kamili wa hospitali."},
+      "upstream_dir": "upstream/bahmni",
+      "priority": 8
+    },
+    {
+      "id": "libresolar",
+      "name": "LibreSolar Charge Controller",
+      "repo": "https://github.com/LibreSolar/charge-controller-firmware",
+      "license": "Apache-2.0 (see repo LICENSE)",
+      "language": "C++",
+      "purpose": {"sw": "Nishati mbadala ya vifaa vya kliniki (solar charge controller ya wazi).", "en": "Alternative power for clinic devices (open solar charge controller)."},
       "contributes": ["power_reference"],
       "integration": {"type": "reference", "protocol": "—", "note_sw": "Marejeo ya hardware kwa shughuli za FUNDI."},
-      "upstream_dir": "upstream/chispito",
-      "priority": 5
+      "upstream_dir": "upstream/libresolar",
+      "priority": 9
     }
   ]
 }

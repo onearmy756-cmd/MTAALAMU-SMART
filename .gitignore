@@ -1,6 +1,9 @@
 # --- Rust (all crates) ---
 target/
 
+# --- Upstream clones (scripts/clone_iot_repos.sh) ---
+upstream/
+
 # --- Node ---
 node_modules/
 npm-debug.log*

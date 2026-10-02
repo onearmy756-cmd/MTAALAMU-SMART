@@ -14,6 +14,7 @@ defmodule HermesGateway.Router do
   | POST | /hitl/:id/decide | approve/reject (RUHUSU / GHAIRI) |
   | GET  | /missions | missions za HERMES + frames |
   | GET  | /missions/:id | mission moja |
+  | GET  | /iot/summary | verticals, clone registry, devices, agents, hermes |
   | POST | /worker/register | worker (Python) anajitambulisha |
   | GET  | /worker/tasks | worker anapoll kazi |
   | POST | /worker/done | worker anaripotoa kazi |
@@ -105,6 +106,10 @@ defmodule HermesGateway.Router do
     found = Enum.find(HermesGateway.Store.missions(), &(&1.id == id))
     if found, do: send_json(conn, 200, %{ok: true, mission: found}),
       else: send_json(conn, 404, %{ok: false, error: "haipo"})
+  end
+
+  get "/iot/summary" do
+    send_json(conn, 200, HermesGateway.Registry.summary())
   end
 
   post "/worker/register" do

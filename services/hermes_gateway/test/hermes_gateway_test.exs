@@ -1,6 +1,6 @@
 defmodule HermesGatewayTest do
   use ExUnit.Case, async: false
-  alias HermesGateway.{Rules, Fst, Ingest, Store}
+  alias HermesGateway.{Rules, Fst, Ingest, Store, Registry}
 
   setup_all do
     # Rules/Fst zinaanzishwa na Application kupitia test_helper (bila cowboy port conflict:
@@ -59,6 +59,33 @@ defmodule HermesGatewayTest do
       assert res["accepted"] == true
       assert res["intent"] == "open"
       assert res["target"] == "kilimo.irrigation_valve"
+    end
+  end
+
+  describe "registry (iot summary)" do
+    setup do
+      {:ok, _} = Registry.start_link([Path.expand("../../data", __DIR__)])
+      :ok
+    end
+
+    test "verticals 4 + projects + devices + agents kutoka JSON" do
+      s = Registry.summary()
+      assert length(s.verticals) == 4
+      assert s.projects_total >= 30
+      assert s.devices_total >= 12
+      assert s.agents_total >= 20
+      ids = Enum.map(s.verticals, & &1["id"])
+      assert "afya" in ids
+      assert "usalama" in ids
+      assert "nyumbani" in ids
+      assert "kilimo" in ids
+    end
+
+    test "hermes + voice summary zipo" do
+      s = Registry.summary()
+      assert "iot_incident" in s.hermes["pipelines"]
+      assert length(s.hermes["hitl_gates"]) >= 4
+      assert "hermes" in s.voice["wake_words"]
     end
   end
 

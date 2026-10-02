@@ -56,7 +56,7 @@
       "actuators": [],
       "risk": "medium",
       "hitl_required": false,
-      "source_projects": ["frigate", "motioneye"],
+      "source_projects": ["frigate", "motioneye", "viseron"],
       "demo": true
     },
     {
@@ -92,7 +92,7 @@
       "actuators": [{"id": "switch", "label": {"sw": "Washa/Zima", "en": "On/Off"}, "hitl_required": false}],
       "risk": "low",
       "hitl_required": false,
-      "source_projects": ["tasmota", "shelly-action"],
+      "source_projects": ["tasmota", "node-red"],
       "demo": true
     },
     {
@@ -104,7 +104,7 @@
       "actuators": [{"id": "switch", "label": {"sw": "Washa/Zima", "en": "On/Off"}, "hitl_required": false}],
       "risk": "medium",
       "hitl_required": false,
-      "source_projects": ["tasmota", "shelly-action"],
+      "source_projects": ["tasmota", "node-red"],
       "demo": true
     },
     {
@@ -131,7 +131,7 @@
       "actuators": [],
       "risk": "medium",
       "hitl_required": false,
-      "source_projects": ["smartfarmer", "openag-vera"],
+      "source_projects": ["meshtastic", "farmbot"],
       "demo": true
     },
     {
@@ -146,7 +146,7 @@
       "actuators": [],
       "risk": "medium",
       "hitl_required": false,
-      "source_projects": ["smartfarmer"],
+      "source_projects": ["meshtastic"],
       "demo": true
     },
     {
@@ -158,7 +158,7 @@
       "actuators": [{"id": "open", "label": {"sw": "Fungua valve", "en": "Open valve"}, "hitl_required": true}],
       "risk": "high",
       "hitl_required": true,
-      "source_projects": ["openirrigation", "farmos"],
+      "source_projects": ["opensprinkler", "farmos"],
       "demo": true
     }
   ]

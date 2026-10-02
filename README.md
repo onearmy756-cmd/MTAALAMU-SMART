@@ -60,6 +60,39 @@ na `pip3 install tensorflow-cpu numpy` — bridges zipo `scripts/ai_pytorch.py`,
 
 **HITL**: skills za `guide` (hardware) zinakatalia `--approve` isipo; AI/web actions zinapita kwa usalama.
 
+## IoT + HERMES (afya · usalama · nyumbani · kilimo)
+
+Verticals 4 zinaongozwa na **HERMES** (Elixir gateway): agents zote — internal 10,
+IoT specialists 4 na workers za OSS — ni **watumishi wa HERMES**, na **HITL** ni gate
+ya kila tenda la hatari. LLM haihesabu (R-1): Rust/R ndizo zinahesabu.
+
+| Sehemu | Mahali |
+|---|---|
+| Registry ya miradi ya clone (33) | `data/iot/registry/*.json` + `data/iot/hermes.json` |
+| Agents za OSS (23) | `data/iot/agents_oss.json` |
+| Vifaa (12) + rules | `data/iot/devices.json`, `data/iot/telemetry_rules.json` |
+| Sauti: Whisper → FST | `data/iot/voice_fst.json` |
+| Gateway (Elixir) | `services/hermes_gateway` — :8088 |
+| Workers (Whisper/LangChain/Crawl4AI) | `services/hermes_agents` — :8090 |
+| UI tab | web-r → **🌐 IoT + HERMES** |
+
+```bash
+# 1) Clone miradi YOTE ya bure (shallow → upstream/, haipo kwenye git)
+bash scripts/clone_iot_repos.sh --list          # orodhesha + hali
+bash scripts/clone_iot_repos.sh                 # verticals 4 + hermes-agent
+bash scripts/clone_iot_repos.sh --only kilimo   # vertical moja
+bash scripts/clone_iot_repos.sh --agents        # + agents za OSS (kubwa)
+
+# 2) Gateway (Elixir) + workers (Python)
+cd services/hermes_gateway && mix deps.get && HERMES_GATEWAY_PORT=8088 mix run --no-halt
+cd services/hermes_agents && pip install -r requirements.txt && python3 worker.py
+
+# 3) UI
+make run-ui   # → tab 🌐 IoT + HERMES
+```
+
+Amri za valve/lock/siren/dawa **hazitekelezwi** bila HITL (`data/iot/hermes.json` gates).
+
 UI:
 
 ```bash
@@ -76,8 +109,9 @@ Header: **English** ⇄ **Kiswahili** (`data/locales`, `web-r/R/i18n.R`).
 ## Muundo
 
 ```
-web-r/          R/Shiny dashboard (LIVE, AGENTIC, FORMULA, DIAG, MAP)
+web-r/          R/Shiny dashboard (LIVE, AGENTIC, IoT+HERMES, FORMULA, DIAG, MAP)
 engine-rust/    Rust CLI: calc, diagnose, agentic, deep, sysprobe, remediate, wiring, deploy
+services/       HERMES Gateway (Elixir) + Workers (Whisper/LangChain/Crawl4AI)
 fundi-mobile/   🩺 FUNDI MOBILE — daktari wa simu (agentic, HITL consent, Android/iPhone/button)
 fundi-deploy/   💻 Fundi Deploy — LAN imaging (P2+P3 kamili)
 data/           JSON (formulas, agents, vision, geo, mobile/…)

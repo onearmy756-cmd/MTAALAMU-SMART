@@ -84,6 +84,9 @@ web-r/
 4. **VISUALIZATION** — KPI, bar/pie/line, ramani ya TZS, mtandao, 5-agent flow,
    heatmap, ratiba ya mwaka 1, dashboard ya mteja
 5. **RAMANI / MAP** — ramani halisi ya Tanzania (angalia hapo chini)
+6. **🌐 IoT + HERMES** — verticals 4 (afya/usalama/nyumbani/kilimo), clone registry ya
+   GitHub, vifaa 12, agents za OSS 23, sauti Whisper→FST na HITL kupitia gateway (:8088).
+   Offline: registry inasomwa moja kwa moja kutoka `data/iot/*.json`.
 
 ## RAMANI HALISI (MAP tab)
 

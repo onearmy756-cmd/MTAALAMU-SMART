@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "vertical": "usalama",
   "updated": "2026-10-02",
   "projects": [
@@ -40,6 +40,54 @@
       "priority": 3
     },
     {
+      "id": "viseron",
+      "name": "Viseron",
+      "repo": "https://github.com/roflcoopter/viseron",
+      "license": "see repo LICENSE",
+      "language": "Python",
+      "purpose": {"sw": "NVR ya kujifunga (self-hosted) yenye object detection na MQTT.", "en": "Self-hosted NVR with object detection and MQTT."},
+      "contributes": ["cctv", "object_detection"],
+      "integration": {"type": "mqtt", "protocol": "MQTT", "note_sw": "Events za detection zinatumwa MQTT."},
+      "upstream_dir": "upstream/viseron",
+      "priority": 4
+    },
+    {
+      "id": "moonfire-nvr",
+      "name": "Moonfire NVR",
+      "repo": "https://github.com/scottlamb/moonfire-nvr",
+      "license": "see repo LICENSE",
+      "language": "Rust",
+      "purpose": {"sw": "NVR nyepesi ya Rust — rekodi za muda mrefu kwa gharama ndogo.", "en": "Lightweight Rust NVR — long recordings at low cost."},
+      "contributes": ["cctv", "recordings"],
+      "integration": {"type": "api", "protocol": "HTTP API", "note_sw": "API nyepesi kwa kamera na rekodi."},
+      "upstream_dir": "upstream/moonfire-nvr",
+      "priority": 5
+    },
+    {
+      "id": "kerberos-agent",
+      "name": "Kerberos Agent",
+      "repo": "https://github.com/kerberos-io/agent",
+      "license": "see repo LICENSE",
+      "language": "Go",
+      "purpose": {"sw": "Agent ya kamera yenye AI kwenye ukingo (edge) — inaunganishwa kwa urahisi.", "en": "Edge camera agent with AI — easy to connect."},
+      "contributes": ["cctv", "edge_ai"],
+      "integration": {"type": "api", "protocol": "REST/MQTT", "note_sw": "Events zinatumwa kwenye gateway ya MTAALAMU."},
+      "upstream_dir": "upstream/kerberos-agent",
+      "priority": 6
+    },
+    {
+      "id": "openipc",
+      "name": "OpenIPC Firmware",
+      "repo": "https://github.com/OpenIPC/firmware",
+      "license": "see repo LICENSE",
+      "language": "C",
+      "purpose": {"sw": "Firmware ya wazi kwa kamera za IP — inaondoa mate ya vendor.", "en": "Open firmware for IP cameras — removes vendor lock-in."},
+      "contributes": ["camera_firmware"],
+      "integration": {"type": "reference", "protocol": "RTSP/ONVIF", "note_sw": "Kamera zilizoflashwa OpenIPC zinatumia RTSP kama kawaida."},
+      "upstream_dir": "upstream/openipc",
+      "priority": 7
+    },
+    {
       "id": "hassio-supervisor",
       "name": "Home Assistant Supervisor",
       "repo": "https://github.com/home-assistant/supervisor",
@@ -49,7 +97,7 @@
       "contributes": ["supervision"],
       "integration": {"type": "reference", "protocol": "—", "note_sw": "Mfano bora wa HITL policy kwa actuation."},
       "upstream_dir": "upstream/hass-supervisor",
-      "priority": 4
+      "priority": 8
     }
   ]
 }

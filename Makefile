@@ -2,7 +2,7 @@
 #   make build | test | health | run-ui | deep
 #   make mobile-build | mobile-run | mobile-release | mobile-clean
 
-.PHONY: build release test health deep sysprobe agentic run-ui mobile-build mobile-run mobile-release mobile-clean clean
+.PHONY: build release test health deep sysprobe agentic run-ui clone-iot mobile-build mobile-run mobile-release mobile-clean clean
 
 ENGINE := engine-rust
 ENGINE_BIN := $(ENGINE)/target/release/mtaalamu
@@ -39,6 +39,14 @@ agentic: build
 
 run-ui:
 	Rscript -e "shiny::runApp('web-r', port=3838, host='127.0.0.1')"
+
+# --- IoT + HERMES (afya · usalama · nyumbani · kilimo) ---
+clone-iot:
+	bash scripts/clone_iot_repos.sh --list
+	@echo ""
+	@echo "Clone zote:    bash scripts/clone_iot_repos.sh"
+	@echo "Vertical moja: bash scripts/clone_iot_repos.sh --only kilimo"
+	@echo "+ agents OSS:  bash scripts/clone_iot_repos.sh --agents"
 
 # --- FUNDI MOBILE 🩺 ---
 mobile-build:

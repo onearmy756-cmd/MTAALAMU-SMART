@@ -38,6 +38,7 @@ Kanuni: **JSON ndio pekee ya interop** (Rust ↔ Elixir gateway ↔ Python worke
 ```
 - `integration.type`: `api | mqtt | adapter | reference`.
 - Clone halisi: `bash scripts/clone_iot_repos.sh` (shallow → `upstream/<id>`, .gitignore'd).
+  Flags: `--list`, `--only <vertical>`, `--id <project>`, `--agents`, `--force`, `--limit N`.
 
 ## 3. `data/iot/devices.json` — aina za vifaa (unified)
 
