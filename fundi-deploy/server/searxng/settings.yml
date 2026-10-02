@@ -1,0 +1,14 @@
+# SearXNG ya MTAALAMU SMART — self-hosted (JSON API + Kiswahili)
+# Endesha: docker compose -f fundi-deploy/server/searxng/docker-compose.yml up -d
+# Kisha: export SEARXNG_URL=http://127.0.0.1:8888
+use_default_settings: true
+server:
+  secret_key: "mtaalamu-searxng-change-me"
+  limiter: false
+  image_proxy: false
+search:
+  formats:
+    - html
+    - json
+  language: sw
+  default_lang: sw

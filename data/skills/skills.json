@@ -1,0 +1,3639 @@
+{
+ "version": "1.1.0",
+ "note": "Skills ZOTE za trades zote (kutoka data/trades.json) + skills za AI/web/PDF. Rust (skills.rs) inasoma file hii pekee. Formula = muda/dakika (expr engine). Rejenerisha: python3 scripts/gen_skills_from_trades.py",
+ "trades_source": "data/trades.json",
+ "skills": [
+  {
+   "id": "computer.kusanidi_os_windows",
+   "trade": "computer",
+   "name_sw": "Kusanidi OS Windows",
+   "name_en": "Kusanidi OS Windows",
+   "difficulty": 2,
+   "formula": "muda = 45 + (num_programs * 5)",
+   "inputs": [
+    {
+     "name": "num_programs",
+     "label": "num_programs",
+     "en": "num_programs",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Bootable USB",
+    "License key",
+    "Screwdriver set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "computer.kutoa_virus_na_malware",
+   "trade": "computer",
+   "name_sw": "Kutoa virus na malware",
+   "name_en": "Kutoa virus na malware",
+   "difficulty": 2,
+   "formula": "muda = 30 + (files_gb * 2)",
+   "inputs": [
+    {
+     "name": "files_gb",
+     "label": "files_gb",
+     "en": "files_gb",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Antivirus boot USB",
+    "External HDD"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "computer.kubadilisha_ram",
+   "trade": "computer",
+   "name_sw": "Kubadilisha RAM",
+   "name_en": "Kubadilisha RAM",
+   "difficulty": 1,
+   "formula": "muda = 15 + (ram_slots * 3)",
+   "inputs": [
+    {
+     "name": "ram_slots",
+     "label": "ram_slots",
+     "en": "ram_slots",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Screwdriver (Phillips #0)",
+    "Anti-static wrist strap"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "computer.kubadilisha_hard_disk_kwenda_ssd",
+   "trade": "computer",
+   "name_sw": "Kubadilisha Hard Disk kwenda SSD",
+   "name_en": "Kubadilisha Hard Disk kwenda SSD",
+   "difficulty": 3,
+   "formula": "muda = 60 + (data_gb * 0.5)",
+   "inputs": [
+    {
+     "name": "data_gb",
+     "label": "data_gb",
+     "en": "data_gb",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Screwdriver set",
+    "SATA-to-USB adapter",
+    "Cloning software"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "computer.usindikaji_wa_psu",
+   "trade": "computer",
+   "name_sw": "Usindikaji wa PSU",
+   "name_en": "Usindikaji wa PSU",
+   "difficulty": 3,
+   "formula": "muda = 40 + (wattage / 100)",
+   "inputs": [
+    {
+     "name": "wattage",
+     "label": "wattage",
+     "en": "wattage",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Screwdriver set",
+    "Multimeter",
+    "Cable ties"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "computer.kutengeneza_fan_na_cooling",
+   "trade": "computer",
+   "name_sw": "Kutengeneza fan na cooling",
+   "name_en": "Kutengeneza fan na cooling",
+   "difficulty": 2,
+   "formula": "muda = 30 + (fans_count * 5)",
+   "inputs": [
+    {
+     "name": "fans_count",
+     "label": "fans_count",
+     "en": "fans_count",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Screwdriver set",
+    "Compressed air",
+    "Thermal paste"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "computer.network_setup_lan_wifi",
+   "trade": "computer",
+   "name_sw": "Network setup (LAN/WiFi)",
+   "name_en": "Network setup (LAN/WiFi)",
+   "difficulty": 2,
+   "formula": "muda = 30 + (devices * 5)",
+   "inputs": [
+    {
+     "name": "devices",
+     "label": "devices",
+     "en": "devices",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Ethernet cable tester",
+    "Router config access"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "computer.kutatua_blue_screen_bsod",
+   "trade": "computer",
+   "name_sw": "Kutatua blue screen (BSOD)",
+   "name_en": "Kutatua blue screen (BSOD)",
+   "difficulty": 4,
+   "formula": "muda = 60 + (stop_code_complexity * 15)",
+   "inputs": [
+    {
+     "name": "stop_code_complexity",
+     "label": "stop_code_complexity",
+     "en": "stop_code_complexity",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Bootable USB",
+    "MemTest86",
+    "Hirens BootCD"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "simu.kubadilisha_skrini_ya_simu",
+   "trade": "simu",
+   "name_sw": "Kubadilisha skrini ya simu",
+   "name_en": "Kubadilisha skrini ya simu",
+   "difficulty": 4,
+   "formula": "muda = 45 + (screen_inches * 3)",
+   "inputs": [
+    {
+     "name": "screen_inches",
+     "label": "screen_inches",
+     "en": "screen_inches",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Heat gun",
+    "Suction cup",
+    "Screwdriver set (Pentalobe)",
+    "Isopropyl alcohol"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "simu.kubadilisha_betri_ya_simu",
+   "trade": "simu",
+   "name_sw": "Kubadilisha betri ya simu",
+   "name_en": "Kubadilisha betri ya simu",
+   "difficulty": 3,
+   "formula": "muda = 30 + (battery_mah / 500)",
+   "inputs": [
+    {
+     "name": "battery_mah",
+     "label": "battery_mah",
+     "en": "battery_mah",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Plastic pry tool",
+    "Isopropyl alcohol",
+    "Screwdriver set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "simu.kutoa_frp_factory_reset_protection",
+   "trade": "simu",
+   "name_sw": "Kutoa FRP (Factory Reset Protection)",
+   "name_en": "Kutoa FRP (Factory Reset Protection)",
+   "difficulty": 4,
+   "formula": "muda = 30 + (lock_level * 10)",
+   "inputs": [
+    {
+     "name": "lock_level",
+     "label": "lock_level",
+     "en": "lock_level",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "FRP unlock tool",
+    "USB cable",
+    "Computer"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "simu.kufuta_password_pattern_lock",
+   "trade": "simu",
+   "name_sw": "Kufuta password / pattern lock",
+   "name_en": "Kufuta password / pattern lock",
+   "difficulty": 3,
+   "formula": "muda = 20 + (encryption_level * 5)",
+   "inputs": [
+    {
+     "name": "encryption_level",
+     "label": "encryption_level",
+     "en": "encryption_level",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "ADB tools",
+    "SP Flash Tool (MediaTek)",
+    "USB cable"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "simu.kusindika_simu_baada_ya_maji_water_damage",
+   "trade": "simu",
+   "name_sw": "Kusindika simu baada ya maji (water damage)",
+   "name_en": "Kusindika simu baada ya maji (water damage)",
+   "difficulty": 5,
+   "formula": "muda = 120 + (immersion_min * 5)",
+   "inputs": [
+    {
+     "name": "immersion_min",
+     "label": "immersion_min",
+     "en": "immersion_min",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Isopropyl alcohol 99%",
+    "Ultrasonic cleaner",
+    "Soldering station",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "umeme.ukubwa_wa_cable_voltage_drop",
+   "trade": "umeme",
+   "name_sw": "Ukubwa wa cable (voltage drop)",
+   "name_en": "Ukubwa wa cable (voltage drop)",
+   "difficulty": 3,
+   "formula": "vd = (M * L * I * rho) / A",
+   "inputs": [
+    {
+     "name": "M",
+     "label": "M",
+     "en": "M",
+     "default": 1
+    },
+    {
+     "name": "L",
+     "label": "L",
+     "en": "L",
+     "default": 1
+    },
+    {
+     "name": "I",
+     "label": "I",
+     "en": "I",
+     "default": 1
+    },
+    {
+     "name": "rho",
+     "label": "rho",
+     "en": "rho",
+     "default": 1
+    },
+    {
+     "name": "A",
+     "label": "A",
+     "en": "A",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Clamp ammeter",
+    "Cable stripper",
+    "Screwdriver set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "umeme.chagua_breaker_sahihi",
+   "trade": "umeme",
+   "name_sw": "Chagua breaker sahihi",
+   "name_en": "Chagua breaker sahihi",
+   "difficulty": 2,
+   "formula": "ib = (P / (V * pf)) * 1.25",
+   "inputs": [
+    {
+     "name": "P",
+     "label": "P",
+     "en": "P",
+     "default": 1
+    },
+    {
+     "name": "V",
+     "label": "V",
+     "en": "V",
+     "default": 1
+    },
+    {
+     "name": "pf",
+     "label": "pf",
+     "en": "pf",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Insulated screwdriver",
+    "Breaker sizing chart"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "umeme.usindi_wa_switch_socket",
+   "trade": "umeme",
+   "name_sw": "Usindi wa switch/socket",
+   "name_en": "Usindi wa switch/socket",
+   "difficulty": 2,
+   "formula": "muda = 20 + (units * 5)",
+   "inputs": [
+    {
+     "name": "units",
+     "label": "units",
+     "en": "units",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Test pen",
+    "Insulated screwdriver",
+    "Plier",
+    "Cable stripper"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "umeme.kutatua_short_circuit",
+   "trade": "umeme",
+   "name_sw": "Kutatua short circuit",
+   "name_en": "Kutatua short circuit",
+   "difficulty": 4,
+   "formula": "muda = 60 + (circuit_count * 10)",
+   "inputs": [
+    {
+     "name": "circuit_count",
+     "label": "circuit_count",
+     "en": "circuit_count",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Continuity tester",
+    "Insulation tape",
+    "Cable tracer"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "umeme.usindi_wa_rcd_earth_leakage",
+   "trade": "umeme",
+   "name_sw": "Usindi wa RCD (earth leakage)",
+   "name_en": "Usindi wa RCD (earth leakage)",
+   "difficulty": 3,
+   "formula": "muda = 45 + (subcircuits * 5)",
+   "inputs": [
+    {
+     "name": "subcircuits",
+     "label": "subcircuits",
+     "en": "subcircuits",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "RCD tester",
+    "Insulated screwdriver",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "umeme.usalama_wa_umeme_ukaguzi",
+   "trade": "umeme",
+   "name_sw": "Usalama wa umeme - ukaguzi",
+   "name_en": "Usalama wa umeme - ukaguzi",
+   "difficulty": 3,
+   "formula": "muda = 30 + (rooms * 5)",
+   "inputs": [
+    {
+     "name": "rooms",
+     "label": "rooms",
+     "en": "rooms",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Megger (earth resistance)",
+    "Multimeter",
+    "Socket tester"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "umeme.usindi_wa_distribution_box",
+   "trade": "umeme",
+   "name_sw": "Usindi wa distribution box",
+   "name_en": "Usindi wa distribution box",
+   "difficulty": 4,
+   "formula": "muda = 90 + (breakers * 5)",
+   "inputs": [
+    {
+     "name": "breakers",
+     "label": "breakers",
+     "en": "breakers",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Insulated screwdriver set",
+    "Cable stripper",
+    "Label maker",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "umeme.kupima_uwezo_wa_transformer",
+   "trade": "umeme",
+   "name_sw": "Kupima uwezo wa transformer",
+   "name_en": "Kupima uwezo wa transformer",
+   "difficulty": 4,
+   "formula": "kva = (V * I * 1.732) / 1000",
+   "inputs": [
+    {
+     "name": "V",
+     "label": "V",
+     "en": "V",
+     "default": 1
+    },
+    {
+     "name": "I",
+     "label": "I",
+     "en": "I",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Clamp ammeter",
+    "Multimeter",
+    "Thermal camera"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "maji.mtiririko_wa_maji_kwenye_bomu",
+   "trade": "maji",
+   "name_sw": "Mtiririko wa maji kwenye bomu",
+   "name_en": "Mtiririko wa maji kwenye bomu",
+   "difficulty": 2,
+   "formula": "q = pi * pow(d / 2000, 2) * v * 1000",
+   "inputs": [
+    {
+     "name": "pi",
+     "label": "pi",
+     "en": "pi",
+     "default": 1
+    },
+    {
+     "name": "pow",
+     "label": "pow",
+     "en": "pow",
+     "default": 1
+    },
+    {
+     "name": "d",
+     "label": "d",
+     "en": "d",
+     "default": 1
+    },
+    {
+     "name": "v",
+     "label": "v",
+     "en": "v",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Pipe cutter",
+    "Adjustable wrench",
+    "Teflon tape",
+    "Pressure gauge"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "maji.kichwa_cha_pampu_tdh",
+   "trade": "maji",
+   "name_sw": "Kichwa cha pampu (TDH)",
+   "name_en": "Kichwa cha pampu (TDH)",
+   "difficulty": 3,
+   "formula": "tdh = Hs + Hf + Hp",
+   "inputs": [
+    {
+     "name": "Hs",
+     "label": "Hs",
+     "en": "Hs",
+     "default": 1
+    },
+    {
+     "name": "Hf",
+     "label": "Hf",
+     "en": "Hf",
+     "default": 1
+    },
+    {
+     "name": "Hp",
+     "label": "Hp",
+     "en": "Hp",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Pressure gauge",
+    "Flow meter",
+    "Pipe wrench"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "maji.kutatua_uvujo_wa_bomu",
+   "trade": "maji",
+   "name_sw": "Kutatua uvujo wa bomu",
+   "name_en": "Kutatua uvujo wa bomu",
+   "difficulty": 3,
+   "formula": "muda = 45 + (pipe_diameter_mm * 0.2)",
+   "inputs": [
+    {
+     "name": "pipe_diameter_mm",
+     "label": "pipe_diameter_mm",
+     "en": "pipe_diameter_mm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Pipe wrench",
+    "Hacksaw",
+    "Plumber's putty",
+    "PTFE tape"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "maji.usindi_wa_sink_na_toilet",
+   "trade": "maji",
+   "name_sw": "Usindi wa sink na toilet",
+   "name_en": "Usindi wa sink na toilet",
+   "difficulty": 3,
+   "formula": "muda = 60 + (fixtures * 15)",
+   "inputs": [
+    {
+     "name": "fixtures",
+     "label": "fixtures",
+     "en": "fixtures",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Plunger",
+    "Toilet auger",
+    "Adjustable wrench",
+    "Sealant gun"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "maji.kusafisha_sewer_drain_blockage",
+   "trade": "maji",
+   "name_sw": "Kusafisha sewer / drain blockage",
+   "name_en": "Kusafisha sewer / drain blockage",
+   "difficulty": 2,
+   "formula": "muda = 30 + (blockage_meters * 10)",
+   "inputs": [
+    {
+     "name": "blockage_meters",
+     "label": "blockage_meters",
+     "en": "blockage_meters",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Drain snake (auger)",
+    "High pressure water jet",
+    "Gloves"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "maji.upanuzi_wa_dharura_ya_heater",
+   "trade": "maji",
+   "name_sw": "Upanuzi wa dharura ya heater",
+   "name_en": "Upanuzi wa dharura ya heater",
+   "difficulty": 3,
+   "formula": "muda = 60 + (kw * 10)",
+   "inputs": [
+    {
+     "name": "kw",
+     "label": "kw",
+     "en": "kw",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Adjustable wrench",
+    "Multimeter",
+    "Heater element tester"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "maji.usindi_wa_tanki_la_maji",
+   "trade": "maji",
+   "name_sw": "Usindi wa tanki la maji",
+   "name_en": "Usindi wa tanki la maji",
+   "difficulty": 3,
+   "formula": "muda = 90 + (liters / 100)",
+   "inputs": [
+    {
+     "name": "liters",
+     "label": "liters",
+     "en": "liters",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Pipe wrench",
+    "Teflon tape",
+    "Level tool",
+    "Float valve"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "maji.shinikizo_la_maji_testing",
+   "trade": "maji",
+   "name_sw": "Shinikizo la maji - testing",
+   "name_en": "Shinikizo la maji - testing",
+   "difficulty": 2,
+   "formula": "bar_test = pressure_min + (elevation * 0.1)",
+   "inputs": [
+    {
+     "name": "pressure_min",
+     "label": "pressure_min",
+     "en": "pressure_min",
+     "default": 1
+    },
+    {
+     "name": "elevation",
+     "label": "elevation",
+     "en": "elevation",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Pressure gauge",
+    "Stop watch",
+    "Bucket (known volume)"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.kubadilisha_mafuta_ya_injini",
+   "trade": "gari",
+   "name_sw": "Kubadilisha mafuta ya injini",
+   "name_en": "Kubadilisha mafuta ya injini",
+   "difficulty": 1,
+   "formula": "muda = 30 + (liters * 2)",
+   "inputs": [
+    {
+     "name": "liters",
+     "label": "liters",
+     "en": "liters",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Oil filter wrench",
+    "Drain pan",
+    "Jack + stands",
+    "Funnel"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.kugundua_tatizo_la_kupumua_diagnosis",
+   "trade": "gari",
+   "name_sw": "Kugundua tatizo la kupumua (diagnosis)",
+   "name_en": "Kugundua tatizo la kupumua (diagnosis)",
+   "difficulty": 4,
+   "formula": "muda = 60 + (symptoms_count * 10)",
+   "inputs": [
+    {
+     "name": "symptoms_count",
+     "label": "symptoms_count",
+     "en": "symptoms_count",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "OBD-II scanner",
+    "Multimeter",
+    "Compression tester",
+    "Stethoscope"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.kubadilisha_brake_pads",
+   "trade": "gari",
+   "name_sw": "Kubadilisha brake pads",
+   "name_en": "Kubadilisha brake pads",
+   "difficulty": 2,
+   "formula": "muda = 45 + (wheels_count * 10)",
+   "inputs": [
+    {
+     "name": "wheels_count",
+     "label": "wheels_count",
+     "en": "wheels_count",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Jack + stands",
+    "Lug wrench",
+    "C-clamp",
+    "Torque wrench"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.engine_tune_up_candles_filters",
+   "trade": "gari",
+   "name_sw": "Engine tune-up (candles + filters)",
+   "name_en": "Engine tune-up (candles + filters)",
+   "difficulty": 3,
+   "formula": "muda = 90 + (cylinders * 5)",
+   "inputs": [
+    {
+     "name": "cylinders",
+     "label": "cylinders",
+     "en": "cylinders",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spark plug socket",
+    "Feeler gauge",
+    "Screwdriver set",
+    "Compressed air"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.kubadilisha_tyre_na_balance",
+   "trade": "gari",
+   "name_sw": "Kubadilisha tyre na balance",
+   "name_en": "Kubadilisha tyre na balance",
+   "difficulty": 2,
+   "formula": "muda = 20 + (tyres * 10)",
+   "inputs": [
+    {
+     "name": "tyres",
+     "label": "tyres",
+     "en": "tyres",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tyre machine",
+    "Wheel balancer",
+    "Torque wrench",
+    "Jack"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.kutatua_overheating",
+   "trade": "gari",
+   "name_sw": "Kutatua overheating",
+   "name_en": "Kutatua overheating",
+   "difficulty": 4,
+   "formula": "muda = 60 + (temp_delta * 0.5)",
+   "inputs": [
+    {
+     "name": "temp_delta",
+     "label": "temp_delta",
+     "en": "temp_delta",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Coolant pressure tester",
+    "Drain pan",
+    "Thermometer",
+    "Hose clamps"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.kubadilisha_clutch_assembly",
+   "trade": "gari",
+   "name_sw": "Kubadilisha clutch assembly",
+   "name_en": "Kubadilisha clutch assembly",
+   "difficulty": 5,
+   "formula": "muda = 240 + (engine_cc / 10)",
+   "inputs": [
+    {
+     "name": "engine_cc",
+     "label": "engine_cc",
+     "en": "engine_cc",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Engine hoist / Jack",
+    "Clutch alignment tool",
+    "Torque wrench",
+    "Spanner set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.transmission_gearbox_diagnosis",
+   "trade": "gari",
+   "name_sw": "Transmission (gearbox) diagnosis",
+   "name_en": "Transmission (gearbox) diagnosis",
+   "difficulty": 5,
+   "formula": "muda = 120 + (gears_count * 10)",
+   "inputs": [
+    {
+     "name": "gears_count",
+     "label": "gears_count",
+     "en": "gears_count",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Transmission jack",
+    "Dial indicator",
+    "Torque wrench",
+    "Feeler gauge"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.kubadilisha_starter_na_alternator",
+   "trade": "gari",
+   "name_sw": "Kubadilisha starter na alternator",
+   "name_en": "Kubadilisha starter na alternator",
+   "difficulty": 3,
+   "formula": "muda = 60 + (engine_cylinders * 5)",
+   "inputs": [
+    {
+     "name": "engine_cylinders",
+     "label": "engine_cylinders",
+     "en": "engine_cylinders",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spanner set",
+    "Multimeter",
+    "Jack + stands",
+    "Battery tester"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gari.suspension_shock_absorber_badilisha",
+   "trade": "gari",
+   "name_sw": "Suspension (shock absorber) badilisha",
+   "name_en": "Suspension (shock absorber) badilisha",
+   "difficulty": 4,
+   "formula": "muda = 60 + (axles_count * 20)",
+   "inputs": [
+    {
+     "name": "axles_count",
+     "label": "axles_count",
+     "en": "axles_count",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spring compressor",
+    "Torque wrench",
+    "Spanner set",
+    "Jack + stands"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.ukubwa_wa_ac_btu_to_tzs",
+   "trade": "hvac",
+   "name_sw": "Ukubwa wa AC (BTU to TZS)",
+   "name_en": "Ukubwa wa AC (BTU to TZS)",
+   "difficulty": 2,
+   "formula": "btu = room_area_sqm * 500; price_tzs = btu * 700",
+   "inputs": [
+    {
+     "name": "room_area_sqm",
+     "label": "room_area_sqm",
+     "en": "room_area_sqm",
+     "default": 1
+    },
+    {
+     "name": "price_tzs",
+     "label": "price_tzs",
+     "en": "price_tzs",
+     "default": 1
+    },
+    {
+     "name": "btu",
+     "label": "btu",
+     "en": "btu",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tape measure",
+    "Thermometer",
+    "BTU calculator"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.usindi_wa_ac_split_unit",
+   "trade": "hvac",
+   "name_sw": "Usindi wa AC split unit",
+   "name_en": "Usindi wa AC split unit",
+   "difficulty": 3,
+   "formula": "muda = 120 + (btu / 2000)",
+   "inputs": [
+    {
+     "name": "btu",
+     "label": "btu",
+     "en": "btu",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Manifold gauge",
+    "Vacuum pump",
+    "Torque wrench",
+    "Level tool",
+    "Drill"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.kugeuza_freon_gas_recharge",
+   "trade": "hvac",
+   "name_sw": "Kugeuza freon (gas recharge)",
+   "name_en": "Kugeuza freon (gas recharge)",
+   "difficulty": 3,
+   "formula": "muda = 45 + (btu / 3000)",
+   "inputs": [
+    {
+     "name": "btu",
+     "label": "btu",
+     "en": "btu",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Manifold gauge",
+    "R410A/R32 gas cylinder",
+    "Leak detector"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.kusafisha_coil_na_filter",
+   "trade": "hvac",
+   "name_sw": "Kusafisha coil na filter",
+   "name_en": "Kusafisha coil na filter",
+   "difficulty": 1,
+   "formula": "muda = 30 + (indoor_units * 15)",
+   "inputs": [
+    {
+     "name": "indoor_units",
+     "label": "indoor_units",
+     "en": "indoor_units",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spray bottle (coil cleaner)",
+    "Water hose",
+    "Brush",
+    "Screwdriver"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.kutatua_tatizo_la_haitoi_baridi",
+   "trade": "hvac",
+   "name_sw": "Kutatua tatizo la haitoi baridi",
+   "name_en": "Kutatua tatizo la haitoi baridi",
+   "difficulty": 4,
+   "formula": "muda = 60 + (error_code_complexity * 10)",
+   "inputs": [
+    {
+     "name": "error_code_complexity",
+     "label": "error_code_complexity",
+     "en": "error_code_complexity",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Manifold gauge",
+    "Multimeter",
+    "Thermometer",
+    "Leak detector"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.ukarabati_wa_kompressor",
+   "trade": "hvac",
+   "name_sw": "Ukarabati wa kompressor",
+   "name_en": "Ukarabati wa kompressor",
+   "difficulty": 5,
+   "formula": "muda = 180 + (hp * 30)",
+   "inputs": [
+    {
+     "name": "hp",
+     "label": "hp",
+     "en": "hp",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Manifold gauge",
+    "Vacuum pump",
+    "Torque wrench",
+    "Capacitor tester"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.duct_cleaning_central_ac",
+   "trade": "hvac",
+   "name_sw": "Duct cleaning (central AC)",
+   "name_en": "Duct cleaning (central AC)",
+   "difficulty": 2,
+   "formula": "muda = 60 + (ducts_m * 3)",
+   "inputs": [
+    {
+     "name": "ducts_m",
+     "label": "ducts_m",
+     "en": "ducts_m",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Vacuum (HEPA)",
+    "Duct brush",
+    "Air compressor"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.thermostat_usindi_na_setting",
+   "trade": "hvac",
+   "name_sw": "Thermostat usindi na setting",
+   "name_en": "Thermostat usindi na setting",
+   "difficulty": 2,
+   "formula": "muda = 30 + (zones * 10)",
+   "inputs": [
+    {
+     "name": "zones",
+     "label": "zones",
+     "en": "zones",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Screwdriver",
+    "Level tool",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.kupima_uwezo_wa_fan_blower",
+   "trade": "hvac",
+   "name_sw": "Kupima uwezo wa fan blower",
+   "name_en": "Kupima uwezo wa fan blower",
+   "difficulty": 3,
+   "formula": "cfm = (rpm * fan_diameter_in * pi) / 60",
+   "inputs": [
+    {
+     "name": "rpm",
+     "label": "rpm",
+     "en": "rpm",
+     "default": 1
+    },
+    {
+     "name": "fan_diameter_in",
+     "label": "fan_diameter_in",
+     "en": "fan_diameter_in",
+     "default": 1
+    },
+    {
+     "name": "pi",
+     "label": "pi",
+     "en": "pi",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Anemometer",
+    "Tachometer",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "hvac.kutatua_sauti_kubwa_kwa_ac",
+   "trade": "hvac",
+   "name_sw": "Kutatua sauti kubwa kwa AC",
+   "name_en": "Kutatua sauti kubwa kwa AC",
+   "difficulty": 3,
+   "formula": "muda = 45 + (db_level * 0.5)",
+   "inputs": [
+    {
+     "name": "db_level",
+     "label": "db_level",
+     "en": "db_level",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Screwdriver",
+    "Rubber dampers",
+    "Level tool",
+    "Wrench set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "cctv.kujenga_mtandao_wa_cctv",
+   "trade": "cctv",
+   "name_sw": "Kujenga mtandao wa CCTV",
+   "name_en": "Kujenga mtandao wa CCTV",
+   "difficulty": 3,
+   "formula": "muda = 60 + (cameras * 20)",
+   "inputs": [
+    {
+     "name": "cameras",
+     "label": "cameras",
+     "en": "cameras",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Ethernet crimper",
+    "Cable tester",
+    "Drill + bits",
+    "Fish tape",
+    "Ladder"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "cctv.storage_hdd_kuhesabu",
+   "trade": "cctv",
+   "name_sw": "Storage (HDD) kuhesabu",
+   "name_en": "Storage (HDD) kuhesabu",
+   "difficulty": 2,
+   "formula": "gb_day = (cams * bitrate_mbps * 86400) / (8 * 1000)",
+   "inputs": [
+    {
+     "name": "cams",
+     "label": "cams",
+     "en": "cams",
+     "default": 1
+    },
+    {
+     "name": "bitrate_mbps",
+     "label": "bitrate_mbps",
+     "en": "bitrate_mbps",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "NVR/Software",
+    "HDD calculator",
+    "Storage calculator"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "cctv.usindi_wa_kamera_na_angle",
+   "trade": "cctv",
+   "name_sw": "Usindi wa kamera na angle",
+   "name_en": "Usindi wa kamera na angle",
+   "difficulty": 2,
+   "formula": "muda = 30 + (cameras * 15)",
+   "inputs": [
+    {
+     "name": "cameras",
+     "label": "cameras",
+     "en": "cameras",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Drill",
+    "Ladder",
+    "Screwdriver",
+    "Cable clips",
+    "Tester monitor"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "cctv.remote_viewing_setup_app",
+   "trade": "cctv",
+   "name_sw": "Remote viewing setup (app)",
+   "name_en": "Remote viewing setup (app)",
+   "difficulty": 2,
+   "formula": "muda = 30 + (remote_devices * 5)",
+   "inputs": [
+    {
+     "name": "remote_devices",
+     "label": "remote_devices",
+     "en": "remote_devices",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Router access",
+    "Phone/tablet",
+    "NVR credentials"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "cctv.kutatua_camera_haifiki_mtandao",
+   "trade": "cctv",
+   "name_sw": "Kutatua camera haifiki mtandao",
+   "name_en": "Kutatua camera haifiki mtandao",
+   "difficulty": 3,
+   "formula": "muda = 45 + (offline_cams * 10)",
+   "inputs": [
+    {
+     "name": "offline_cams",
+     "label": "offline_cams",
+     "en": "offline_cams",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Cable tester",
+    "Multimeter",
+    "PoE tester",
+    "IP scanner tool"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "solar.ukubwa_wa_panel_wp",
+   "trade": "solar",
+   "name_sw": "Ukubwa wa Panel (Wp)",
+   "name_en": "Ukubwa wa Panel (Wp)",
+   "difficulty": 3,
+   "formula": "array_w = Load_Wh / (PSH * eta)",
+   "inputs": [
+    {
+     "name": "Load_Wh",
+     "label": "Load_Wh",
+     "en": "Load_Wh",
+     "default": 1
+    },
+    {
+     "name": "PSH",
+     "label": "PSH",
+     "en": "PSH",
+     "default": 1
+    },
+    {
+     "name": "eta",
+     "label": "eta",
+     "en": "eta",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Solarimeter",
+    "Tape measure",
+    "Level tool",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "solar.ukubwa_wa_betri_ah",
+   "trade": "solar",
+   "name_sw": "Ukubwa wa Betri (Ah)",
+   "name_en": "Ukubwa wa Betri (Ah)",
+   "difficulty": 3,
+   "formula": "ah = (Load * Days) / (DoD * V_batt * eta)",
+   "inputs": [
+    {
+     "name": "Load",
+     "label": "Load",
+     "en": "Load",
+     "default": 1
+    },
+    {
+     "name": "Days",
+     "label": "Days",
+     "en": "Days",
+     "default": 1
+    },
+    {
+     "name": "DoD",
+     "label": "DoD",
+     "en": "DoD",
+     "default": 1
+    },
+    {
+     "name": "V_batt",
+     "label": "V_batt",
+     "en": "V_batt",
+     "default": 1
+    },
+    {
+     "name": "eta",
+     "label": "eta",
+     "en": "eta",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Hydrometer",
+    "Battery tester"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "solar.usindi_wa_solar_panel_inverter",
+   "trade": "solar",
+   "name_sw": "Usindi wa solar panel + inverter",
+   "name_en": "Usindi wa solar panel + inverter",
+   "difficulty": 4,
+   "formula": "muda = 180 + (panels * 20)",
+   "inputs": [
+    {
+     "name": "panels",
+     "label": "panels",
+     "en": "panels",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Drill",
+    "Socket set",
+    "Wire stripper",
+    "MC4 crimping tool",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "solar.ukaguzi_wa_betri_load_test",
+   "trade": "solar",
+   "name_sw": "Ukaguzi wa betri (load test)",
+   "name_en": "Ukaguzi wa betri (load test)",
+   "difficulty": 2,
+   "formula": "muda = 45 + (batteries * 10)",
+   "inputs": [
+    {
+     "name": "batteries",
+     "label": "batteries",
+     "en": "batteries",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Load tester",
+    "Multimeter",
+    "Hydrometer"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "solar.mppt_charge_controller_usindi",
+   "trade": "solar",
+   "name_sw": "MPPT charge controller usindi",
+   "name_en": "MPPT charge controller usindi",
+   "difficulty": 3,
+   "formula": "muda = 60 + (panels * 5)",
+   "inputs": [
+    {
+     "name": "panels",
+     "label": "panels",
+     "en": "panels",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Wire stripper",
+    "Crimping tool",
+    "Cable lugs"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "solar.kutatua_inverter_haijaweza_kuweka_umeme",
+   "trade": "solar",
+   "name_sw": "Kutatua inverter haijaweza kuweka umeme",
+   "name_en": "Kutatua inverter haijaweza kuweka umeme",
+   "difficulty": 4,
+   "formula": "muda = 60 + (kw_rating * 5)",
+   "inputs": [
+    {
+     "name": "kw_rating",
+     "label": "kw_rating",
+     "en": "kw_rating",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Oscilloscope",
+    "Inverter manual",
+    "Clamp ammeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "solar.kusafisha_panels_na_ukaguzi_wa_uwezo",
+   "trade": "solar",
+   "name_sw": "Kusafisha panels na ukaguzi wa uwezo",
+   "name_en": "Kusafisha panels na ukaguzi wa uwezo",
+   "difficulty": 1,
+   "formula": "muda = 30 + (panels * 3)",
+   "inputs": [
+    {
+     "name": "panels",
+     "label": "panels",
+     "en": "panels",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Soft brush",
+    "Water hose",
+    "Microfiber cloth",
+    "Solarimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "useremala.kutengeneza_kiti_cha_sofa",
+   "trade": "useremala",
+   "name_sw": "Kutengeneza kiti cha sofa",
+   "name_en": "Kutengeneza kiti cha sofa",
+   "difficulty": 3,
+   "formula": "muda = 240 + (seaters * 60)",
+   "inputs": [
+    {
+     "name": "seaters",
+     "label": "seaters",
+     "en": "seaters",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Staple gun",
+    "Upholstery needle",
+    "Hammer",
+    "Scissors",
+    "Screwdriver"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "useremala.kubadilisha_vifaa_vya_foam",
+   "trade": "useremala",
+   "name_sw": "Kubadilisha vifaa vya foam",
+   "name_en": "Kubadilisha vifaa vya foam",
+   "difficulty": 2,
+   "formula": "muda = 60 + (cushions * 15)",
+   "inputs": [
+    {
+     "name": "cushions",
+     "label": "cushions",
+     "en": "cushions",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Foam cutter",
+    "Scissors",
+    "Spray adhesive",
+    "Measuring tape"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "useremala.kubadilisha_spring_za_kiti",
+   "trade": "useremala",
+   "name_sw": "Kubadilisha spring za kiti",
+   "name_en": "Kubadilisha spring za kiti",
+   "difficulty": 3,
+   "formula": "muda = 90 + (spring_units * 10)",
+   "inputs": [
+    {
+     "name": "spring_units",
+     "label": "spring_units",
+     "en": "spring_units",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spring pliers",
+    "Hammer",
+    "Upholstery clips",
+    "Screwdriver"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "useremala.kutatua_frame_ya_kuni",
+   "trade": "useremala",
+   "name_sw": "Kutatua frame ya kuni",
+   "name_en": "Kutatua frame ya kuni",
+   "difficulty": 3,
+   "formula": "muda = 60 + (joints_broken * 20)",
+   "inputs": [
+    {
+     "name": "joints_broken",
+     "label": "joints_broken",
+     "en": "joints_broken",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Wood glue",
+    "Clamps",
+    "Screwdriver set",
+    "Sand paper"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "useremala.ukarabati_wa_armrest",
+   "trade": "useremala",
+   "name_sw": "Ukarabati wa armrest",
+   "name_en": "Ukarabati wa armrest",
+   "difficulty": 2,
+   "formula": "muda = 45 + (armrests * 20)",
+   "inputs": [
+    {
+     "name": "armrests",
+     "label": "armrests",
+     "en": "armrests",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Staple gun",
+    "Screwdriver",
+    "Scissors",
+    "Glue"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "useremala.bed_frame_assembly",
+   "trade": "useremala",
+   "name_sw": "Bed frame assembly",
+   "name_en": "Bed frame assembly",
+   "difficulty": 1,
+   "formula": "muda = 30 + (drawers * 10)",
+   "inputs": [
+    {
+     "name": "drawers",
+     "label": "drawers",
+     "en": "drawers",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Allen key set",
+    "Screwdriver",
+    "Mallet"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "useremala.carpet_curtain_ufungaji",
+   "trade": "useremala",
+   "name_sw": "Carpet / curtain ufungaji",
+   "name_en": "Carpet / curtain ufungaji",
+   "difficulty": 1,
+   "formula": "muda = 30 + (sqm * 2)",
+   "inputs": [
+    {
+     "name": "sqm",
+     "label": "sqm",
+     "en": "sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Carpet tucker",
+    "Knee kicker",
+    "Staple gun",
+    "Tape measure"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "useremala.re_upholstery_kuzalisha_upya",
+   "trade": "useremala",
+   "name_sw": "Re-upholstery - kuzalisha upya",
+   "name_en": "Re-upholstery - kuzalisha upya",
+   "difficulty": 4,
+   "formula": "muda = 360 + (pieces * 60)",
+   "inputs": [
+    {
+     "name": "pieces",
+     "label": "pieces",
+     "en": "pieces",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Staple remover",
+    "Upholstery needles",
+    "Fabric scissors",
+    "Sewing machine"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.makadirio_ya_madenga_blocks",
+   "trade": "ujenzi",
+   "name_sw": "Makadirio ya madenga (blocks)",
+   "name_en": "Makadirio ya madenga (blocks)",
+   "difficulty": 2,
+   "formula": "blocks = ceil((WallL * WallH) / (BL * BH) * (1 + waste/100))",
+   "inputs": [
+    {
+     "name": "ceil",
+     "label": "ceil",
+     "en": "ceil",
+     "default": 1
+    },
+    {
+     "name": "WallL",
+     "label": "WallL",
+     "en": "WallL",
+     "default": 1
+    },
+    {
+     "name": "WallH",
+     "label": "WallH",
+     "en": "WallH",
+     "default": 1
+    },
+    {
+     "name": "BL",
+     "label": "BL",
+     "en": "BL",
+     "default": 1
+    },
+    {
+     "name": "BH",
+     "label": "BH",
+     "en": "BH",
+     "default": 1
+    },
+    {
+     "name": "waste",
+     "label": "waste",
+     "en": "waste",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tape measure",
+    "Calculator",
+    "Plans/map"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.mchanganyiko_wa_saruji_concrete",
+   "trade": "ujenzi",
+   "name_sw": "Mchanganyiko wa saruji (concrete)",
+   "name_en": "Mchanganyiko wa saruji (concrete)",
+   "difficulty": 3,
+   "formula": "cement_bags = ceil(L * W * T * 7 * ratio)",
+   "inputs": [
+    {
+     "name": "ceil",
+     "label": "ceil",
+     "en": "ceil",
+     "default": 1
+    },
+    {
+     "name": "L",
+     "label": "L",
+     "en": "L",
+     "default": 1
+    },
+    {
+     "name": "W",
+     "label": "W",
+     "en": "W",
+     "default": 1
+    },
+    {
+     "name": "T",
+     "label": "T",
+     "en": "T",
+     "default": 1
+    },
+    {
+     "name": "ratio",
+     "label": "ratio",
+     "en": "ratio",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tape measure",
+    "Trowel",
+    "Spirit level",
+    "Wheelbarrow"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.ukaguzi_wa_ukubwa_wa_msingi_foundation",
+   "trade": "ujenzi",
+   "name_sw": "Ukaguzi wa ukubwa wa msingi (foundation)",
+   "name_en": "Ukaguzi wa ukubwa wa msingi (foundation)",
+   "difficulty": 3,
+   "formula": "muda = 60 + (area_sqm * 0.5)",
+   "inputs": [
+    {
+     "name": "area_sqm",
+     "label": "area_sqm",
+     "en": "area_sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spirit level",
+    "Tape measure",
+    "Plumb bob",
+    "Surveyor's level"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.kujenga_ukuta_block_laying",
+   "trade": "ujenzi",
+   "name_sw": "Kujenga ukuta (block laying)",
+   "name_en": "Kujenga ukuta (block laying)",
+   "difficulty": 3,
+   "formula": "muda = 60 + (blocks * 1.5)",
+   "inputs": [
+    {
+     "name": "blocks",
+     "label": "blocks",
+     "en": "blocks",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Trowel",
+    "Spirit level",
+    "Mortar board",
+    "Tape measure"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.kupima_kimo_cha_sakafu_floor",
+   "trade": "ujenzi",
+   "name_sw": "Kupima kimo cha sakafu (floor)",
+   "name_en": "Kupima kimo cha sakafu (floor)",
+   "difficulty": 3,
+   "formula": "muda = 60 + (sqm * 1.5)",
+   "inputs": [
+    {
+     "name": "sqm",
+     "label": "sqm",
+     "en": "sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Concrete mixer",
+    "Trowel",
+    "Spirit level",
+    "Tamper"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.kujenga_stair_ngazi",
+   "trade": "ujenzi",
+   "name_sw": "Kujenga stair (ngazi)",
+   "name_en": "Kujenga stair (ngazi)",
+   "difficulty": 4,
+   "formula": "muda = 180 + (steps * 15)",
+   "inputs": [
+    {
+     "name": "steps",
+     "label": "steps",
+     "en": "steps",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tape measure",
+    "Spirit level",
+    "Trowel",
+    "Rebar bender"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.tiles_ufungaji_floor",
+   "trade": "ujenzi",
+   "name_sw": "Tiles ufungaji (floor)",
+   "name_en": "Tiles ufungaji (floor)",
+   "difficulty": 2,
+   "formula": "muda = 45 + (sqm * 2)",
+   "inputs": [
+    {
+     "name": "sqm",
+     "label": "sqm",
+     "en": "sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tile cutter",
+    "Notched trowel",
+    "Spirit level",
+    "Tile spacers",
+    "Grout float"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.usalama_ukaguzi_wa_scaffolding",
+   "trade": "ujenzi",
+   "name_sw": "Usalama - ukaguzi wa scaffolding",
+   "name_en": "Usalama - ukaguzi wa scaffolding",
+   "difficulty": 3,
+   "formula": "muda = 30 + (height_m * 3)",
+   "inputs": [
+    {
+     "name": "height_m",
+     "label": "height_m",
+     "en": "height_m",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spanner set",
+    "Level tool",
+    "Inspection checklist",
+    "Tape measure"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.usindi_wa_window_na_door",
+   "trade": "ujenzi",
+   "name_sw": "Usindi wa window na door",
+   "name_en": "Usindi wa window na door",
+   "difficulty": 2,
+   "formula": "muda = 45 + (units * 10)",
+   "inputs": [
+    {
+     "name": "units",
+     "label": "units",
+     "en": "units",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Drill",
+    "Spirit level",
+    "Screwdriver",
+    "Shims",
+    "Caulking gun"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ujenzi.kupima_uwezo_wa_lami_beams",
+   "trade": "ujenzi",
+   "name_sw": "Kupima uwezo wa lami (beams)",
+   "name_en": "Kupima uwezo wa lami (beams)",
+   "difficulty": 5,
+   "formula": "load_capacity = (width_m * depth_pow2 * steel_ratio) / 100",
+   "inputs": [
+    {
+     "name": "width_m",
+     "label": "width_m",
+     "en": "width_m",
+     "default": 1
+    },
+    {
+     "name": "depth_pow2",
+     "label": "depth_pow2",
+     "en": "depth_pow2",
+     "default": 1
+    },
+    {
+     "name": "steel_ratio",
+     "label": "steel_ratio",
+     "en": "steel_ratio",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Rebar scanner",
+    "Ultrasonic tester",
+    "Charts",
+    "Calculator"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "rangi.makadirio_ya_rangi",
+   "trade": "rangi",
+   "name_sw": "Makadirio ya rangi",
+   "name_en": "Makadirio ya rangi",
+   "difficulty": 1,
+   "formula": "liters = ceil((Area_sqm / Coverage_sqm_per_L) * coats)",
+   "inputs": [
+    {
+     "name": "ceil",
+     "label": "ceil",
+     "en": "ceil",
+     "default": 1
+    },
+    {
+     "name": "Area_sqm",
+     "label": "Area_sqm",
+     "en": "Area_sqm",
+     "default": 1
+    },
+    {
+     "name": "Coverage_sqm_per_L",
+     "label": "Coverage_sqm_per_L",
+     "en": "Coverage_sqm_per_L",
+     "default": 1
+    },
+    {
+     "name": "coats",
+     "label": "coats",
+     "en": "coats",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tape measure",
+    "Calculator",
+    "Color chart"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "rangi.kusanduku_na_kuzalisha_upya_sand_primer",
+   "trade": "rangi",
+   "name_sw": "Kusanduku na kuzalisha upya (sand + primer)",
+   "name_en": "Kusanduku na kuzalisha upya (sand + primer)",
+   "difficulty": 2,
+   "formula": "muda = 30 + (sqm * 0.5)",
+   "inputs": [
+    {
+     "name": "sqm",
+     "label": "sqm",
+     "en": "sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Sandpaper",
+    "Sanding block",
+    "Putty knife",
+    "Primer brush"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "rangi.ukuta_wa_nje_exterior_kuchora",
+   "trade": "rangi",
+   "name_sw": "Ukuta wa nje (exterior) kuchora",
+   "name_en": "Ukuta wa nje (exterior) kuchora",
+   "difficulty": 3,
+   "formula": "muda = 45 + (sqm * 0.8)",
+   "inputs": [
+    {
+     "name": "sqm",
+     "label": "sqm",
+     "en": "sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Paint roller",
+    "Extension pole",
+    "Paint brush",
+    "Drop cloths",
+    "Ladder"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "rangi.ukuta_wa_ndani_interior_kuchora",
+   "trade": "rangi",
+   "name_sw": "Ukuta wa ndani (interior) kuchora",
+   "name_en": "Ukuta wa ndani (interior) kuchora",
+   "difficulty": 2,
+   "formula": "muda = 30 + (sqm * 0.6)",
+   "inputs": [
+    {
+     "name": "sqm",
+     "label": "sqm",
+     "en": "sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Paint roller + tray",
+    "Cut-in brush",
+    "Painter's tape",
+    "Drop cloths"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "rangi.sakafu_na_ceiling_kuchora",
+   "trade": "rangi",
+   "name_sw": "Sakafu na ceiling kuchora",
+   "name_en": "Sakafu na ceiling kuchora",
+   "difficulty": 2,
+   "formula": "muda = 30 + (sqm * 0.5)",
+   "inputs": [
+    {
+     "name": "sqm",
+     "label": "sqm",
+     "en": "sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Long handle roller",
+    "Stepladder",
+    "Drop cloths",
+    "Paint tray"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "welding.kuunganya_chuma_mig_mma",
+   "trade": "welding",
+   "name_sw": "Kuunganya chuma (MIG/MMA)",
+   "name_en": "Kuunganya chuma (MIG/MMA)",
+   "difficulty": 3,
+   "formula": "muda = 20 + (weld_length_cm * 0.5)",
+   "inputs": [
+    {
+     "name": "weld_length_cm",
+     "label": "weld_length_cm",
+     "en": "weld_length_cm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Welding machine",
+    "Electrode/Hose",
+    "Clamps",
+    "Welding helmet",
+    "Angle grinder"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "welding.kubadilisha_vifaa_vya_chuma_frame",
+   "trade": "welding",
+   "name_sw": "Kubadilisha vifaa vya chuma (frame)",
+   "name_en": "Kubadilisha vifaa vya chuma (frame)",
+   "difficulty": 3,
+   "formula": "muda = 60 + (joints * 20)",
+   "inputs": [
+    {
+     "name": "joints",
+     "label": "joints",
+     "en": "joints",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Angle grinder",
+    "Welder",
+    "Hammer",
+    "Chipping hammer",
+    "Measuring tape"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "welding.kutatua_chuma_kinachomoto",
+   "trade": "welding",
+   "name_sw": "Kutatua chuma kinachomoto",
+   "name_en": "Kutatua chuma kinachomoto",
+   "difficulty": 4,
+   "formula": "muda = 45 + (cracks * 20)",
+   "inputs": [
+    {
+     "name": "cracks",
+     "label": "cracks",
+     "en": "cracks",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Angle grinder",
+    "Welding machine",
+    "Preheat torch",
+    "Clamps"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "welding.usindi_wa_gate_na_mlango",
+   "trade": "welding",
+   "name_sw": "Usindi wa gate na mlango",
+   "name_en": "Usindi wa gate na mlango",
+   "difficulty": 3,
+   "formula": "muda = 120 + (meters_wide * 30)",
+   "inputs": [
+    {
+     "name": "meters_wide",
+     "label": "meters_wide",
+     "en": "meters_wide",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Welder",
+    "Angle grinder",
+    "Spirit level",
+    "Tape measure",
+    "Hinges + lock"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "welding.kutengeneza_stair_handrail",
+   "trade": "welding",
+   "name_sw": "Kutengeneza stair handrail",
+   "name_en": "Kutengeneza stair handrail",
+   "difficulty": 2,
+   "formula": "muda = 60 + (meters_length * 20)",
+   "inputs": [
+    {
+     "name": "meters_length",
+     "label": "meters_length",
+     "en": "meters_length",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Angle grinder",
+    "Welder",
+    "Tape measure",
+    "Spirit level"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "welding.cutting_angle_grinder_plasma",
+   "trade": "welding",
+   "name_sw": "Cutting (angle grinder + plasma)",
+   "name_en": "Cutting (angle grinder + plasma)",
+   "difficulty": 2,
+   "formula": "muda = 15 + (cut_length_cm * 0.3)",
+   "inputs": [
+    {
+     "name": "cut_length_cm",
+     "label": "cut_length_cm",
+     "en": "cut_length_cm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Angle grinder",
+    "Plasma cutter",
+    "Clamps",
+    "Measuring tape"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "welding.stainless_tig_welding",
+   "trade": "welding",
+   "name_sw": "Stainless TIG welding",
+   "name_en": "Stainless TIG welding",
+   "difficulty": 4,
+   "formula": "muda = 30 + (weld_cm * 1.5)",
+   "inputs": [
+    {
+     "name": "weld_cm",
+     "label": "weld_cm",
+     "en": "weld_cm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "TIG welder",
+    "Tungsten electrodes",
+    "Argon gas",
+    "Filler rod"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "welding.window_grill_usindi",
+   "trade": "welding",
+   "name_sw": "Window grill usindi",
+   "name_en": "Window grill usindi",
+   "difficulty": 2,
+   "formula": "muda = 60 + (sqm_window * 15)",
+   "inputs": [
+    {
+     "name": "sqm_window",
+     "label": "sqm_window",
+     "en": "sqm_window",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Welder",
+    "Angle grinder",
+    "Tape measure",
+    "Squares"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pikipiki.engine_tune_up_mafuta",
+   "trade": "pikipiki",
+   "name_sw": "Engine tune-up + mafuta",
+   "name_en": "Engine tune-up + mafuta",
+   "difficulty": 2,
+   "formula": "muda = 45 + (cc / 20)",
+   "inputs": [
+    {
+     "name": "cc",
+     "label": "cc",
+     "en": "cc",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spark plug socket",
+    "Oil filter wrench",
+    "Screwdriver",
+    "Feeler gauge"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pikipiki.kubadilisha_brake_pads_disc",
+   "trade": "pikipiki",
+   "name_sw": "Kubadilisha brake pads/disc",
+   "name_en": "Kubadilisha brake pads/disc",
+   "difficulty": 2,
+   "formula": "muda = 30 + (wheels * 10)",
+   "inputs": [
+    {
+     "name": "wheels",
+     "label": "wheels",
+     "en": "wheels",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spanner set",
+    "Allen key",
+    "C-clamp",
+    "Torque wrench"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pikipiki.chain_sprocket_badilisha",
+   "trade": "pikipiki",
+   "name_sw": "Chain + sprocket badilisha",
+   "name_en": "Chain + sprocket badilisha",
+   "difficulty": 3,
+   "formula": "muda = 45 + (cc / 25)",
+   "inputs": [
+    {
+     "name": "cc",
+     "label": "cc",
+     "en": "cc",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Chain breaker",
+    "Spanner set",
+    "Torque wrench",
+    "Chain alignment tool"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pikipiki.kutatua_haianzi_carburetor",
+   "trade": "pikipiki",
+   "name_sw": "Kutatua haianzi (carburetor)",
+   "name_en": "Kutatua haianzi (carburetor)",
+   "difficulty": 4,
+   "formula": "muda = 60 + (cc / 15)",
+   "inputs": [
+    {
+     "name": "cc",
+     "label": "cc",
+     "en": "cc",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Carb cleaner",
+    "Screwdriver set",
+    "Feeler gauge",
+    "Compression tester"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pikipiki.kubadilisha_tyre_na_tube",
+   "trade": "pikipiki",
+   "name_sw": "Kubadilisha tyre na tube",
+   "name_en": "Kubadilisha tyre na tube",
+   "difficulty": 2,
+   "formula": "muda = 20 + (tyres * 10)",
+   "inputs": [
+    {
+     "name": "tyres",
+     "label": "tyres",
+     "en": "tyres",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tyre levers",
+    "Pump",
+    "Bead breaker",
+    "Spanner set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pikipiki.kutatua_overheating_cooling",
+   "trade": "pikipiki",
+   "name_sw": "Kutatua overheating (cooling)",
+   "name_en": "Kutatua overheating (cooling)",
+   "difficulty": 3,
+   "formula": "muda = 45 + (cc / 20)",
+   "inputs": [
+    {
+     "name": "cc",
+     "label": "cc",
+     "en": "cc",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Radiator flush kit",
+    "Coolant",
+    "Thermometer",
+    "Spanner"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pikipiki.battery_electrical_wiring",
+   "trade": "pikipiki",
+   "name_sw": "Battery + electrical wiring",
+   "name_en": "Battery + electrical wiring",
+   "difficulty": 3,
+   "formula": "muda = 30 + (faults * 10)",
+   "inputs": [
+    {
+     "name": "faults",
+     "label": "faults",
+     "en": "faults",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Battery tester",
+    "Screwdriver",
+    "Wire stripper"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pikipiki.fork_suspension_ukarabati",
+   "trade": "pikipiki",
+   "name_sw": "Fork suspension ukarabati",
+   "name_en": "Fork suspension ukarabati",
+   "difficulty": 4,
+   "formula": "muda = 60 + (cc / 25)",
+   "inputs": [
+    {
+     "name": "cc",
+     "label": "cc",
+     "en": "cc",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Fork seal driver",
+    "Spanner set",
+    "Torque wrench",
+    "Fork oil"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "jenereta.ukubwa_wa_jenereta_kw",
+   "trade": "jenereta",
+   "name_sw": "Ukubwa wa jenereta (kW)",
+   "name_en": "Ukubwa wa jenereta (kW)",
+   "difficulty": 3,
+   "formula": "kw_needed = (sum_load_w * safety_factor) / 1000",
+   "inputs": [
+    {
+     "name": "sum_load_w",
+     "label": "sum_load_w",
+     "en": "sum_load_w",
+     "default": 1
+    },
+    {
+     "name": "safety_factor",
+     "label": "safety_factor",
+     "en": "safety_factor",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Clamp ammeter",
+    "Multimeter",
+    "Load list",
+    "Calculator"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "jenereta.engine_service_mafuta_filter",
+   "trade": "jenereta",
+   "name_sw": "Engine service (mafuta + filter)",
+   "name_en": "Engine service (mafuta + filter)",
+   "difficulty": 2,
+   "formula": "muda = 45 + (kva / 5)",
+   "inputs": [
+    {
+     "name": "kva",
+     "label": "kva",
+     "en": "kva",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Oil filter wrench",
+    "Drain pan",
+    "Fuel filter tool",
+    "Funnel"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "jenereta.kutatua_haijali_carb_fuel",
+   "trade": "jenereta",
+   "name_sw": "Kutatua haijali (carb/fuel)",
+   "name_en": "Kutatua haijali (carb/fuel)",
+   "difficulty": 4,
+   "formula": "muda = 60 + (kva * 0.5)",
+   "inputs": [
+    {
+     "name": "kva",
+     "label": "kva",
+     "en": "kva",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Fuel pressure gauge",
+    "Carb cleaner",
+    "Multimeter",
+    "Screwdriver set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "jenereta.voltage_regulator_usindikaji",
+   "trade": "jenereta",
+   "name_sw": "Voltage regulator usindikaji",
+   "name_en": "Voltage regulator usindikaji",
+   "difficulty": 3,
+   "formula": "muda = 45 + (kva * 0.3)",
+   "inputs": [
+    {
+     "name": "kva",
+     "label": "kva",
+     "en": "kva",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Oscilloscope",
+    "Spanner set",
+    "Screwdriver"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "jenereta.karatasi_ya_avr_automatic_voltage",
+   "trade": "jenereta",
+   "name_sw": "Karatasi ya AVR (Automatic Voltage)",
+   "name_en": "Karatasi ya AVR (Automatic Voltage)",
+   "difficulty": 4,
+   "formula": "muda = 60 + (kva * 0.4)",
+   "inputs": [
+    {
+     "name": "kva",
+     "label": "kva",
+     "en": "kva",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Soldering iron",
+    "AVR tester",
+    "Screwdriver"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gas.kutatua_uvujo_wa_gesi",
+   "trade": "gas",
+   "name_sw": "Kutatua uvujo wa gesi",
+   "name_en": "Kutatua uvujo wa gesi",
+   "difficulty": 4,
+   "formula": "muda = 30 + (leak_points * 15)",
+   "inputs": [
+    {
+     "name": "leak_points",
+     "label": "leak_points",
+     "en": "leak_points",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Gas leak detector",
+    "Soap solution",
+    "Wrench set",
+    "PTFE tape"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gas.kubadilisha_pipe_za_gesi",
+   "trade": "gas",
+   "name_sw": "Kubadilisha pipe za gesi",
+   "name_en": "Kubadilisha pipe za gesi",
+   "difficulty": 3,
+   "formula": "muda = 45 + (meters * 10)",
+   "inputs": [
+    {
+     "name": "meters",
+     "label": "meters",
+     "en": "meters",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Pipe wrench",
+    "Bender",
+    "Leak detector",
+    "Spanner set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gas.ukarabati_wa_cooker_stove",
+   "trade": "gas",
+   "name_sw": "Ukarabati wa cooker/stove",
+   "name_en": "Ukarabati wa cooker/stove",
+   "difficulty": 2,
+   "formula": "muda = 45 + (burners * 10)",
+   "inputs": [
+    {
+     "name": "burners",
+     "label": "burners",
+     "en": "burners",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Screwdriver",
+    "Brush",
+    "Multimeter (ignition)",
+    "Soap solution"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gas.gas_geyser_ukarabati",
+   "trade": "gas",
+   "name_sw": "Gas geyser ukarabati",
+   "name_en": "Gas geyser ukarabati",
+   "difficulty": 3,
+   "formula": "muda = 60 + (liters_per_min * 5)",
+   "inputs": [
+    {
+     "name": "liters_per_min",
+     "label": "liters_per_min",
+     "en": "liters_per_min",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Wrench set",
+    "Multimeter",
+    "Leak detector",
+    "Thermometer"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "roofing.makadirio_ya_mabati_ya_paa",
+   "trade": "roofing",
+   "name_sw": "Makadirio ya mabati ya paa",
+   "name_en": "Makadirio ya mabati ya paa",
+   "difficulty": 2,
+   "formula": "sheets = ceil((roof_area_sqm * slope_factor) / sheet_cover_sqm)",
+   "inputs": [
+    {
+     "name": "ceil",
+     "label": "ceil",
+     "en": "ceil",
+     "default": 1
+    },
+    {
+     "name": "roof_area_sqm",
+     "label": "roof_area_sqm",
+     "en": "roof_area_sqm",
+     "default": 1
+    },
+    {
+     "name": "slope_factor",
+     "label": "slope_factor",
+     "en": "slope_factor",
+     "default": 1
+    },
+    {
+     "name": "sheet_cover_sqm",
+     "label": "sheet_cover_sqm",
+     "en": "sheet_cover_sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tape measure",
+    "Ladder",
+    "Roofing plans",
+    "Calculator"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "roofing.ufungaji_wa_mabati_roofing_sheets",
+   "trade": "roofing",
+   "name_sw": "Ufungaji wa mabati (roofing sheets)",
+   "name_en": "Ufungaji wa mabati (roofing sheets)",
+   "difficulty": 3,
+   "formula": "muda = 90 + (sheets_count * 5)",
+   "inputs": [
+    {
+     "name": "sheets_count",
+     "label": "sheets_count",
+     "en": "sheets_count",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Drill + roofing bits",
+    "Screws",
+    "Ladder",
+    "Tape measure",
+    "Safety harness"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "roofing.kutatua_uvujo_wa_paa",
+   "trade": "roofing",
+   "name_sw": "Kutatua uvujo wa paa",
+   "name_en": "Kutatua uvujo wa paa",
+   "difficulty": 3,
+   "formula": "muda = 45 + (leak_areas * 20)",
+   "inputs": [
+    {
+     "name": "leak_areas",
+     "label": "leak_areas",
+     "en": "leak_areas",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Ladder",
+    "Hammer",
+    "Roofing nails",
+    "Sealant",
+    "Roofing cement"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "roofing.ufungaji_wa_gutters",
+   "trade": "roofing",
+   "name_sw": "Ufungaji wa gutters",
+   "name_en": "Ufungaji wa gutters",
+   "difficulty": 2,
+   "formula": "muda = 30 + (meters_length * 3)",
+   "inputs": [
+    {
+     "name": "meters_length",
+     "label": "meters_length",
+     "en": "meters_length",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Ladder",
+    "Drill",
+    "Brackets",
+    "Gutter sealant",
+    "Hacksaw"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "roofing.kutengeneza_tiles_roof",
+   "trade": "roofing",
+   "name_sw": "Kutengeneza tiles (roof)",
+   "name_en": "Kutengeneza tiles (roof)",
+   "difficulty": 3,
+   "formula": "muda = 60 + (sqm * 1.5)",
+   "inputs": [
+    {
+     "name": "sqm",
+     "label": "sqm",
+     "en": "sqm",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tape measure",
+    "Hammer",
+    "Roofing nails",
+    "Sealant",
+    "Tile cutter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pump.ukubwa_wa_pampu_tdh_gpm",
+   "trade": "pump",
+   "name_sw": "Ukubwa wa pampu (TDH + GPM)",
+   "name_en": "Ukubwa wa pampu (TDH + GPM)",
+   "difficulty": 3,
+   "formula": "tdh = static + friction + pressure; power = (9.81 * Q_m3h * tdh) / (3600 * eff)",
+   "inputs": [
+    {
+     "name": "static",
+     "label": "static",
+     "en": "static",
+     "default": 1
+    },
+    {
+     "name": "friction",
+     "label": "friction",
+     "en": "friction",
+     "default": 1
+    },
+    {
+     "name": "pressure",
+     "label": "pressure",
+     "en": "pressure",
+     "default": 1
+    },
+    {
+     "name": "power",
+     "label": "power",
+     "en": "power",
+     "default": 1
+    },
+    {
+     "name": "Q_m3h",
+     "label": "Q_m3h",
+     "en": "Q_m3h",
+     "default": 1
+    },
+    {
+     "name": "tdh",
+     "label": "tdh",
+     "en": "tdh",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Flow meter",
+    "Pressure gauge",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pump.kutatua_pampu_haitoi_maji",
+   "trade": "pump",
+   "name_sw": "Kutatua pampu haitoi maji",
+   "name_en": "Kutatua pampu haitoi maji",
+   "difficulty": 3,
+   "formula": "muda = 45 + (hp * 10)",
+   "inputs": [
+    {
+     "name": "hp",
+     "label": "hp",
+     "en": "hp",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Pressure gauge",
+    "Multimeter",
+    "Priming port",
+    "Wrench set"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pump.kubadilisha_seal_na_impeller",
+   "trade": "pump",
+   "name_sw": "Kubadilisha seal na impeller",
+   "name_en": "Kubadilisha seal na impeller",
+   "difficulty": 4,
+   "formula": "muda = 60 + (hp * 15)",
+   "inputs": [
+    {
+     "name": "hp",
+     "label": "hp",
+     "en": "hp",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Spanner set",
+    "Pump puller",
+    "Seal kit",
+    "Impeller"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pump.motor_electrical_ukarabati",
+   "trade": "pump",
+   "name_sw": "Motor electrical ukarabati",
+   "name_en": "Motor electrical ukarabati",
+   "difficulty": 3,
+   "formula": "muda = 45 + (kw_rating * 10)",
+   "inputs": [
+    {
+     "name": "kw_rating",
+     "label": "kw_rating",
+     "en": "kw_rating",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Megger",
+    "Bearing puller",
+    "Screwdriver"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "pump.pressure_tank_ufungaji",
+   "trade": "pump",
+   "name_sw": "Pressure tank ufungaji",
+   "name_en": "Pressure tank ufungaji",
+   "difficulty": 2,
+   "formula": "muda = 45 + (capacity_liters * 0.2)",
+   "inputs": [
+    {
+     "name": "capacity_liters",
+     "label": "capacity_liters",
+     "en": "capacity_liters",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Wrench set",
+    "PTFE tape",
+    "Pressure gauge"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "tailor.kupiga_ukubwa_measurements",
+   "trade": "tailor",
+   "name_sw": "Kupiga ukubwa (measurements)",
+   "name_en": "Kupiga ukubwa (measurements)",
+   "difficulty": 1,
+   "formula": "muda = 10 + (garments * 5)",
+   "inputs": [
+    {
+     "name": "garments",
+     "label": "garments",
+     "en": "garments",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Measuring tape",
+    "Notepad",
+    "Marking chalk"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "tailor.kutunga_kaptura_shirt",
+   "trade": "tailor",
+   "name_sw": "Kutunga kaptura / shirt",
+   "name_en": "Kutunga kaptura / shirt",
+   "difficulty": 2,
+   "formula": "muda = 120 + (embellishments * 20)",
+   "inputs": [
+    {
+     "name": "embellishments",
+     "label": "embellishments",
+     "en": "embellishments",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Sewing machine",
+    "Scissors",
+    "Pins",
+    "Chalk",
+    "Sewing kit"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "tailor.kutunga_suit_koti",
+   "trade": "tailor",
+   "name_sw": "Kutunga suit / koti",
+   "name_en": "Kutunga suit / koti",
+   "difficulty": 4,
+   "formula": "muda = 480 + (details * 30)",
+   "inputs": [
+    {
+     "name": "details",
+     "label": "details",
+     "en": "details",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Sewing machine",
+    "Steam iron",
+    "Scissors",
+    "Chalk",
+    "Interfacing"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "tailor.kubadilisha_nguo_alterations",
+   "trade": "tailor",
+   "name_sw": "Kubadilisha nguo (alterations)",
+   "name_en": "Kubadilisha nguo (alterations)",
+   "difficulty": 2,
+   "formula": "muda = 30 + (changes * 15)",
+   "inputs": [
+    {
+     "name": "changes",
+     "label": "changes",
+     "en": "changes",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Sewing kit",
+    "Seam ripper",
+    "Chalk",
+    "Iron"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "tailor.kutenga_nguo_ya_harusi_wedding",
+   "trade": "tailor",
+   "name_sw": "Kutenga nguo ya harusi (wedding)",
+   "name_en": "Kutenga nguo ya harusi (wedding)",
+   "difficulty": 5,
+   "formula": "muda = 720 + (layers * 60)",
+   "inputs": [
+    {
+     "name": "layers",
+     "label": "layers",
+     "en": "layers",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Sewing machine (industrial)",
+    "Fabric scissors",
+    "Lace tools",
+    "Steamer",
+    "Mannequin"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "appliance.kutatua_washing_machine_haifanyi_kazi",
+   "trade": "appliance",
+   "name_sw": "Kutatua washing machine haifanyi kazi",
+   "name_en": "Kutatua washing machine haifanyi kazi",
+   "difficulty": 3,
+   "formula": "muda = 60 + (kg_load * 5)",
+   "inputs": [
+    {
+     "name": "kg_load",
+     "label": "kg_load",
+     "en": "kg_load",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Screwdriver",
+    "Spanner set",
+    "Inlet valve tester"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "appliance.kutatua_fridge_haitoi_baridi",
+   "trade": "appliance",
+   "name_sw": "Kutatua fridge haitoi baridi",
+   "name_en": "Kutatua fridge haitoi baridi",
+   "difficulty": 4,
+   "formula": "muda = 60 + (liters * 0.1)",
+   "inputs": [
+    {
+     "name": "liters",
+     "label": "liters",
+     "en": "liters",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Thermometer",
+    "Manifold gauge",
+    "Compressor tester"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "appliance.microwave_ukarabati",
+   "trade": "appliance",
+   "name_sw": "Microwave ukarabati",
+   "name_en": "Microwave ukarabati",
+   "difficulty": 3,
+   "formula": "muda = 30 + (watts / 100)",
+   "inputs": [
+    {
+     "name": "watts",
+     "label": "watts",
+     "en": "watts",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Microwave leakage tester",
+    "Multimeter",
+    "Screwdriver",
+    "High voltage probe"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "appliance.tv_ukarabati_haionekani",
+   "trade": "appliance",
+   "name_sw": "TV ukarabati - haionekani",
+   "name_en": "TV ukarabati - haionekani",
+   "difficulty": 3,
+   "formula": "muda = 45 + (inches * 0.5)",
+   "inputs": [
+    {
+     "name": "inches",
+     "label": "inches",
+     "en": "inches",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Soldering iron",
+    "LED tester",
+    "Panel removal tools"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "borehole.makadirio_ya_kina_cha_kupima",
+   "trade": "borehole",
+   "name_sw": "Makadirio ya kina cha kupima",
+   "name_en": "Makadirio ya kina cha kupima",
+   "difficulty": 3,
+   "formula": "depth_est = water_table_m + 10",
+   "inputs": [
+    {
+     "name": "water_table_m",
+     "label": "water_table_m",
+     "en": "water_table_m",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Geological report",
+    "Water table map",
+    "Surveyor"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "borehole.kupima_maji_kwenye_borehole",
+   "trade": "borehole",
+   "name_sw": "Kupima maji kwenye borehole",
+   "name_en": "Kupima maji kwenye borehole",
+   "difficulty": 3,
+   "formula": "yield_lps = (volume_liters / test_time_s)",
+   "inputs": [
+    {
+     "name": "volume_liters",
+     "label": "volume_liters",
+     "en": "volume_liters",
+     "default": 1
+    },
+    {
+     "name": "test_time_s",
+     "label": "test_time_s",
+     "en": "test_time_s",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Submersible test pump",
+    "Stopwatch",
+    "Flow meter",
+    "Known container"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "borehole.usindi_wa_submersible_pump",
+   "trade": "borehole",
+   "name_sw": "Usindi wa submersible pump",
+   "name_en": "Usindi wa submersible pump",
+   "difficulty": 4,
+   "formula": "muda = 120 + (depth_m * 1.5)",
+   "inputs": [
+    {
+     "name": "depth_m",
+     "label": "depth_m",
+     "en": "depth_m",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Pump hoist / crane",
+    "Tapes",
+    "Pipe wrench",
+    "Cable ties",
+    "Multimeter"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "borehole.kutatua_uvijo_wa_uvujo_wa_borehole",
+   "trade": "borehole",
+   "name_sw": "Kutatua uvijo wa uvujo wa borehole",
+   "name_en": "Kutatua uvijo wa uvujo wa borehole",
+   "difficulty": 4,
+   "formula": "muda = 60 + (depth_m * 0.5)",
+   "inputs": [
+    {
+     "name": "depth_m",
+     "label": "depth_m",
+     "en": "depth_m",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Borehole camera",
+    "Pump",
+    "Chlorine",
+    "Test pump"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "borehole.casing_screen_ukarabati",
+   "trade": "borehole",
+   "name_sw": "Casing / screen ukarabati",
+   "name_en": "Casing / screen ukarabati",
+   "difficulty": 5,
+   "formula": "muda = 90 + (depth_m * 0.5)",
+   "inputs": [
+    {
+     "name": "depth_m",
+     "label": "depth_m",
+     "en": "depth_m",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Borehole camera",
+    "Drill rig",
+    "Casing puller",
+    "Welding"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gate_motor.kupima_uwezo_wa_motor",
+   "trade": "gate_motor",
+   "name_sw": "Kupima uwezo wa motor",
+   "name_en": "Kupima uwezo wa motor",
+   "difficulty": 3,
+   "formula": "power_nm = weight_kg * width_m * 0.1",
+   "inputs": [
+    {
+     "name": "weight_kg",
+     "label": "weight_kg",
+     "en": "weight_kg",
+     "default": 1
+    },
+    {
+     "name": "width_m",
+     "label": "width_m",
+     "en": "width_m",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Tape measure",
+    "Scale",
+    "Hinge friction tester",
+    "Calculator"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gate_motor.usindi_wa_sliding_gate_motor",
+   "trade": "gate_motor",
+   "name_sw": "Usindi wa sliding gate motor",
+   "name_en": "Usindi wa sliding gate motor",
+   "difficulty": 3,
+   "formula": "muda = 180 + (meters_width * 20)",
+   "inputs": [
+    {
+     "name": "meters_width",
+     "label": "meters_width",
+     "en": "meters_width",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Drill",
+    "Spirit level",
+    "Spanner set",
+    "Welder",
+    "Remote programmer"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gate_motor.usindi_wa_swing_gate_motor",
+   "trade": "gate_motor",
+   "name_sw": "Usindi wa swing gate motor",
+   "name_en": "Usindi wa swing gate motor",
+   "difficulty": 3,
+   "formula": "muda = 180 + (gate_meters * 25)",
+   "inputs": [
+    {
+     "name": "gate_meters",
+     "label": "gate_meters",
+     "en": "gate_meters",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Drill",
+    "Spirit level",
+    "Spanner set",
+    "Remote programmer",
+    "Safety beam"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gate_motor.kutatua_motor_haifungui",
+   "trade": "gate_motor",
+   "name_sw": "Kutatua motor haifungui",
+   "name_en": "Kutatua motor haifungui",
+   "difficulty": 3,
+   "formula": "muda = 45 + (fault_code_complexity * 10)",
+   "inputs": [
+    {
+     "name": "fault_code_complexity",
+     "label": "fault_code_complexity",
+     "en": "fault_code_complexity",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Multimeter",
+    "Remote programmer",
+    "Limit adjuster",
+    "Manual"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "gate_motor.access_control_usindi_intercom",
+   "trade": "gate_motor",
+   "name_sw": "Access control usindi (intercom)",
+   "name_en": "Access control usindi (intercom)",
+   "difficulty": 2,
+   "formula": "muda = 60 + (readers * 15)",
+   "inputs": [
+    {
+     "name": "readers",
+     "label": "readers",
+     "en": "readers",
+     "default": 1
+    }
+   ],
+   "tools": [
+    "Drill",
+    "Network cable tester",
+    "Multimeter",
+    "Program cable"
+   ],
+   "action": "guide"
+  },
+  {
+   "id": "ai.pytorch",
+   "trade": "ai",
+   "name_sw": "PyTorch — mifano ya ML (train/infer)",
+   "name_en": "PyTorch — ML models (train/infer)",
+   "difficulty": 4,
+   "formula": "muda = 30 + (epochs * 2)",
+   "inputs": [
+    {
+     "name": "epochs",
+     "label": "Epochs",
+     "en": "Epochs",
+     "default": 10
+    }
+   ],
+   "tools": [
+    "python3 + torch",
+    "GPU (hiari)",
+    "data/"
+   ],
+   "action": "pytorch_train",
+   "runtime": "python3",
+   "script": "scripts/ai_pytorch.py"
+  },
+  {
+   "id": "ai.tensorflow",
+   "trade": "ai",
+   "name_sw": "TensorFlow — mifano ya ML (train/infer)",
+   "name_en": "TensorFlow — ML models (train/infer)",
+   "difficulty": 4,
+   "formula": "muda = 30 + (epochs * 2)",
+   "inputs": [
+    {
+     "name": "epochs",
+     "label": "Epochs",
+     "en": "Epochs",
+     "default": 10
+    }
+   ],
+   "tools": [
+    "python3 + tensorflow",
+    "GPU (hiari)",
+    "data/"
+   ],
+   "action": "tensorflow_train",
+   "runtime": "python3",
+   "script": "scripts/ai_tensorflow.py"
+  },
+  {
+   "id": "ai.pdf_search",
+   "trade": "ai",
+   "name_sw": "Kutafuta PDF nyingi kwa wakati mmoja (parallel)",
+   "name_en": "Parallel PDF search",
+   "difficulty": 2,
+   "formula": "muda = 10 + (files * 1)",
+   "inputs": [
+    {
+     "name": "files",
+     "label": "Faili",
+     "en": "Files",
+     "default": 20
+    }
+   ],
+   "tools": [
+    "Rust pdf engine (pdf_extract.rs)",
+    "data/pdfs/"
+   ],
+   "action": "pdf_search",
+   "runtime": "rust"
+  },
+  {
+   "id": "ai.searxng",
+   "trade": "ai",
+   "name_sw": "Meta-search ya SearXNG (injini nyingi pamoja)",
+   "name_en": "SearXNG meta-search",
+   "difficulty": 2,
+   "formula": "muda = 5 + (engines * 2)",
+   "inputs": [
+    {
+     "name": "engines",
+     "label": "Engines",
+     "en": "Engines",
+     "default": 4
+    }
+   ],
+   "tools": [
+    "SearXNG API",
+    "Rust HTTP"
+   ],
+   "action": "searxng_search",
+   "runtime": "rust"
+  },
+  {
+   "id": "ai.duckduckgo",
+   "trade": "ai",
+   "name_sw": "Tafuta mtandaoni kwa DuckDuckGo",
+   "name_en": "DuckDuckGo web search",
+   "difficulty": 1,
+   "formula": "muda = 5 + (pages * 2)",
+   "inputs": [
+    {
+     "name": "pages",
+     "label": "Pages",
+     "en": "Pages",
+     "default": 5
+    }
+   ],
+   "tools": [
+    "DDG lite HTML",
+    "Rust HTTP"
+   ],
+   "action": "duckduckgo_search",
+   "runtime": "rust"
+  },
+  {
+   "id": "ai.ollama_llm",
+   "trade": "ai",
+   "name_sw": "LLM ya bure (Ollama cloud/local — tinyllama, gpt-oss)",
+   "name_en": "Free LLM (Ollama cloud/local — tinyllama, gpt-oss)",
+   "difficulty": 2,
+   "formula": "muda = 5 + (tokens / 200)",
+   "inputs": [
+    {
+     "name": "tokens",
+     "label": "Tokens",
+     "en": "Tokens",
+     "default": 300
+    }
+   ],
+   "tools": [
+    "OLLAMA_API_KEY",
+    "data/ai/models.json"
+   ],
+   "action": "ollama_ask",
+   "runtime": "rust"
+  },
+  {
+   "id": "ai.huggingface",
+   "trade": "ai",
+   "name_sw": "Hugging Face — modeli wazi za bure (search + inference)",
+   "name_en": "Hugging Face — free open models (search + inference)",
+   "difficulty": 3,
+   "formula": "muda = 10 + (downloads / 50)",
+   "inputs": [
+    {
+     "name": "downloads",
+     "label": "Downloads",
+     "en": "Downloads",
+     "default": 100
+    }
+   ],
+   "tools": [
+    "HF Hub API",
+    "HF Inference API",
+    "Rust HTTP"
+   ],
+   "action": "hf_search",
+   "runtime": "rust"
+  },
+  {
+   "id": "ai.skill_plan",
+   "trade": "ai",
+   "name_sw": "Mpango wa kazi kwa skills (auto-plan + hesabu)",
+   "name_en": "Skill-based work plan (auto-plan + math)",
+   "difficulty": 2,
+   "formula": "muda = 5 + (steps * 3)",
+   "inputs": [
+    {
+     "name": "steps",
+     "label": "Hatua",
+     "en": "Steps",
+     "default": 4
+    }
+   ],
+   "tools": [
+    "skills.json",
+    "expr engine"
+   ],
+   "action": "skill_plan",
+   "runtime": "rust"
+  }
+ ]
+}

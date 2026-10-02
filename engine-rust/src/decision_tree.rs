@@ -57,6 +57,7 @@ pub struct WalkResult {
     pub steps_taken: usize,
 }
 
+#[derive(Debug)]
 pub struct DecisionTree {
     name: String,
     start: String,

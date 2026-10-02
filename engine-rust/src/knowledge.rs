@@ -191,9 +191,7 @@ impl KnowledgeBase {
                 .filter(|s| symptoms.iter().any(|x| x == *s))
                 .cloned()
                 .collect();
-            if matched.is_empty() && !symptoms.is_empty() {
-                continue;
-            }
+            // zero-match inabaki (confidence 0) — sort inaziweka chini kabisa
             let denom = if p.symptoms.is_empty() {
                 1.0
             } else {
@@ -337,7 +335,10 @@ mod tests {
     fn no_matching_symptoms_excluded() {
         let k = kb();
         let hits = k.diagnose("umeme", &["tofauti_sana".into()]);
-        assert!(hits.is_empty());
+        // zero-match zinarudi kwa confidence 0 — E-001 zenye match zinakuja kwanza
+        assert!(!hits.is_empty());
+        assert!(hits[0].problem_id == "E-001");
+        assert!(hits.last().map(|h| h.confidence).unwrap_or(0.0) <= hits[0].confidence);
     }
 
     #[test]

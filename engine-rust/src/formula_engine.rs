@@ -19,6 +19,22 @@ pub struct BiText {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BiTextLists {
+    #[serde(default)]
+    pub sw: Vec<String>,
+    #[serde(default)]
+    pub en: Vec<String>,
+}
+
+/// Standards inaweza kuwa string moja au orodha (data halisi ina arrays).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Standards {
+    Str(BiText),
+    List(BiTextLists),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InputSpec {
     pub name: String,
     pub label: BiText,
@@ -90,7 +106,7 @@ pub struct Formula {
     #[serde(default)]
     pub rules: Vec<Rule>,
     #[serde(default)]
-    pub standards: Option<BiText>,
+    pub standards: Option<Standards>,
     #[serde(default)]
     pub test: Option<TestSpec>,
 }
@@ -146,7 +162,7 @@ pub struct CalcResult {
     pub status: String,
     pub message: BiText,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub standards: Option<BiText>,
+    pub standards: Option<Standards>,
     pub warnings: Vec<String>,
 }
 

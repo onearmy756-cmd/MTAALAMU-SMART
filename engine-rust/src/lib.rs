@@ -26,6 +26,9 @@ pub mod grounded_reason;
 pub mod deploy;
 pub mod wiring;
 pub mod scribe;
+pub mod skills;
+pub mod pdf_extract;
+pub mod web;
 
 pub use expr::{eval, eval_with, EvalError, Vars};
 pub use formula_engine::{FormulaEngine, CalcResult, Formula};
@@ -54,3 +57,5 @@ pub use wiring::{system_wiring, system_wiring_json, SystemWiring};
 pub use scribe::{
     auto_watch, auto_work_once, load_sessions, save_session, AutoWorkReport, Scribe, ScribeFrame,
 };
+pub use skills::{SkillsEngine, Skill, SkillMatch};
+pub use pdf_extract::{pdf_to_text, search_pdfs, PdfSearchResult, PdfHit, PdfText};

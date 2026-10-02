@@ -57,8 +57,8 @@ impl Scribe {
         self.push(
             "P",
             "Mpango",
-            format!("Nimekupanga mpango wa kutatua: {}. Vitendo: {}.", problem, a),
-            format!("Mpango uko tayari. Nitaenda hatua kwa hatua: {}.", a),
+            &format!("Nimekupanga mpango wa kutatua: {}. Vitendo: {}.", problem, a),
+            &format!("Mpango uko tayari. Nitaenda hatua kwa hatua: {}.", a),
             "Ramani ya kifaa inaonekana; sehemu zote zime-labeliwa",
             json!({ "problem": problem, "actions": actions }),
         );
@@ -75,8 +75,8 @@ impl Scribe {
         self.push(
             "I",
             "Utambuzi",
-            lista,
-            format!("Ninaangalia kifaa chako. {} Afya: {}.", lista, health),
+            &lista,
+            &format!("Ninaangalia kifaa chako. {} Afya: {}.", lista, health),
             "Issues zime-wekwa juu ya ramani (overlay) kwenye sehemu zilizoathirika",
             json!({ "issues": issues, "health": health }),
         );
@@ -97,8 +97,8 @@ impl Scribe {
         self.push(
             "I",
             "Utekelezaji",
-            format!("{}{}", done, skip),
-            format!("Ninatekeleza suluhisho sasa. {}", done),
+            &format!("{}{}", done, skip),
+            &format!("Ninatekeleza suluhisho sasa. {}", done),
             "Ramani inaonyesha sehemu zinazorekebishwa (status inabadilika live)",
             json!({ "executed": executed, "skipped": skipped }),
         );
@@ -109,11 +109,11 @@ impl Scribe {
         self.push(
             "T",
             "Kipimo",
-            format!(
+            &format!(
                 "Baada ya fix: CPU {:.0}%, RAM {:.0}%, issues {}.",
                 cpu, ram, issues_n
             ),
-            format!(
+            &format!(
                 "Napima mfumo: CPU asilimia {:.0}, RAM asilimia {:.0}. Matatizo yaliyobaki: {}.",
                 cpu, ram, issues_n
             ),
@@ -127,7 +127,7 @@ impl Scribe {
         self.push(
             "V",
             "Uthibitisho",
-            format!("Uthibitisho: {}.", detail_sw),
+            &format!("Uthibitisho: {}.", detail_sw),
             if ok {
                 "Nimekamilisha. Tafadhali thibitisha wewe mwenyewe kama kila kitu kiko sawa."
             } else {
@@ -143,7 +143,7 @@ impl Scribe {
         self.push(
             "D",
             "Nyaraka",
-            format!("Ripoti kamili imeandikwa: {}.", report_path),
+            &format!("Ripoti kamili imeandikwa: {}.", report_path),
             "Ripoti yako kama kitabu kidigitali iko tayari. Ninahifadhi maarifa haya.",
             "Kitabu: jalada → tatizo → njia → suluhisho → tarehe/muda",
             json!({ "report": report_path, "learned": knowledge_saved }),
@@ -152,7 +152,12 @@ impl Scribe {
 
     /// Frame ya kawaida (scan/auto-work n.k.)
     pub fn note(&mut self, code: &str, name: &str, narration: &str, visual: &str, evidence: Value) {
-        self.push(code, name, narration.to_string(), narration.to_string(), visual, evidence);
+        self.push(code, name, narration, narration, visual, evidence);
+    }
+
+    /// Frame yenye voice tofauti na narration
+    pub fn note_voice(&mut self, code: &str, name: &str, narration: &str, voice: &str, visual: &str, evidence: Value) {
+        self.push(code, name, narration, voice, visual, evidence);
     }
 
     fn push(
@@ -315,7 +320,7 @@ pub fn auto_work_once(data_root: &Path, session_id: &str, approve: bool) -> Auto
             json!({ "auto": true }),
         );
     } else if !issues.is_empty() {
-        scribe.note(
+        scribe.note_voice(
             "HITL",
             "Ruhusa",
             "Nimekupa orodha ya matatizo. Niruhusu niendeshe kiotomatiki? (RUHUSU kwenye UI)",
@@ -381,7 +386,7 @@ pub fn save_session(data_root: &Path, session_id: &str, value: &Value) -> Result
         vec![]
     };
     arr.retain(|s| s.get("session_id").and_then(|x| x.as_str()) != Some(session_id));
-    arr.push(value);
+    arr.push(value.clone());
     if arr.len() > 100 {
         arr = arr.split_off(arr.len() - 100);
     }

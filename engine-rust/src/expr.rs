@@ -66,7 +66,7 @@ pub fn eval(src: &str, vars: &Vars) -> Result<f64, String> {
 pub fn eval_with(src: &str, vars: &Vars) -> Result<f64, EvalError> {
     let tokens = tokenize(src)?;
     let mut pos = 0usize;
-    let v = parse_comparison(&tokens, &mut pos, vars)?;
+    let v = parse_logical(&tokens, &mut pos, vars)?;
     if pos != tokens.len() {
         return Err(EvalError::Parse(format!(
             "Expression haikamilika (token {} baada ya mwisho)",
@@ -158,13 +158,44 @@ fn peek(t: &[Token], p: usize) -> Option<&Token> { t.get(p) }
 
 fn truthy(x: f64) -> bool { x != 0.0 }
 
-/// comparison := logical (cmp logical)*  -> 1.0 / 0.0
+/// logical := comparison (('&&'|'||') comparison)*  -> 1.0 / 0.0
+fn parse_logical(t: &[Token], p: &mut usize, v: &Vars) -> Result<f64, EvalError> {
+    let mut left = parse_comparison(t, p, v)?;
+    loop {
+        match peek(t, *p) {
+            Some(Token::And) => {
+                *p += 1;
+                let right = parse_comparison(t, p, v)?;
+                left = if truthy(left) && truthy(right) { 1.0 } else { 0.0 };
+            }
+            Some(Token::Or) => {
+                *p += 1;
+                let right = parse_comparison(t, p, v)?;
+                left = if truthy(left) || truthy(right) { 1.0 } else { 0.0 };
+            }
+            _ => break,
+        }
+    }
+    Ok(left)
+}
+
+/// not := '!'? not | expr   (! = ngazi ya juu kabisa kabla ya comparisons)
+fn parse_not(t: &[Token], p: &mut usize, v: &Vars) -> Result<f64, EvalError> {
+    if let Some(Token::Not) = peek(t, *p) {
+        *p += 1;
+        let x = parse_not(t, p, v)?;
+        return Ok(if truthy(x) { 0.0 } else { 1.0 });
+    }
+    parse_expr(t, p, v)
+}
+
+/// comparison := not (cmp not)*  -> 1.0 / 0.0
 fn parse_comparison(t: &[Token], p: &mut usize, v: &Vars) -> Result<f64, EvalError> {
-    let mut left = parse_logical(t, p, v)?;
+    let mut left = parse_not(t, p, v)?;
     while let Some(Token::Cmp(op)) = peek(t, *p) {
         let op = op.clone();
         *p += 1;
-        let right = parse_logical(t, p, v)?;
+        let right = parse_not(t, p, v)?;
         let r = match op.as_str() {
             "<" => left < right,
             "<=" => left <= right,
@@ -177,37 +208,6 @@ fn parse_comparison(t: &[Token], p: &mut usize, v: &Vars) -> Result<f64, EvalErr
         left = if r { 1.0 } else { 0.0 };
     }
     Ok(left)
-}
-
-/// logical := not (('&&'|'||') not)*  -> 1.0 / 0.0
-fn parse_logical(t: &[Token], p: &mut usize, v: &Vars) -> Result<f64, EvalError> {
-    let mut left = parse_not(t, p, v)?;
-    loop {
-        match peek(t, *p) {
-            Some(Token::And) => {
-                *p += 1;
-                let right = parse_not(t, p, v)?;
-                left = if truthy(left) && truthy(right) { 1.0 } else { 0.0 };
-            }
-            Some(Token::Or) => {
-                *p += 1;
-                let right = parse_not(t, p, v)?;
-                left = if truthy(left) || truthy(right) { 1.0 } else { 0.0 };
-            }
-            _ => break,
-        }
-    }
-    Ok(left)
-}
-
-/// not := '!'? comparison-or-atom
-fn parse_not(t: &[Token], p: &mut usize, v: &Vars) -> Result<f64, EvalError> {
-    if let Some(Token::Not) = peek(t, *p) {
-        *p += 1;
-        let x = parse_not(t, p, v)?;
-        return Ok(if truthy(x) { 0.0 } else { 1.0 });
-    }
-    parse_expr(t, p, v)
 }
 
 /// expr := term (('+'|'-') term)*
