@@ -5,6 +5,7 @@ defmodule HermesGateway.Application do
   Supervision tree:
     - Store (ETS)        : telemetry ya hivi punde, alerts, missions, HITL requests
     - Rules (GenServer)  : rules kutoka data/iot/telemetry_rules.json
+    - Registry (GenServer): summary ya data/iot (verticals, clone registry, devices, agents)
     - Mqtt (hiari)       : emqtt kama imepachikwa (toa alama kwenye mix.exs)
     - Router (Plug/Cowboy): HTTP API kwa UI (Shiny), worker (Python) na engine (Rust)
   """
@@ -19,6 +20,7 @@ defmodule HermesGateway.Application do
       {HermesGateway.Store, nil},
       {HermesGateway.Rules, [Path.join(data_dir, "iot/telemetry_rules.json")]},
       {HermesGateway.Fst, [Path.join(data_dir, "iot/voice_fst.json")]},
+      {HermesGateway.Registry, [data_dir]},
       {HermesGateway.Mqtt, nil},
       {Plug.Cowboy, scheme: :http, plug: HermesGateway.Router, options: [port: port, ip: {0, 0, 0, 0}]}
     ]

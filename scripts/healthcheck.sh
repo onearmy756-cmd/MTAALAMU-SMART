@@ -14,7 +14,23 @@ check test -f engine-rust/Cargo.toml
 check test -f web-r/app.R
 check test -f web-r/R/sysprobe.R
 check test -f web-r/R/agentic.R
+check test -f web-r/R/iot.R
 check test -f data/agents/agents_10.json || check test -f web-r/data/agents/agents_10.json
+
+# IoT + HERMES (afya · usalama · nyumbani · kilimo)
+check test -f data/iot/verticals.json
+check test -f data/iot/hermes.json
+check test -f data/iot/devices.json
+check test -f data/iot/agents_oss.json
+check test -f data/iot/telemetry_rules.json
+check test -f data/iot/voice_fst.json
+check test -f data/iot/registry/afya.json
+check test -f data/iot/registry/usalama.json
+check test -f data/iot/registry/nyumbani.json
+check test -f data/iot/registry/kilimo.json
+check test -f scripts/clone_iot_repos.sh
+check test -f services/hermes_gateway/mix.exs
+check test -f services/hermes_agents/worker.py
 
 if command -v cargo >/dev/null 2>&1; then
   (cd engine-rust && cargo build --release) || FAIL=1

@@ -207,6 +207,19 @@ data/
 
 ---
 
+## 1C. MODULI: IoT + HERMES (afya · usalama · nyumbani · kilimo) — 2026-10-02
+
+| Kazi | Hali |
+|---|---|
+| Registry ya miradi ya clone (32, zote bure + URL zimethibitishwa kwenye GitHub) | ✅ `data/iot/registry/*.json` |
+| Agents za OSS (23: LangChain, LangGraph, Whisper, Crawl4AI, AutoGen, CrewAI, …) | ✅ `data/iot/agents_oss.json` |
+| Script ya clone (shallow → `upstream/`, gitignored; `--list --only --id --agents --force --limit`) | ✅ `scripts/clone_iot_repos.sh` |
+| HERMES Gateway (Elixir): `GET /iot/summary` + tests za registry | ✅ `services/hermes_gateway` |
+| UI tab **IoT + HERMES** (verticals, clone registry + CLONE button, devices, agents, sauti Whisper→FST, HITL approve/reject) | ✅ `web-r/R/iot.R` |
+| KANUNI: JSON ndio chanzo (2/5), HITL kwa tenda hatari (4), LLM haihesabu (R-1) | ✅ |
+
+---
+
 ## 2. MFUMO WA UTEKELEZAJI (phases)
 
 | Phase | Kazi | Hali |

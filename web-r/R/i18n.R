@@ -26,6 +26,7 @@ STR <- list(
 
   # --- tabs ---
   "tabs.live"         = list(sw = "\u25c9 MFUATILIO HALISI", en = "\u25c9 LIVE MONITOR"),
+  "tabs.iot"          = list(sw = "\U0001f310 IoT + HERMES", en = "\U0001f310 IoT + HERMES"),
   "tabs.formula"      = list(sw = "\u25e6 INJINI YA FORMULA", en = "\u25e6 FORMULA ENGINE"),
   "tabs.diag"         = list(sw = "\u25cf UTAMBUZI", en = "\u25cf DIAGNOSIS"),
   "tabs.viz"          = list(sw = "\u25a0 UONESHAJI", en = "\u25a0 VISUALIZATION"),

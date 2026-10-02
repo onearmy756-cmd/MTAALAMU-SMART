@@ -19,6 +19,7 @@ missions za HERMES, HITL store na task queue kwa workers (LangChain/Whisper/Craw
 | **HITL gates** | `data/iot/hermes.json` + `devices.json` → store ya approvals |
 | **Missions** | memory ya HERMES: incidents + frames za agents (Kiswahili) |
 | **Worker queue** | register / poll / done kwa agents za Python |
+| **IoT summary** | `GET /iot/summary` — verticals, clone registry, devices, agents, hermes (kutoka `data/iot/`) |
 
 ## Anza
 
@@ -54,6 +55,9 @@ curl -s -X POST localhost:8088/hitl/HL-1/decide -H 'content-type: application/js
 
 # Missions za HERMES
 curl -s localhost:8088/missions | jq
+
+# IoT summary (verticals + clone registry + devices + agents)
+curl -s localhost:8088/iot/summary | jq '.projects_total, .devices_total, .agents_total'
 ```
 
 ## Mtiririko waHERMES
