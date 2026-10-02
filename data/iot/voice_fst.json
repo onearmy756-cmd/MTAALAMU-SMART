@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-10-02",
+  "wake_words": ["hermes", "heremezi"],
+  "language": "sw",
+  "kanuni": "Whisper (STT) inatoa matini; FST inaamisha intent + target + value; LLM haihusiki na amri za moja kwa moja.",
+  "fst": {
+    "states": ["START", "WAKE", "INTENT", "TARGET", "VALUE", "CONFIRM", "ACTION", "END", "ERROR"],
+    "initial": "START",
+    "accept": ["END"],
+    "transitions": [
+      {"from": "START", "token": "hermes|heremezi", "to": "WAKE", "reply_sw": "Ndiyo, niko hapa."},
+      {"from": "START", "token": "*", "to": "ERROR", "reply_sw": "Anza na neno la ushtuko: hermes."},
+      {"from": "WAKE", "token": "washa|zima|fungua|funga|weka", "to": "INTENT", "reply_sw": null},
+      {"from": "WAKE", "token": "*", "to": "ERROR", "reply_sw": "Sema amri: washa, zima, fungua, funga au weka."},
+      {"from": "INTENT", "token": "taa|tafaa", "to": "TARGET", "reply_sw": null},
+      {"from": "INTENT", "token": "socket|plagi", "to": "TARGET", "reply_sw": null},
+      {"from": "INTENT", "token": "valve|pampu", "to": "TARGET", "reply_sw": null},
+      {"from": "INTENT", "token": "lock|mkia", "to": "TARGET", "reply_sw": null},
+      {"from": "INTENT", "token": "*", "to": "ERROR", "reply_sw": "Sema lengo: taa, socket, valve au lock."},
+      {"from": "TARGET", "token": "<value>", "to": "VALUE", "reply_sw": null},
+      {"from": "TARGET", "token": "sasa|hapo", "to": "VALUE", "reply_sw": null},
+      {"from": "TARGET", "token": "*", "to": "VALUE", "reply_sw": null},
+      {"from": "VALUE", "token": "hermes|heremezi|sawa", "to": "CONFIRM", "reply_sw": "Nimekuchukulia: nenda?"},
+      {"from": "VALUE", "token": "*", "to": "CONFIRM", "reply_sw": null},
+      {"from": "CONFIRM", "token": "ndiyo|endelea", "to": "ACTION", "reply_sw": "Ninatekeleza."},
+      {"from": "CONFIRM", "token": "hapana|simama", "to": "END", "reply_sw": "Nimeghairi."},
+      {"from": "ACTION", "token": "*", "to": "END", "reply_sw": "Imefanyika."}
+    ]
+  },
+  "intents": [
+    {"id": "washa", "sw": "washa", "action": "turn_on"},
+    {"id": "zima", "sw": "zima", "action": "turn_off"},
+    {"id": "fungua", "sw": "fungua", "action": "open"},
+    {"id": "funga", "sw": "funga", "action": "close"},
+    {"id": "weka", "sw": "weka", "action": "set"}
+  ],
+  "targets": [
+    {"id": "taa", "sw": "taa", "device": "nyumbani.smart_light", "actuator": "switch"},
+    {"id": "socket", "sw": "socket", "device": "nyumbani.smart_socket", "actuator": "switch"},
+    {"id": "valve", "sw": "valve", "device": "kilimo.irrigation_valve", "actuator": "open"},
+    {"id": "lock", "sw": "lock", "device": "usalama.door_sensor", "actuator": "lock"}
+  ],
+  "hitl_note": {"sw": "Amri inayogusa valve, lock, sireni au kifaa kilicho hitl_required=true lazima ipite kwenye HITL gate ya hermes.json kabla ya kutekelezwa.", "en": "Commands touching valves, locks, sirens or hitl_required devices must pass the HITL gate in hermes.json before execution."}
+}

@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "vertical": "usalama",
+  "updated": "2026-10-02",
+  "projects": [
+    {
+      "id": "frigate",
+      "name": "Frigate NVR",
+      "repo": "https://github.com/blakeblackshear/frigate",
+      "license": "MIT",
+      "language": "Python",
+      "purpose": {"sw": "NVR ya AI kwa CCTV — kutambua watu, magari na matukio.", "en": "AI NVR for CCTV — detect people, cars and events."},
+      "contributes": ["cctv", "detection_events"],
+      "integration": {"type": "mqtt", "protocol": "MQTT (frigate/events)", "note_sw": "Frigate inatuma events kwa MQTT moja kwa moja."},
+      "upstream_dir": "upstream/frigate",
+      "priority": 1
+    },
+    {
+      "id": "motioneye",
+      "name": "motionEye",
+      "repo": "https://github.com/motioneye-project/motioneye",
+      "license": "GPL-3.0",
+      "language": "Python",
+      "purpose": {"sw": "Frontend ya motion — kamera nyingi, video loops, alerts.", "en": "Motion frontend — many cameras, video loops, alerts."},
+      "contributes": ["cameras", "motion_events"],
+      "integration": {"type": "adapter", "protocol": "Webhooks/MQTT", "note_sw": "Adapter ndogo inayotuma events kwenye topic ya MTAALAMU."},
+      "upstream_dir": "upstream/motioneye",
+      "priority": 2
+    },
+    {
+      "id": "zone-minder",
+      "name": "ZoneMinder",
+      "repo": "https://github.com/ZoneMinder/zoneminder",
+      "license": "GPL-2.0",
+      "language": "PHP/C++",
+      "purpose": {"sw": "NVR ya zamani imara — zones, filters, alarms.", "en": "Mature NVR — zones, filters, alarms."},
+      "contributes": ["cameras", "alarms"],
+      "integration": {"type": "api", "protocol": "API/Events", "note_sw": "ZM API kwa alarms."},
+      "upstream_dir": "upstream/zoneminder",
+      "priority": 3
+    },
+    {
+      "id": "hassio-supervisor",
+      "name": "Home Assistant Supervisor",
+      "repo": "https://github.com/home-assistant/supervisor",
+      "license": "Apache-2.0",
+      "language": "Python",
+      "purpose": {"sw": "Kusimamia add-ons na vifaa vya nyumbani kwa salama.", "en": "Supervises add-ons and home devices safely."},
+      "contributes": ["supervision"],
+      "integration": {"type": "reference", "protocol": "—", "note_sw": "Mfano bora wa HITL policy kwa actuation."},
+      "upstream_dir": "upstream/hass-supervisor",
+      "priority": 4
+    }
+  ]
+}

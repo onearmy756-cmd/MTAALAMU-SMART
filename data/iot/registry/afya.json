@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "vertical": "afya",
+  "updated": "2026-10-02",
+  "projects": [
+    {
+      "id": "openmrs",
+      "name": "OpenMRS",
+      "repo": "https://github.com/OpenMRS/openmrs-core",
+      "license": "MPL-2.0",
+      "language": "Java",
+      "purpose": {"sw": "Rekodi za matibabu ya wazi (EHR) — wagonjwa, mahudhurio, dawa.", "en": "Open medical records (EHR) — patients, encounters, orders."},
+      "contributes": ["patients", "encounters", "orders"],
+      "integration": {"type": "api", "protocol": "REST", "note_sw": "REST module ya OpenMRS inatoa API ya wagonjwa na encounters."},
+      "upstream_dir": "upstream/openmrs",
+      "priority": 1
+    },
+    {
+      "id": "openelis",
+      "name": "OpenELIS Global",
+      "repo": "https://github.com/I-TECH-UW/OpenELIS-Global-2",
+      "license": "MIT-like (see repo LICENSE)",
+      "language": "Java/React",
+      "purpose": {"sw": "Information system ya maabara (LIMS) — sampuli na majibu.", "en": "Laboratory information system (LIMS) — samples and results."},
+      "contributes": ["lab_samples", "lab_results"],
+      "integration": {"type": "api", "protocol": "FHIR/REST", "note_sw": "FHIR endpoints za maabara."},
+      "upstream_dir": "upstream/openelis",
+      "priority": 2
+    },
+    {
+      "id": "dhis2",
+      "name": "DHIS2",
+      "repo": "https://github.com/dhis2/dhis2-core",
+      "license": "BSD-3-Clause",
+      "language": "Java",
+      "purpose": {"sw": "Takwimu za afya kwa ngazi zote (HMIS) — ripoti na dashibodi.", "en": "Health information stats (HMIS) — reporting and dashboards."},
+      "contributes": ["aggregates", "reports"],
+      "integration": {"type": "api", "protocol": "REST", "note_sw": "Web API ya DHIS2 kwa data elements na analytics."},
+      "upstream_dir": "upstream/dhis2",
+      "priority": 3
+    },
+    {
+      "id": "openhim",
+      "name": "OpenHIM",
+      "repo": "https://github.com/jembi/openhim-core-js",
+      "license": "MPL-2.0",
+      "language": "JavaScript",
+      "purpose": {"sw": "Interop layer (HIE) — inaunganisha mifumo ya afya kwa salama.", "en": "Interop layer (HIE) — securely routes between health systems."},
+      "contributes": ["mediator", "routing"],
+      "integration": {"type": "adapter", "protocol": "HTTPS/Mediator", "note_sw": "Mediator ndogo inayozungumza na gateway ya MTAALAMU."},
+      "upstream_dir": "upstream/openhim",
+      "priority": 4
+    },
+    {
+      "id": "chispito",
+      "name": "Chispito Wind Generator",
+      "repo": "https://github.com/aqeelat/Chispito-Wind-Generator",
+      "license": "GPL (see repo LICENSE)",
+      "language": "Docs/Hardware",
+      "purpose": {"sw": "Nishati mbadala ya vifaa vya kliniki (wijini ya upepo ya DIY).", "en": "Alternative power for clinic devices (DIY wind turbine)."},
+      "contributes": ["power_reference"],
+      "integration": {"type": "reference", "protocol": "—", "note_sw": "Marejeo ya hardware kwa shughuli za FUNDI."},
+      "upstream_dir": "upstream/chispito",
+      "priority": 5
+    }
+  ]
+}

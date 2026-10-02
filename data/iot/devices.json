@@ -1,0 +1,165 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-10-02",
+  "devices": [
+    {
+      "id": "afya.patient_monitor",
+      "vertical": "afya",
+      "name": {"sw": "Kipimo cha Mgonjwa", "en": "Patient Monitor"},
+      "icon": "📈",
+      "telemetry": [
+        {"name": "hr_bpm", "unit": "bpm", "min": 30, "max": 200, "warn_low": 50, "warn_high": 120, "fail_low": 40, "fail_high": 140},
+        {"name": "spo2_pct", "unit": "%", "min": 70, "max": 100, "warn_low": 92, "warn_high": 101, "fail_low": 88, "fail_high": 102},
+        {"name": "temp_c", "unit": "°C", "min": 30, "max": 43, "warn_low": 35.5, "warn_high": 38.0, "fail_low": 34.5, "fail_high": 39.5}
+      ],
+      "actuators": [],
+      "risk": "high",
+      "hitl_required": false,
+      "source_projects": ["openmrs"],
+      "demo": true
+    },
+    {
+      "id": "afya.oxygen_concentrator",
+      "vertical": "afya",
+      "name": {"sw": "Kizalishi cha Oksijeni", "en": "Oxygen Concentrator"},
+      "icon": "💨",
+      "telemetry": [
+        {"name": "flow_lpm", "unit": "L/min", "min": 0, "max": 10, "warn_low": 1, "warn_high": 6, "fail_low": 0.5, "fail_high": 8},
+        {"name": "o2_pct", "unit": "%", "min": 60, "max": 100, "warn_low": 87, "warn_high": 101, "fail_low": 82, "fail_high": 102}
+      ],
+      "actuators": [{"id": "set_flow", "label": {"sw": "Weka mtiririko (L/min)", "en": "Set flow (L/min)"}, "hitl_required": true}],
+      "risk": "high",
+      "hitl_required": true,
+      "source_projects": ["openmrs"],
+      "demo": true
+    },
+    {
+      "id": "afya.vaccine_fridge",
+      "vertical": "afya",
+      "name": {"sw": "Friji ya Chanjo", "en": "Vaccine Fridge"},
+      "icon": "🧊",
+      "telemetry": [
+        {"name": "temp_c", "unit": "°C", "min": -30, "max": 30, "warn_low": 2.5, "warn_high": 7.0, "fail_low": 2.0, "fail_high": 8.0}
+      ],
+      "actuators": [{"id": "set_temp", "label": {"sw": "Weka joto (°C)", "en": "Set temp (°C)"}, "hitl_required": true}],
+      "risk": "high",
+      "hitl_required": true,
+      "source_projects": ["dhis2"],
+      "demo": true
+    },
+    {
+      "id": "usalama.motion_sensor",
+      "vertical": "usalama",
+      "name": {"sw": "Sensor ya Mwendo", "en": "Motion Sensor"},
+      "icon": "🚶",
+      "telemetry": [{"name": "motion", "unit": "bool", "min": 0, "max": 1, "warn_low": 0, "warn_high": 1, "fail_low": 0, "fail_high": 1}],
+      "actuators": [],
+      "risk": "medium",
+      "hitl_required": false,
+      "source_projects": ["frigate", "motioneye"],
+      "demo": true
+    },
+    {
+      "id": "usalama.door_sensor",
+      "vertical": "usalama",
+      "name": {"sw": "Sensor ya Mlango", "en": "Door Sensor"},
+      "icon": "🚪",
+      "telemetry": [{"name": "open", "unit": "bool", "min": 0, "max": 1, "warn_low": 0, "warn_high": 1, "fail_low": 0, "fail_high": 1}],
+      "actuators": [{"id": "lock", "label": {"sw": "Funga mkia", "en": "Lock"}, "hitl_required": true}],
+      "risk": "high",
+      "hitl_required": true,
+      "source_projects": ["frigate"],
+      "demo": true
+    },
+    {
+      "id": "usalama.siren",
+      "vertical": "usalama",
+      "name": {"sw": "Sireni", "en": "Siren"},
+      "icon": "🚨",
+      "telemetry": [],
+      "actuators": [{"id": "trigger", "label": {"sw": "Lipo sireni", "en": "Trigger siren"}, "hitl_required": true}],
+      "risk": "high",
+      "hitl_required": true,
+      "source_projects": ["frigate"],
+      "demo": true
+    },
+    {
+      "id": "nyumbani.smart_light",
+      "vertical": "nyumbani",
+      "name": {"sw": "Taa Mahiri", "en": "Smart Light"},
+      "icon": "💡",
+      "telemetry": [{"name": "power_w", "unit": "W", "min": 0, "max": 2000, "warn_low": 0, "warn_high": 150, "fail_low": 0, "fail_high": 300}],
+      "actuators": [{"id": "switch", "label": {"sw": "Washa/Zima", "en": "On/Off"}, "hitl_required": false}],
+      "risk": "low",
+      "hitl_required": false,
+      "source_projects": ["tasmota", "shelly-action"],
+      "demo": true
+    },
+    {
+      "id": "nyumbani.smart_socket",
+      "vertical": "nyumbani",
+      "name": {"sw": "Socket Mahiri", "en": "Smart Socket"},
+      "icon": "🔌",
+      "telemetry": [{"name": "power_w", "unit": "W", "min": 0, "max": 4000, "warn_low": 0, "warn_high": 2000, "fail_low": 0, "fail_high": 3500}],
+      "actuators": [{"id": "switch", "label": {"sw": "Washa/Zima", "en": "On/Off"}, "hitl_required": false}],
+      "risk": "medium",
+      "hitl_required": false,
+      "source_projects": ["tasmota", "shelly-action"],
+      "demo": true
+    },
+    {
+      "id": "nyumbani.temp_humidity",
+      "vertical": "nyumbani",
+      "name": {"sw": "Joto na Unyevu", "en": "Temp & Humidity"},
+      "icon": "🌡️",
+      "telemetry": [
+        {"name": "temp_c", "unit": "°C", "min": -10, "max": 60, "warn_low": 15, "warn_high": 32, "fail_low": 5, "fail_high": 40},
+        {"name": "humidity_pct", "unit": "%", "min": 0, "max": 100, "warn_low": 25, "warn_high": 70, "fail_low": 15, "fail_high": 85}
+      ],
+      "actuators": [],
+      "risk": "low",
+      "hitl_required": false,
+      "source_projects": ["esphome"],
+      "demo": true
+    },
+    {
+      "id": "kilimo.soil_sensor",
+      "vertical": "kilimo",
+      "name": {"sw": "Unyevu wa Udongo", "en": "Soil Moisture"},
+      "icon": "🌱",
+      "telemetry": [{"name": "soil_moisture_pct", "unit": "%", "min": 0, "max": 100, "warn_low": 30, "warn_high": 90, "fail_low": 20, "fail_high": 95}],
+      "actuators": [],
+      "risk": "medium",
+      "hitl_required": false,
+      "source_projects": ["smartfarmer", "openag-vera"],
+      "demo": true
+    },
+    {
+      "id": "kilimo.weather_node",
+      "vertical": "kilimo",
+      "name": {"sw": "Kituo cha Hewa Shambani", "en": "Farm Weather Node"},
+      "icon": "⛅",
+      "telemetry": [
+        {"name": "temp_c", "unit": "°C", "min": -5, "max": 55, "warn_low": 8, "warn_high": 38, "fail_low": 0, "fail_high": 45},
+        {"name": "rain_mm", "unit": "mm/h", "min": 0, "max": 200, "warn_low": 0, "warn_high": 20, "fail_low": 0, "fail_high": 50}
+      ],
+      "actuators": [],
+      "risk": "medium",
+      "hitl_required": false,
+      "source_projects": ["smartfarmer"],
+      "demo": true
+    },
+    {
+      "id": "kilimo.irrigation_valve",
+      "vertical": "kilimo",
+      "name": {"sw": "Valve ya Udhuwilishaji", "en": "Irrigation Valve"},
+      "icon": "🚿",
+      "telemetry": [{"name": "flow_lpm", "unit": "L/min", "min": 0, "max": 500, "warn_low": 5, "warn_high": 200, "fail_low": 1, "fail_high": 400}],
+      "actuators": [{"id": "open", "label": {"sw": "Fungua valve", "en": "Open valve"}, "hitl_required": true}],
+      "risk": "high",
+      "hitl_required": true,
+      "source_projects": ["openirrigation", "farmos"],
+      "demo": true
+    }
+  ]
+}

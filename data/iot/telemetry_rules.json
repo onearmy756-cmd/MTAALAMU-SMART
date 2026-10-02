@@ -1,0 +1,105 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-10-02",
+  "kanuni": "first matching rule wins",
+  "rules": [
+    {
+      "id": "afya.patient_monitor.hr_bpm",
+      "device": "afya.patient_monitor",
+      "field": "hr_bpm",
+      "checks": [
+        {"check": "v >= 50 && v <= 120", "status": "GOOD", "msg": {"sw": "Mapigo ya moyo yako sawa.", "en": "Heart rate normal."}},
+        {"check": "v > 120 && v <= 140", "status": "WARNING", "msg": {"sw": "Mapigo yameongezeka — angalia mgonjwa.", "en": "Elevated heart rate — check patient."}},
+        {"check": "v < 50 && v >= 40", "status": "WARNING", "msg": {"sw": "Mapigo yamepungua — angalia mgonjwa.", "en": "Low heart rate — check patient."}},
+        {"check": "true", "status": "FAIL", "msg": {"sw": "HATARI: mapigo ya moyo nje ya kikomo!", "en": "CRITICAL: heart rate out of bounds!"}}
+      ],
+      "alert": {"severity": "critical", "voice_sw": "Hatiari! Mapigo ya moyo yametoka kwenye kikomo.", "notify": ["ui", "sms", "hospital"]}
+    },
+    {
+      "id": "afya.patient_monitor.spo2_pct",
+      "device": "afya.patient_monitor",
+      "field": "spo2_pct",
+      "checks": [
+        {"check": "v >= 92", "status": "GOOD", "msg": {"sw": "Oksijeni nzuri.", "en": "Oxygen normal."}},
+        {"check": "v >= 88", "status": "WARNING", "msg": {"sw": "Oksijeni iko chini — angalia.", "en": "Oxygen low — check."}},
+        {"check": "true", "status": "FAIL", "msg": {"sw": "HATARI: oksijeni chini sana!", "en": "CRITICAL: oxygen very low!"}}
+      ],
+      "alert": {"severity": "critical", "voice_sw": "Hatiari! Oksijeni ya mgonjwa iko chini.", "notify": ["ui", "sms", "hospital"]}
+    },
+    {
+      "id": "afya.vaccine_fridge.temp_c",
+      "device": "afya.vaccine_fridge",
+      "field": "temp_c",
+      "checks": [
+        {"check": "v >= 2.5 && v <= 7.0", "status": "GOOD", "msg": {"sw": "Joto la friji sawa.", "en": "Fridge temperature OK."}},
+        {"check": "v >= 2.0 && v <= 8.0", "status": "WARNING", "msg": {"sw": "Joto liko mpakani.", "en": "Temperature near limits."}},
+        {"check": "true", "status": "FAIL", "msg": {"sw": "HATARI: chanjo ziko katika hatari ya joto!", "en": "CRITICAL: vaccines at temperature risk!"}}
+      ],
+      "alert": {"severity": "critical", "voice_sw": "Hatiari! Friji ya chanjo imetoka kwenye joto sahihi.", "notify": ["ui", "sms", "hospital"]}
+    },
+    {
+      "id": "afya.oxygen_concentrator.o2_pct",
+      "device": "afya.oxygen_concentrator",
+      "field": "o2_pct",
+      "checks": [
+        {"check": "v >= 87", "status": "GOOD", "msg": {"sw": "Oksijeni ya kifaa sawa.", "en": "Device oxygen OK."}},
+        {"check": "v >= 82", "status": "WARNING", "msg": {"sw": "Utajiri wa oksijeni uko chini.", "en": "Oxygen purity dropping."}},
+        {"check": "true", "status": "FAIL", "msg": {"sw": "HATARI: kifaa hakitoi oksijeni ya kutosha!", "en": "CRITICAL: device not delivering enough oxygen!"}}
+      ],
+      "alert": {"severity": "critical", "voice_sw": "Hatiari! Kizalishi cha oksijeni kimepungua.", "notify": ["ui", "sms", "hospital"]}
+    },
+    {
+      "id": "usalama.motion_sensor.motion",
+      "device": "usalama.motion_sensor",
+      "field": "motion",
+      "checks": [
+        {"check": "v == 0", "status": "GOOD", "msg": {"sw": "Hakuna mwendo.", "en": "No motion."}},
+        {"check": "true", "status": "WARNING", "msg": {"sw": "Mwendo umeonekana.", "en": "Motion detected."}}
+      ],
+      "alert": {"severity": "info", "voice_sw": "Mwendo umeonekana kwenye sensor.", "notify": ["ui"]}
+    },
+    {
+      "id": "usalama.door_sensor.open",
+      "device": "usalama.door_sensor",
+      "field": "open",
+      "checks": [
+        {"check": "v == 0", "status": "GOOD", "msg": {"sw": "Mlango umefungwa.", "en": "Door closed."}},
+        {"check": "true", "status": "FAIL", "msg": {"sw": "Mlango UMEFUNGUKA — angalia usalama!", "en": "Door OPENED — check security!"}}
+      ],
+      "alert": {"severity": "warning", "voice_sw": "Mlango umefunguka.", "notify": ["ui", "sms"]}
+    },
+    {
+      "id": "nyumbani.smart_socket.power_w",
+      "device": "nyumbani.smart_socket",
+      "field": "power_w",
+      "checks": [
+        {"check": "v < 2000", "status": "GOOD", "msg": {"sw": "Matumizi ya umeme sawa.", "en": "Power usage normal."}},
+        {"check": "v <= 3500", "status": "WARNING", "msg": {"sw": "Matumizi ya juu — tahadhari.", "en": "High usage — warning."}},
+        {"check": "true", "status": "FAIL", "msg": {"sw": "HATARI: mzigo wa umeme mwingi sana!", "en": "CRITICAL: excessive power load!"}}
+      ],
+      "alert": {"severity": "warning", "voice_sw": "Matumizi ya umeme yameongezeka sana.", "notify": ["ui"]}
+    },
+    {
+      "id": "kilimo.soil_sensor.soil_moisture_pct",
+      "device": "kilimo.soil_sensor",
+      "field": "soil_moisture_pct",
+      "checks": [
+        {"check": "v >= 30 && v <= 90", "status": "GOOD", "msg": {"sw": "Unyevu wa udongo sawa.", "en": "Soil moisture OK."}},
+        {"check": "v >= 20", "status": "WARNING", "msg": {"sw": "Udongo unaanza kuwa kavu.", "en": "Soil getting dry."}},
+        {"check": "true", "status": "FAIL", "msg": {"sw": "HATARI: udongo mkavu sana — mazao hatarini!", "en": "CRITICAL: soil too dry — crops at risk!"}}
+      ],
+      "alert": {"severity": "warning", "voice_sw": "Udongo wa shamba unaanza kuwa kavu.", "notify": ["ui", "sms"]}
+    },
+    {
+      "id": "kilimo.weather_node.rain_mm",
+      "device": "kilimo.weather_node",
+      "field": "rain_mm",
+      "checks": [
+        {"check": "v < 20", "status": "GOOD", "msg": {"sw": "Mvua ya kawaida.", "en": "Normal rain."}},
+        {"check": "v <= 50", "status": "WARNING", "msg": {"sw": "Mvua nyingi — angalia mafuriko.", "en": "Heavy rain — watch for floods."}},
+        {"check": "true", "status": "FAIL", "msg": {"sw": "HATARI: mvua kubwa mno — mafuriko!", "en": "CRITICAL: extreme rain — flooding!"}}
+      ],
+      "alert": {"severity": "warning", "voice_sw": "Mvua kubwa shambani — angalia mafuriko.", "notify": ["ui", "sms"]}
+    }
+  ]
+}

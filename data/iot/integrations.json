@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-10-02",
+  "integrations": [
+    {"id": "mqtt", "name": "MQTT Broker", "kind": "broker", "host": "127.0.0.1", "port": 1883, "note_sw": "EMQX au Mosquitto — vifaa vingine vya IoT vinazungumza hapa.", "required": false},
+    {"id": "hermes_gateway", "name": "HERMES Gateway (Elixir)", "kind": "gateway", "host": "127.0.0.1", "port": 8088, "repo": "services/hermes_gateway", "note_sw": "Inapokea telemetry (MQTT+HTTP), inaendesha rules, FST, missions na HITL store.", "required": true},
+    {"id": "mtaalamu_engine", "name": "MTAALAMU Engine (Rust)", "kind": "engine", "host": "127.0.0.1", "port": 8080, "repo": "engine-rust", "note_sw": "Inahesabu: formulas, bayes, knowledge — gateway na worker zinaiita HTTP.", "required": true},
+    {"id": "hermes_agents", "name": "HERMES Workers (Python/LangChain)", "kind": "worker", "host": "127.0.0.1", "port": 8090, "repo": "services/hermes_agents", "note_sw": "Agents za LangChain, Whisper STT, Crawl4AI — zinaomba kazi kwa gateway na kupoll.", "required": true},
+    {"id": "whisper", "name": "Whisper STT", "kind": "stt", "host": "127.0.0.1", "port": 8090, "repo": "services/hermes_agents", "note_sw": "fast-whisper kwa kutambua sauti ya Kiswahili → matini → FST.", "required": false},
+    {"id": "ollama", "name": "Ollama LLM", "kind": "llm", "host": "127.0.0.1", "port": 11434, "note_sw": "Hiari: HERMES anaweza kufanya kazi bila LLM (offline-first).", "required": false},
+    {"id": "sms", "name": "SMS Gateway", "kind": "notify", "host": "", "port": 0, "note_sw": "Africa's Talking au provider yoyote — alerti za SMS (config kwenye .env).", "required": false},
+    {"id": "openmrs", "name": "OpenMRS", "kind": "upstream", "host": "127.0.0.1", "port": 8081, "repo": "upstream/openmrs", "note_sw": "EHR ya hospitali — REST API.", "required": false},
+    {"id": "frigate", "name": "Frigate NVR", "kind": "upstream", "host": "127.0.0.1", "port": 5000, "repo": "upstream/frigate", "note_sw": "CCTV events kwa MQTT.", "required": false},
+    {"id": "home-assistant", "name": "Home Assistant", "kind": "upstream", "host": "127.0.0.1", "port": 8123, "repo": "upstream/home-assistant", "note_sw": "Automation ya nyumbani — MQTT discovery.", "required": false},
+    {"id": "farmos", "name": "farmOS", "kind": "upstream", "host": "127.0.0.1", "port": 8082, "repo": "upstream/farmos", "note_sw": "Usimamizi wa shamba — REST.", "required": false}
+  ]
+}
