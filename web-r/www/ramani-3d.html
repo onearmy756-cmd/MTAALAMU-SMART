@@ -11,6 +11,12 @@
     - Milima halisi: Terrain DEM ya AWS (tiles za elevation, bila key)
     - GPS + Hali ya hewa + Hatari + Sauti ya Kiswahili (sw-TZ)
   -->
+  <!-- REAL-TIME: preconnect — handshake za TCP/TLS zinafanywa MAPKEA, sio wakati wa tiles -->
+  <link rel="preconnect" href="https://server.arcgisonline.com" crossorigin />
+  <link rel="preconnect" href="https://gibs.earthdata.nasa.gov" crossorigin />
+  <link rel="preconnect" href="https://s3.amazonaws.com" crossorigin />
+  <link rel="preconnect" href="https://demotiles.maplibre.org" crossorigin />
+  <link rel="dns-prefetch" href="https://unpkg.com" />
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <style>
@@ -71,14 +77,34 @@
       padding: 0.45rem 0.6rem; font-size: 0.68rem; color: var(--dim); pointer-events: none;
     }
     .legend b { color: var(--cyan); font-family: var(--title); letter-spacing: 1px; }
+    /* Search suggestions (Nominatim + ndani) */
+    .q-wrap { position: relative; }
+    #q3d { padding: 0.4rem 0.5rem; border-radius: 6px; border: 1px solid var(--line); background: #0f2233; color: var(--text); font-family: var(--mono); font-size: 0.76rem; }
+    #qList {
+      position: absolute; top: 100%; left: 0; right: 0; z-index: 30; display: none;
+      background: var(--card); border: 1px solid var(--line); border-radius: 0 0 8px 8px; max-height: 220px; overflow-y: auto;
+    }
+    #qList div { padding: 0.4rem 0.55rem; cursor: pointer; font-size: 0.74rem; border-bottom: 1px solid #12263c; }
+    #qList div:hover { background: #143048; }
+    #qList .lvl { color: var(--dim); font-size: 0.62rem; margin-left: 0.3rem; }
+    /* SKRINI KAMILI: fullscreen au ?full=1 — ramani PEKEE */
+    :fullscreen header, :fullscreen #panel { display: none !important; }
+    .pure-map header, .pure-map #panel { display: none !important; }
+    #exitPure {
+      display: none; position: fixed; right: 12px; bottom: 12px; z-index: 9;
+    }
+    .pure-map #exitPure { display: inline-block; }
   </style>
 </head>
 <body>
 <div id="app">
+  <button type="button" id="exitPure" onclick="location.href='ramani-3d.html'" title="Rudi na panel">↩️ Rudi</button>
   <header>
     <h1>🌍 RAMANI 3D</h1>
     <div class="btns">
       <button type="button" id="btnSat" class="on">🛰️ Picha Halisi</button>
+      <button type="button" id="btnLabels" class="on">🏷️ Lebo</button>
+      <button type="button" id="btnFull">⛶ Skrini</button>
       <button type="button" id="btnTerrain" class="on">⛰️ Milima 3D</button>
       <button type="button" id="btnTilt">🔄 Mwelekeo</button>
       <button type="button" id="btnFly">✈️ Ndege (Dar)</button>
@@ -88,6 +114,13 @@
       <button type="button" id="btnIoT">📡 Vifaa IoT</button>
       <button type="button" id="btnMission">🤖 HERMES Mission</button>
       <button type="button" id="btnVoice" title="Washa/zima sauti ya Kiswahili">🔈 Sauti: ON</button>
+      <span class="q-wrap"><input id="q3d" type="search" placeholder="🔎 Tafuta sehemu..." autocomplete="off" style="max-width:140px" /><div id="qList"></div></span>
+      <button type="button" id="btnNet" class="on">🕸️ Miunganisho</button>
+      <button type="button" id="btnCities">🏙️ Miji</button>
+      <button type="button" id="btnRegions">🗺️ Mikoa</button>
+      <button type="button" id="btnPeople">👷 Wafundi</button>
+      <button type="button" id="btnCorridors">🛣️ Corridor</button>
+      <button type="button" id="btnFollow">🧭 Follow</button>
       <select id="baseSel" title="Chagua chanzo cha picha">
         <option value="esri">Esri World Imagery</option>
         <option value="gibs">NASA GIBS (leo)</option>
@@ -100,7 +133,7 @@
     <div class="legend">
       <b>RAMANI 3D HALISI</b><br/>
       GPU/WebGL — RAM ndogo<br/>
-      Esri Imagery + AWS Terrain<br/>
+      Esri Imagery + Lebo halisi<br/>
       <span id="fpsBadge">fps: —</span>
     </div>
   </div>
@@ -112,6 +145,7 @@
       <span class="badge info" id="weatherBadge">Hewa: —</span>
       <span class="badge" id="hzBadge">Hatari: ZIMEFICHWA</span>
       <span class="badge" id="iotBadge">IoT: ZIMEFICHWA</span>
+      <span class="badge ok" id="liveBadge">LIVE: —</span>
       <span class="badge info" id="missionBadge">HERMES: TAYARI</span>
     </div>
     <div id="weatherBox" class="weather-box" style="display:none"></div>
@@ -178,6 +212,14 @@ function speak(text) {
 
 /* ---------- RAMANI (MapLibre GL — GPU) ---------- */
 /* Raster style: tiles halisi, si vector nzito — data kidogo, picha halisi */
+/* ---------- SITES ZA IOT (zinatumika pia ndani ya style ya map — lazima ziwekwe MAPEMA) ---------- */
+const IOT_SITES = {
+  afya:    { name: "Hospitali (mfano)",  lng: 39.26, lat: -6.82, ico: "🏥" },
+  usalama: { name: "Nyumba salama",      lng: 39.24, lat: -6.79, ico: "🛡️" },
+  nyumbani:{ name: "Bodi ya nyumbani",   lng: 39.22, lat: -6.76, ico: "🏠" },
+  kilimo:  { name: "Shamba (kilimo)",    lng: 36.68, lat: -3.39, ico: "🌱" }
+};
+
 const BASEMAPS = {
   esri: {
     tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
@@ -201,8 +243,12 @@ function gibsTiles() {
 
 function baseStyle(id) {
   const cfg = id === "gibs" ? { tiles: gibsTiles(), attribution: BASEMAPS.gibs.attribution } : BASEMAPS[id];
+  /* PROGRESSIVE: style ya mwanzo ina PICHA TU — lebo na sites zinaongezwa
+   * baada ya frame ya kwanza (ensureLabelLayers) ili map ionekane HARAKA. */
   return {
     version: 8,
+    /* Glyphs za bure (MapLibre demo) — kwa ajili ya majina ya sites za IoT */
+    glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
     sources: {
       base: {
         type: "raster",
@@ -216,14 +262,78 @@ function baseStyle(id) {
         tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
         encoding: "terrarium",
         tileSize: 256,
-        maxzoom: 13
+        maxzoom: 12
       }
     },
     layers: [
       { id: "bg", type: "background", paint: { "background-color": "#0a1220" } },
-      { id: "base", type: "raster", source: "base", paint: { "raster-fade-duration": 200 } }
+      { id: "base", type: "raster", source: "base", paint: { "raster-fade-duration": 0 } }
     ]
   };
+}
+
+/* ---------- PROGRESSIVE EXTRAS (lebo + sites) — zinaongezwa baada ya load ---------- */
+function ensureLabelLayers() {
+  if (!map.getSource("labels_places")) {
+    map.addSource("labels_places", {
+      type: "raster",
+      tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: "Lebo: Esri World Boundaries & Places"
+    });
+  }
+  if (!map.getSource("labels_streets")) {
+    map.addSource("labels_streets", {
+      type: "raster",
+      tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}"],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: "Lebo za barabara: Esri World Transportation"
+    });
+  }
+  if (!map.getSource("sites")) {
+    map.addSource("sites", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: Object.keys(IOT_SITES).map(function (k) {
+          const s = IOT_SITES[k];
+          return { type: "Feature", geometry: { type: "Point", coordinates: [s.lng, s.lat] }, properties: { name: s.name, ico: s.ico, key: k } };
+        })
+      }
+    });
+  }
+  if (!map.getLayer("labels-places")) {
+    map.addLayer({ id: "labels-places", type: "raster", source: "labels_places", paint: { "raster-opacity": 1 } });
+  }
+  if (!map.getLayer("labels-streets")) {
+    map.addLayer({ id: "labels-streets", type: "raster", source: "labels_streets", paint: { "raster-opacity": 1 } });
+  }
+  if (!map.getLayer("site-label")) {
+    map.addLayer({ id: "site-label", type: "symbol", source: "sites", layout: {
+        "text-field": ["get", "ico"], "text-font": ["Noto Sans Regular"],
+        "text-size": 16, "text-offset": [0, -1.4], "text-anchor": "bottom",
+        "text-allow-overlap": true, "visibility": "none"
+      }, paint: { "text-color": "#00e5ff", "text-halo-color": "#04070d", "text-halo-width": 2 } });
+  }
+  /* MAJINA YA MIJI — symbol labels zenye halo nzito: zinaonekana VIZURI juu ya picha yoyote */
+  const citiesLbl = (window.MT_GEO_FULL && window.MT_GEO_FULL.cities) || [];
+  if (citiesLbl.length) {
+    if (!map.getSource("city-names")) {
+      map.addSource("city-names", { type: "geojson", data: { type: "FeatureCollection", features: citiesLbl.map((c, i) => ({
+        type: "Feature", id: i, geometry: { type: "Point", coordinates: [c.lng, c.lat] }, properties: { name: c.name }
+      })) } });
+    }
+    if (!map.getLayer("city-name-labels")) {
+      map.addLayer({ id: "city-name-labels", type: "symbol", source: "city-names", layout: {
+          "text-field": ["get", "name"], "text-font": ["Noto Sans Regular"],
+          "text-size": 14, "text-letter-spacing": 0.1, "text-anchor": "center",
+          "text-allow-overlap": true
+        }, paint: { "text-color": "#ffffff", "text-halo-color": "#04070d", "text-halo-width": 2.5 } });
+    }
+  }
+  labelsApply(labelsOn);
 }
 
 const map = new maplibregl.Map({
@@ -235,7 +345,12 @@ const map = new maplibregl.Map({
   bearing: -18,
   maxPitch: 80,
   antialias: false,                /* RAM/gpu kidogo */
-  attributionControl: { compact: true }
+  attributionControl: { compact: true },
+  /* REAL-TIME tuning: hakuna fade, hakuna ku-fetch upya kila wakati, cache ndogo */
+  fadeDuration: 0,
+  refreshExpiredTiles: false,
+  maxTileCacheSize: 64,
+  renderWorldCopies: false
 });
 map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-left");
 map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
@@ -256,7 +371,10 @@ function setTerrain(on) {
   } catch (e) { /* terrain haiwezekani kwenye GPU dhaifu */ }
 }
 map.on("load", () => {
-  setTerrain(terrainOn);
+  map._mtLoaded = true;              /* standalone auto-on inatumia hii */
+  ensureLabelLayers();               /* lebo zinajitokeza BAADA YA picha (fast first paint) */
+  if (netOn) netApply(true);         /* miunganisho halisi: HERMES ↔ sites */
+  map.once("idle", () => setTerrain(terrainOn));  /* milima: baada ya frame ya kwanza */
   /* Fog/anga: hali halisi ya anga bila gharama ya texture */
   try {
     map.setSky({
@@ -283,10 +401,38 @@ document.getElementById("baseSel").onchange = (e) => setBase(e.target.value);
 function setBase(id) {
   const s = baseStyle(id);
   map.setStyle(s, { diff: true });
-  /* terrain inarudishwa baada ya style mpya */
-  setTimeout(() => setTerrain(terrainOn), 400);
+  /* terrain + lebo + hatari + IoT zinarudishwa baada ya style mpya */
+  setTimeout(() => {
+    ensureAllDynamic();
+  }, 400);
   document.getElementById("btnSat").classList.toggle("on", id === "esri" || id === "gibs");
 }
+
+/* ---------- LEBO HALISI (majina ya mikoa/miji/barabara — Esri Reference) ---------- */
+let labelsOn = true;
+function labelsApply(on) {
+  try {
+    if (map.getLayer("labels-places")) {
+      map.setLayoutProperty("labels-places", "visibility", on ? "visible" : "none");
+    }
+    if (map.getLayer("labels-streets")) {
+      map.setLayoutProperty("labels-streets", "visibility", on ? "visible" : "none");
+    }
+    if (map.getLayer("site-label")) {
+      map.setLayoutProperty("site-label", "visibility", on && iotOn ? "visible" : "none");
+    }
+    if (map.getLayer("city-name-labels")) {
+      map.setLayoutProperty("city-name-labels", "visibility", on ? "visible" : "none");
+    }
+  } catch (e) { /* style inabadilishwa — labelsApply inaitwa tena na setBase */ }
+}
+document.getElementById("btnLabels").onclick = () => {
+  labelsOn = !labelsOn;
+  document.getElementById("btnLabels").classList.toggle("on", labelsOn);
+  labelsApply(labelsOn);
+  setInstruction(labelsOn ? "Lebo za majina zimewashwa (miji + barabara)." : "Lebo zimefichwa — picha pekee.");
+  speak(labelsOn ? "Lebo za majina zimewashwa." : "Lebo zimafichwa.");
+};
 
 /* ---------- MWELEKEO / NDEGE ---------- */
 let tilted = true;
@@ -300,6 +446,19 @@ document.getElementById("btnFly").onclick = () => {
   speak("Ndege kwenda Dar es Salaam. Tazama jiji kwa tatu.");
 };
 
+/* ---------- SKRINI KAMILI (⛶ au ?full=1) ---------- */
+document.getElementById("btnFull").onclick = () => {
+  const el = document.documentElement;
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    (el.requestFullscreen || el.webkitRequestFullscreen || function () {}).call(el);
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
+};
+if (new URLSearchParams(location.search).get("full") === "1") {
+  document.body.classList.add("pure-map");
+}
+
 /* ---------- GPS ---------- */
 let watchId = null;
 document.getElementById("btnGps").onclick = () => {
@@ -310,6 +469,13 @@ document.getElementById("btnGps").onclick = () => {
   if (watchId != null) navigator.geolocation.clearWatch(watchId);
   watchId = navigator.geolocation.watchPosition((pos) => {
     const ll = [pos.coords.longitude, pos.coords.latitude];
+    map._mtUserLL = ll;
+    /* REAL-TIME trail: njia unayotembea inachorwa (kama map.js ya 2D) */
+    const last = trailCoords[trailCoords.length - 1];
+    if (!last || Math.abs(last[0] - ll[0]) > 0.00004 || Math.abs(last[1] - ll[1]) > 0.00004) {
+      trailCoords.push(ll);
+      drawTrail();
+    }
     document.getElementById("gpsStatus").textContent = "GPS: OK ±" + Math.round(pos.coords.accuracy) + "m";
     document.getElementById("gpsStatus").className = "badge ok";
     speakOnce(VOICE_PROMPTS.gps_ok);
@@ -324,6 +490,7 @@ document.getElementById("btnGps").onclick = () => {
       map.flyTo({ center: ll, zoom: 15.5, pitch: 62, duration: 2400 });
     } else {
       map.getSource("user").setData({ type: "Feature", geometry: { type: "Point", coordinates: ll } });
+      if (followOn) map.easeTo({ center: ll, duration: 700 });
     }
   }, () => {
     document.getElementById("gpsStatus").textContent = "GPS: dhaifu";
@@ -344,13 +511,65 @@ function speakOnce(t) { if (!_gpsSaid) { speak(t); _gpsSaid = true; } }
     if (m2) window.MT_IOT_3D = JSON.parse(decodeURIComponent(m2));
     const m3 = location.hash.match(/pipe=([^&]+)/);
     if (m3) window.MT_PIPE_3D = JSON.parse(decodeURIComponent(m3));
+    const m4 = location.hash.match(/cities=([^&]+)/);
+    if (m4 && !window.MT_GEO_FULL) window.MT_GEO_FULL = { cities: JSON.parse(decodeURIComponent(m4[1])) };
   } catch (e) { /* data ya hash isiyofaa — tuma tupu */ }
+})();
+/* ---------- STANDALONE / PREVIEW mode: hash tupu → soma JSON halisi za mradi ----------
+ * Inafanya kazi kwa scripts/preview_server.py (root = repo): fetch kama hii
+ *   ../data/geo.json            → web-r/data/geo.json (hazards)
+ *   ../../data/iot/devices.json → data/iot/devices.json (vifaa 12)
+ * Kwenye R/Shiny (root = www) fetch hizi zinakosea 404 — zinakataliwa kimya.
+ */
+(async function () {
+  try {
+    if (!window.MT_GEO_3D) {
+      const r = await fetch("../data/geo.json");
+      if (r.ok) {
+        const g = await r.json();
+        window.MT_GEO_3D = { hazards: g.hazards || [] };
+        window.MT_GEO_FULL = g;   /* miji + markers + regions + routes (kama map.js) */
+      }
+    }
+  } catch (e) { /* 404 au offline — OK */ }
+  try {
+    if (!window.MT_IOT_3D) {
+      const r = await fetch("../../data/iot/devices.json");
+      if (r.ok) {
+        const d = await r.json();
+        window.MT_IOT_3D = { devices: d.devices || [] };
+      }
+    }
+  } catch (e) { /* 404 au offline — OK */ }
+  map.on("load", () => {
+    setTimeout(() => {
+      if ((window.MT_GEO_3D && window.MT_GEO_3D.hazards || []).length) {
+        const b = document.getElementById("btnHazards");
+        if (!b.classList.contains("on")) b.click();
+      }
+      if ((window.MT_IOT_3D && window.MT_IOT_3D.devices || []).length) {
+        const b2 = document.getElementById("btnIoT");
+        if (!b2.classList.contains("on")) b2.click();
+      }
+      /* VYOTE kutoka ramani ya 2D — defaults kama map.js (boundaries/cities/techs ON) */
+      if (window.MT_GEO_FULL) {
+        ensureLabelLayers();   /* city-name labels zinajipakia data ikifika */
+        ["btnCities", "btnRegions", "btnPeople"].forEach((id) => {
+          const b3 = document.getElementById(id);
+          if (!b3.classList.contains("on")) b3.click();
+        });
+      }
+    }, 300);
+  });
 })();
 let hazardsOn = false;
 document.getElementById("btnHazards").onclick = () => {
   hazardsOn = !hazardsOn;
+  hzApply(hazardsOn);
+};
+function hzApply(on) {
   const list = (window.MT_GEO_3D && window.MT_GEO_3D.hazards) || [];
-  if (!hazardsOn) {
+  if (!on) {
     if (map.getLayer("hz")) map.removeLayer("hz");
     if (map.getSource("hz")) map.removeSource("hz");
     document.getElementById("hzBadge").textContent = "Hatari: ZIMEFICHWA";
@@ -393,25 +612,25 @@ document.getElementById("btnHazards").onclick = () => {
   document.getElementById("hzBadge").className = "badge warn";
   setInstruction("Hatari " + list.length + " zimeonyeshwa. Bofya alama kusikia onyo.");
   speak(VOICE_PROMPTS.hazard);
-};
+}
 
 /* ---------- VIFAA VYA IoT (data/iot/devices.json — verticals 4) ---------- */
-/* Maeneo ya vertex (site za mradi): afya=hospitali, usalama=nyumba, nyumbani=bodi, kilimo=shamba */
-const IOT_SITES = {
-  afya:    { name: "Hospitali (mfano)",  lng: 39.26, lat: -6.82, ico: "🏥" },
-  usalama: { name: "Nyumba salama",      lng: 39.24, lat: -6.79, ico: "🛡️" },
-  nyumbani:{ name: "Bodi ya nyumbani",   lng: 39.22, lat: -6.76, ico: "🏠" },
-  kilimo:  { name: "Shamba (kilimo)",    lng: 36.68, lat: -3.39, ico: "🌱" }
-};
+/* Maeneo ya vertical (site za mradi) — IOT_SITES imetangazwa JUU (inatumika na baseStyle) */
 let iotOn = false;
 document.getElementById("btnIoT").onclick = () => {
   iotOn = !iotOn;
   document.getElementById("btnIoT").classList.toggle("on", iotOn);
+  iotApply(iotOn);
+};
+function iotApply(on) {
   const devices = (window.MT_IOT_3D && window.MT_IOT_3D.devices) || [];
-  if (!iotOn) {
+  if (!on) {
     if (map.getLayer("iot-dot")) map.removeLayer("iot-dot");
     if (map.getLayer("iot-pulse")) map.removeLayer("iot-pulse");
     if (map.getSource("iot")) map.removeSource("iot");
+    if (map.getLayer("site-label")) {
+      try { map.setLayoutProperty("site-label", "visibility", "none"); } catch (e) {}
+    }
     document.getElementById("iotBadge").textContent = "IoT: ZIMEFICHWA";
     document.getElementById("iotBadge").className = "badge";
     setInstruction("Vifaa vya IoT vimefichwa.");
@@ -458,7 +677,13 @@ document.getElementById("btnIoT").onclick = () => {
   document.getElementById("iotBadge").className = "badge ok";
   setInstruction("Vifaa " + feats.length + " vya IoT (verticals 4) vimeonyeshwa. Bofya kifaa → HERMES anuchunguze.");
   speak("Vifaa vya IoT vimeonyeshwa kwenye ramani ya tatu.");
-};
+  /* Majina ya sites (labels za location husika) — yanaonekana na IoT + Lebo */
+  try {
+    if (map.getLayer("site-label")) {
+      map.setLayoutProperty("site-label", "visibility", labelsOn ? "visible" : "none");
+    }
+  } catch (e) {}
+}
 
 /* ---------- HERMES MISSION (iot_incident pipeline kwenye 3D) ---------- */
 /* Events: 'mt-hermes-run' kutoka popups; panel inaonyesha hatua PIITVD + heat za IoT */
@@ -500,6 +725,309 @@ function runMission(deviceId) {
   }, 1600);
 }
 
+/* ============================================================
+ * NETWORK HALISI + VYOTE KUTOKA RAMANI YA 2D (map.js / geo.json)
+ *  - HERMES hub ↔ sites: mistari inayotembea (miunganisho halisi)
+ *  - Agents zinaonekana: 🤖 HERMES + 🧠 🕷️ 🎙️ 💬 workers
+ *  - Miji 12 · Mikoa 30 + stats · Wafundi 8 / Wateja 7 / Kazi 4
+ *  - Corridors 8 · Search (Nominatim) · OSRM routing · GPS trail
+ * Data: web-r/data/geo.json (JSON = chanzo, kama map.js ilivyofanya)
+ * ============================================================ */
+const HERMES_HUB = { lng: 39.2083, lat: -6.7924, name: "HERMES Gateway", ico: "🤖" };
+const NET_WORKERS = [
+  { id: "langchain", ico: "\uD83E\uDDE0", dx: 0.012, dy: 0.005 },
+  { id: "crawl4ai", ico: "\uD83D\uDD77\uFE0F", dx: -0.012, dy: 0.006 },
+  { id: "whisper", ico: "\uD83C\uDFA4", dx: 0.010, dy: -0.007 },
+  { id: "ollama", ico: "\uD83D\uDCAC", dx: -0.011, dy: -0.007 }
+];
+let netOn = true, netTimer = null, netStep = 0;
+let citiesOn = false, regionsOn = false, peopleOn = false, corridorsOn = false, followOn = false;
+let REGIONS_GEO = null, lastRouteGeo = null;
+const trailCoords = [];
+
+window.MT3D = {
+  /* OSRM routing — kutoka GPS (au mtazamo) kwenda lengo; njia halisi ya barabara */
+  routeTo: async function (lat, lng, name) {
+    const start = map._mtUserLL || (function () { const c = map.getCenter(); return [c.lng, c.lat]; })();
+    try {
+      const url = "https://router.project-osrm.org/route/v1/driving/" + start[0] + "," + start[1] + ";" + lng + "," + lat + "?overview=full&geometries=geojson&steps=true";
+      const r = await fetch(url);
+      const d = await r.json();
+      const rt = d.routes && d.routes[0];
+      if (!rt) throw new Error("hakuna njia");
+      lastRouteGeo = rt.geometry;
+      if (!map.getSource("route")) {
+        map.addSource("route", { type: "geojson", data: rt.geometry });
+        map.addLayer({ id: "route-casing", type: "line", source: "route", paint: { "line-color": "#04070d", "line-width": 10, "line-opacity": 0.5 } });
+        map.addLayer({ id: "route-line", type: "line", source: "route", layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#00ff88", "line-width": 6, "line-opacity": 0.9 } });
+      } else {
+        map.getSource("route").setData(rt.geometry);
+      }
+      const km = (rt.distance / 1000).toFixed(1), min = Math.round(rt.duration / 60);
+      setInstruction("\uD83D\uDEE3\uFE0F Njia kwenda " + name + ": " + km + " km · dakika " + min + " · hatua " + rt.legs[0].steps.length + " (OSRM halisi)");
+      speak("Njia iko tayari. Kilomita " + km + ", dakika " + min + " kwenda " + name + ".");
+    } catch (e) {
+      setInstruction("Njia haipatikani kwa sasa (OSRM): " + e.message);
+    }
+  }
+};
+
+function drawTrail() {
+  if (trailCoords.length < 2) return;
+  const geom = { type: "LineString", coordinates: trailCoords.slice() };
+  if (!map.getSource("trail")) {
+    map.addSource("trail", { type: "geojson", data: geom });
+    map.addLayer({ id: "trail-line", type: "line", source: "trail", paint: { "line-color": "#ffb300", "line-width": 3, "line-opacity": 0.8, "line-dasharray": [2, 2] } });
+  } else {
+    map.getSource("trail").setData(geom);
+  }
+}
+
+/* ---------- 🕸️ MIUNGANISHO HALISI: HERMES ↔ sites + agents wanaonekana ---------- */
+function netApply(on) {
+  if (!on) {
+    ["net-line", "net-node", "net-icons"].forEach((id) => { if (map.getLayer(id)) map.removeLayer(id); });
+    ["net", "net-nodes"].forEach((id) => { if (map.getSource(id)) map.removeSource(id); });
+    if (netTimer) { clearInterval(netTimer); netTimer = null; }
+    setInstruction("Miunganisho ya HERMES imefichwa.");
+    return;
+  }
+  if (!map.getSource("net")) {
+    const lines = Object.keys(IOT_SITES).map((k) => ({
+      type: "Feature",
+      properties: { name: IOT_SITES[k].name },
+      geometry: { type: "LineString", coordinates: [[HERMES_HUB.lng, HERMES_HUB.lat], [IOT_SITES[k].lng, IOT_SITES[k].lat]] }
+    }));
+    map.addSource("net", { type: "geojson", data: { type: "FeatureCollection", features: lines } });
+    map.addLayer({ id: "net-line", type: "line", source: "net", layout: { "line-cap": "round" }, paint: { "line-color": "#00e5ff", "line-width": 2.5, "line-opacity": 0.8, "line-dasharray": [0, 4, 3] } });
+
+    const nodes = [{ type: "Feature", geometry: { type: "Point", coordinates: [HERMES_HUB.lng, HERMES_HUB.lat] }, properties: { ico: HERMES_HUB.ico, name: HERMES_HUB.name, kind: "hub" } }]
+      .concat(NET_WORKERS.map((w) => ({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [HERMES_HUB.lng + w.dx, HERMES_HUB.lat + w.dy] },
+        properties: { ico: w.ico, name: w.id, kind: "worker" }
+      })));
+    map.addSource("net-nodes", { type: "geojson", data: { type: "FeatureCollection", features: nodes } });
+    map.addLayer({ id: "net-node", type: "circle", source: "net-nodes", filter: ["==", ["get", "kind"], "hub"],
+      paint: { "circle-radius": 10, "circle-color": "#00e5ff", "circle-stroke-width": 3, "circle-stroke-color": "#ffffff" } });
+    map.addLayer({ id: "net-icons", type: "symbol", source: "net-nodes",
+      layout: { "text-field": ["get", "ico"], "text-font": ["Noto Sans Regular"], "text-size": 17, "text-offset": [0, -0.4], "text-anchor": "bottom", "text-allow-overlap": true },
+      paint: { "text-color": "#00e5ff", "text-halo-color": "#04070d", "text-halo-width": 2 } });
+
+    map.on("click", "net-node", (e) => {
+      const p = e.features[0].properties;
+      const html = p.kind === "hub"
+        ? "<b>\uD83E\uDD16 HERMES Gateway (HQ)</b><br/>Msingi: Elixir · port 8088<br/>FST + Rules + HITL + Missions<br/><button onclick=\"document.getElementById('btnMission').click()\" style=\"background:#00e5ff;border:0;padding:4px 10px;border-radius:4px;cursor:pointer;font-weight:700;margin-top:4px\">▶️ Anza mission</button>"
+        : "<b>" + p.ico + " " + p.name + "</b><br/>Worker agent wa HERMES";
+      new maplibregl.Popup({ maxWidth: "260px" }).setLngLat(e.lngLat).setHTML(html).addTo(map);
+      speak("Hermes gateway. Mimi msimamizi wa mfumo.");
+    });
+  }
+  /* MISTARI INAYOTEMBEA — data flow halisi kwenye network */
+  if (netTimer) clearInterval(netTimer);
+  const DASH = [[0, 4, 3], [1, 3, 3], [2, 2, 3], [3, 1, 3]];
+  netTimer = setInterval(() => {
+    netStep = (netStep + 1) % DASH.length;
+    try { if (map.getLayer("net-line")) map.setPaintProperty("net-line", "line-dasharray", DASH[netStep]); } catch (e) {}
+  }, 160);
+  setInstruction("\uD83D\uDD78\uFE0F Miunganisho halisi: HERMES (\uD83E\uDD16) ↔ sites 4. Workers: " + NET_WORKERS.map((w) => w.ico + " " + w.id).join(" · "));
+}
+document.getElementById("btnNet").onclick = () => {
+  netOn = !netOn;
+  document.getElementById("btnNet").classList.toggle("on", netOn);
+  netApply(netOn);
+};
+
+/* ---------- 🏙️ MIJI 12 (geo.json — kama map.js) ---------- */
+function citiesApply(on) {
+  const cities = (window.MT_GEO_FULL && window.MT_GEO_FULL.cities) || [];
+  if (!on || !cities.length) {
+    ["cities-dot", "cities-label"].forEach((id) => { if (map.getLayer(id)) map.removeLayer(id); });
+    if (map.getSource("cities")) map.removeSource("cities");
+    if (on && !cities.length) setInstruction("Miji haipatikani hapa (data ipo kwenye preview standalone).");
+    return;
+  }
+  if (!map.getSource("cities")) {
+    map.addSource("cities", { type: "geojson", data: { type: "FeatureCollection", features: cities.map((c, i) => ({
+      type: "Feature", id: i, geometry: { type: "Point", coordinates: [c.lng, c.lat] }, properties: { name: c.name }
+    })) } });
+    map.addLayer({ id: "cities-dot", type: "circle", source: "cities", paint: { "circle-radius": 6, "circle-color": "#ffb300", "circle-stroke-width": 2, "circle-stroke-color": "#fff" } });
+    map.addLayer({ id: "cities-label", type: "symbol", source: "cities", layout: { "text-field": ["get", "name"], "text-font": ["Noto Sans Regular"], "text-size": 12, "text-offset": [0, 1.2], "text-anchor": "top", "text-allow-overlap": false }, paint: { "text-color": "#ffe082", "text-halo-color": "#04070d", "text-halo-width": 2 } });
+    map.on("click", "cities-dot", (e) => {
+      const p = e.features[0].properties;
+      new maplibregl.Popup().setLngLat(e.lngLat).setHTML(
+        "<b>\uD83C\uDFD9\uFE0F " + p.name + "</b><br/><button onclick=\"map.flyTo({center:[" + e.lngLat.lng + "," + e.lngLat.lat + "],zoom:14,pitch:65,duration:3000});MT3D.routeTo(" + e.lngLat.lat + "," + e.lngLat.lng + ",'" + p.name + "')\" style=\"background:#00e5ff;border:0;padding:4px 10px;border-radius:4px;cursor:pointer;font-weight:700;margin-top:4px\">\uD83D\uDEE3\uFE0F Nenda hapa</button>"
+      ).addTo(map);
+    });
+  }
+  setInstruction("Miji " + cities.length + " ya Tanzania imeonyeshwa. Bofya → Nenda hapa.");
+}
+document.getElementById("btnCities").onclick = () => {
+  citiesOn = !citiesOn;
+  document.getElementById("btnCities").classList.toggle("on", citiesOn);
+  citiesApply(citiesOn);
+};
+
+/* ---------- 🗺️ MIKOA 30 + STATS (tz_regions.geojson + geo.json regions) ---------- */
+async function regionsApply(on) {
+  if (!on) {
+    ["regions-fill", "regions-line"].forEach((id) => { if (map.getLayer(id)) map.removeLayer(id); });
+    if (map.getSource("regions")) map.removeSource("regions");
+    return;
+  }
+  if (!REGIONS_GEO) {
+    try { const r = await fetch("../data/tz_regions.geojson"); if (r.ok) REGIONS_GEO = await r.json(); } catch (e) {}
+  }
+  if (!REGIONS_GEO) { setInstruction("Mipaka ya mikoa haipatikani (tumia preview standalone)."); regionsOn = false; return; }
+  if (!map.getSource("regions")) {
+    map.addSource("regions", { type: "geojson", data: REGIONS_GEO });
+    map.addLayer({ id: "regions-fill", type: "fill", source: "regions", paint: { "fill-color": "#00e5ff", "fill-opacity": 0.04 } });
+    map.addLayer({ id: "regions-line", type: "line", source: "regions", paint: { "line-color": "#00e5ff", "line-width": 1.5, "line-opacity": 0.55 } });
+    map.on("click", "regions-fill", (e) => {
+      const nm = e.features[0].properties.shapeName;
+      const st = (window.MT_GEO_FULL && window.MT_GEO_FULL.regions && window.MT_GEO_FULL.regions[nm]) || null;
+      const rows = st ? "<div>Kazi: <b>" + st.jobs + "</b></div><div>Mafundi: <b>" + st.techs + "</b></div><div>Wateja: <b>" + st.customers + "</b></div>" : "<i>Hakuna stats</i>";
+      new maplibregl.Popup({ maxWidth: "240px" }).setLngLat(e.lngLat).setHTML("<b>\uD83D\uDDFA\uFE0F Mkoa wa " + nm + "</b>" + rows).addTo(map);
+    });
+  }
+  setInstruction("Mikoa " + REGIONS_GEO.features.length + " — bofya mkoa kuona stats halisi (kazi/mafundí/wateja).");
+}
+document.getElementById("btnRegions").onclick = () => {
+  regionsOn = !regionsOn;
+  document.getElementById("btnRegions").classList.toggle("on", regionsOn);
+  regionsApply(regionsOn);
+};
+
+/* ---------- 👷 WAFUNDI 8 · WATEJA 7 · KAZI 4 (geo.json markers — picha halisi) ---------- */
+function peopleApply(on) {
+  const ms = (window.MT_GEO_FULL && window.MT_GEO_FULL.markers) || [];
+  if (!on || !ms.length) {
+    ["people-icon", "people-dot"].forEach((id) => { if (map.getLayer(id)) map.removeLayer(id); });
+    if (map.getSource("people")) map.removeSource("people");
+    if (on && !ms.length) setInstruction("Wafundi/wateja haipo hapa (data ipo kwenye preview standalone).");
+    return;
+  }
+  if (!map.getSource("people")) {
+    map.addSource("people", { type: "geojson", data: { type: "FeatureCollection", features: ms.map((m, i) => ({
+      type: "Feature", id: i, geometry: { type: "Point", coordinates: [m.lng, m.lat] },
+      properties: {
+        name: m.name, kind: m.kind, trade: m.trade || "", place: m.place || "",
+        jobs: m.jobs || 0, rating: m.rating || "", status: m.status || "",
+        env: m.env || "", tools: m.tools || "", ico: m.kind === "tech" ? "\uD83D\uDC77" : m.kind === "customer" ? "\uD83C\uDFE2" : "\uD83D\uDEE0\uFE0F",
+        color: m.kind === "tech" ? "#00e676" : m.kind === "customer" ? "#ffb300" : "#ff3b3b"
+      }
+    })) } });
+    map.addLayer({ id: "people-dot", type: "circle", source: "people", paint: { "circle-radius": 7, "circle-color": ["get", "color"], "circle-stroke-width": 2, "circle-stroke-color": "#fff" } });
+    map.addLayer({ id: "people-icon", type: "symbol", source: "people", layout: { "text-field": ["get", "ico"], "text-font": ["Noto Sans Regular"], "text-size": 13, "text-offset": [0, -0.5], "text-anchor": "bottom", "text-allow-overlap": false }, paint: { "text-halo-color": "#04070d", "text-halo-width": 2 } });
+    map.on("click", "people-dot", (e) => {
+      const p = e.features[0].properties;
+      new maplibregl.Popup({ maxWidth: "300px" }).setLngLat(e.lngLat).setHTML(
+        "<b>" + p.ico + " " + p.name + "</b> (" + p.status + ")<br/>" + p.trade + " · " + p.place +
+        "<div>Kazi: <b>" + p.jobs + "</b> · Rating: <b>" + p.rating + "</b></div>" +
+        "<div>" + p.env + "</div><div><i>" + p.tools + "</i></div>" +
+        "<button onclick=\"MT3D.routeTo(" + e.lngLat.lat + "," + e.lngLat.lng + ",'" + p.name.replace(/'/g, "") + "')\" style=\"background:#00e5ff;border:0;padding:4px 10px;border-radius:4px;cursor:pointer;font-weight:700;margin-top:4px\">\uD83D\uDEE3\uFE0F Nenda hapa</button>"
+      ).addTo(map);
+    });
+  }
+  setInstruction("Wafundi " + ms.filter((m) => m.kind === "tech").length + " · wateja " + ms.filter((m) => m.kind === "customer").length + " · kazi " + ms.filter((m) => m.kind === "job").length + " — zote HALISI kutoka geo.json.");
+}
+document.getElementById("btnPeople").onclick = () => {
+  peopleOn = !peopleOn;
+  document.getElementById("btnPeople").classList.toggle("on", peopleOn);
+  peopleApply(peopleOn);
+};
+
+/* ---------- 🛣️ CORRIDORS 8 (geo.json routes) ---------- */
+function corridorsApply(on) {
+  const rs = (window.MT_GEO_FULL && window.MT_GEO_FULL.routes) || [];
+  if (!on || !rs.length) {
+    if (map.getLayer("corridor-line")) map.removeLayer("corridor-line");
+    if (map.getSource("corridors")) map.removeSource("corridors");
+    if (on && !rs.length) setInstruction("Corridors haipo hapa (preview standalone pekee).");
+    return;
+  }
+  if (!map.getSource("corridors")) {
+    map.addSource("corridors", { type: "geojson", data: { type: "FeatureCollection", features: rs.map((r, i) => ({
+      type: "Feature", id: i, geometry: { type: "LineString", coordinates: [[r.from.lng, r.from.lat], [r.to.lng, r.to.lat]] },
+      properties: { name: r.name, type: r.type }
+    })) } });
+    map.addLayer({ id: "corridor-line", type: "line", source: "corridors", paint: { "line-color": "#ff9100", "line-width": 3, "line-opacity": 0.65, "line-dasharray": [3, 2] } });
+    map.on("click", "corridor-line", (e) => {
+      const p = e.features[0].properties;
+      new maplibregl.Popup().setLngLat(e.lngLat).setHTML("<b>\uD83D\uDEE3\uFE0F " + p.name + "</b><br/>Corridor ya " + p.type).addTo(map);
+    });
+  }
+  setInstruction("Corridors " + rs.length + " za Tanzania (Dar–Dodoma, n.k.).");
+}
+document.getElementById("btnCorridors").onclick = () => {
+  corridorsOn = !corridorsOn;
+  document.getElementById("btnCorridors").classList.toggle("on", corridorsOn);
+  corridorsApply(corridorsOn);
+};
+
+/* ---------- 🧭 FOLLOW GPS ---------- */
+document.getElementById("btnFollow").onclick = () => {
+  followOn = !followOn;
+  document.getElementById("btnFollow").classList.toggle("on", followOn);
+  setInstruction(followOn ? "Follow: ON — ramani inakufuata kila hatua." : "Follow: OFF.");
+  if (followOn && map._mtUserLL) map.easeTo({ center: map._mtUserLL, zoom: Math.max(map.getZoom(), 15), duration: 800 });
+};
+
+/* ---------- 🔎 SEARCH (Nominatim + ndani: miji/marker/hatari/sites) ---------- */
+function localMatches(v) {
+  const out = [];
+  const g = window.MT_GEO_FULL || {};
+  (g.cities || []).forEach((c) => { if (c.name.toLowerCase().includes(v)) out.push({ name: c.name, detail: "Mji — Tanzania", lat: c.lat, lng: c.lng, level: "mji" }); });
+  (g.markers || []).forEach((m) => { if ((m.name || "").toLowerCase().includes(v)) out.push({ name: m.name, detail: m.place || m.kind, lat: m.lat, lng: m.lng, level: m.kind }); });
+  ((window.MT_GEO_3D && window.MT_GEO_3D.hazards) || []).forEach((h) => { if ((h.name || "").toLowerCase().includes(v)) out.push({ name: h.name, detail: h.place || "hatari", lat: h.lat, lng: h.lng, level: "hatari" }); });
+  Object.keys(IOT_SITES).forEach((k) => { if (IOT_SITES[k].name.toLowerCase().includes(v)) out.push({ name: IOT_SITES[k].name, detail: "site ya IoT", lat: IOT_SITES[k].lat, lng: IOT_SITES[k].lng, level: "site" }); });
+  return out.slice(0, 5);
+}
+const qIn = document.getElementById("q3d"), qList = document.getElementById("qList");
+let qTimer = null, qResults = [];
+qIn.addEventListener("input", () => {
+  clearTimeout(qTimer);
+  const v = qIn.value.trim().toLowerCase();
+  if (v.length < 2) { qList.style.display = "none"; return; }
+  qTimer = setTimeout(() => doSearch(v), 350);
+});
+async function doSearch(v) {
+  qResults = localMatches(v);
+  try {
+    const r = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=sw&viewbox=29.2,-11.9,40.7,-0.9&q=" + encodeURIComponent(v));
+    if (r.ok) {
+      (await r.json()).forEach((x) => qResults.push({ name: (x.display_name || "").split(",")[0], detail: (x.display_name || "").slice(0, 70), lat: +x.lat, lng: +x.lon, level: "OSM" }));
+    }
+  } catch (e) { /* offline — ndani pekee */ }
+  qResults = qResults.slice(0, 8);
+  qList.innerHTML = qResults.map((o) => "<div><b>" + o.name + "</b><span class=\"lvl\">" + o.level + "</span><div class=\"lvl\">" + (o.detail || "") + "</div></div>").join("");
+  qList.style.display = qResults.length ? "block" : "none";
+  Array.prototype.forEach.call(qList.children, (el, i) => { el.onclick = () => pickResult(qResults[i]); });
+}
+function pickResult(o) {
+  qList.style.display = "none";
+  qIn.value = o.name;
+  map.flyTo({ center: [o.lng, o.lat], zoom: 14, pitch: 62, duration: 2600 });
+  if (!map._mtDest) map._mtDest = new maplibregl.Marker({ color: "#ffb300" }).setLngLat([o.lng, o.lat]).addTo(map);
+  else map._mtDest.setLngLat([o.lng, o.lat]);
+  MT3D.routeTo(o.lat, o.lng, o.name);
+}
+
+/* ---------- RE-APPLY YOTE BAADA YA KUBADILISHA BASEMAP ---------- */
+function ensureAllDynamic() {
+  ensureLabelLayers();
+  setTerrain(terrainOn);
+  if (netOn) netApply(true);
+  if (citiesOn) citiesApply(true);
+  if (regionsOn) regionsApply(true);
+  if (peopleOn) peopleApply(true);
+  if (corridorsOn) corridorsApply(true);
+  hzApply(hazardsOn);
+  iotApply(iotOn);
+  if (lastRouteGeo && map.getSource("route")) map.getSource("route").setData(lastRouteGeo);
+  if (trailCoords.length > 1) drawTrail();
+}
+
 /* ---------- HALI YA HEWA (Open-Meteo, bure bila key) ---------- */
 document.getElementById("btnWeather").onclick = () => loadWeather(true);
 async function loadWeather(announce) {
@@ -533,6 +1061,24 @@ function weatherCodeSw(code) {
   if (code <= 57) return "Manyunyu"; if (code <= 67) return "Mvua"; if (code <= 77) return "Theluji";
   if (code <= 82) return "Mvua kubwa"; if (code <= 99) return "Radi"; return "Hali ya hewa";
 }
+
+/* ---------- REAL-TIME ENGINE (saa hai + pulse ya vifaa — gharama ndogo) ---------- */
+/* 1) Saa hai: badge inajisasisha kila sekunde (DOM moja tu) */
+setInterval(() => {
+  const el = document.getElementById("liveBadge");
+  if (el) el.textContent = "LIVE: " + new Date().toLocaleTimeString("en-GB");
+}, 1000);
+
+/* 2) Pulse ya IoT: opacity inavuka taratibu (setPaintProperty, si redraw ya tiles) */
+let pulseT = 0;
+setInterval(() => {
+  pulseT = (pulseT + 1) % 40;
+  try {
+    if (map.getLayer("iot-pulse")) {
+      map.setPaintProperty("iot-pulse", "circle-opacity", 0.10 + 0.10 * (0.5 + 0.5 * Math.sin((pulseT / 40) * Math.PI * 2)));
+    }
+  } catch (e) { /* layer imeondolewa — OK */ }
+}, 100);
 
 /* ---------- FPS METER (uthibitisho wa "RAM/resource ndogo") ---------- */
 let frames = 0, lastT = performance.now();

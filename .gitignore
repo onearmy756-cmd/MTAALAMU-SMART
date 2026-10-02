@@ -25,5 +25,9 @@ desktop.ini
 .vscode/
 .idea/
 
+# --- Python bytecode ---
+__pycache__/
+*.pyc
+
 # --- Freebuff local state ---
 .freebuff/

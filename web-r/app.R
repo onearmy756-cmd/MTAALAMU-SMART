@@ -89,6 +89,8 @@ PIPE_3D_STEPS <- tryCatch({
     steps = vapply(steps, function(s) s$action %||% s$agent %||% "", character(1))
   ), auto_unbox = TRUE)
 }, error = function(e) "{}")
+# Majina ya miji (geo.json) kwa ajili ya LABELS za RAMANI 3D — zinaonekana kila basemap
+GEO_3D_CITIES <- tryCatch(jsonlite::toJSON(GEO$cities %||% list(), auto_unbox = FALSE), error = function(e) "[]")
 bound_src <- p_app("data", "tz_regions.geojson")
 bound_dst <- p_app("www", "tz_regions.geojson")
 if (file.exists(bound_src)) {
@@ -578,7 +580,7 @@ server <- function(input, output, session) {
 
   output$viz <- renderUI(view_viz(lang()))
   output$map <- renderUI(view_map(lang(), GEO, map_payload(lang(), GEO_TXT)))
-  output$map3d <- renderUI(view_map3d(lang(), GEO_3D_HZ, IOT_3D_DEV, PIPE_3D_STEPS))
+  output$map3d <- renderUI(view_map3d(lang(), GEO_3D_HZ, IOT_3D_DEV, PIPE_3D_STEPS, GEO_3D_CITIES))
   output$nav <- renderUI(NULL)
   output$fundi <- renderUI(fundi_tab_el(lang()))
   fundi_server(input, output, session)

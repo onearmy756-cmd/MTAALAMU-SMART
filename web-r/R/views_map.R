@@ -195,10 +195,11 @@ view_map <- function(lang, geo, payload) {
 # Data: web-r/data/geo.json (hazards) → location.hash (JSON = chanzo)
 # ============================================================
 view_map3d <- function(lang, hazards_json = "[]", iot_json = "[]", pipe_json = "{}",
-                       height_vh = "72vh") {
+                       cities_json = "[]", height_vh = "72vh") {
   hz <- paste0("#hz=", utils::URLencode(hazards_json, reserved = TRUE),
                "&iot=", utils::URLencode(iot_json, reserved = TRUE),
-               "&pipe=", utils::URLencode(pipe_json, reserved = TRUE))
+               "&pipe=", utils::URLencode(pipe_json, reserved = TRUE),
+               "&cities=", utils::URLencode(cities_json, reserved = TRUE))
   tags$div(class = "panel",
     tags$div(class = "panel-head",
       tags$h2("\U0001f30d RAMANI 3D — PICHA HALISI (GPU)"),
