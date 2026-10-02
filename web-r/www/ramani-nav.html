@@ -291,6 +291,23 @@ searchEl.addEventListener("input",()=>{
   if(q.length<1){sugEl.style.display="none";return;}
   searchTimer=setTimeout(()=>doSearch(q),280);
 });
+/* HIERARKIA kamili (mikoa→wilaya→tarafa→kata→vijiji→vitongoji→mtaa→barabara)
+ * inapakiwa kutoka geo_hierarchy_index.json — inaongezwa kwenye PLACES punde
+ * itakapofika, hivyo search inapata sehemu zote (data-driven JSON). */
+let HIER_PLACES=[];
+(async()=>{try{
+  const h=await fetch("../data/geo_hierarchy_index.json");
+  if(h.ok){
+    const d=await h.json();
+    HIER_PLACES=(d.features||[]).map(f=>{const p=f.properties;return{
+      id:p.id,name:p.name_sw,level:p.level,lat:p.lat,lng:p.lng,
+      region:p.region,parent:p.parent||""
+    };});
+    PLACES.push(...HIER_PLACES);
+  }
+}catch(e){}})();
+const LEVEL_SW={mkoa:"Mkoa",wilaya:"Wilaya",tarafa:"Tarafa",kata:"Kata",kijiji:"Kijiji",vitongoji:"Kitongoji",mtaa:"Mtaa",barabara:"Barabara"};
+
 async function doSearch(q){
   const ql=q.toLowerCase();
   const local=PLACES.filter(p=>p.name.toLowerCase().includes(ql)||p.level.includes(ql)||String(p.id).toLowerCase().includes(ql)).slice(0,10);
@@ -303,7 +320,7 @@ async function doSearch(q){
   }catch(e){}
   const hits=[...local,...remote].slice(0,14);
   if(!hits.length){sugEl.style.display="none";return;}
-  sugEl.innerHTML=hits.map((p,i)=>`<div data-i="${i}"><strong>${p.name}</strong><span class="lvl">${p.level}${p.full?" · "+p.full.split(",").slice(1,3).join(","):""}</span></div>`).join("");
+  sugEl.innerHTML=hits.map((p,i)=>`<div data-i="${i}"><strong>${p.name}</strong><span class="lvl">${LEVEL_SW[p.level]||p.level}${p.region?" · "+p.region+(p.parent?" — "+p.parent:""):p.full?" · "+p.full.split(",").slice(1,3).join(","):""}</span></div>`).join("");
   sugEl.style.display="block"; sugEl._hits=hits;
   sugEl.querySelectorAll("div").forEach(el=>{el.onclick=()=>{const p=sugEl._hits[parseInt(el.dataset.i,10)];if(!p)return;selectDestination(p);sugEl.style.display="none";searchEl.value=p.name;};});
 }
@@ -312,7 +329,7 @@ document.addEventListener("click",(e)=>{if(!e.target.closest(".search-wrap"))sug
 function selectDestination(p){
   destination=p;
   if(destMarker)map.removeLayer(destMarker);
-  destMarker=L.marker([p.lat,p.lng]).addTo(map).bindPopup("<b>"+p.name+"</b><br/>"+(p.level||"")).openPopup();
+  destMarker=L.marker([p.lat,p.lng]).addTo(map).bindPopup("<b>"+p.name+"</b><br/>"+(LEVEL_SW[p.level]||p.level||"")+(p.region?" · Mkoa wa "+p.region+(p.parent?" — "+p.parent:""):"")).openPopup();
   map.flyTo([p.lat,p.lng],Math.max(map.getZoom(),13));
   setInstruction("Sehemu: "+p.name+". Bonyeza Njia, kisha Anza.");
   speak("Sehemu unayoenda: "+p.name);

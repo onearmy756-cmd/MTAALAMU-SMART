@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MTAALAMU SMART — Dashboard</title>
+<!--
+  MTAALAMU SMART — BROWSER DASHBOARD (standalone, bila R/Shiny)
+  KANUNI: data-driven JSON pekee — content yote inatoka data/ (kanuni ya token-savings).
+  Tabs: LIVE · AGENTIC VISION · FORMULA · BAYES · RAMANI · FUNDI · MOBILE · IOT
+  Formula engine: evaluator salama ya expression (kama eval.R ya R — LLM haihesabu kamwe).
+  Bayes: posterior = prior × ∏ L(si) (kama bayes_causes kwenye eval.R).
+-->
+<style>
+:root{
+  --bg:#04070d;--card:#0a1628;--card2:#0f2233;--line:rgba(0,229,255,.35);
+  --cyan:#00e5ff;--green:#00ff88;--orange:#ffb300;--red:#ff3b3b;--purple:#b388ff;
+  --text:#cfe9f5;--dim:#5e8aa3;
+  --mono:'Share Tech Mono',ui-monospace,Consolas,monospace;
+  --title:'Rajdhani',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh}
+.dashboard{max-width:1280px;margin:0 auto;padding:0 12px 40px}
+header.hud-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:14px 8px;border-bottom:1px solid var(--line)}
+.hud-shield{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#0f2233,#143048);border:1px solid var(--line);font-size:22px}
+.hud-title{font-family:var(--title);font-size:1.25rem;letter-spacing:3px;color:#eafcff;text-shadow:0 0 12px rgba(0,229,255,.5)}
+.hud-sub{font-size:.72rem;color:var(--dim)}
+.hud-right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:.3rem .6rem;border-radius:999px;
+  font-size:.7rem;border:1px solid var(--line);background:var(--card2)}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.pill.green{color:var(--green);border-color:rgba(0,255,136,.4)}
+.pill.secure{color:var(--cyan)}
+.lang-box select{background:var(--card2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:.3rem .5rem;font-family:var(--mono)}
+/* TABS */
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;padding:12px 0;position:sticky;top:0;z-index:20;
+  background:rgba(4,7,13,.92);backdrop-filter:blur(4px)}
+nav.tabs button{padding:.5rem .8rem;border-radius:8px;border:1px solid var(--line);cursor:pointer;
+  background:var(--card2);color:var(--cyan);font-family:var(--mono);font-size:.74rem;font-weight:700;letter-spacing:.5px}
+nav.tabs button:hover{background:#143048}
+nav.tabs button.on{background:rgba(0,229,255,.16);color:var(--green);border-color:var(--green);box-shadow:0 0 12px rgba(0,255,136,.15)}
+/* PANELS */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:16px;overflow:hidden}
+.panel-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:.8rem 1rem;border-bottom:1px solid rgba(0,229,255,.18)}
+.panel-head h2{font-family:var(--title);font-size:1rem;letter-spacing:2px;color:#eafcff}
+.panel-head .meta{font-size:.68rem;color:var(--dim);margin-left:auto}
+.panel-body{padding:1rem}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.card{background:var(--card2);border:1px solid rgba(0,229,255,.22);border-radius:10px;padding:.8rem}
+.card h3{font-family:var(--title);font-size:.82rem;letter-spacing:1px;color:var(--cyan);margin-bottom:.5rem}
+.badge{display:inline-block;padding:.12rem .45rem;border-radius:4px;font-size:.64rem;border:1px solid var(--line);color:var(--dim);background:#12263c}
+.badge.ok{color:var(--green);border-color:rgba(0,255,136,.5)}
+.badge.warn{color:var(--orange);border-color:rgba(255,179,0,.5)}
+.badge.danger{color:var(--red);border-color:rgba(255,59,59,.55)}
+.badge.info{color:var(--cyan)}
+/* GAUGES */
+.gauge{position:relative;width:120px;height:120px;margin:0 auto}
+.gauge svg{transform:rotate(-90deg)}
+.gauge .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge .val b{font-size:1.3rem;color:var(--cyan)}
+.gauge .val span{font-size:.6rem;color:var(--dim)}
+.bar{height:8px;border-radius:4px;background:#0d1b2e;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--cyan)}
+/* FLOW / PIPELINE */
+.flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.flow .step{background:var(--card2);border:1px solid rgba(0,229,255,.3);border-radius:8px;padding:.5rem .7rem;font-size:.68rem;min-width:120px}
+.flow .step b{display:block;color:var(--cyan);font-size:.72rem}
+.flow .arr{color:var(--dim)}
+.flow .step.done{border-color:var(--green);color:var(--green)}
+.flow .step.run{border-color:var(--orange);box-shadow:0 0 10px rgba(255,179,0,.3)}
+/* FORMULA */
+.trade-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.trade-pills button{padding:.3rem .6rem;border-radius:999px;border:1px solid var(--line);background:var(--card2);color:var(--text);cursor:pointer;font-size:.68rem;font-family:var(--mono)}
+.trade-pills button.on{background:rgba(0,255,136,.14);color:var(--green);border-color:var(--green)}
+.f-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto}
+.f-item{padding:.55rem .7rem;border:1px solid rgba(0,229,255,.2);border-radius:8px;cursor:pointer;background:var(--card2);font-size:.74rem}
+.f-item:hover{border-color:var(--cyan)}
+.f-item.on{border-color:var(--green);background:rgba(0,255,136,.07)}
+.f-item b{color:#eafcff}
+.f-item .fx{color:var(--dim);font-size:.68rem;margin-top:2px}
+.inp{display:flex;flex-direction:column;gap:2px;font-size:.7rem}
+.inp label{color:var(--dim)}
+.inp input,.inp select{background:#0d1b2e;border:1px solid var(--line);border-radius:6px;color:var(--text);padding:.4rem .5rem;font-family:var(--mono)}
+.result{background:#0d1b2e;border:1px solid rgba(0,255,136,.35);border-radius:10px;padding:.8rem;margin-top:10px}
+.result .big{font-size:1.4rem;color:var(--green);font-family:var(--title)}
+.steps{margin-top:.6rem;font-size:.72rem;color:var(--text)}
+.steps li{margin-left:16px;margin-bottom:2px}
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:.72rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid rgba(0,229,255,.12);text-align:left}
+th{color:var(--cyan);font-family:var(--title);letter-spacing:1px;font-size:.7rem}
+tr:hover td{background:rgba(0,229,255,.05)}
+/* TOPOLOGY SVG */
+.topo{background:#0d1b2e;border:1px solid rgba(0,229,255,.2);border-radius:10px}
+/* SVG CHART */
+.chart-wrap{background:#0d1b2e;border:1px solid rgba(0,229,255,.2);border-radius:10px;padding:.5rem}
+/* MOBILE PROBLEM */
+.mprob{padding:.5rem .6rem;border-bottom:1px solid rgba(0,229,255,.1);font-size:.72rem}
+.mprob b{color:#eafcff}
+.mprob .sol{color:var(--dim);margin-top:3px;white-space:pre-line}
+/* IOT */
+.vert{display:flex;gap:10px;align-items:flex-start;padding:.7rem;border:1px solid rgba(0,229,255,.2);border-radius:10px;background:var(--card2)}
+.vert .ico{font-size:1.4rem}
+/* STATUS BAR */
+footer.statusbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:.7rem 1rem;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:.7rem;color:var(--dim)}
+.empty{color:var(--dim);font-size:.74rem;font-style:italic;padding:.6rem}
+a.cyan{color:var(--cyan)}
+.btn{background:var(--card2);border:1px solid var(--line);color:var(--cyan);padding:.4rem .7rem;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:.72rem;font-weight:700}
+.btn:hover{background:#143048}
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <header class="hud-header">
+    <div class="hud-shield">🔐</div>
+    <div>
+      <div class="hud-title" id="hudTitle">MTAALAMU SMART</div>
+      <div class="hud-sub" id="hudSub">Intelligent System — Rust + JSON</div>
+    </div>
+    <div class="hud-right">
+      <span class="pill green"><span class="dot"></span><span id="pillOnline">ONLINE</span></span>
+      <span class="pill secure">🔒 SECURE</span>
+      <span class="lang-box">
+        <select id="langSel">
+          <option value="sw">🇹🇿 Kiswahili</option>
+          <option value="en">🇬🇧 English</option>
+        </select>
+      </span>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+  <main id="main"></main>
+
+  <footer class="statusbar">
+    <span>⚙️ engine: <b id="sbEngine">browser (JSON)</b></span>
+    <span>📅 <span id="sbDate">—</span></span>
+    <span>🕐 <span id="sbClock">—</span></span>
+    <span>📊 formulas: <b id="sbFormulas">—</b></span>
+    <span>🧠 models: <b id="sbModels">—</b></span>
+    <span>🛠️ skills: <b id="sbSkills">—</b></span>
+    <span style="margin-left:auto">
+      <a class="cyan" href="ramani-3d.html">🌍 Ramani 3D</a> ·
+      <a class="cyan" href="ramani-nav.html">🧭 Navigation</a>
+    </span>
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+ * MTAALAMU SMART — DASHBOARD ENGINE (browser, offline-first)
+ * JSON = chanzo pekee. Hakuna content hard-coded ya biashara.
+ * ============================================================ */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (n) => Number(n).toLocaleString("en-US");
+const fmtTZS = (n) => "TZS " + fmt(Math.round(n));
+
+let LANG = localStorage.getItem("mt_lang") || "sw";
+let D = {};               /* data zote */
+let TAB = "live";
+let S = {
+  fxTrade: "all", fxId: null, fxResult: null,
+  diagModel: "electrical", diagOn: [],
+  mission: -1, missionTimer: null
+};
+
+/* ---------- FETCH ZOTE (data halisi ya mradi) ---------- */
+async function getJSON(url) { try { const r = await fetch(url); if (!r.ok) return null; return await r.json(); } catch (e) { return null; } }
+async function loadAll() {
+  const jobs = {
+    formulas:   "../../data/formulas.json",
+    diagnosis:  "../data/diagnosis.json",
+    agentData:  "../data/agent_data.json",
+    agents10:   "../../data/agents/agents_10.json",
+    skills:     "../../data/skills/skills.json",
+    trades:     "../../data/trades.json",
+    problems:   "../../data/problems.json",
+    geo:        "../data/geo.json",
+    geoHier:    "../data/geo_hierarchy_index.json",
+    iotDevices: "../../data/iot/devices.json",
+    iotHermes:  "../../data/iot/hermes.json",
+    iotVerticals:"../../data/iot/verticals.json",
+    iotRegHome: "../../data/iot/registry/nyumbani.json",
+    iotRegAfya: "../../data/iot/registry/afya.json",
+    iotRegUsalama:"../../data/iot/registry/usalama.json",
+    iotRegKilimo:"../../data/iot/registry/kilimo.json",
+    deployBundles:"../../data/deploy/app_bundles.json",
+    mobileServices: "../../data/mobile/services.json",
+    mobileProblems: "../../data/mobile/phone_problems.json",
+    professions: "../../data/professions.json",
+    pricing:    "../../data/pricing.json",
+    config:     "../../data/config.json"
+  };
+  for (const [k, u] of Object.entries(jobs)) D[k] = await getJSON(u);
+  if (D.skills) D.skillsArr = D.skills.skills || D.skills || [];
+}
+
+/* ---------- i18n ndogo (labels za UI tu) ---------- */
+const T = {
+  tabs: { live: {sw:"◉ LIVE MONITOR",en:"◉ LIVE MONITOR"}, agentic: {sw:"◉ AGENTIC VISION",en:"◉ AGENTIC VISION"},
+          formula: {sw:"🧮 FORMULA",en:"🧮 FORMULA"}, diag: {sw:"🧠 UTAMBUZI (BAYES)",en:"🧠 BAYES DIAGNOSIS"},
+          map: {sw:"🗺️ RAMANI",en:"🗺️ MAP"}, fundi: {sw:"💻 FUNDI DEPLOY",en:"💻 FUNDI DEPLOY"},
+          mobile: {sw:"🩺 FUNDI MOBILE",en:"🩺 FUNDI MOBILE"}, iot: {sw:"📡 IOT + HERMES",en:"📡 IOT + HERMES"} },
+  hudSub: {sw:"Mfumo Mahiri — Rust + JSON — data-driven",en:"Intelligent System — Rust + JSON — data-driven"},
+  online: {sw:"MTANDO: HAI",en:"ONLINE"}
+};
+const tr = (k) => (T[k] && (T[k][LANG] || T[k].sw)) || k;
+
+/* ============================================================
+ * FORMULA ENGINE — evaluator salama (kama eval.R)
+ * func: sqrt pow ceil floor abs log exp min max if ; pi
+ * ============================================================ */
+function evalExpr(expr, vars) {
+  const CONSTS = (D.formulas && D.formulas.constants) || {};
+  const names = Object.keys(vars), vals = names.map((k) => vars[k]);
+  names.push("pi", "e"); vals.push(Math.PI, Math.E);
+  for (const [k, v] of Object.entries(CONSTS)) { names.push(k); vals.push(v); }
+  const FN = { sqrt: Math.sqrt, pow: Math.pow, ceil: Math.ceil, floor: Math.floor, abs: Math.abs,
+               log: Math.log, exp: Math.exp, min: Math.min, max: Math.max,
+               if: (c, a, b) => (c ? a : b) };
+  let i = 0; const s = expr;
+  function ws() { while (i < s.length && /\s/.test(s[i])) i++; }
+  function num() {
+    ws();
+    if (s[i] === "(") { i++; const v = or(); ws(); if (s[i] === ")") i++; return v; }
+    if (s[i] === "-") { i++; return -num(); }
+    if (s[i] === "+") { i++; return num(); }
+    if (s.startsWith("pi", i) && !/[a-zA-Z0-9_]/.test(s[i + 2] || "")) { i += 2; return Math.PI; }
+    /* function calls: sqrt( pow( ceil( floor( abs( log( exp( min( max( if( */
+    for (const fname of Object.keys(FN)) {
+      if (s.startsWith(fname + "(", i)) {
+        i += fname.length + 1;
+        const args = [or()];
+        for (;;) { ws(); if (s[i] === ",") { i++; args.push(or()); } else break; }
+        ws(); if (s[i] === ")") i++;
+        return FN[fname].apply(null, args);
+      }
+    }
+    const m = /^[0-9]*\.?[0-9]+([eE][+-]?[0-9]+)?/.exec(s.slice(i));
+    if (m) { i += m[0].length; return parseFloat(m[0]); }
+    for (const n of names) if (s.startsWith(n, i) && !/[a-zA-Z0-9_]/.test(s[i + n.length] || "")) { i += n.length; return vals[names.indexOf(n)]; }
+    throw new Error("bad token @" + i);
+  }
+  function powr() { let v = num(); ws(); if (s[i] === "^") { i++; return Math.pow(v, powr()); } return v; }
+  function mul() { let v = powr(); for (;;) { ws(); if (s[i] === "*") { i++; v *= powr(); } else if (s[i] === "/") { i++; v /= powr(); } else if (s[i] === "%") { i++; v %= powr(); } else return v; } }
+  function add() { let v = mul(); for (;;) { ws(); if (s[i] === "+") { i++; v += mul(); } else if (s[i] === "-") { i++; v -= mul(); } else return v; } }
+  function cmp() { let v = add(); for (;;) { ws(); if (s.startsWith("<=", i)) { i += 2; v = v <= add() ? 1 : 0; } else if (s.startsWith(">=", i)) { i += 2; v = v >= add() ? 1 : 0; } else if (s[i] === "<") { i++; v = v < add() ? 1 : 0; } else if (s[i] === ">") { i++; v = v > add() ? 1 : 0; } else return v; } }
+  function eq() { let v = cmp(); for (;;) { ws(); if (s.startsWith("==", i)) { i += 2; v = v === add() ? 1 : 0; } else if (s.startsWith("!=", i)) { i += 2; v = v !== add() ? 1 : 0; } else return v; } }
+  function and() { let v = eq(); for (;;) { ws(); if (s.startsWith("&&", i)) { i += 2; v = (v && eq()) ? 1 : 0; } else return v; } }
+  function or()  { let v = and(); for (;;) { ws(); if (s.startsWith("||", i)) { i += 2; v = (v || and()) ? 1 : 0; } else return v; } }
+  /* top: or() inashughulikia kila kitu (numbers, vars, parens, func calls, ±) */
+  return or();
+}
+function calcFormula(f, inputVals) {
+  const vars = {};
+  (f.inputs || []).forEach((inp) => {
+    const v = inputVals[inp.name];
+    vars[inp.name] = (v == null || v === "" || isNaN(Number(v))) ? inp.default : Number(v);
+  });
+  const outputs = (f.outputs || []).map((o) => {
+    let raw = null, err = null;
+    try { raw = evalExpr(o.expr, vars); vars[o.name] = raw; } catch (e) { err = e.message; }
+    const digits = o.digits == null ? 2 : o.digits;
+    return { name: o.name, label: o.label, unit: o.unit || "", err,
+             value: raw == null ? null : Math.round(raw * Math.pow(10, digits)) / Math.pow(10, digits) };
+  });
+  const steps = (f.steps || []).map((st) => {
+    if (st.text) return { label: st.label, text: st.text };
+    try {
+      const v = evalExpr(st.expr, vars);
+      const num = Math.round(v * 100) / 100;
+      return { label: st.label, text: (st.template || "{{result}}").replace("{{result}}", fmt(num)) };
+    } catch (e) { return { label: st.label, text: "—" }; }
+  });
+  let status = "INFO", msg = { sw: "", en: "" };
+  (f.rules || []).some((r) => {
+    const cvars = Object.assign({}, vars);
+    outputs.forEach((o) => { if (o.value != null) cvars[o.name] = o.value; });
+    const chk = r.check.replace(/\btrue\b/gi, "1").replace(/\bfalse\b/gi, "0");
+    let ok = false;
+    try { ok = !!evalExpr(chk, cvars); } catch (e) { ok = false; }
+    if (ok) { status = r.status; msg = r.msg || { sw: "", en: "" }; return true; }
+    return false;
+  });
+  return { outputs, steps, status, msg };
+}
+
+/* ---------- BAYES (kama bayes_causes kwenye eval.R) ---------- */
+function bayesCauses(model, on) {
+  const rows = (model.causes || []).map((c) => {
+    let p = c.prior || 0.1;
+    (model.symptoms || []).forEach((s) => {
+      const lik = (s.likelihood && s.likelihood[c.id] != null) ? s.likelihood[c.id] : 0.2;
+      p *= on.includes(s.id) ? lik : (1 - lik);
+    });
+    return { id: c.id, name: c.name, fix: c.fix, cost_tzs: c.cost_tzs, prob: p };
+  });
+  const total = rows.reduce((a, r) => a + r.prob, 0) || 1;
+  rows.forEach((r) => r.pct = Math.round((r.prob / total) * 1000) / 10);
+  return rows.sort((a, b) => b.pct - a.pct);
+}
+
+/* ============================================================
+ * RENDER HELPERS
+ * ============================================================ */
+function gauge(label, pct, color) {
+  const r = 46, c = 2 * Math.PI * r, off = c * (1 - Math.min(100, Math.max(0, pct)) / 100);
+  return `<div class="card" style="text-align:center">
+    <div class="gauge">
+      <svg width="120" height="120">
+        <circle cx="60" cy="60" r="${r}" stroke="#0d1b2e" stroke-width="10" fill="none"/>
+        <circle cx="60" cy="60" r="${r}" stroke="${color}" stroke-width="10" fill="none"
+          stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round"/>
+      </svg>
+      <div class="val"><b>${Math.round(pct)}%</b><span>${esc(label)}</span></div>
+    </div></div>`;
+}
+function statusBadge(st) {
+  const cls = st === "GOOD" ? "ok" : st === "WARNING" ? "warn" : st === "FAIL" ? "danger" : "info";
+  return `<span class="badge ${cls}">${esc(st)}</span>`;
+}
+function svgBarChart(data, color, w, h) {
+  w = w || 560; h = h || 180;
+  const max = Math.max(...data.map((d) => d.v), 1), bw = (w - 40) / data.length;
+  let bars = "", labels = "";
+  data.forEach((d, i) => {
+    const bh = Math.round((d.v / max) * (h - 50));
+    const x = 30 + i * bw, y = h - 30 - bh;
+    bars += `<rect x="${x + 4}" y="${y}" width="${bw - 10}" height="${bh}" fill="${color}" opacity="0.85" rx="3"/>`;
+    bars += `<text x="${x + bw / 2}" y="${y - 4}" fill="#cfe9f5" font-size="9" text-anchor="middle">${d.v}</text>`;
+    labels += `<text x="${x + bw / 2}" y="${h - 14}" fill="#5e8aa3" font-size="8.5" text-anchor="middle">${esc(d.k)}</text>`;
+  });
+  return `<div class="chart-wrap"><svg width="100%" viewBox="0 0 ${w} ${h}">${bars}${labels}</svg></div>`;
+}
+function topoSvg(topology) {
+  const nodes = topology.nodes || [], links = topology.links || [];
+  const w = 640, h = 340;
+  const pos = {};
+  nodes.forEach((n) => pos[n.id] = { x: n.x / 360 * w, y: n.y / 360 * h, n });
+  let lines = (links || []).map((l) => {
+    const a = pos[l.from], b = pos[l.to];
+    if (!a || !b) return "";
+    const col = l.status === "warning" ? "#ffb300" : l.status === "fail" ? "#ff3b3b" : "#00e5ff";
+    return `<line x1="${a.x + 14}" y1="${a.y + 14}" x2="${b.x + 14}" y2="${b.y + 14}" stroke="${col}" stroke-width="2" opacity="0.6"><animate attributeName="stroke-dashoffset" from="20" to="0" dur="1s" repeatCount="indefinite"/></line>`;
+  }).join("");
+  let dots = Object.values(pos).map((p) => {
+    const col = p.n.status === "online" ? "#00ff88" : p.n.status === "warning" ? "#ffb300" : "#ff3b3b";
+    return `<g><circle cx="${p.x + 14}" cy="${p.y + 14}" r="13" fill="${col}" opacity="0.2"/><circle cx="${p.x + 14}" cy="${p.y + 14}" r="6" fill="${col}"/>
+      <text x="${p.x + 14}" y="${p.y + 42}" fill="#cfe9f5" font-size="9" text-anchor="middle">${esc(p.n.label)}</text></g>`;
+  }).join("");
+  return `<div class="topo"><svg width="100%" viewBox="0 0 ${w} ${h}">${lines}${dots}</svg></div>`;
+}
+function compsSvg(components) {
+  const w = 640, h = 300;
+  let out = "";
+  (components || []).forEach((c) => {
+    const x = c.x / 360 * w, y = c.y / 360 * h;
+    const col = c.status === "good" ? "#00ff88" : c.status === "warn" ? "#ffb300" : "#ff3b3b";
+    out += `<g><rect x="${x - 60}" y="${y - 18}" width="120" height="36" rx="8" fill="#0f2233" stroke="${col}" opacity="0.9"/>
+      <text x="${x}" y="${y + 4}" fill="#eafcff" font-size="11" text-anchor="middle">${esc(c.icon)} ${esc(c.name)}</text></g>`;
+  });
+  return `<div class="topo"><svg width="100%" viewBox="0 0 ${w} ${h}">${out}</svg></div>`;
+}
+
+/* ============================================================
+ * TABS — RENDER KILA MOJA
+ * ============================================================ */
+const TABS = ["live", "agentic", "formula", "diag", "map", "fundi", "mobile", "iot"];
+
+function renderTabs() {
+  $("tabs").innerHTML = TABS.map((t) =>
+    `<button data-t="${t}" class="${t === TAB ? "on" : ""}">${esc(tr("tabs." + t))}</button>`).join("");
+  Array.from($("tabs").children).forEach((b) => b.onclick = () => { TAB = b.dataset.t; renderAll(); });
+}
+
+/* ---------- TAB: LIVE ---------- */
+function vLive() {
+  const probe = D.liveProbe || {};
+  const cpu = probe.cpu != null ? probe.cpu : 50, ram = probe.ram != null ? probe.ram : 50, disk = probe.disk != null ? probe.disk : 50;
+  const comps = (D.agentData && D.agentData.components) || [];
+  const issues = (D.agentData && D.agentData.issues) || [];
+  const proc = (D.agentData && D.agentData.processes) || [];
+  return `
+  <div class="panel"><div class="panel-head"><h2>◉ ${esc(LANG === "sw" ? "MONITOR YA MOJA KWA MOJA" : "LIVE MONITOR")}</h2>
+    <span class="meta">${esc(LANG === "sw" ? "probe ya OS (browser: hali ya mfumo)" : "OS probe (browser: system state)")}</span></div>
+  <div class="panel-body">
+    <div class="grid g4">
+      ${gauge("CPU", cpu, "#00e5ff")}${gauge("RAM", ram, "#00ff88")}${gauge("DISK", disk, "#ffb300")}${gauge("NET", Math.min(100, 12 + (Date.now() / 1000 % 40)), "#b388ff")}
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h3>🖥️ ${esc(LANG === "sw" ? "VIFAA VMUNGANYO" : "DEVICE MAP")}</h3>${compsSvg(comps)}</div>
+      <div class="card"><h3>⚙️ ${esc(LANG === "sw" ? "MCHAKATO (top)" : "PROCESSES (top)")}</h3>
+        <table><thead><tr><th>${esc(LANG === "sw" ? "Jina" : "Name")}</th><th>CPU%</th><th>RAM%</th><th></th></tr></thead><tbody>
+        ${proc.slice(0, 8).map((p) => `<tr><td>${esc(p.name)}</td><td>${p.cpu}</td><td>${p.ram}</td>
+          <td>${p.status === "danger" ? '<span class="badge danger">!</span>' : p.status === "warn" ? '<span class="badge warn">~</span>' : '<span class="badge ok">✓</span>'}</td></tr>`).join("")}
+        </tbody></table></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h3>⚠️ ${esc(LANG === "sw" ? "MATATIZO YALIYOGUNDULIWA" : "DETECTED ISSUES")}</h3>
+      ${(issues.length ? issues : [{ title: "—", desc: LANG === "sw" ? "Hakuna tatizo kwenye data." : "No issue in data.", action: "" }]).map((i) =>
+        `<div style="border-bottom:1px solid rgba(0,229,255,.1);padding:.5rem 0">
+          <b style="color:var(--orange)">${esc(i.title)}</b><div style="font-size:.72rem;margin-top:2px">${esc(i.desc)}</div>
+          ${i.action ? `<div style="font-size:.7rem;color:var(--green);margin-top:2px">→ ${esc(i.action)}</div>` : ""}</div>`).join("")}
+    </div>
+  </div></div>`;
+}
+
+/* ---------- TAB: AGENTIC VISION ---------- */
+function vAgentic() {
+  const orch = (D.agents10 && D.agents10.orchestrator) || {};
+  const agents = (D.agents10 && D.agents10.agents) || [];
+  const auto = (D.iotHermes && D.iotHermes.hermes && D.iotHermes.hermes.pipelines || []).find((p) => p.id === "iot_incident") || { steps: [] };
+  return `
+  <div class="panel"><div class="panel-head"><h2>◉ AGENTIC VISION</h2>
+    <span class="meta">${esc(orch.mode || "Pipeline")} · HITL · ${esc(agents.length)} agents</span></div>
+  <div class="panel-body">
+    <div class="card"><h3>🤖 ${esc(LANG === "sw" ? "PIPELINE 8 (iot_incident — hermes.json)" : "8-STEP PIPELINE (iot_incident — hermes.json)")}</h3>
+      <div class="flow" id="pipeFlow">
+        ${auto.steps.map((s, i) => `<div class="step ${i < S.mission ? "done" : i === S.mission ? "run" : ""}" id="pstep${i}">
+          <b>${i + 1}. ${esc(s.agent)}</b>${esc(s.action)}</div><span class="arr">→</span>`).join("")}
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="btnRunPipe">▶️ ${esc(LANG === "sw" ? "Anza mission (simulation)" : "Run mission (simulation)")}</button>
+        <button class="btn" id="btnStopPipe">⏹️ ${esc(LANG === "sw" ? "Simamisha" : "Stop")}</button>
+        <span class="badge info" id="pipeBadge">${S.mission < 0 ? (LANG === "sw" ? "TAYARI" : "READY") : S.mission >= auto.steps.length ? (LANG === "sw" ? "IMEKAMILIKA ✓" : "COMPLETE ✓") : (LANG === "sw" ? "INAENDELEA" : "RUNNING") + " " + (S.mission + 1) + "/" + auto.steps.length}</span>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h3>🧩 ${esc(LANG === "sw" ? "AGENTS (${n}) — agents_10.json" : "AGENTS (${n}) — agents_10.json").replace("${n}", agents.length)}</h3>
+        <table><thead><tr><th>ID</th><th>${esc(LANG === "sw" ? "Jukumu" : "Role")}</th><th>HITL</th></tr></thead><tbody>
+        ${agents.map((a) => `<tr><td><b>${esc(a.name_sw)}</b></td><td style="font-size:.66rem;color:var(--dim)">${esc(a.role || "")}</td>
+          <td>${a.hitl ? '<span class="badge warn">HITL</span>' : '<span class="badge ok">auto</span>'}</td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="card"><h3>🚪 ${esc(LANG === "sw" ? "HITL GATES — kanuni za ruhusa" : "HITL GATES — permission rules")}</h3>
+        ${(((D.iotHermes || {}).hermes || {}).hitl_gates || []).map((g) =>
+          `<div style="padding:.4rem 0;border-bottom:1px solid rgba(0,229,255,.1);font-size:.72rem">
+            <b style="color:var(--orange)">${esc(g.id)}</b> — ${esc(g.applies || "")}
+            <div style="color:var(--dim);font-size:.66rem">${esc((LANG === "sw" ? g.reason_sw : g.reason_en) || "")} · ${esc((g.channels || []).join(", "))}</div></div>`).join("")}
+      </div>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- TAB: FORMULA ---------- */
+function vFormula() {
+  const fs = (D.formulas && D.formulas.formulas) || [];
+  const trades = ["all"].concat(Array.from(new Set(fs.map((f) => f.trade))));
+  const tradeNames = {};
+  ((D.trades || {}).trades || []).forEach((t) => tradeNames[t.id] = t);
+  const pill = (id) => {
+    const label = id === "all" ? (LANG === "sw" ? "ZOTE" : "ALL") : ((tradeNames[id] && tradeNames[id].icon + " " + tradeNames[id].name_sw) || id);
+    return `<button data-fx="${id}" class="${S.fxTrade === id ? "on" : ""}">${esc(label)}</button>`;
+  };
+  const list = fs.filter((f) => S.fxTrade === "all" || f.trade === S.fxTrade);
+  const cur = fs.find((f) => f.id === S.fxId) || list[0];
+  const L = (o) => esc((o && (o[LANG] || o.sw)) || "");
+  let panel = "";
+  if (cur) {
+    const res = calcFormula(cur, (S.fxVals && S.fxVals[cur.id]) || {});
+    panel = `
+    <div class="card">
+      <h3>${L(cur.name)} <span class="badge info">${esc(cur.trade)}</span></h3>
+      <div style="font-size:.72rem;color:var(--dim);margin-bottom:.5rem">${L(cur.description)}</div>
+      <div class="formula-chip" style="background:#0d1b2e;border:1px dashed var(--line);border-radius:8px;padding:.5rem .7rem;font-size:.85rem;color:var(--cyan);margin-bottom:.7rem">${esc(cur.formula || "")}</div>
+      <div class="grid g3">
+        ${(cur.inputs || []).map((inp) => {
+          const val = (S.fxVals && S.fxVals[cur.id] && S.fxVals[cur.id][inp.name] != null) ? S.fxVals[cur.id][inp.name] : inp.default;
+          if (inp.select) return `<div class="inp"><label>${L(inp.label)}${inp.unit ? " (" + esc(inp.unit) + ")" : ""}</label>
+            <select data-fx-inp="${esc(inp.name)}">${inp.select.map((o) => `<option value="${o.value}" ${o.value == val ? "selected" : ""}>${esc(o.label)}</option>`).join("")}</select></div>`;
+          return `<div class="inp"><label>${L(inp.label)}${inp.unit ? " (" + esc(inp.unit) + ")" : ""}</label>
+            <input data-fx-inp="${esc(inp.name)}" type="number" step="any" value="${val}" min="${inp.min != null ? inp.min : ""}" max="${inp.max != null ? inp.max : ""}"/></div>`;
+        }).join("")}
+      </div>
+      <div class="result">
+        ${res.outputs.map((o) => `<div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+          <span style="color:var(--dim);font-size:.72rem">${L(o.label)}</span>
+          <span class="big">${o.err ? "—" : fmt(o.value)} <small>${esc(o.unit)}</small></span></div>`).join("")}
+        <div style="margin-top:.4rem">${statusBadge(res.status)} <span style="font-size:.72rem">${L(res.msg)}</span></div>
+        ${res.steps.length ? `<ol class="steps">${res.steps.map((st) => `<li><span style="color:var(--dim)">${esc(st.label || "")}:</span> ${esc(st.text)}</li>`).join("")}</ol>` : ""}
+      </div>
+    </div>`;
+  }
+  return `
+  <div class="panel"><div class="panel-head"><h2>🧮 ${esc(LANG === "sw" ? "INJINI YA FORMULA" : "FORMULA ENGINE")}</h2>
+    <span class="meta">${fmt(fs.length)} ${esc(LANG === "sw" ? "formulas — hesabu halisi kwenye browser" : "formulas — real calculation in browser")}</span></div>
+  <div class="panel-body">
+    <div class="trade-pills">${trades.map(pill).join("")}</div>
+    <div class="grid" style="grid-template-columns:minmax(240px,1fr) 2fr">
+      <div class="f-list">${list.map((f) => `<div class="f-item ${cur && cur.id === f.id ? "on" : ""}" data-fxid="${esc(f.id)}">
+        <b>${L(f.name)}</b><div class="fx">${esc(f.formula || "")}</div></div>`).join("")}</div>
+      <div>${panel}</div>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- TAB: BAYES DIAGNOSIS ---------- */
+function vDiag() {
+  const models = (D.diagnosis && D.diagnosis.models) || {};
+  const ids = Object.keys(models);
+  const m = models[S.diagModel] || models[ids[0]];
+  if (!m) return `<div class="panel"><div class="panel-body"><div class="empty">—</div></div></div>`;
+  const L = (o) => esc((o && (o[LANG] || o.sw)) || "");
+  const causes = bayesCauses(m, S.diagOn);
+  const chartData = causes.slice(0, 6).map((c) => ({ k: c.name.sw.slice(0, 8), v: Math.max(1, Math.round(c.pct)) }));
+  return `
+  <div class="panel"><div class="panel-head"><h2>🧠 ${esc(LANG === "sw" ? "UTAMBUZI (BAYES)" : "BAYES DIAGNOSIS")}</h2>
+    <span class="meta">${fmt(ids.length)} ${esc(LANG === "sw" ? "models — posterior = prior × ∏L" : "models — posterior = prior × ∏L")}</span></div>
+  <div class="panel-body">
+    <div class="trade-pills">${ids.map((id) => `<button data-dm="${id}" class="${S.diagModel === id ? "on" : ""}">${esc((models[id].title && (models[id].title[LANG] || models[id].title.sw)) || id)}</button>`).join("")}</div>
+    <div class="card"><h3>${L(m.title)}</h3>
+      <div class="grid g3">
+        ${(m.symptoms || []).map((s) => `<label style="display:flex;gap:8px;align-items:center;background:#0d1b2e;border:1px solid ${S.diagOn.includes(s.id) ? "var(--green)" : "rgba(0,229,255,.2)"};border-radius:8px;padding:.5rem .6rem;cursor:pointer;font-size:.72rem">
+          <input type="checkbox" data-sym="${esc(s.id)}" ${S.diagOn.includes(s.id) ? "checked" : ""}/>
+          <span>${L(s.name)}</span></label>`).join("")}
+      </div>
+      <div style="margin-top:8px">
+        <button class="btn" id="btnDiagClear">✖️ ${esc(LANG === "sw" ? "Futa vichaguli" : "Clear")}</button>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h3>📊 ${esc(LANG === "sw" ? "POSTERIORS (%)" : "POSTERIORS (%)")}</h3>${svgBarChart(chartData, "#00ff88", 560, 190)}</div>
+      <div class="card"><h3>🩺 ${esc(LANG === "sw" ? "SABABU + SULUHISHO" : "CAUSES + FIXES")}</h3>
+        <table><thead><tr><th>#</th><th>${esc(LANG === "sw" ? "Sababu" : "Cause")}</th><th>%</th><th>${esc(LANG === "sw" ? "Tiba" : "Fix")}</th><th>${esc(LANG === "sw" ? "Gharama" : "Cost")}</th></tr></thead><tbody>
+        ${causes.map((c, i) => `<tr><td>${i + 1}</td><td><b>${L(c.name)}</b></td>
+          <td><span class="badge ${c.pct > 40 ? "danger" : c.pct > 15 ? "warn" : "ok"}">${c.pct}%</span></td>
+          <td style="font-size:.66rem">${L(c.fix)}</td><td>${c.cost_tzs ? fmtTZS(c.cost_tzs) : "—"}</td></tr>`).join("")}
+        </tbody></table></div>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- TAB: RAMANI ---------- */
+function vMap() {
+  const regions = (D.geo && D.geo.regions) || {};
+  const hz = (D.geo && D.geo.hazards) || [];
+  const hier = D.geoHier || { features: [] };
+  const regionRows = Object.entries(regions).map(([k, v]) => ({ k, ...v })).sort((a, b) => b.jobs - a.jobs);
+  const chartData = regionRows.slice(0, 10).map((r) => ({ k: r.k.slice(0, 8), v: r.jobs }));
+  const byLevel = {};
+  hier.features.forEach((f) => { const p = f.properties; byLevel[p.level] = (byLevel[p.level] || 0) + 1; });
+  return `
+  <div class="panel"><div class="panel-head"><h2>🗺️ ${esc(LANG === "sw" ? "RAMANI + HIERARKIA YA TANZANIA" : "MAP + TANZANIA HIERARCHY")}</h2>
+    <span class="meta">${esc(LANG === "sw" ? "picha halisi + milima 3D + drill-down" : "real imagery + 3D terrain + drill-down")}</span></div>
+  <div class="panel-body">
+    <div class="grid g2">
+      <div class="card" style="text-align:center">
+        <h3>🌍 RAMANI 3D — ${esc(LANG === "sw" ? "PICHA HALISI" : "REAL IMAGERY")}</h3>
+        <a href="ramani-3d.html" target="_blank" style="display:block;background:url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/3/3/4') center/cover;height:170px;border-radius:10px;border:1px solid var(--line);position:relative;text-decoration:none">
+          <span style="position:absolute;inset:auto 0 0 0;background:rgba(4,7,13,.75);padding:.6rem;font-size:.78rem;color:var(--green)">▶️ ${esc(LANG === "sw" ? "Fungua Ramani 3D kamili" : "Open full 3D map")}</span></a>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+          ${["mkoa", "wilaya", "tarafa", "kata", "kijiji", "vitongoji", "mtaa", "barabara"].map((l) =>
+            `<span class="badge info">${esc(l)}: <b>${byLevel[l] || 0}</b></span>`).join("")}
+        </div>
+      </div>
+      <div class="card"><h3>📊 KAZI KWA MKOA (top 10 — geo.json)</h3>${svgBarChart(chartData, "#00e5ff")}</div>
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card"><h3>⚠️ ${esc(LANG === "sw" ? "HATARI (geo.json)" : "HAZARDS (geo.json)")}</h3>
+        <table><thead><tr><th>${esc(LANG === "sw" ? "Jina" : "Name")}</th><th>${esc(LANG === "sw" ? "Aina" : "Type")}</th><th>${esc(LANG === "sw" ? "Mahali" : "Place")}</th><th></th></tr></thead><tbody>
+        ${hz.map((h) => `<tr><td><b>${esc(h.name)}</b></td><td>${esc(h.type)}</td><td>${esc(h.place)}</td>
+          <td><span class="badge ${h.severity === "high" ? "danger" : "warn"}">${esc(h.severity)}</span></td></tr>`).join("")}
+        </tbody></table></div>
+      <div class="card"><h3>🧭 ${esc(LANG === "sw" ? "NAVIGATION + SAUTI" : "NAVIGATION + VOICE")}</h3>
+        <p style="font-size:.74rem;color:var(--dim);margin-bottom:.6rem">${esc(LANG === "sw" ? "Turn-by-turn kwa Kiswahili, sauti (sw-TZ), hali ya hewa, hatari, GPS auto-detect." : "Turn-by-turn in Swahili, voice (sw-TZ), weather, hazards, GPS auto-detect.")}</p>
+        <a class="btn" href="ramani-nav.html" target="_blank" style="text-decoration:none;display:inline-block">▶️ ${esc(LANG === "sw" ? "Fungua Navigation" : "Open Navigation")}</a>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+/* ---------- TAB: FUNDI DEPLOY ---------- */
+function vFundi() {
+  const bundles = (D.deployBundles && D.deployBundles.bundles) || [];
+  const prods = ((D.pricing || {}).products || []).filter((p) => p.type === "hardware" || /deploy|rescue|box/i.test(p.code + p.name.sw));
+  return `
+  <div class="panel"><div class="panel-head"><h2>💻 FUNDI DEPLOY</h2>
+    <span class="meta">${esc(LANG === "sw" ? "imaging ya LAN — bundles halisi (app_bundles.json)" : "LAN imaging — real bundles (app_bundles.json)")}</span></div>
+  <div class="panel-body">
+    <div class="grid g2">
+      ${bundles.map((b) => `<div class="card"><h3>📦 ${esc(b.name_sw || b.id)}</h3>
+        <div style="font-size:.72rem;color:var(--dim);margin-bottom:.5rem">${esc(b.description || "")}</div>
+        <table><tbody>${(b.apps || []).slice(0, 8).map((a) => `<tr><td>${a.critical ? '<span class="badge danger">★</span>' : '<span class="badge">·</span>'}</td><td><b>${esc(a.name)}</b></td>
+          <td style="color:var(--dim);font-size:.64rem">winget: ${esc(a.winget || "—")} · apt: ${esc(a.apt || "—")}</td></tr>`).join("")}</tbody></table>
+        ${(b.apps || []).length > 8 ? `<div class="empty">+${b.apps.length - 8} ${esc(LANG === "sw" ? "apps zaidi" : "more apps")}</div>` : ""}
+      </div>`).join("")}
+    </div>
+    <div class="card" style="margin-top:12px"><h3>🛒 ${esc(LANG === "sw" ? "BIDHAA (pricing.json)" : "PRODUCTS (pricing.json)")}</h3>
+      <table><thead><tr><th>${esc(LANG === "sw" ? "Bidhaa" : "Product")}</th><th>${esc(LANG === "sw" ? "Maelezo" : "Description")}</th><th>Bei</th></tr></thead><tbody>
+      ${prods.map((p) => `<tr><td><b>${esc(p.name.sw)}</b></td><td style="font-size:.66rem;color:var(--dim)">${esc((LANG === "sw" ? p.description.sw : p.description.en) || "")}</td>
+        <td><b style="color:var(--green)">${fmtTZS(p.price_tzs)}</b></td></tr>`).join("")}
+      </tbody></table></div>
+  </div></div>`;
+}
+
+/* ---------- TAB: FUNDI MOBILE ---------- */
+function vMobile() {
+  const cats = (D.mobileProblems && D.mobileProblems.categories) || [];
+  const svc = (D.mobileServices && D.mobileServices.services) || [];
+  return `
+  <div class="panel"><div class="panel-head"><h2>🩺 FUNDI MOBILE</h2>
+    <span class="meta">${esc(LANG === "sw" ? "daktari wa simu — matatizo + huduma (JSON halisi)" : "phone doctor — problems + services (real JSON)")}</span></div>
+  <div class="panel-body">
+    <div class="grid g3">
+      ${cats.map((c) => `<div class="card"><h3>${esc(c.icon || "")} ${esc(c.name_sw)}</h3>
+        ${(c.problems || []).slice(0, 6).map((p) => `<div class="mprob"><b>${esc(p.p)}</b>
+          <div class="sol">${esc(p.s)}</div>
+          <div style="margin-top:3px"><span class="badge info">⏱️ ${p.minutes} min</span></div></div>`).join("")}
+      </div>`).join("")}
+    </div>
+    <div class="card" style="margin-top:12px"><h3>🧾 ${esc(LANG === "sw" ? "HUDUMA + BEI (services.json)" : "SERVICES + PRICES (services.json)")}</h3>
+      <table><thead><tr><th>${esc(LANG === "sw" ? "Huduma" : "Service")}</th><th>${esc(LANG === "sw" ? "Dakika" : "Minutes")}</th><th>Risk</th><th>Bei</th></tr></thead><tbody>
+      ${svc.map((s) => `<tr><td><b>${esc(s.name_sw)}</b></td><td>${s.minutes}</td>
+        <td><span class="badge ${s.risk === "high" ? "danger" : s.risk === "medium" ? "warn" : "ok"}">${esc(s.risk || "low")}</span></td>
+        <td>${s.free ? '<span class="badge ok">FREE</span>' : fmtTZS(s.price || 0)}</td></tr>`).join("")}
+      </tbody></table></div>
+  </div></div>`;
+}
+
+/* ---------- TAB: IOT + HERMES ---------- */
+function vIot() {
+  const verts = (D.iotVerticals && D.iotVerticals.verticals) || [];
+  const devs = (D.iotDevices && D.iotDevices.devices) || [];
+  const regs = { nyumbani: D.iotRegHome, afya: D.iotRegAfya, usalama: D.iotRegUsalama, kilimo: D.iotRegKilimo };
+  const focus = [];
+  Object.values(regs).forEach((r) => ((r && r.projects) || []).forEach((p) => { if (p.focus || p.contributes) focus.push(p); }));
+  const hermes = (D.iotHermes && D.iotHermes.hermes) || {};
+  return `
+  <div class="panel"><div class="panel-head"><h2>📡 IOT + HERMES</h2>
+    <span class="meta">${fmt(verts.length)} verticals · ${fmt(devs.length)} ${esc(LANG === "sw" ? "vifaa" : "devices")} · ${esc((hermes.name_sw || "HERMES").split("—")[0].trim())}</span></div>
+  <div class="panel-body">
+    <div class="grid g2">
+      <div class="card"><h3>🏥 VERTICALS 4</h3><div class="grid" style="gap:8px">
+        ${verts.map((v) => `<div class="vert"><div class="ico">${esc(v.icon)}</div>
+          <div><b style="color:${esc(v.color || "var(--cyan)")}">${esc((v.name && (v.name[LANG] || v.name.sw)) || v.id)}</b>
+          <div style="font-size:.68rem;color:var(--dim);margin-top:2px">MQTT: ${esc(v.mqtt_root || "—")} · risk: ${esc(v.risk || "—")}</div>
+          <div style="font-size:.66rem;margin-top:2px">${esc((v.hitl_policy && (v.hitl_policy[LANG] || v.hitl_policy.sw)) || "")}</div></div></div>`).join("")}
+      </div></div>
+      <div class="card"><h3>📡 ${esc(LANG === "sw" ? "VIFAA (devices.json)" : "DEVICES (devices.json)")}</h3>
+        <table><thead><tr><th>ID</th><th>${esc(LANG === "sw" ? "Jina" : "Name")}</th><th>Vertical</th><th></th></tr></thead><tbody>
+        ${devs.slice(0, 12).map((d) => `<tr><td style="font-size:.64rem">${esc(d.id)}</td><td>${esc((d.name && (d.name.sw || d.name)) || d.id)}</td>
+          <td>${esc(d.vertical)}</td><td>${d.demo ? '<span class="badge warn">demo</span>' : '<span class="badge ok">live</span>'}</td></tr>`).join("")}
+        </tbody></table></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h3>🧰 ${esc(LANG === "sw" ? "MIRADI YA FOCUS (registry — upstream/)" : "FOCUS PROJECTS (registry — upstream/)")}</h3>
+      <div class="grid g3" style="margin-top:6px">
+        ${focus.slice(0, 12).map((p) => `<div class="card" style="padding:.6rem">
+          <b style="color:var(--cyan);font-size:.74rem">${esc(p.name)}</b>
+          <span class="badge info" style="margin-left:4px">${esc(p.language || "")}</span>
+          <div style="font-size:.66rem;color:var(--dim);margin-top:3px">${esc((p.purpose && (p.purpose[LANG] || p.purpose.sw)) || "")}</div>
+          <div style="font-size:.6rem;margin-top:3px"><a class="cyan" href="${esc(p.repo)}" target="_blank">repo ↗</a> · <span class="badge">${esc(p.license || "")}</span></div>
+        </div>`).join("")}
+      </div></div>
+    <div class="card" style="margin-top:12px"><h3>🤖 ${esc(hermes.name_sw || "HERMES")}</h3>
+      <div style="font-size:.72rem">${((hermes.principles || [])).slice(0, 4).map((p) => `<div style="padding:.3rem 0;border-bottom:1px solid rgba(0,229,255,.08)">• ${esc((LANG === "sw" && p.sw) || p.en || p)}</div>`).join("")}</div>
+    </div>
+  </div></div>`;
+}
+
+/* ============================================================
+ * WIRING YA EVENTS (delegation kwenye #main)
+ * ============================================================ */
+function wire() {
+  const main = $("main");
+  main.onclick = (ev) => {
+    const t = ev.target.closest("[data-fx],[data-fxid],[data-dm],[data-sym],#btnRunPipe,#btnStopPipe,#btnDiagClear");
+    if (!t) return;
+    if (t.dataset.fx) { S.fxTrade = t.dataset.fx; renderAll(); return; }
+    if (t.dataset.fxid) { S.fxId = t.dataset.fxid; renderAll(); return; }
+    if (t.dataset.dm) { S.diagModel = t.dataset.dm; S.diagOn = []; renderAll(); return; }
+    if (t.dataset.sym) {
+      const id = t.dataset.sym;
+      /* checkbox click → toggle baada ya state mpya */
+      setTimeout(() => {
+        S.diagOn = Array.from(main.querySelectorAll("[data-sym]:checked")).map((c) => c.dataset.sym);
+        renderAll();
+      }, 0);
+      return;
+    }
+    if (t.id === "btnDiagClear") { S.diagOn = []; renderAll(); return; }
+    if (t.id === "btnRunPipe") { runPipe(); return; }
+    if (t.id === "btnStopPipe") { stopPipe(); return; }
+  };
+  main.oninput = (ev) => {
+    const inp = ev.target.closest("[data-fx-inp]");
+    if (!inp) return;
+    S.fxVals = S.fxVals || {};
+    const fid = (S.fxId || ((D.formulas.formulas.filter((f) => S.fxTrade === "all" || f.trade === S.fxTrade)[0] || {}).id));
+    if (!fid) return;
+    S.fxVals[fid] = S.fxVals[fid] || {};
+    S.fxVals[fid][inp.dataset.fxInp] = inp.value;
+    const card = inp.closest(".card");
+    const res = calcFormula(D.formulas.formulas.find((f) => f.id === fid), S.fxVals[fid]);
+    /* update live bila kure-render yote */
+    const resEl = card.querySelector(".result");
+    if (resEl) {
+      const L = (o) => esc((o && (o[LANG] || o.sw)) || "");
+      resEl.innerHTML = res.outputs.map((o) => `<div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+        <span style="color:var(--dim);font-size:.72rem">${L(o.label)}</span>
+        <span class="big">${o.err ? "—" : fmt(o.value)} <small>${esc(o.unit)}</small></span></div>`).join("") +
+        `<div style="margin-top:.4rem">${statusBadge(res.status)} <span style="font-size:.72rem">${L(res.msg)}</span></div>` +
+        (res.steps.length ? `<ol class="steps">${res.steps.map((st) => `<li><span style="color:var(--dim)">${esc(st.label || "")}:</span> ${esc(st.text)}</li>`).join("")}</ol>` : "");
+    }
+  };
+}
+function runPipe() {
+  const steps = ((((D.iotHermes || {}).hermes || {}).pipelines || []).find((p) => p.id === "iot_incident") || { steps: [] }).steps;
+  stopPipe(); S.mission = -1;
+  S.missionTimer = setInterval(() => {
+    S.mission++;
+    if (S.mission >= steps.length) { stopPipe(true); return; }
+    renderAgenticPipe(steps);
+  }, 1500);
+}
+function stopPipe(done) {
+  if (S.missionTimer) { clearInterval(S.missionTimer); S.missionTimer = null; }
+  const steps = ((((D.iotHermes || {}).hermes || {}).pipelines || []).find((p) => p.id === "iot_incident") || { steps: [] }).steps;
+  if (done) { S.mission = steps.length; renderAgenticPipe(steps); }
+}
+function renderAgenticPipe(steps) {
+  if (TAB !== "agentic") return;
+  steps.forEach((s, i) => {
+    const el = $("pstep" + i);
+    if (!el) return;
+    el.classList.toggle("done", i < S.mission);
+    el.classList.toggle("run", i === S.mission);
+  });
+  const b = $("pipeBadge");
+  if (b) {
+    if (S.mission >= steps.length) { b.textContent = LANG === "sw" ? "IMEKAMILIKA ✓" : "COMPLETE ✓"; b.className = "badge ok"; }
+    else { b.textContent = (LANG === "sw" ? "INAENDELEA" : "RUNNING") + " " + (S.mission + 1) + "/" + steps.length; b.className = "badge warn"; }
+  }
+}
+
+/* ---------- RENDER MUHTASARI ---------- */
+function renderAll() {
+  renderTabs();
+  const v = { live: vLive, agentic: vAgentic, formula: vFormula, diag: vDiag, map: vMap, fundi: vFundi, mobile: vMobile, iot: vIot }[TAB] || vLive;
+  $("main").innerHTML = v();
+  $("hudSub").textContent = tr("hudSub");
+  $("pillOnline").textContent = tr("online");
+}
+
+/* ---------- BOOT ---------- */
+(async function boot() {
+  $("sbDate").textContent = new Date().toISOString().slice(0, 10);
+  $("langSel").value = LANG;
+  $("langSel").onchange = () => { LANG = $("langSel").value; localStorage.setItem("mt_lang", LANG); renderAll(); };
+  await loadAll();
+  $("sbFormulas").textContent = fmt((D.formulas && D.formulas.formulas || []).length);
+  $("sbModels").textContent = fmt(Object.keys((D.diagnosis || {}).models || {}).length);
+  $("sbSkills").textContent = fmt((D.skillsArr || []).length);
+  S.fxId = ((D.formulas || {}).formulas || [])[0] && D.formulas.formulas[0].id;
+  wire();
+  renderAll();
+  setInterval(() => { $("sbClock").textContent = new Date().toLocaleTimeString("en-GB"); }, 1000);
+})();
+</script>
+</body>
+</html>

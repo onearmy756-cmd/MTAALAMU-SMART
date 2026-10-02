@@ -23,7 +23,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         path = urlparse(self.path).path
         if path in ("/", "/index.html"):
             self.send_response(302)
-            self.send_header("Location", "/web-r/www/ramani-3d.html")
+            self.send_header("Location", "/web-r/www/index.html")
             self.end_headers()
             return
         super().do_GET()
@@ -34,7 +34,7 @@ socketserver.ThreadingTCPServer.allow_reuse_address = True
 if __name__ == "__main__":
     with socketserver.ThreadingTCPServer(("0.0.0.0", PORT), Handler) as httpd:
         print(
-            "MTAALAMU preview: http://0.0.0.0:%d/web-r/www/ramani-3d.html"
+            "MTAALAMU preview: http://0.0.0.0:%d/web-r/www/index.html"
             % PORT,
             flush=True,
         )

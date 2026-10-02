@@ -118,6 +118,7 @@
       <button type="button" id="btnNet" class="on">🕸️ Miunganisho</button>
       <button type="button" id="btnCities">🏙️ Miji</button>
       <button type="button" id="btnRegions">🗺️ Mikoa</button>
+      <button type="button" id="btnHier">🏘️ Hierarkia</button>
       <button type="button" id="btnPeople">👷 Wafundi</button>
       <button type="button" id="btnCorridors">🛣️ Corridor</button>
       <button type="button" id="btnFollow">🧭 Follow</button>
@@ -144,6 +145,7 @@
       <span class="badge info" id="terrainStatus">Milima 3D: ON</span>
       <span class="badge info" id="weatherBadge">Hewa: —</span>
       <span class="badge" id="hzBadge">Hatari: ZIMEFICHWA</span>
+      <span class="badge" id="hierBadge">Hierarkia: IMEFICHWA</span>
       <span class="badge" id="iotBadge">IoT: ZIMEFICHWA</span>
       <span class="badge ok" id="liveBadge">LIVE: —</span>
       <span class="badge info" id="missionBadge">HERMES: TAYARI</span>
@@ -541,6 +543,11 @@ function speakOnce(t) { if (!_gpsSaid) { speak(t); _gpsSaid = true; } }
       }
     }
   } catch (e) { /* 404 au offline — OK */ }
+  try {
+    /* HIERARKIA kamili: mikoa→wilaya→tarafa→kata→vijiji→vitongoji→mtaa→barabara */
+    const h = await fetch("../data/geo_hierarchy_index.json");
+    if (h.ok) window.MT_HIER = await h.json();
+  } catch (e) { /* 404 au offline — OK */ }
   map.on("load", () => {
     setTimeout(() => {
       if ((window.MT_GEO_3D && window.MT_GEO_3D.hazards || []).length) {
@@ -558,6 +565,10 @@ function speakOnce(t) { if (!_gpsSaid) { speak(t); _gpsSaid = true; } }
           const b3 = document.getElementById(id);
           if (!b3.classList.contains("on")) b3.click();
         });
+      }
+      /* HIERARKIA kamili — iwashwe moja kwa moja data ikiwa tayari */
+      if (window.MT_HIER && !hierOn) {
+        document.getElementById("btnHier").click();
       }
     }, 300);
   });
@@ -746,6 +757,29 @@ let REGIONS_GEO = null, lastRouteGeo = null;
 const trailCoords = [];
 
 window.MT3D = {
+  /* HIERARKIA: zoom kwenda feature + drill-down kwenda watoto wake */
+  hierZoom: function (id) {
+    const f = ((HIER_GEO && HIER_GEO.features) || []).find((x) => x.properties.id === id);
+    if (!f) return;
+    const p = f.properties;
+    const lv = HIER_LEVELS.find((l) => l.id === p.level);
+    const ZOOMS = { mkoa: 9, wilaya: 11, tarafa: 13, kata: 14, kijiji: 15, vitongoji: 16, mtaa: 16, barabara: 14 };
+    map.flyTo({ center: [p.lng, p.lat], zoom: Math.max(map.getZoom(), ZOOMS[p.level] || 14), pitch: 60, duration: 2200 });
+    setInstruction("🔍 " + (lv ? lv.sw : p.level) + ": " + p.name_sw + " — mkoa wa " + p.region + ".");
+    speak(p.name_sw + ". Mkoa wa " + p.region + ".");
+  },
+  hierUp: function (id) {
+    const f = ((HIER_GEO && HIER_GEO.features) || []).find((x) => x.properties.id === id);
+    if (!f) return;
+    const p = f.properties;
+    const parentId = p.parent_id || p.region_id;
+    const pf = ((HIER_GEO && HIER_GEO.features) || []).find((x) => x.properties.id === parentId && x.properties.level !== "barabara")
+      || ((HIER_GEO && HIER_GEO.features) || []).find((x) => x.properties.id === p.region_id);
+    if (!pf) return;
+    const q = pf.properties;
+    MT3D.hierZoom(q.id);
+    new maplibregl.Popup({ maxWidth: "300px" }).setLngLat([q.lng, q.lat]).setHTML(hierPopupHtml(q)).addTo(map);
+  },
   /* OSRM routing — kutoka GPS (au mtazamo) kwenda lengo; njia halisi ya barabara */
   routeTo: async function (lat, lng, name) {
     const start = map._mtUserLL || (function () { const c = map.getCenter(); return [c.lng, c.lat]; })();
@@ -898,6 +932,99 @@ document.getElementById("btnRegions").onclick = () => {
   regionsApply(regionsOn);
 };
 
+/* ---------- 🏘️ HIERARKIA KAMILI (geo_hierarchy_index.json) ----------
+ * Mikoa → Wilaya → Tarafa → Kata → Vijiji → Vitongoji → Mtaa → Barabara
+ * Kila ngazi ina layer yake: rangi + zoom range (minzoom) tofauti.
+ * Popup: bofya → maelezo + vitufe vya KUZAMA (drill-down) na KUPANDA.
+ * Ngazi za chini ziko kwenye ring za mkoa (placement) — onyo kwenye popup.
+ */
+const HIER_LEVELS = [
+  { id: "mkoa",      sw: "Mkoa",     color: "#00e5ff", minzoom: 0,  size: 15 },
+  { id: "wilaya",    sw: "Wilaya",   color: "#b388ff", minzoom: 0,  size: 11 },
+  { id: "tarafa",    sw: "Tarafa",   color: "#ff9100", minzoom: 8,  size: 9 },
+  { id: "kata",      sw: "Kata",     color: "#00ff88", minzoom: 9,  size: 8 },
+  { id: "kijiji",    sw: "Kijiji",   color: "#8bc34a", minzoom: 10, size: 7 },
+  { id: "vitongoji", sw: "Kitongoji", color: "#40c4ff", minzoom: 11, size: 6 },
+  { id: "mtaa",      sw: "Mtaa",     color: "#ffd54f", minzoom: 11, size: 6 },
+  { id: "barabara",  sw: "Barabara", color: "#ff5252", minzoom: 9,  size: 7 }
+];
+let hierOn = false, HIER_GEO = null;
+function hierCount(level) {
+  return (HIER_GEO && HIER_GEO.features || []).filter((f) => f.properties.level === level).length;
+}
+function hierPopupHtml(p) {
+  const lv = HIER_LEVELS.find((l) => l.id === p.level) || { sw: p.level, color: "#00e5ff" };
+  let html = "<b style='color:" + lv.color + "'>" + lv.sw.toUpperCase() + ": " + p.name_sw + "</b>";
+  if (p.name_en && p.name_en !== p.name_sw) html += "<br/><span style='color:#5e8aa3'>" + p.name_en + "</span>";
+  html += "<br/>Mkoa: " + p.region;
+  if (p.parent) html += "<br/>Ndani ya: " + p.parent;
+  if (p.level === "mkoa" && (p.jobs || p.techs || p.customers)) {
+    html += "<div>Kazi: <b>" + (p.jobs || 0) + "</b> · Mafundi: <b>" + (p.techs || 0) + "</b> · Wateja: <b>" + (p.customers || 0) + "</b></div>";
+  }
+  if (p.road_type) html += "<div>Aina: " + p.road_type + "</div>";
+  if (p.placed) html += "<br/><i style='color:#ffb300'>Mahali: placement ya hierarkia (ring ya mkoa) — sio survey halisi.</i>";
+  html += "<div style='margin-top:4px;display:flex;gap:4px;flex-wrap:wrap'>";
+  html += "<button onclick=\"MT3D.hierZoom('" + p.id + "')\" style=\"background:#00e5ff;border:0;padding:4px 8px;border-radius:4px;cursor:pointer;font-weight:700\">🔍 Karibu</button>";
+  if (p.level !== "mkoa") html += "<button onclick=\"MT3D.hierUp('" + p.id + "')\" style=\"background:#143048;color:#00e5ff;border:1px solid #00e5ff;padding:4px 8px;border-radius:4px;cursor:pointer;font-weight:700\">⬆️ Ngazi ya juu</button>";
+  html += "<button onclick=\"MT3D.routeTo(" + p.lat + "," + p.lng + ",'" + String(p.name_sw).replace(/'/g, "") + "')\" style=\"background:#00ff88;border:0;padding:4px 8px;border-radius:4px;cursor:pointer;font-weight:700\">🛣️ Njia hapa</button>";
+  html += "</div>";
+  return html;
+}
+function hierApply(on) {
+  const feats = (HIER_GEO && HIER_GEO.features) || [];
+  if (!on || !feats.length) {
+    HIER_LEVELS.forEach((l) => {
+      ["hier-" + l.id, "hier-label-" + l.id].forEach((id) => { if (map.getLayer(id)) map.removeLayer(id); });
+    });
+    if (map.getSource("hier")) map.removeSource("hier");
+    document.getElementById("hierBadge").textContent = "Hierarkia: IMEFICHWA";
+    document.getElementById("hierBadge").className = "badge";
+    setInstruction("Hierarkia imefichwa.");
+    return;
+  }
+  if (!map.getSource("hier")) {
+    map.addSource("hier", { type: "geojson", data: HIER_GEO });
+    HIER_LEVELS.forEach((l) => {
+      const filter = l.id === "barabara"
+        ? ["all", ["==", ["get", "level"], "barabara"]]
+        : ["all", ["==", ["get", "level"], l.id]];
+      if (l.id === "barabara") {
+        map.addLayer({ id: "hier-" + l.id, type: "line", source: "hier", filter: filter,
+          paint: { "line-color": l.color, "line-width": 2.5, "line-opacity": 0.8 } });
+      } else {
+        map.addLayer({ id: "hier-" + l.id, type: "circle", source: "hier", filter: filter,
+          minzoom: l.minzoom,
+          paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, Math.max(3, l.size - 6), 12, l.size],
+                   "circle-color": l.color, "circle-opacity": 0.85,
+                   "circle-stroke-width": 1.5, "circle-stroke-color": "#04070d" } });
+        map.addLayer({ id: "hier-label-" + l.id, type: "symbol", source: "hier", filter: filter,
+          minzoom: Math.max(l.minzoom, 11),
+          layout: { "text-field": ["get", "name_sw"], "text-font": ["Noto Sans Regular"], "text-size": 11,
+                    "text-offset": [0, 1.1], "text-anchor": "top", "text-allow-overlap": false },
+          paint: { "text-color": l.color, "text-halo-color": "#04070d", "text-halo-width": 2 } });
+      }
+      map.on("click", "hier-" + l.id, (e) => {
+        const p = e.features[0].properties;
+        new maplibregl.Popup({ maxWidth: "300px" }).setLngLat(e.lngLat).setHTML(hierPopupHtml(p)).addTo(map);
+        speak(l.sw + ": " + p.name_sw + ". Mkoa wa " + p.region + ".");
+      });
+      map.on("mouseenter", "hier-" + l.id, () => { map.getCanvas().style.cursor = "pointer"; });
+      map.on("mouseleave", "hier-" + l.id, () => { map.getCanvas().style.cursor = ""; });
+    });
+  }
+  const total = feats.length;
+  const parts = HIER_LEVELS.map((l) => l.sw + " " + hierCount(l.id)).join(" · ");
+  document.getElementById("hierBadge").textContent = "Hierarkia: " + total;
+  document.getElementById("hierBadge").className = "badge ok";
+  setInstruction("🏘️ Hierarkia kamili: " + parts + ". Bofya alama → drill-down (⬇️) na ngazi ya juu (⬆️).");
+  speak("Hierarkia ya Tanzania imeonyeshwa. Mikoa, wilaya, tarafa, kata, vijiji, vitongoji, mtaa na barabara.");
+}
+document.getElementById("btnHier").onclick = () => {
+  hierOn = !hierOn;
+  document.getElementById("btnHier").classList.toggle("on", hierOn);
+  hierApply(hierOn);
+};
+
 /* ---------- 👷 WAFUNDI 8 · WATEJA 7 · KAZI 4 (geo.json markers — picha halisi) ---------- */
 function peopleApply(on) {
   const ms = (window.MT_GEO_FULL && window.MT_GEO_FULL.markers) || [];
@@ -981,6 +1108,16 @@ function localMatches(v) {
   (g.markers || []).forEach((m) => { if ((m.name || "").toLowerCase().includes(v)) out.push({ name: m.name, detail: m.place || m.kind, lat: m.lat, lng: m.lng, level: m.kind }); });
   ((window.MT_GEO_3D && window.MT_GEO_3D.hazards) || []).forEach((h) => { if ((h.name || "").toLowerCase().includes(v)) out.push({ name: h.name, detail: h.place || "hatari", lat: h.lat, lng: h.lng, level: "hatari" }); });
   Object.keys(IOT_SITES).forEach((k) => { if (IOT_SITES[k].name.toLowerCase().includes(v)) out.push({ name: IOT_SITES[k].name, detail: "site ya IoT", lat: IOT_SITES[k].lat, lng: IOT_SITES[k].lng, level: "site" }); });
+  /* HIERARKIA: mikoa→wilaya→tarafa→kata→vijiji→vitongoji→mtaa→barabara */
+  if (window.MT_HIER && window.MT_HIER.features) {
+    const SW = { mkoa: "Mkoa", wilaya: "Wilaya", tarafa: "Tarafa", kata: "Kata", kijiji: "Kijiji", vitongoji: "Kitongoji", mtaa: "Mtaa", barabara: "Barabara" };
+    window.MT_HIER.features.forEach((f) => {
+      const p = f.properties;
+      if ((p.name_sw || "").toLowerCase().includes(v)) {
+        out.push({ name: p.name_sw, detail: SW[p.level] + " · " + p.region + (p.parent ? " — " + p.parent : ""), lat: p.lat, lng: p.lng, level: SW[p.level] || p.level, hierId: p.id });
+      }
+    });
+  }
   return out.slice(0, 5);
 }
 const qIn = document.getElementById("q3d"), qList = document.getElementById("qList");
@@ -1007,7 +1144,11 @@ async function doSearch(v) {
 function pickResult(o) {
   qList.style.display = "none";
   qIn.value = o.name;
-  map.flyTo({ center: [o.lng, o.lat], zoom: 14, pitch: 62, duration: 2600 });
+  if (o.hierId) {
+    MT3D.hierZoom(o.hierId);
+  } else {
+    map.flyTo({ center: [o.lng, o.lat], zoom: 14, pitch: 62, duration: 2600 });
+  }
   if (!map._mtDest) map._mtDest = new maplibregl.Marker({ color: "#ffb300" }).setLngLat([o.lng, o.lat]).addTo(map);
   else map._mtDest.setLngLat([o.lng, o.lat]);
   MT3D.routeTo(o.lat, o.lng, o.name);

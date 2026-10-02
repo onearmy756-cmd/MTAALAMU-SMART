@@ -22,6 +22,8 @@
     "mitaa_districts_covered": 184,
     "barabara_listed": 50,
     "barabara_regions_covered": 31,
+    "index_total_features": 1254,
+    "index_file": "web-r/data/geo_hierarchy_index.json",
     "note": "Hierarkia yote imeanza na KILA wilaya/mkoa imefunikwa. Data kamili (elfu+) inahitaji NBS/OSM import."
   },
   "files": {
@@ -32,6 +34,8 @@
     "vitongoji": "data/geo/vitongoji.json",
     "mitaa": "data/geo/mitaa.json",
     "barabara": "data/geo/barabara.json",
+    "hierarchy_index": ["web-r/data/geo_hierarchy_index.json", "data/geo/hierarchy_index.json"],
+    "hierarchy_index_generator": "scripts/gen_geo_index.py",
     "schema": "data/geo/SCHEMA.md"
   },
   "notes": [
