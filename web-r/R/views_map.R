@@ -189,3 +189,24 @@ view_map <- function(lang, geo, payload) {
         "setTimeout(function(){ if (window.MTMap && MTMap.init) MTMap.init(); }, 50);"
       ))))
 }
+
+# ============================================================
+# RAMANI 3D — MapLibre GL (GPU/WebGL, RAM ndogo) + picha halisi
+# Data: web-r/data/geo.json (hazards) → location.hash (JSON = chanzo)
+# ============================================================
+view_map3d <- function(lang, hazards_json = "[]") {
+  hz <- paste0("#hz=", utils::URLencode(hazards_json, reserved = TRUE))
+  tags$div(class = "panel",
+    tags$div(class = "panel-head",
+      tags$h2("\U0001f30d RAMANI 3D — PICHA HALISI (GPU)"),
+      tags$span(class = "meta", "MapLibre · Esri Imagery · AWS Terrain · RAM ndogo")),
+    tags$div(class = "panel-body",
+      tags$div(style = "display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap",
+        tags$button(class = "btn", onclick = "window.open('ramani-3d.html','_blank')",
+                    "\u25b6 Fungua 3D kwa skrini kamili"),
+        tags$span(class = "meta",
+          "Picha halisi za satellite + milima ya kweli (3D). Inachora kwa GPU — CPU/RAM kidogo sana.")),
+      tags$iframe(src = paste0("ramani-3d.html", hz),
+        style = paste0("width:100%;height:72vh;border:1px solid #00e5ff33;",
+          "border-radius:12px;background:#04070d"), loading = "lazy")))
+}

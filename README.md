@@ -116,6 +116,7 @@ UI: tab **📡 IOT REGISTRY** (web-r) inaonyesha FOCUS/CLONED kwa kila mradi.
 3. **🧮 FORMULA ENGINE**
 4. **🧠 UTAMBUZI (BAYES)**
 5. **🗺️ RAMANI / NAVIGATION**
+6. **🌍 3D** — ramani ya tatu yenye picha halisi (Esri Imagery + NASA GIBS) + milima halisi (AWS Terrain DEM) — MapLibre GL, inachora kwa GPU (RAM/CPU kidogo): `web-r/www/ramani-3d.html`
 
 ## Rust (examples)
 
