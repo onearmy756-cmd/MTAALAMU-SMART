@@ -71,6 +71,11 @@ AGENTIC <- .refresh_agentic_live()
 GEO <- tryCatch(fromJSON(p_app("data", "geo.json"), simplifyVector = FALSE), error = function(e) list())
 GEO_TXT <- tryCatch(paste(readLines(p_app("data", "geo.json"), encoding = "UTF-8", warn = FALSE), collapse = "\n"),
                     error = function(e) "{}")
+# Hazards halisi (geo.json) kwa ajili ya RAMANI 3D (ramani-3d.html, via location.hash = JSON)
+GEO_3D_HZ <- tryCatch({
+  hz <- GEO$hazards %||% list()
+  jsonlite::toJSON(hz, auto_unbox = TRUE)
+}, error = function(e) "[]")
 bound_src <- p_app("data", "tz_regions.geojson")
 bound_dst <- p_app("www", "tz_regions.geojson")
 if (file.exists(bound_src)) {
@@ -117,6 +122,7 @@ ui <- fluidPage(
     conditionalPanel(condition = "input.tab == 'diag'", uiOutput("diagnosis")),
     conditionalPanel(condition = "input.tab == 'viz'", uiOutput("viz")),
     conditionalPanel(condition = "input.tab == 'map'", uiOutput("map")),
+    conditionalPanel(condition = "input.tab == 'map3d'", uiOutput("map3d")),
     conditionalPanel(condition = "input.tab == 'nav'",
       tags$div(class = "panel",
         tags$div(class = "panel-head",
@@ -559,6 +565,7 @@ server <- function(input, output, session) {
 
   output$viz <- renderUI(view_viz(lang()))
   output$map <- renderUI(view_map(lang(), GEO, map_payload(lang(), GEO_TXT)))
+  output$map3d <- renderUI(view_map3d(lang(), GEO_3D_HZ))
   output$nav <- renderUI(NULL)
   output$fundi <- renderUI(fundi_tab_el(lang()))
   fundi_server(input, output, session)
@@ -567,7 +574,7 @@ server <- function(input, output, session) {
   output$iot <- renderUI(view_iot(lang()))
   output$statusbar <- renderUI(status_bar_el(lang(), stats(), uptime()))
 
-  for (nm in c("live", "agentic", "formula", "diagnosis", "viz", "statusbar", "tabs", "fundi", "mobile", "nav", "iot")) {
+  for (nm in c("live", "agentic", "formula", "diagnosis", "viz", "statusbar", "tabs", "fundi", "mobile", "nav", "iot", "map", "map3d")) {
     outputOptions(output, nm, suspendWhenHidden = FALSE)
   }
 }

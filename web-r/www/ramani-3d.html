@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>MTAALAMU SMART — Ramani 3D (Picha Halisi)</title>
+  <!--
+    MTAALAMU SMART — RAMANI 3D ya kufaa-resources (KANUNI: offline-first, RAM ndogo)
+    - MapLibre GL JS (BSD-3): inachora kwa GPU/WebGL — RAM ya CPU kidogo sana (~1MB heap yake)
+    - Picha halisi: Esri World Imagery (ile ile ya map.js) + NASA GIBS (siku moja nyuma)
+    - Milima halisi: Terrain DEM ya AWS (tiles za elevation, bila key)
+    - GPS + Hali ya hewa + Hatari + Sauti ya Kiswahili (sw-TZ)
+  -->
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <style>
+    :root {
+      --bg: #04070d; --card: #0a1628; --line: rgba(0, 229, 255, 0.35);
+      --cyan: #00e5ff; --green: #00ff88; --orange: #ffb300; --red: #ff3b3b;
+      --text: #cfe9f5; --dim: #5e8aa3; --mono: 'Share Tech Mono', ui-monospace, monospace;
+      --title: 'Rajdhani', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--mono); overflow: hidden; }
+    #app { display: flex; flex-direction: column; height: 100%; }
+    header {
+      padding: 0.5rem 0.7rem; background: var(--card); border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;
+    }
+    header h1 {
+      font-family: var(--title); font-size: 0.95rem; letter-spacing: 2px; color: #eafcff;
+      text-shadow: 0 0 10px rgba(0,229,255,0.5); white-space: nowrap;
+    }
+    .btns { display: flex; gap: 0.3rem; flex-wrap: wrap; align-items: center; }
+    button {
+      padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid var(--line); cursor: pointer;
+      font-weight: 600; font-size: 0.76rem; background: #0f2233; color: var(--cyan);
+      font-family: var(--mono); letter-spacing: 0.5px;
+    }
+    button:hover { background: #143048; }
+    button.on { background: rgba(0,229,255,0.18); color: var(--green); border-color: var(--green); }
+    button.danger { color: var(--red); border-color: rgba(255,59,59,0.55); }
+    select {
+      padding: 0.38rem 0.5rem; border-radius: 6px; border: 1px solid var(--line);
+      background: #0f2233; color: var(--text); font-size: 0.76rem; font-family: var(--mono);
+    }
+    #map { flex: 1; min-height: 160px; }
+    .maplibregl-ctrl-attrib { background: rgba(4,7,13,0.75) !important; color: var(--dim) !important; font-size: 10px !important; }
+    .maplibregl-ctrl-attrib a { color: var(--cyan) !important; }
+    #panel {
+      background: var(--card); border-top: 1px solid var(--line);
+      padding: 0.55rem 0.8rem; max-height: 26vh; overflow-y: auto;
+    }
+    #instruction { font-size: 0.95rem; line-height: 1.4; margin-bottom: 0.35rem; }
+    #meta { font-size: 0.72rem; color: var(--dim); display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+    .badge {
+      display: inline-block; padding: 0.12rem 0.42rem; border-radius: 4px;
+      font-size: 0.66rem; background: #12263c; border: 1px solid var(--line); color: var(--dim);
+    }
+    .badge.ok { color: var(--green); border-color: rgba(0,255,136,0.5); }
+    .badge.warn { color: var(--orange); border-color: rgba(255,179,0,0.5); }
+    .badge.danger { color: var(--red); border-color: rgba(255,59,59,0.55); }
+    .badge.info { color: var(--cyan); }
+    .weather-box {
+      margin-top: 0.35rem; padding: 0.4rem 0.5rem; border-radius: 6px;
+      background: #0f1a2e; border: 1px solid var(--line); font-size: 0.78rem;
+    }
+    .legend {
+      position: absolute; right: 10px; top: 10px; z-index: 5;
+      background: rgba(4,7,13,0.82); border: 1px solid var(--line); border-radius: 8px;
+      padding: 0.45rem 0.6rem; font-size: 0.68rem; color: var(--dim); pointer-events: none;
+    }
+    .legend b { color: var(--cyan); font-family: var(--title); letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🌍 RAMANI 3D</h1>
+    <div class="btns">
+      <button type="button" id="btnSat" class="on">🛰️ Picha Halisi</button>
+      <button type="button" id="btnTerrain" class="on">⛰️ Milima 3D</button>
+      <button type="button" id="btnTilt">🔄 Mwelekeo</button>
+      <button type="button" id="btnFly">✈️ Ndege (Dar)</button>
+      <button type="button" id="btnGps">📍 GPS</button>
+      <button type="button" id="btnWeather" class="off">☁️ Hewa</button>
+      <button type="button" id="btnHazards">⚠️ Hatari</button>
+      <button type="button" id="btnVoice" title="Washa/zima sauti ya Kiswahili">🔈 Sauti: ON</button>
+      <select id="baseSel" title="Chagua chanzo cha picha">
+        <option value="esri">Esri World Imagery</option>
+        <option value="gibs">NASA GIBS (leo)</option>
+        <option value="osm">OSM (ramani)</option>
+      </select>
+    </div>
+  </header>
+  <div style="position:relative; flex:1; display:flex; flex-direction:column; min-height:0;">
+    <div id="map"></div>
+    <div class="legend">
+      <b>RAMANI 3D HALISI</b><br/>
+      GPU/WebGL — RAM ndogo<br/>
+      Esri Imagery + AWS Terrain<br/>
+      <span id="fpsBadge">fps: —</span>
+    </div>
+  </div>
+  <div id="panel">
+    <div id="instruction">Karibu Ramani 3D. Picha halisi + milima ya kweli. Bonyeza GPS au Ndege (Dar).</div>
+    <div id="meta">
+      <span class="badge" id="gpsStatus">GPS: —</span>
+      <span class="badge info" id="terrainStatus">Milima 3D: ON</span>
+      <span class="badge info" id="weatherBadge">Hewa: —</span>
+      <span class="badge" id="hzBadge">Hatari: ZIMEFICHWA</span>
+    </div>
+    <div id="weatherBox" class="weather-box" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+ * RAMANI 3D — MTAALAMU SMART
+ * Kanuni: GPU ndiyo inachora (MapLibre WebGL) — RAM ya CPU kidogo.
+ * Picha halisi: Esri World Imagery / NASA GIBS | Milima: AWS Terrain DEM
+ * Sauti: Web Speech API (sw-TZ) | Hewa: Open-Meteo | GPS: navigator
+ * ============================================================ */
+"use strict";
+
+const VOICE_PROMPTS = {
+  welcome: "Karibu Ramani ya tatu. Picha halisi na milima ya kweli zimewasha.",
+  gps_searching: "Inatafuta mahali ulipo.",
+  gps_ok: "Mahali ulipo limetambuliwa.",
+  gps_fail: "Ishara ya GPS imepotea.",
+  terrain_on: "Milima ya tatu imewashwa.",
+  terrain_off: "Milima ya tatu imesimamishwa.",
+  weather_alert: "Onyo la hali ya hewa.",
+  hazard: "Tahadhari. Kuna hatari kwenye ramani."
+};
+
+let voiceOn = true;
+let lastInstruction = VOICE_PROMPTS.welcome;
+
+function setInstruction(t) {
+  lastInstruction = t;
+  document.getElementById("instruction").textContent = t;
+}
+
+function speak(text) {
+  if (!voiceOn || !window.speechSynthesis) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "sw-TZ"; u.rate = 0.92;
+    const vs = speechSynthesis.getVoices() || [];
+    const sw = vs.find(v => v.lang && (v.lang.toLowerCase().startsWith("sw") || v.lang.includes("Swahili")));
+    if (sw) u.voice = sw;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch (e) { /* sauti ni hiari */ }
+}
+(function () {
+  const b = document.getElementById("btnVoice");
+  if (!window.speechSynthesis) { b.textContent = "🚫 Sauti"; b.disabled = true; return; }
+  b.onclick = () => {
+    voiceOn = !voiceOn;
+    b.textContent = voiceOn ? "🔈 Sauti: ON" : "🔇 Sauti: OFF";
+    b.classList.toggle("on", voiceOn);
+    if (voiceOn) speak(lastInstruction);
+  };
+  const check = () => {
+    const vs = speechSynthesis.getVoices() || [];
+    const has = vs.some(v => (v.lang || "").toLowerCase().startsWith("sw"));
+    b.title = has ? "Voice ya Kiswahili ipo" : "Hakuna voice ya sw — itatumia nyingine";
+  };
+  check();
+  if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = check;
+})();
+
+/* ---------- RAMANI (MapLibre GL — GPU) ---------- */
+/* Raster style: tiles halisi, si vector nzito — data kidogo, picha halisi */
+const BASEMAPS = {
+  esri: {
+    tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+    attribution: "Picha: Esri World Imagery"
+  },
+  gibs: { tiles: [], attribution: "Picha: NASA EOSDIS GIBS (MODIS Terra)" },
+  osm: {
+    tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+    attribution: "© OpenStreetMap contributors"
+  }
+};
+
+function gibsDateStr(d) {
+  const m = ("0" + (d.getMonth() + 1)).slice(-2), day = ("0" + d.getDate()).slice(-2);
+  return d.getFullYear() + "-" + m + "-" + day;
+}
+function gibsTiles() {
+  const d = gibsDateStr(new Date(Date.now() - 86400000));
+  return ["https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/" + d + "/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg"];
+}
+
+function baseStyle(id) {
+  const cfg = id === "gibs" ? { tiles: gibsTiles(), attribution: BASEMAPS.gibs.attribution } : BASEMAPS[id];
+  return {
+    version: 8,
+    sources: {
+      base: {
+        type: "raster",
+        tiles: cfg.tiles,
+        tileSize: 256,
+        maxzoom: id === "gibs" ? 9 : 19,
+        attribution: cfg.attribution
+      },
+      terrain: {
+        type: "raster-dem",
+        tiles: ["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],
+        encoding: "terrarium",
+        tileSize: 256,
+        maxzoom: 13
+      }
+    },
+    layers: [
+      { id: "bg", type: "background", paint: { "background-color": "#0a1220" } },
+      { id: "base", type: "raster", source: "base", paint: { "raster-fade-duration": 200 } }
+    ]
+  };
+}
+
+const map = new maplibregl.Map({
+  container: "map",
+  style: baseStyle("esri"),
+  center: [39.2083, -6.7924],     /* Dar es Salaam */
+  zoom: 11.2,
+  pitch: 62,                       /* mtazamo wa 3D */
+  bearing: -18,
+  maxPitch: 80,
+  antialias: false,                /* RAM/gpu kidogo */
+  attributionControl: { compact: true }
+});
+map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-left");
+map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
+
+/* ---------- MILIMA 3D (AWS Terrain DEM) ---------- */
+let terrainOn = true;
+function setTerrain(on) {
+  try {
+    if (on) {
+      map.setTerrain({ source: "terrain", exaggeration: 1.25 });
+      document.getElementById("terrainStatus").textContent = "Milima 3D: ON";
+      document.getElementById("terrainStatus").className = "badge ok";
+    } else {
+      map.setTerrain(null);
+      document.getElementById("terrainStatus").textContent = "Milima 3D: OFF";
+      document.getElementById("terrainStatus").className = "badge";
+    }
+  } catch (e) { /* terrain haiwezekani kwenye GPU dhaifu */ }
+}
+map.on("load", () => {
+  setTerrain(terrainOn);
+  /* Fog/anga: hali halisi ya anga bila gharama ya texture */
+  try {
+    map.setSky({
+      "sky-color": "#7fb8e6",
+      "fog-color": "#cfe9f5",
+      "fog-ground-blend": 0.6,
+      "horizon-fog-blend": 0.5,
+      "sky-horizon-blend": 0.6,
+      "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 0.8, 10, 0.4, 16, 0]
+    });
+  } catch (e) { /* toleo la maplibre lisilo na setSky */ }
+  speak(VOICE_PROMPTS.welcome);
+});
+document.getElementById("btnTerrain").onclick = () => {
+  terrainOn = !terrainOn;
+  document.getElementById("btnTerrain").classList.toggle("on", terrainOn);
+  setTerrain(terrainOn);
+  speak(terrainOn ? VOICE_PROMPTS.terrain_on : VOICE_PROMPTS.terrain_off);
+};
+
+/* ---------- KUBADILISHA PICHA (basemap) ---------- */
+document.getElementById("btnSat").onclick = () => { setBase("esri"); };
+document.getElementById("baseSel").onchange = (e) => setBase(e.target.value);
+function setBase(id) {
+  const s = baseStyle(id);
+  map.setStyle(s, { diff: true });
+  /* terrain inarudishwa baada ya style mpya */
+  setTimeout(() => setTerrain(terrainOn), 400);
+  document.getElementById("btnSat").classList.toggle("on", id === "esri" || id === "gibs");
+}
+
+/* ---------- MWELEKEO / NDEGE ---------- */
+let tilted = true;
+document.getElementById("btnTilt").onclick = () => {
+  tilted = !tilted;
+  map.easeTo({ pitch: tilted ? 62 : 0, bearing: tilted ? -18 : 0, duration: 600 });
+  document.getElementById("btnTilt").classList.toggle("on", !tilted);
+};
+document.getElementById("btnFly").onclick = () => {
+  map.flyTo({ center: [39.2083, -6.7924], zoom: 15.5, pitch: 68, bearing: -30, duration: 5200, essential: true });
+  speak("Ndege kwenda Dar es Salaam. Tazama jiji kwa tatu.");
+};
+
+/* ---------- GPS ---------- */
+let watchId = null;
+document.getElementById("btnGps").onclick = () => {
+  if (!navigator.geolocation) { document.getElementById("gpsStatus").textContent = "GPS: hakuna"; return; }
+  document.getElementById("gpsStatus").textContent = "GPS: inatafuta...";
+  document.getElementById("gpsStatus").className = "badge info";
+  speak(VOICE_PROMPTS.gps_searching);
+  if (watchId != null) navigator.geolocation.clearWatch(watchId);
+  watchId = navigator.geolocation.watchPosition((pos) => {
+    const ll = [pos.coords.longitude, pos.coords.latitude];
+    document.getElementById("gpsStatus").textContent = "GPS: OK ±" + Math.round(pos.coords.accuracy) + "m";
+    document.getElementById("gpsStatus").className = "badge ok";
+    speakOnce(VOICE_PROMPTS.gps_ok);
+    if (!map._mtUser) {
+      map._mtUser = true;
+      map.addSource("user", { type: "geojson", data: { type: "Feature", geometry: { type: "Point", coordinates: ll } } });
+      map.addLayer({ id: "user-acc", type: "circle", source: "user",
+        paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, ["*", 0.002, Math.max(30, pos.coords.accuracy)], 16, ["*", 8, Math.max(6, pos.coords.accuracy / 100)]],
+                 "circle-color": "#00e5ff", "circle-opacity": 0.18 } });
+      map.addLayer({ id: "user-dot", type: "circle", source: "user",
+        paint: { "circle-radius": 7, "circle-color": "#00e5ff", "circle-stroke-width": 3, "circle-stroke-color": "#ffffff" } });
+      map.flyTo({ center: ll, zoom: 15.5, pitch: 62, duration: 2400 });
+    } else {
+      map.getSource("user").setData({ type: "Feature", geometry: { type: "Point", coordinates: ll } });
+    }
+  }, () => {
+    document.getElementById("gpsStatus").textContent = "GPS: dhaifu";
+    document.getElementById("gpsStatus").className = "badge warn";
+    speak(VOICE_PROMPTS.gps_fail);
+  }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 });
+};
+let _gpsSaid = false;
+function speakOnce(t) { if (!_gpsSaid) { speak(t); _gpsSaid = true; } }
+
+/* ---------- HATARI (data halisi kutoka geo.json — R inaijaza kwenye hash) ---------- */
+/* R: app.R inaunga hazards za web-r/data/geo.json kwenye #hz=... (JSON = chanzo) */
+(function () {
+  try {
+    const m = location.hash.match(/hz=([^&]+)/);
+    if (m) window.MT_GEO_3D = { hazards: JSON.parse(decodeURIComponent(m[1])) };
+  } catch (e) { /* data ya hash isiyofaa — tuma tupu */ }
+})();
+let hazardsOn = false;
+document.getElementById("btnHazards").onclick = () => {
+  hazardsOn = !hazardsOn;
+  const list = (window.MT_GEO_3D && window.MT_GEO_3D.hazards) || [];
+  if (!hazardsOn) {
+    if (map.getLayer("hz")) map.removeLayer("hz");
+    if (map.getSource("hz")) map.removeSource("hz");
+    document.getElementById("hzBadge").textContent = "Hatari: ZIMEFICHWA";
+    document.getElementById("hzBadge").className = "badge";
+    setInstruction("Hatari zimefichwa.");
+    return;
+  }
+  if (!list.length) { setInstruction("Hakuna hatari kwenye data (geo.json)."); hazardsOn = false; return; }
+  const feats = list.map((h, i) => ({
+    type: "Feature",
+    geometry: { type: "Point", coordinates: [h.lng, h.lat] },
+    properties: {
+      name: h.name, type: h.type, place: h.place, note: h.note_sw || "",
+      color: h.severity === "high" ? "#ff1744" : h.severity === "medium" ? "#ff9100" : "#ffc107",
+      ico: h.type === "mafuriko" ? "🌊" : h.type === "umeme" ? "⚡" : h.type === "uhalifu" ? "🚨" : "⚠"
+    },
+    id: i
+  }));
+  if (!map.getSource("hz")) {
+    map.addSource("hz", { type: "geojson", data: { type: "FeatureCollection", features: feats } });
+    map.addLayer({ id: "hz", type: "circle", source: "hz",
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 8, 14, 20],
+        "circle-color": ["get", "color"], "circle-opacity": 0.55,
+        "circle-stroke-width": 2, "circle-stroke-color": ["get", "color"]
+      } });
+    map.on("click", "hz", (e) => {
+      const p = e.features[0].properties;
+      const html = "<b style='color:" + p.color + "'>" + p.ico + " " + p.name + "</b>" +
+        "<br/>Aina: " + p.type + "<br/>Mahali: " + p.place + "<br/><i>" + p.note + "</i>";
+      new maplibregl.Popup({ maxWidth: "280px" }).setLngLat(e.lngLat).setHTML(html).addTo(map);
+      speak("Tahadhari: " + p.name);
+    });
+    map.on("mouseenter", "hz", () => { map.getCanvas().style.cursor = "pointer"; });
+    map.on("mouseleave", "hz", () => { map.getCanvas().style.cursor = ""; });
+  } else {
+    map.getSource("hz").setData({ type: "FeatureCollection", features: feats });
+  }
+  document.getElementById("hzBadge").textContent = "Hatari: " + list.length;
+  document.getElementById("hzBadge").className = "badge warn";
+  setInstruction("Hatari " + list.length + " zimeonyeshwa. Bofya alama kusikia onyo.");
+  speak(VOICE_PROMPTS.hazard);
+};
+
+/* ---------- HALI YA HEWA (Open-Meteo, bure bila key) ---------- */
+document.getElementById("btnWeather").onclick = () => loadWeather(true);
+async function loadWeather(announce) {
+  try {
+    const c = map.getCenter();
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=" + c.lat.toFixed(3) + "&longitude=" + c.lng.toFixed(3) +
+      "&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,precipitation&timezone=Africa%2FDar_es_Salaam";
+    const res = await fetch(url);
+    const data = await res.json();
+    const cur = data.current || {};
+    const cond = weatherCodeSw(cur.weather_code);
+    const box = document.getElementById("weatherBox");
+    box.style.display = "block";
+    box.innerHTML = "<b>Hali ya hewa (eneo la mtazamo):</b> " + cond + " · " + cur.temperature_2m + "°C · Upepo " +
+      cur.wind_speed_10m + " km/h · Mvua " + (cur.precipitation || 0) + " mm";
+    const badge = document.getElementById("weatherBadge");
+    badge.textContent = "Hewa: " + cur.temperature_2m + "°C · " + cond;
+    badge.className = "badge info";
+    if ((cur.weather_code || 0) >= 65 || (cur.precipitation || 0) > 5) {
+      badge.className = "badge danger";
+      if (announce) speak(VOICE_PROMPTS.weather_alert + " " + cond + ". Kuwa makini.");
+    } else if (announce) {
+      speak("Hali ya hewa: " + cond + ", digrii " + Math.round(cur.temperature_2m));
+    }
+  } catch (e) {
+    document.getElementById("weatherBadge").textContent = "Hewa: haipatikani";
+  }
+}
+function weatherCodeSw(code) {
+  if (code === 0) return "Anga safi"; if (code <= 3) return "Mawingu kidogo"; if (code <= 48) return "Ukungu";
+  if (code <= 57) return "Manyunyu"; if (code <= 67) return "Mvua"; if (code <= 77) return "Theluji";
+  if (code <= 82) return "Mvua kubwa"; if (code <= 99) return "Radi"; return "Hali ya hewa";
+}
+
+/* ---------- FPS METER (uthibitisho wa "RAM/resource ndogo") ---------- */
+let frames = 0, lastT = performance.now();
+function tickFps(now) {
+  frames++;
+  if (now - lastT >= 1000) {
+    document.getElementById("fpsBadge").textContent = "fps: " + frames + " (GPU)";
+    frames = 0; lastT = now;
+  }
+  requestAnimationFrame(tickFps);
+}
+requestAnimationFrame(tickFps);
+
+/* Voice list lazy-load (Chrome) */
+if (window.speechSynthesis) speechSynthesis.getVoices();
+</script>
+</body>
+</html>

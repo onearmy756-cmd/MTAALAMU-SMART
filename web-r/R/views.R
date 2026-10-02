@@ -22,7 +22,7 @@ if (!exists(".MTAALAMU_VIEWS_LOADED", inherits = TRUE)) {
 
 # Override tabs_el — ongeza AGENTIC VISION + FUNDI DEPLOY + NAVIGATION
 tabs_el <- function(lang, n_formula, n_diag, current) {
-  ids <- c("live", "agentic", "formula", "diag", "viz", "map", "nav", "fundi", "mobile", "iot")
+  ids <- c("live", "agentic", "formula", "diag", "viz", "map", "map3d", "nav", "fundi", "mobile", "iot")
   labels <- c(
     tr("tabs.live", lang),
     if (!is.null(STR[["tabs.agentic"]])) tr("tabs.agentic", lang) else "AGENTIC VISION",
@@ -30,6 +30,7 @@ tabs_el <- function(lang, n_formula, n_diag, current) {
     paste0(tr("tabs.diag", lang), " (", n_diag, ")"),
     paste0(tr("tabs.viz", lang), " (6)"),
     tr("tabs.map", lang),
+    "\U0001f30d 3D",
     "\U0001f9ed NAVIGATION",
     "FUNDI DEPLOY",
     "\U0001fa7a FUNDI MOBILE",
