@@ -5,6 +5,7 @@
 fastapi>=0.110,<1.0
 uvicorn>=0.29,<1.0
 requests>=2.31,<3.0
+python-multipart>=0.0.9   # inahitajika na /stt UploadFile (FastAPI form data)
 
 # LangChain (open source, MIT) — tools/chains/memory za HERMES workers
 langchain>=0.2,<0.4
