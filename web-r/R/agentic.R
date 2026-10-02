@@ -395,6 +395,13 @@ view_agentic <- function(lang, data, session_state = NULL) {
     panel_el("Pipeline", "PIITVD",
       agentic_pipeline_el(pipe_steps, session_state$pipe_idx %||% 0, lang)),
 
+    panel_el("\U0001f30d Ramani 3D — HERMES mission live", "picha halisi + vifaa vya IoT",
+      view_map3d(lang,
+                 hazards_json = if (exists("GEO_3D_HZ", envir = globalenv())) get("GEO_3D_HZ", envir = globalenv()) else "[]",
+                 iot_json     = if (exists("IOT_3D_DEV", envir = globalenv())) get("IOT_3D_DEV", envir = globalenv()) else "[]",
+                 pipe_json    = if (exists("PIPE_3D_STEPS", envir = globalenv())) get("PIPE_3D_STEPS", envir = globalenv()) else "{}",
+                 height_vh    = "56vh")),
+
     tags$div(class = "grid",
       panel_el("Ramani", "OS components",
         HTML(agentic_device_map_svg(components))),

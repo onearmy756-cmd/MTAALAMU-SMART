@@ -194,8 +194,11 @@ view_map <- function(lang, geo, payload) {
 # RAMANI 3D — MapLibre GL (GPU/WebGL, RAM ndogo) + picha halisi
 # Data: web-r/data/geo.json (hazards) → location.hash (JSON = chanzo)
 # ============================================================
-view_map3d <- function(lang, hazards_json = "[]") {
-  hz <- paste0("#hz=", utils::URLencode(hazards_json, reserved = TRUE))
+view_map3d <- function(lang, hazards_json = "[]", iot_json = "[]", pipe_json = "{}",
+                       height_vh = "72vh") {
+  hz <- paste0("#hz=", utils::URLencode(hazards_json, reserved = TRUE),
+               "&iot=", utils::URLencode(iot_json, reserved = TRUE),
+               "&pipe=", utils::URLencode(pipe_json, reserved = TRUE))
   tags$div(class = "panel",
     tags$div(class = "panel-head",
       tags$h2("\U0001f30d RAMANI 3D — PICHA HALISI (GPU)"),
@@ -207,6 +210,6 @@ view_map3d <- function(lang, hazards_json = "[]") {
         tags$span(class = "meta",
           "Picha halisi za satellite + milima ya kweli (3D). Inachora kwa GPU — CPU/RAM kidogo sana.")),
       tags$iframe(src = paste0("ramani-3d.html", hz),
-        style = paste0("width:100%;height:72vh;border:1px solid #00e5ff33;",
+        style = paste0("width:100%;height:", height_vh, ";border:1px solid #00e5ff33;",
           "border-radius:12px;background:#04070d"), loading = "lazy")))
 }
