@@ -35,3 +35,6 @@ __pycache__/
 *.pyc
 
 # --- Freebuff local state ---
+
+# Freebuff sponsored runtime (transient)
+.freebuff/sponsored-runtime/
