@@ -220,6 +220,7 @@ data/
 | **P6** | `web-html/`: single-file apps 11 | ⏳ |
 | **P7** | Verification: tests, build, browser, audit dhidi ya requirements (hakuna kitu kimeachwa) | ⏳ |
 | **L0–L7** | Location & Navigation module (ona sehemu 1B) | 🔄 L0 |
+| **I0** | IoT + HERMES: JSON registry (verticals 4) + focus set 8 (home-assistant, openmrs, frigate, hermes-agent + langchain, crawl4ai, whisper, ollama); `scripts/clone_iot_repos.sh` (focus default, `--agents`, `--all`, `--only`, `--list`); tab **IOT REGISTRY** (web-r/R/iot.R) | ✅ |
 
 ## 3. KANUNI ZISIZOKUBALIWA (kutoka documents)
 1. **KANUNI 2/5**: content yote (formulas, bei, rules, copy, layout) kutoka JSON — code haitoi business content.

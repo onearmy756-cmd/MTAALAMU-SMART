@@ -8,6 +8,7 @@
     "upstream": {
       "repo": "https://github.com/NousResearch/hermes-agent",
       "license": "MIT",
+      "focus": true,
       "note_sw": "Nakala halisi inapatikana kwa scripts/clone_iot_repos.sh (upstream/hermes-agent). Tunapitia kanuni zake: kujifunza kutoka kazi, memory ya kudumu, skills loop.",
       "note_en": "Real copy via scripts/clone_iot_repos.sh (upstream/hermes-agent). We adopt its principles: learning from work, persistent memory, skills loop."
     },

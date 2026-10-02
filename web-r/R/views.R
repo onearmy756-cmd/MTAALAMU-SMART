@@ -22,7 +22,7 @@ if (!exists(".MTAALAMU_VIEWS_LOADED", inherits = TRUE)) {
 
 # Override tabs_el — ongeza AGENTIC VISION + FUNDI DEPLOY + NAVIGATION
 tabs_el <- function(lang, n_formula, n_diag, current) {
-  ids <- c("live", "agentic", "formula", "diag", "viz", "map", "nav", "fundi", "mobile")
+  ids <- c("live", "agentic", "formula", "diag", "viz", "map", "nav", "fundi", "mobile", "iot")
   labels <- c(
     tr("tabs.live", lang),
     if (!is.null(STR[["tabs.agentic"]])) tr("tabs.agentic", lang) else "AGENTIC VISION",
@@ -32,7 +32,8 @@ tabs_el <- function(lang, n_formula, n_diag, current) {
     tr("tabs.map", lang),
     "\U0001f9ed NAVIGATION",
     "FUNDI DEPLOY",
-    "\U0001fa7a FUNDI MOBILE")
+    "\U0001fa7a FUNDI MOBILE",
+    "\U0001f4e1 IOT REGISTRY")
   tab_click <- function(id) {
     sprintf(paste0("window.mtTab ? mtTab('%s') : ",
                    "Shiny.setInputValue('tab','%s',{priority:'event'})"), id, id)

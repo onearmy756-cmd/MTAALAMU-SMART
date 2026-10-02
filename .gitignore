@@ -25,5 +25,8 @@ desktop.ini
 .vscode/
 .idea/
 
+# --- Upstream clones (git clone --depth 1) ---
+upstream/
+
 # --- Freebuff local state ---
 .freebuff/

@@ -13,7 +13,8 @@
       "contributes": ["devices", "automations"],
       "integration": {"type": "mqtt", "protocol": "MQTT (Home Assistant Discovery)", "note_sw": "HA inazungumza MQTT ya discovery — inaunganishwa moja kwa moja na gateway."},
       "upstream_dir": "upstream/home-assistant",
-      "priority": 1
+      "priority": 1,
+      "focus": true
     },
     {
       "id": "esphome",

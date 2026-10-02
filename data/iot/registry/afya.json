@@ -13,7 +13,8 @@
       "contributes": ["patients", "encounters", "orders"],
       "integration": {"type": "api", "protocol": "REST", "note_sw": "REST module ya OpenMRS inatoa API ya wagonjwa na encounters."},
       "upstream_dir": "upstream/openmrs",
-      "priority": 1
+      "priority": 1,
+      "focus": true
     },
     {
       "id": "openelis",

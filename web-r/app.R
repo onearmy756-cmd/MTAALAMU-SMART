@@ -37,6 +37,7 @@ source(p_app("R", "sysprobe.R"), local = FALSE)
 source(p_app("R", "solve.R"), local = FALSE)
 source(p_app("R", "fundi.R"), local = FALSE)
 source(p_app("R", "mobile.R"), local = FALSE)
+source(p_app("R", "iot.R"), local = FALSE)
 
 library(jsonlite)
 
@@ -132,6 +133,7 @@ ui <- fluidPage(
     ,
     conditionalPanel(condition = "input.tab == 'fundi'", uiOutput("fundi")),
     conditionalPanel(condition = "input.tab == 'mobile'", uiOutput("mobile")),
+    conditionalPanel(condition = "input.tab == 'iot'", uiOutput("iot")),
     uiOutput("statusbar")
   )
 )
@@ -562,9 +564,10 @@ server <- function(input, output, session) {
   fundi_server(input, output, session)
   output$mobile <- renderUI(mobile_tab_el(lang()))
   mobile_server(input, output, session)
+  output$iot <- renderUI(view_iot(lang()))
   output$statusbar <- renderUI(status_bar_el(lang(), stats(), uptime()))
 
-  for (nm in c("live", "agentic", "formula", "diagnosis", "viz", "statusbar", "tabs", "fundi", "mobile", "nav")) {
+  for (nm in c("live", "agentic", "formula", "diagnosis", "viz", "statusbar", "tabs", "fundi", "mobile", "nav", "iot")) {
     outputOptions(output, nm, suspendWhenHidden = FALSE)
   }
 }

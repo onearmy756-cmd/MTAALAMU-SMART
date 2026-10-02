@@ -13,7 +13,8 @@
       "contributes": ["cctv", "detection_events"],
       "integration": {"type": "mqtt", "protocol": "MQTT (frigate/events)", "note_sw": "Frigate inatuma events kwa MQTT moja kwa moja."},
       "upstream_dir": "upstream/frigate",
-      "priority": 1
+      "priority": 1,
+      "focus": true
     },
     {
       "id": "motioneye",

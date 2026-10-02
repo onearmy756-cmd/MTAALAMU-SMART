@@ -715,3 +715,18 @@ body {
   .hud-title { font-size: 24px; }
   .device-map { grid-template-columns: 1fr; }
 }
+
+/* ---------------- IOT REGISTRY (JSON data-driven) ---------------- */
+.iot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-top: 6px; }
+.iot-card {
+  border: 1px solid var(--panel-line); background: var(--panel);
+  clip-path: var(--cut); padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.iot-card b { color: #eafcff; font-family: var(--title); letter-spacing: 1px; }
+.iot-card .meta { font-size: 11px; color: var(--dim); letter-spacing: 0.5px; }
+.iot-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.badge.yellow { background: rgba(255, 179, 0, 0.16); color: var(--orange); border: 1px solid rgba(255, 179, 0, 0.55); }
+.badge.blue   { background: rgba(41, 121, 255, 0.16); color: var(--blue); border: 1px solid rgba(41, 121, 255, 0.55); }
+.badge.dim    { background: rgba(94, 138, 163, 0.14); color: var(--dim); border: 1px solid rgba(94, 138, 163, 0.4); }
+.iot-h3 { font-family: var(--title); color: var(--cyan); font-size: 15px; letter-spacing: 2px; margin: 14px 0 4px; }

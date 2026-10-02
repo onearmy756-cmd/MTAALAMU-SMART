@@ -81,7 +81,30 @@ engine-rust/    Rust CLI: calc, diagnose, agentic, deep, sysprobe, remediate, wi
 fundi-mobile/   🩺 FUNDI MOBILE — daktari wa simu (agentic, HITL consent, Android/iPhone/button)
 fundi-deploy/   💻 Fundi Deploy — LAN imaging (P2+P3 kamili)
 data/           JSON (formulas, agents, vision, geo, mobile/…)
+upstream/       clones za IoT (gitignored, undwa na scripts/clone_iot_repos.sh)
 ```
+
+## IOT + HERMES (seti ya FOCUS)
+
+JSON ndio chanzo: `data/iot/registry/*.json`, `data/iot/hermes.json`, `data/iot/agents_oss.json`.
+Miradi yenye `"focus": true` ndiyo seti iliyochaguliwa (8):
+
+| Kundi | Mradi |
+|---|---|
+| Smart Home | `home-assistant` |
+| Hospitali | `openmrs` |
+| Usalama | `frigate` |
+| Msimamizi | `hermes-agent` |
+| Workers | `langchain`, `crawl4ai`, `whisper`, `ollama` |
+
+```bash
+bash scripts/clone_iot_repos.sh                 # FOCUS registry 4 (home-assistant, openmrs, frigate + hermes)
+bash scripts/clone_iot_repos.sh --agents        # FOCUS 4 + agents 4 za focus (8)
+bash scripts/clone_iot_repos.sh --all --agents  # zote (registry + agents)
+bash scripts/clone_iot_repos.sh --only afya     # vertical moja
+```
+
+UI: tab **📡 IOT REGISTRY** (web-r) inaonyesha FOCUS/CLONED kwa kila mradi.
 
 ## Tabs
 
