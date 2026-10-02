@@ -20,6 +20,46 @@ bash scripts/healthcheck.sh
 ./engine-rust/target/release/mtaalamu remediate --action report_top_cpu
 ```
 
+## SKILLS ENGINE (skills zote + AI halisi)
+
+Skills **146** (trades 21 + AI) ziko `data/skills/skills.json` — Rust inasoma JSON pekee.
+
+```bash
+B=./engine-rust/target/release/mtaalamu
+
+# Tafuta + hesabu + panga
+cd engine-rust && cargo build --release && cd ..
+$B skills --q betri
+$B skill --id simu.kubadilisha_betri_ya_simu --inputs '{"battery_mah": 5000}'
+$B skills-plan --msg "skrini ya simu imevunjika"
+
+# TEKELEZA (halisi)
+$B skills-run --skill ai.duckduckgo --msg "voltage drop formula"   # DDG search
+$B skills-run --skill ai.pdf_search --msg "breaker sizing"          # PDF nyingi parallel (data/pdfs/)
+$B skills-run --skill ai.ollama_llm --msg "Eleza: betri inakufa?"   # LLM ya bure (gpt-oss:20b)
+$B skills-run --skill ai.huggingface --msg "tinyllama"              # HF hub search
+$B skills-run --skill ai.pytorch --approve                          # PyTorch halisi (CPU)
+$B skills-run --skill ai.tensorflow --approve                       # TensorFlow halisi
+
+# Amri za moja kwa moja
+$B search-web --q "umeme Tanzania" --both            # DDG + SearXNG merged
+$B search-pdf --q "breaker" --dir data/pdfs
+$B pdf-text --file data/pdfs/cable_sizing.pdf
+$B ai-ask --msg "habari" --model gpt-oss:20b
+$B hf-search --q "swahili"
+```
+
+**Modeli za bure** (`data/ai/models.json`): Ollama cloud (`OLLAMA_API_KEY`),
+Ollama local (`ollama serve`), Hugging Face hub+inference. Default: `gpt-oss:20b`.
+
+**SearXNG self-hosted**: `docker compose -f fundi-deploy/server/searxng/docker-compose.yml up -d`
+kisha `export SEARXNG_URL=http://127.0.0.1:8888` (public instances zimezuiwa na bot-check).
+
+**PyTorch/TensorFlow**: `pip3 install torch --index-url https://download.pytorch.org/whl/cpu`
+na `pip3 install tensorflow-cpu numpy` — bridges zipo `scripts/ai_pytorch.py`, `scripts/ai_tensorflow.py`.
+
+**HITL**: skills za `guide` (hardware) zinakatalia `--approve` isipo; AI/web actions zinapita kwa usalama.
+
 UI:
 
 ```bash

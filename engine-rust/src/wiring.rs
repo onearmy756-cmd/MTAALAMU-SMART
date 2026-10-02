@@ -500,7 +500,7 @@ pub fn system_wiring_top(top_procs: usize) -> SystemWiring {
         });
     }
 
-    let mut capabilities = d.capabilities.iter().map(|s| s.to_string()).collect();
+    let mut capabilities: Vec<String> = d.capabilities.iter().map(|s| s.to_string()).collect();
     if has_pci {
         capabilities.push("pci.list".into());
     }

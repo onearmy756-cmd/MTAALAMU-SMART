@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "note": "Modeli za bure (free) za MTAALAMU SMART. Ollama cloud (OLLAMA_API_KEY) + Ollama local + Hugging Face (free/open). Rust (skills.rs) inachagua modeli kutoka hapa pekee — hakuna hard-code (KANUNI 2/5).",
+  "providers": {
+    "ollama_cloud": {
+      "base_url": "https://ollama.com",
+      "chat_path": "/api/chat",
+      "tags_path": "/api/tags",
+      "auth": "Bearer $OLLAMA_API_KEY",
+      "free": true,
+      "note": "Cloud ya Ollama — modeli zote hapa chini ni bure na key ya MTAALAMU"
+    },
+    "ollama_local": {
+      "base_url": "http://127.0.0.1:11434",
+      "chat_path": "/api/chat",
+      "tags_path": "/api/tags",
+      "auth": "none",
+      "free": true,
+      "note": "Ollama local (offline-first) — tinyllama inaingizwa kwa 'ollama pull tinyllama'"
+    },
+    "huggingface": {
+      "hub_api": "https://huggingface.co/api/models",
+      "inference_url": "https://router.huggingface.co/v1/chat/completions",
+      "feature_extraction_url": "https://router.huggingface.co/hf-inference/models/{model}/pipeline/feature-extraction",
+      "auth": "Bearer $HF_TOKEN (hiari — modeli nyingi ni za bure bila token)",
+      "free": true
+    }
+  },
+  "models": [
+    {"id": "tinyllama", "provider": "ollama_cloud|ollama_local", "params": "1.1B", "task": "chat|translate|summarize", "sw": "nzuri", "free": true, "priority": 1, "note": "TinyLlama 1.1B Chat — ndogo, ya haraka, offline local (ollama pull tinyllama). Cloud ya key hii HAINA tinyllama — tumia gpt-oss:20b"},
+    {"id": "gpt-oss:20b", "provider": "ollama_cloud|ollama_local", "params": "20B", "task": "chat|reason|summarize|translate", "sw": "nzuri", "free": true, "priority": 2, "note": "OpenAI open-weight — reasoning nzuri"},
+    {"id": "gpt-oss:120b", "provider": "ollama_cloud", "params": "120B", "task": "chat|reason|complex", "sw": "nzuri", "free": true, "priority": 3},
+    {"id": "gemma4:31b", "provider": "ollama_cloud", "params": "31B", "task": "chat|translate", "sw": "nzuri", "free": true, "priority": 4},
+    {"id": "nemotron-3-nano:30b", "provider": "ollama_cloud", "params": "30B", "task": "chat", "sw": "wastani", "free": true, "priority": 5},
+    {"id": "deepseek-v4.1-flash", "provider": "ollama_cloud", "params": "flash", "task": "chat|code", "sw": "wastani", "free": true, "priority": 6},
+    {"id": "minimax-m2.7", "provider": "ollama_cloud", "params": "-", "task": "chat|long", "sw": "wastani", "free": true, "priority": 7},
+    {"id": "kimi-k2.7-code", "provider": "ollama_cloud", "params": "-", "task": "code", "sw": "dhaifu", "free": true, "priority": 8},
+    {"id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0", "provider": "huggingface", "task": "chat", "sw": "wastani", "free": true, "priority": 10, "downloads": 1388821},
+    {"id": "Qwen/Qwen2.5-0.5B-Instruct", "provider": "huggingface", "task": "chat|translate", "sw": "nzuri", "free": true, "priority": 11},
+    {"id": "Qwen/Qwen2.5-1.5B-Instruct", "provider": "huggingface", "task": "chat|translate", "sw": "nzuri", "free": true, "priority": 12},
+    {"id": "HuggingFaceTB/SmolLM2-1.7B-Instruct", "provider": "huggingface", "task": "chat", "sw": "wastani", "free": true, "priority": 13},
+    {"id": "google/flan-t5-small", "provider": "huggingface", "task": "summarize|qa", "sw": "dhaifu", "free": true, "priority": 14},
+    {"id": "sentence-transformers/LaBSE", "provider": "huggingface", "task": "embed", "sw": "nzuri (lugha 109, Kiswahili kimojawapo)", "free": true, "priority": 15},
+    {"id": "distilbert-base-uncased-distilled-squad", "provider": "huggingface", "task": "pdf_qa|extractive_qa", "sw": "en tu", "free": true, "priority": 16},
+    {"id": "openai/whisper-small", "provider": "huggingface", "task": "speech_to_text", "sw": "sauti", "free": true, "priority": 17}
+  ],
+  "routing": {
+    "default_chat": "gpt-oss:20b",
+    "fallback_chain": ["gpt-oss:20b", "gemma4:31b", "Qwen/Qwen2.5-0.5B-Instruct"],
+    "kiswahili": ["gpt-oss:20b", "gemma4:31b", "Qwen/Qwen2.5-1.5B-Instruct"],
+    "summarize_pdf": ["gpt-oss:20b", "gemma4:31b"],
+    "embed_sw": ["sentence-transformers/LaBSE"],
+    "policy": "LLM haihesabu kamwe (R-1) — inaongea/translate/summarize tu. Hesabu = Rust expr engine."
+  }
+}
