@@ -85,6 +85,8 @@
       <button type="button" id="btnGps">📍 GPS</button>
       <button type="button" id="btnWeather" class="off">☁️ Hewa</button>
       <button type="button" id="btnHazards">⚠️ Hatari</button>
+      <button type="button" id="btnIoT">📡 Vifaa IoT</button>
+      <button type="button" id="btnMission">🤖 HERMES Mission</button>
       <button type="button" id="btnVoice" title="Washa/zima sauti ya Kiswahili">🔈 Sauti: ON</button>
       <select id="baseSel" title="Chagua chanzo cha picha">
         <option value="esri">Esri World Imagery</option>
@@ -109,6 +111,8 @@
       <span class="badge info" id="terrainStatus">Milima 3D: ON</span>
       <span class="badge info" id="weatherBadge">Hewa: —</span>
       <span class="badge" id="hzBadge">Hatari: ZIMEFICHWA</span>
+      <span class="badge" id="iotBadge">IoT: ZIMEFICHWA</span>
+      <span class="badge info" id="missionBadge">HERMES: TAYARI</span>
     </div>
     <div id="weatherBox" class="weather-box" style="display:none"></div>
   </div>
@@ -336,6 +340,10 @@ function speakOnce(t) { if (!_gpsSaid) { speak(t); _gpsSaid = true; } }
   try {
     const m = location.hash.match(/hz=([^&]+)/);
     if (m) window.MT_GEO_3D = { hazards: JSON.parse(decodeURIComponent(m[1])) };
+    const m2 = location.hash.match(/iot=([^&]+)/);
+    if (m2) window.MT_IOT_3D = JSON.parse(decodeURIComponent(m2));
+    const m3 = location.hash.match(/pipe=([^&]+)/);
+    if (m3) window.MT_PIPE_3D = JSON.parse(decodeURIComponent(m3));
   } catch (e) { /* data ya hash isiyofaa — tuma tupu */ }
 })();
 let hazardsOn = false;
@@ -386,6 +394,111 @@ document.getElementById("btnHazards").onclick = () => {
   setInstruction("Hatari " + list.length + " zimeonyeshwa. Bofya alama kusikia onyo.");
   speak(VOICE_PROMPTS.hazard);
 };
+
+/* ---------- VIFAA VYA IoT (data/iot/devices.json — verticals 4) ---------- */
+/* Maeneo ya vertex (site za mradi): afya=hospitali, usalama=nyumba, nyumbani=bodi, kilimo=shamba */
+const IOT_SITES = {
+  afya:    { name: "Hospitali (mfano)",  lng: 39.26, lat: -6.82, ico: "🏥" },
+  usalama: { name: "Nyumba salama",      lng: 39.24, lat: -6.79, ico: "🛡️" },
+  nyumbani:{ name: "Bodi ya nyumbani",   lng: 39.22, lat: -6.76, ico: "🏠" },
+  kilimo:  { name: "Shamba (kilimo)",    lng: 36.68, lat: -3.39, ico: "🌱" }
+};
+let iotOn = false;
+document.getElementById("btnIoT").onclick = () => {
+  iotOn = !iotOn;
+  document.getElementById("btnIoT").classList.toggle("on", iotOn);
+  const devices = (window.MT_IOT_3D && window.MT_IOT_3D.devices) || [];
+  if (!iotOn) {
+    if (map.getLayer("iot-dot")) map.removeLayer("iot-dot");
+    if (map.getLayer("iot-pulse")) map.removeLayer("iot-pulse");
+    if (map.getSource("iot")) map.removeSource("iot");
+    document.getElementById("iotBadge").textContent = "IoT: ZIMEFICHWA";
+    document.getElementById("iotBadge").className = "badge";
+    setInstruction("Vifaa vya IoT vimefichwa.");
+    return;
+  }
+  const feats = devices.map((d, i) => {
+    const site = IOT_SITES[d.vertical] || IOT_SITES.nyumbani;
+    const j = (i % 5) - 2;
+    return {
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [site.lng + j * 0.004, site.lat + (i % 3) * 0.0025] },
+      properties: { id: d.id, name: (d.name && d.name.sw) || d.id, icon: d.icon || "📡",
+                    vert: d.vertical, demo: !!d.demo,
+                    color: d.vertical === "afya" ? "#00e676" : d.vertical === "usalama" ? "#ff1744" :
+                           d.vertical === "kilimo" ? "#8bc34a" : "#00e5ff" },
+      id: i
+    };
+  });
+  if (!map.getSource("iot")) {
+    map.addSource("iot", { type: "geojson", data: { type: "FeatureCollection", features: feats } });
+    map.addLayer({ id: "iot-pulse", type: "circle", source: "iot",
+      paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 10, 15, 34],
+               "circle-color": ["get", "color"], "circle-opacity": 0.16 } });
+    map.addLayer({ id: "iot-dot", type: "circle", source: "iot",
+      paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 4, 15, 9],
+               "circle-color": ["get", "color"], "circle-opacity": 0.95,
+               "circle-stroke-width": 2, "circle-stroke-color": "#ffffff" } });
+    map.on("click", "iot-dot", (e) => {
+      const p = e.features[0].properties;
+      new maplibregl.Popup({ maxWidth: "260px" }).setLngLat(e.lngLat).setHTML(
+        "<b>" + p.icon + " " + p.name + "</b><br/>" +
+        "Vertical: <b style='color:" + p.color + "'>" + p.vert + "</b><br/>" +
+        "Device: " + p.id +
+        (p.demo ? "<br/><i style='color:#ffb300'>DEMO — haijaunganishwa na kifaa halisi</i>" : "") +
+        "<br/><button onclick=\"window.dispatchEvent(new CustomEvent('mt-hermes-run',{detail:'" + p.id + "'}))\" style=\"background:#00e5ff;border:0;padding:4px 10px;border-radius:4px;cursor:pointer;font-weight:700;margin-top:4px\">🤖 HERMES anuchunguze</button>"
+      ).addTo(map);
+    });
+    map.on("mouseenter", "iot-dot", () => { map.getCanvas().style.cursor = "pointer"; });
+    map.on("mouseleave", "iot-dot", () => { map.getCanvas().style.cursor = ""; });
+  } else {
+    map.getSource("iot").setData({ type: "FeatureCollection", features: feats });
+  }
+  document.getElementById("iotBadge").textContent = "IoT: " + feats.length + " vifaa";
+  document.getElementById("iotBadge").className = "badge ok";
+  setInstruction("Vifaa " + feats.length + " vya IoT (verticals 4) vimeonyeshwa. Bofya kifaa → HERMES anuchunguze.");
+  speak("Vifaa vya IoT vimeonyeshwa kwenye ramani ya tatu.");
+};
+
+/* ---------- HERMES MISSION (iot_incident pipeline kwenye 3D) ---------- */
+/* Events: 'mt-hermes-run' kutoka popups; panel inaonyesha hatua PIITVD + heat za IoT */
+let missionStep = -1, missionTimer = null;
+const MISSION_LABELS = (window.MT_PIPE_3D && window.MT_PIPE_3D.steps) ||
+  ["ingest + classify", "bayes + knowledge", "mpango + HITL", "omba ruhusa", "tekeleza", "pima upya", "scribe", "learner"];
+window.addEventListener("mt-hermes-run", (ev) => {
+  const deviceId = (ev.detail || "").toString();
+  runMission(deviceId);
+});
+document.getElementById("btnMission").onclick = () => runMission("");
+function runMission(deviceId) {
+  if (missionTimer) clearInterval(missionTimer);
+  if (!iotOn) document.getElementById("btnIoT").click();
+  missionStep = -1;
+  document.getElementById("missionBadge").textContent = "HERMES: INAENDELEA...";
+  document.getElementById("missionBadge").className = "badge warn";
+  setInstruction("🤖 HERMES mission (iot_incident" + (deviceId ? " · " + deviceId : "") + ") imeanza...");
+  speak("Hermes ameanza kazi. Anachunguza.");
+  const total = MISSION_LABELS.length;
+  missionTimer = setInterval(() => {
+    missionStep++;
+    if (missionStep >= total) {
+      clearInterval(missionTimer); missionTimer = null;
+      document.getElementById("missionBadge").textContent = "HERMES: IMEKAMILIKA ✓";
+      document.getElementById("missionBadge").className = "badge ok";
+      setInstruction("🤖 HERMES mission imekamilika. Ripoti iko tayari (scribe + learner).");
+      speak("Kazi imekamilika.");
+      return;
+    }
+    const lbl = MISSION_LABELS[missionStep];
+    const badge = document.getElementById("missionBadge");
+    badge.textContent = "HERMES: " + (missionStep + 1) + "/" + total + " — " + lbl;
+    badge.className = "badge warn";
+    setInstruction("🤖 Hatua " + (missionStep + 1) + "/" + total + ": " + lbl + (deviceId ? " (" + deviceId + ")" : ""));
+    if (missionStep === 2 || missionStep === 3) {
+      speak("Nahitaji ruhusa yako. Hii ni HITL.");
+    }
+  }, 1600);
+}
 
 /* ---------- HALI YA HEWA (Open-Meteo, bure bila key) ---------- */
 document.getElementById("btnWeather").onclick = () => loadWeather(true);

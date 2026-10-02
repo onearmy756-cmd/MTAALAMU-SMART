@@ -76,6 +76,19 @@ GEO_3D_HZ <- tryCatch({
   hz <- GEO$hazards %||% list()
   jsonlite::toJSON(hz, auto_unbox = TRUE)
 }, error = function(e) "[]")
+# Vifaa vya IoT (data/iot/devices.json) + HERMES pipeline (data/iot/hermes.json) kwa RAMANI 3D
+IOT_3D_DEV <- tryCatch({
+  d <- fromJSON(p_root("data", "iot", "devices.json"), simplifyVector = FALSE)
+  jsonlite::toJSON(d$devices %||% list(), auto_unbox = FALSE)
+}, error = function(e) "[]")
+PIPE_3D_STEPS <- tryCatch({
+  h <- fromJSON(p_root("data", "iot", "hermes.json"), simplifyVector = FALSE)
+  steps <- (h$hermes$pipelines %||% list())[[1]]$steps %||% list()
+  jsonlite::toJSON(list(
+    id = "iot_incident",
+    steps = vapply(steps, function(s) s$action %||% s$agent %||% "", character(1))
+  ), auto_unbox = TRUE)
+}, error = function(e) "{}")
 bound_src <- p_app("data", "tz_regions.geojson")
 bound_dst <- p_app("www", "tz_regions.geojson")
 if (file.exists(bound_src)) {
@@ -565,7 +578,7 @@ server <- function(input, output, session) {
 
   output$viz <- renderUI(view_viz(lang()))
   output$map <- renderUI(view_map(lang(), GEO, map_payload(lang(), GEO_TXT)))
-  output$map3d <- renderUI(view_map3d(lang(), GEO_3D_HZ))
+  output$map3d <- renderUI(view_map3d(lang(), GEO_3D_HZ, IOT_3D_DEV, PIPE_3D_STEPS))
   output$nav <- renderUI(NULL)
   output$fundi <- renderUI(fundi_tab_el(lang()))
   fundi_server(input, output, session)
