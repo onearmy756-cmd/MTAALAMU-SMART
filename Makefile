@@ -4,6 +4,11 @@
 
 .PHONY: build release test health deep sysprobe agentic run-ui mobile-build mobile-run mobile-release mobile-clean clean
 
+# Secrets come from Infisical (nothing on disk). App code is unchanged — it still
+# reads process env / Sys.getenv. Local dev one-time setup: infisical login && infisical init
+#   make run-ui            # wraps the existing start command in `infisical run`
+INFISICAL_ENV ?= dev
+
 ENGINE := engine-rust
 ENGINE_BIN := $(ENGINE)/target/release/mtaalamu
 MOBILE := fundi-mobile
@@ -38,7 +43,7 @@ agentic: build
 	$(ENGINE_BIN) agentic --msg "Production smoke: kompyuta inaenda polepole" --approve
 
 run-ui:
-	Rscript -e "shiny::runApp('web-r', port=3838, host='127.0.0.1')"
+	infisical run --env=$(INFISICAL_ENV) -- Rscript -e "shiny::runApp('web-r', port=3838, host='127.0.0.1')"
 
 # --- FUNDI MOBILE 🩺 ---
 mobile-build:
