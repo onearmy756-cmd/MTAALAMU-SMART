@@ -1,0 +1,17 @@
+# HERMES Workers — Python (LangChain + Whisper + Crawl4AI)
+# Sakina: pip install -r requirements.txt
+# (au: python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt)
+
+fastapi>=0.110,<1.0
+uvicorn>=0.29,<1.0
+requests>=2.31,<3.0
+
+# LangChain (open source, MIT) — tools/chains/memory za HERMES workers
+langchain>=0.2,<0.4
+langchain-community>=0.2,<0.4
+
+# Whisper (OpenAI, MIT) — STT ya Kiswahili (model ndogo: base/small kwa offline)
+faster-whisper>=1.0,<2.0
+
+# Crawl4AI (Apache-2.0) — crawler maarufu ya LLM-ready content
+crawl4ai>=0.4,<0.8

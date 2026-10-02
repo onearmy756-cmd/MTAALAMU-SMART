@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "vertical": "kilimo",
+  "updated": "2026-10-02",
+  "projects": [
+    {
+      "id": "farmos",
+      "name": "farmOS",
+      "repo": "https://github.com/farmOS/farmOS",
+      "license": "GPL-2.0",
+      "language": "PHP/Drupal",
+      "purpose": {"sw": "Usimamizi wa shamba — mashamba, mazao, kazi na sensors.", "en": "Farm management — fields, crops, tasks and sensors."},
+      "contributes": ["fields", "crops", "tasks"],
+      "integration": {"type": "api", "protocol": "REST/JSON:API", "note_sw": "farmOS API kwa logs na assets za shamba."},
+      "upstream_dir": "upstream/farmos",
+      "priority": 1
+    },
+    {
+      "id": "openag-vera",
+      "name": "OpenAg Food Computer",
+      "repo": "https://github.com/OpenAgriculture/Personal_Food_Computer",
+      "license": "GPL-3.0",
+      "language": "Python",
+      "purpose": {"sw": "Food computer — controlled environment kwa mazao (sensor + actuator).", "en": "Food computer — controlled environment for crops."},
+      "contributes": ["env_sensors", "env_actuators"],
+      "integration": {"type": "adapter", "protocol": "MQTT/Serial", "note_sw": "Adapter ya sensor/actuator zake kwenye devices.json."},
+      "upstream_dir": "upstream/openag",
+      "priority": 2
+    },
+    {
+      "id": "openirrigation",
+      "name": "Open Irrigation Controller",
+      "repo": "https://github.com/dgomes/irrigration_control",
+      "license": "GPL-3.0 (see repo LICENSE)",
+      "language": "Arduino/C++",
+      "purpose": {"sw": "Controller ya udhuwilishaji ya chini ya gharama.", "en": "Low-cost irrigation controller."},
+      "contributes": ["irrigation_valves"],
+      "integration": {"type": "adapter", "protocol": "MQTT/Modbus", "note_sw": "Valve states zinatumwa kwa MQTT — actuation kwa HITL."},
+      "upstream_dir": "upstream/openirrigation",
+      "priority": 3
+    },
+    {
+      "id": "smartfarmer",
+      "name": "Smart Farmer Mesh",
+      "repo": "https://github.com/kimundo/SmartFarmerMesh",
+      "license": "MIT (see repo LICENSE)",
+      "language": "C++",
+      "purpose": {"sw": "Mesh ya sensors za shamba (LoRa/ESP-NOW) — hali ya hewa na udongo.", "en": "Farm sensor mesh (LoRa/ESP-NOW) — weather and soil."},
+      "contributes": ["soil_sensors", "weather_nodes"],
+      "integration": {"type": "mqtt", "protocol": "MQTT bridge", "note_sw": "Mesh bridge inatuma kwenye root ya MTAALAMU."},
+      "upstream_dir": "upstream/smartfarmer",
+      "priority": 4
+    },
+    {
+      "id": "kiwix-farm",
+      "name": "Farm Knowledge Offline",
+      "repo": "https://github.com/kiwix/kiwix-tools",
+      "license": "GPL-3.0",
+      "language": "C++",
+      "purpose": {"sw": "Maarifa ya kilimo offline (ZIM) — mazao, magonjwa, soko.", "en": "Offline farm knowledge (ZIM) — crops, diseases, markets."},
+      "contributes": ["offline_knowledge"],
+      "integration": {"type": "reference", "protocol": "—", "note_sw": "Inajumuishwa kwenye knowledge hub ya offline."},
+      "upstream_dir": "upstream/kiwix",
+      "priority": 5
+    }
+  ]
+}

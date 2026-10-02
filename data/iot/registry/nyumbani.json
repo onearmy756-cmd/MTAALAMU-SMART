@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "vertical": "nyumbani",
+  "updated": "2026-10-02",
+  "projects": [
+    {
+      "id": "home-assistant",
+      "name": "Home Assistant Core",
+      "repo": "https://github.com/home-assistant/core",
+      "license": "Apache-2.0",
+      "language": "Python",
+      "purpose": {"sw": "Shina la home automation — integrations elfu kwa elfu.", "en": "Home automation hub — thousands of integrations."},
+      "contributes": ["devices", "automations"],
+      "integration": {"type": "mqtt", "protocol": "MQTT (Home Assistant Discovery)", "note_sw": "HA inazungumza MQTT ya discovery — inaunganishwa moja kwa moja na gateway."},
+      "upstream_dir": "upstream/home-assistant",
+      "priority": 1
+    },
+    {
+      "id": "esphome",
+      "name": "ESPHome",
+      "repo": "https://github.com/esphome/esphome",
+      "license": "GPL-3.0 / MIT parts",
+      "language": "C++/Python",
+      "purpose": {"sw": "Firmware za sensors DIY (ESP32) — joto, unyevu, umeme.", "en": "DIY sensor firmware (ESP32) — temp, humidity, power."},
+      "contributes": ["sensors", "firmware"],
+      "integration": {"type": "mqtt", "protocol": "MQTT (native)", "note_sw": "ESPHome inatumia MQTT asili — device inaandikishwa kwenye devices.json."},
+      "upstream_dir": "upstream/esphome",
+      "priority": 2
+    },
+    {
+      "id": "zigbee2mqtt",
+      "name": "Zigbee2MQTT",
+      "repo": "https://github.com/Koenkk/zigbee2mqtt",
+      "license": "GPL-3.0",
+      "language": "TypeScript",
+      "purpose": {"sw": "Vifaa vya Zigbee bila gateway ya msingi — sensors + actuators.", "en": "Zigbee devices without vendor gateway — sensors + actuators."},
+      "contributes": ["zigbee_devices"],
+      "integration": {"type": "mqtt", "protocol": "MQTT (zigbee2mqtt/#)", "note_sw": "Topics za Z2M zinapangwa kwenda devices.json."},
+      "upstream_dir": "upstream/zigbee2mqtt",
+      "priority": 3
+    },
+    {
+      "id": "tasmota",
+      "name": "Tasmota",
+      "repo": "https://github.com/arendst/Tasmota",
+      "license": "GPL-3.0",
+      "language": "C++",
+      "purpose": {"sw": "Firmware ya sockets/bulbs — MQTT moja kwa moja.", "en": "Socket/bulb firmware — native MQTT."},
+      "contributes": ["sockets", "bulbs"],
+      "integration": {"type": "mqtt", "protocol": "MQTT (tele/state)", "note_sw": "Tasmota tele/ topics zinafungwa kwenye telemetry rules."},
+      "upstream_dir": "upstream/tasmota",
+      "priority": 4
+    },
+    {
+      "id": "shelly-action",
+      "name": "Shelly MQTT",
+      "repo": "https://github.com/YOURLS/YOURLS",
+      "license": "MIT (sample adapter)",
+      "language": "Shell",
+      "purpose": {"sw": "Mfano wa adapter ya sockets za Shelly (MQTT).", "en": "Sample adapter for Shelly sockets (MQTT)."},
+      "contributes": ["sockets"],
+      "integration": {"type": "adapter", "protocol": "MQTT", "note_sw": "Mfano tu — badilisha na adapter yako ya Shelly."},
+      "upstream_dir": "upstream/shelly-adapter",
+      "priority": 5
+    }
+  ]
+}

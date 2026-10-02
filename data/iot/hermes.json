@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-10-02",
+  "hermes": {
+    "id": "hermes",
+    "name_sw": "HERMES — Msimamizi Mkuu",
+    "name_en": "HERMES — Master Agent",
+    "upstream": {
+      "repo": "https://github.com/NousResearch/hermes-agent",
+      "license": "MIT",
+      "note_sw": "Nakala halisi inapatikana kwa scripts/clone_iot_repos.sh (upstream/hermes-agent). Tunapitia kanuni zake: kujifunza kutoka kazi, memory ya kudumu, skills loop.",
+      "note_en": "Real copy via scripts/clone_iot_repos.sh (upstream/hermes-agent). We adopt its principles: learning from work, persistent memory, skills loop."
+    },
+    "principles": [
+      "Hesabu ni Rust/R pekee — HERMES haihesabu, inaamsha, inaeleza, inaandika.",
+      "Kila tenda la hatari lina HITL gate — kamwe hakuna actuation ya kiotomatiki ya hatari.",
+      "Kila kazi ina frame za scribe (Kiswahili) + learning loop kwenye data/learning_log.json.",
+      "Offline kwanza: LLM (Ollama) ni hiari; bila LLM mfumo unaendelea kwa rules + knowledge.",
+      "Memory ya kudumu: missions + frames zinafanywa available kwa agents zote."
+    ],
+    "delegation": {
+      "internal": [
+        {"id": "receptionist", "from": "agents_10", "when": "mtumiaji anaandika au kusema tatizo"},
+        {"id": "vision", "from": "agents_10", "when": "scan ya kifaa/OS au vifaa vya IoT"},
+        {"id": "diagnoser", "from": "agents_10", "when": "telemetry FAIL au matumizi ya bayes/knowledge"},
+        {"id": "planner", "from": "agents_10", "when": "kutengeneza mpango PIITVD"},
+        {"id": "solver", "from": "agents_10", "when": "tekeleza — INAHITAJI HITL"},
+        {"id": "tester", "from": "agents_10", "when": "kurudia pima baada ya fix"},
+        {"id": "verifier", "from": "agents_10", "when": "kuthibitisha matokeo"},
+        {"id": "scribe", "from": "agents_10", "when": "kuingiza kila hatua kwa Kiswahili"},
+        {"id": "reporter", "from": "agents_10", "when": "kitabu kidigitali / ripoti"},
+        {"id": "learner", "from": "agents_10", "when": "kuingiza maarifa mapya"}
+      ],
+      "iot_specialists": [
+        {"id": "iot_patient", "name_sw": "Mlinzi wa Mgonjwa", "vertical": "afya", "when": "telemetry ya mgonjwa FAIL"},
+        {"id": "iot_perimeter", "name_sw": "Mlinzi wa Mpaka", "vertical": "usalama", "when": "mlango/mwendo/sireni"},
+        {"id": "iot_homekeeper", "name_sw": "Mdumishaji wa Nyumbani", "vertical": "nyumbani", "when": "taaa/sockets/energy"},
+        {"id": "iot_farmer", "name_sw": "Mshauri wa Shamba", "vertical": "kilimo", "when": "udongo/hewa/valve"}
+      ],
+      "worker_agents": ["langchain", "crawl4ai", "whisper", "ollama"]
+    },
+    "pipelines": [
+      {
+        "id": "iot_incident",
+        "trigger": "telemetry rule status FAIL",
+        "steps": [
+          {"agent": "iot_specialist", "action": "ingest + classify"},
+          {"agent": "diagnoser", "action": "bayes + knowledge lookup"},
+          {"agent": "planner", "action": "unda mpango + HITL kama inahitajika"},
+          {"agent": "hitl", "action": "omba ruhusa (UI + sauti)"},
+          {"agent": "solver", "action": "tekeleza (bila HITL: guide tu)"},
+          {"agent": "tester", "action": "pima upya"},
+          {"agent": "scribe", "action": "frame ya Kiswahili"},
+          {"agent": "learner", "action": "hifadhi kwenye learning_log"}
+        ]
+      },
+      {
+        "id": "voice_command",
+        "trigger": "Whisper STT → FST intent",
+        "steps": [
+          {"agent": "receptionist", "action": "pokea amri (Kiswahili)"},
+          {"agent": "planner", "action": "amsha target device/actuator"},
+          {"agent": "hitl", "action": "gate kama hitl_required"},
+          {"agent": "solver", "action": "tuma actuation kwa gateway"},
+          {"agent": "scribe", "action": "frame + sauti ya kuthibitisha"}
+        ]
+      },
+      {
+        "id": "knowledge_grow",
+        "trigger": "crawler amekamilika au mission mpya",
+        "steps": [
+          {"agent": "crawl4ai", "action": "kusa vrsc kutoka vyanzo vilivyoruhusiwa"},
+          {"agent": "learner", "action": "chuja + hifadhi data/knowledge/crawl/"},
+          {"agent": "scribe", "action": "muhtasari wa Kiswahili"}
+        ]
+      }
+    ],
+    "hitl_gates": [
+      {"id": "hitl_clinical", "applies": "vertical=afya actuation", "reason_sw": "Tiba ni maamuzi ya daktari.", "channels": ["ui", "voice"]},
+      {"id": "hitl_security", "applies": "locks, sirens, disarm", "reason_sw": "Usalama wa watu kwanza.", "channels": ["ui", "voice", "sms"]},
+      {"id": "hitl_irrigation", "applies": "valves, pampu, maji", "reason_sw": "Gharama ya maji + usalama wa mazao.", "channels": ["ui", "voice"]},
+      {"id": "hitl_energy", "applies": "mzigo mkubwa wa umeme", "reason_sw": "Kinga ya moto/overload.", "channels": ["ui"]}
+    ],
+    "memory": {
+      "missions": "data/iot/missions.json",
+      "learning_log": "data/learning_log.json",
+      "frames": "data/iot/missions.json#frames"
+    }
+  }
+}

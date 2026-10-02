@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-10-02",
+  "kanuni": "Agents za OSS ni watumishi wa HERMES — hawawezi kukiuka HITL wala kuhesabu.",
+  "agents": [
+    {"id": "hermes-agent", "name": "Hermes Agent (Nous Research)", "repo": "https://github.com/NousResearch/hermes-agent", "license": "MIT", "language": "Python", "contributes": ["master-agent-pattern", "memory", "skills-loop"], "hermes_role": "master-pattern", "status": "integrated"},
+    {"id": "langchain", "name": "LangChain", "repo": "https://github.com/langchain-ai/langchain", "license": "MIT", "language": "Python/JS", "contributes": ["tools", "chains", "memory"], "hermes_role": "worker", "status": "integrated"},
+    {"id": "ollama", "name": "Ollama", "repo": "https://github.com/ollama/ollama", "license": "MIT", "language": "Go", "contributes": ["local-llm"], "hermes_role": "worker", "status": "integrated"},
+    {"id": "whisper", "name": "Whisper", "repo": "https://github.com/openai/whisper", "license": "MIT", "language": "Python", "contributes": ["speech-to-text"], "hermes_role": "worker", "status": "integrated"},
+    {"id": "crawl4ai", "name": "Crawl4AI", "repo": "https://github.com/unclecode/crawl4ai", "license": "Apache-2.0", "language": "Python", "contributes": ["web-crawl"], "hermes_role": "worker", "status": "integrated"},
+    {"id": "autogen", "name": "AutoGen", "repo": "https://github.com/microsoft/autogen", "license": "CC-BY-4.0 (code MIT)", "language": "Python", "contributes": ["multi-agent-conversation"], "hermes_role": "pattern", "status": "integrated"},
+    {"id": "crewai", "name": "CrewAI", "repo": "https://github.com/crewAIInc/crewAI", "license": "MIT", "language": "Python", "contributes": ["role-based-crews"], "hermes_role": "pattern", "status": "integrated"},
+    {"id": "open-interpreter", "name": "Open Interpreter", "repo": "https://github.com/openinterpreter/open-interpreter", "license": "AGPL-3.0", "language": "Python", "contributes": ["code-execution-pattern"], "hermes_role": "pattern", "status": "optional"},
+    {"id": "gpt4all", "name": "GPT4All", "repo": "https://github.com/nomic-ai/gpt4all", "license": "MIT", "language": "C++/Python", "contributes": ["offline-llm"], "hermes_role": "worker", "status": "optional"},
+    {"id": "aider", "name": "Aider", "repo": "https://github.com/Aider-AI/aider", "license": "Apache-2.0", "language": "Python", "contributes": ["repo-editing-pattern"], "hermes_role": "pattern", "status": "optional"},
+    {"id": "superagi", "name": "SuperAGI", "repo": "https://github.com/TransformerOptimus/SuperAGI", "license": "MIT", "language": "Python", "contributes": ["autonomous-loops"], "hermes_role": "pattern", "status": "adapter-planned"},
+    {"id": "semaphore-ui", "name": "Semaphore UI", "repo": "https://github.com/semaphoreui/semaphore", "license": "MIT", "language": "Go", "contributes": ["task-queue-ui"], "hermes_role": "pattern", "status": "adapter-planned"}
+  ]
+}

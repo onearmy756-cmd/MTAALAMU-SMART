@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-10-02",
+  "verticals": [
+    {
+      "id": "afya",
+      "name": {"sw": "AFYA — Hospitali", "en": "HEALTH — Hospital"},
+      "icon": "🏥",
+      "color": "#00e676",
+      "mqtt_root": "mtaalamu/afya",
+      "risk": "high",
+      "hitl_policy": {"sw": "Dawa na tiba ni maamuzi ya daktari — agent inaonyesha na kuomba ruhusa tu.", "en": "Medication and treatment are clinician decisions — agents advise and require HITL."},
+      "summary": {"sw": "Vipimo vya wagonjwa, zanzari, oksijeni, friji za chanjo na alerti za hospitali.", "en": "Patient vitals, ICU beds, oxygen, vaccine fridges and hospital alerts."}
+    },
+    {
+      "id": "usalama",
+      "name": {"sw": "USALAMA — Security", "en": "SECURITY"},
+      "icon": "🛡️",
+      "color": "#ff1744",
+      "mqtt_root": "mtaalamu/usalama",
+      "risk": "high",
+      "hitl_policy": {"sw": "Kufunga/kufungua, siren na locks zinahitaji ruhusa — kamwe automatic.", "en": "Locks, sirens and disarm need human approval — never automatic."},
+      "summary": {"sw": "CCTV, sensors ya mlango, motion detectors, sirens na alarmi.", "en": "CCTV, door sensors, motion detectors, sirens and alarms."}
+    },
+    {
+      "id": "nyumbani",
+      "name": {"sw": "SMART HOME — Nyumbani", "en": "SMART HOME"},
+      "icon": "🏠",
+      "color": "#40c4ff",
+      "mqtt_root": "mtaalamu/nyumbani",
+      "risk": "medium",
+      "hitl_policy": {"sw": "Taa na sockets: automatic kwa kanuni; nyuma ya lock na energy kubwa: HITL.", "en": "Lights/sockets: rules-driven automation; high-power or lock-adjacent actions: HITL."},
+      "summary": {"sw": "Taa, sockets, sensors ya joto/maji, energy monitoring na automation ya kanuni.", "en": "Lights, sockets, temp/leak sensors, energy monitoring and rules automation."}
+    },
+    {
+      "id": "kilimo",
+      "name": {"sw": "KILIMO — Agriculture", "en": "AGRICULTURE"},
+      "icon": "🌾",
+      "color": "#ffc107",
+      "mqtt_root": "mtaalamu/kilimo",
+      "risk": "high",
+      "hitl_policy": {"sw": "Valve ya maji/pampu inahitaji idhini kabla ya kufunguliwa (gharama + usalama).", "en": "Irrigation valves/pumps need approval before actuation (cost + safety)."},
+      "summary": {"sw": "Udhuwilishaji, unyevu wa udongo, hali ya hewa shambani na pampu.", "en": "Irrigation, soil moisture, on-farm weather and pumps."}
+    }
+  ]
+}
