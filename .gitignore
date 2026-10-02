@@ -35,4 +35,3 @@ __pycache__/
 *.pyc
 
 # --- Freebuff local state ---
-.freebuff/
