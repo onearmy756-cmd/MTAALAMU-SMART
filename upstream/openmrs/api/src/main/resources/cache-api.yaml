@@ -1,0 +1,11 @@
+caches:
+    userSearchLocales:
+        configuration: "entity"
+    conceptIdsByMapping:
+        configuration: "entity"
+    serializerWhiteListTypes:
+        configuration: "entity"
+    rolePrivileges:
+        configuration: "role-privileges"
+    globalProperties:
+        configuration: "global-properties"

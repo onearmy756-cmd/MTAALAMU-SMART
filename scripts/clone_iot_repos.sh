@@ -112,8 +112,12 @@ FAIL=0
 while IFS=$'\t' read -r id dir repo _focus; do
   [ -z "${id:-}" ] && continue
   dest="$ROOT/$dir"
+  if [ -e "$dest" ] && [ ! -e "$dest/.git" ]; then
+    echo "SKIP   $id (ipo bila .git — nakala ya repo hii; .git itarudishwa kama mteja wa git)"
+    continue
+  fi
   if [ -d "$dest/.git" ]; then
-    echo "SKIP   $id (ipo)"
+    echo "SKIP   $id (ipo, .git ipo)"
     continue
   fi
   echo "CLONED $id -> $dir"

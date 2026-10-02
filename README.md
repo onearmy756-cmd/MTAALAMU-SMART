@@ -81,7 +81,7 @@ engine-rust/    Rust CLI: calc, diagnose, agentic, deep, sysprobe, remediate, wi
 fundi-mobile/   🩺 FUNDI MOBILE — daktari wa simu (agentic, HITL consent, Android/iPhone/button)
 fundi-deploy/   💻 Fundi Deploy — LAN imaging (P2+P3 kamili)
 data/           JSON (formulas, agents, vision, geo, mobile/…)
-upstream/       clones za IoT (gitignored, undwa na scripts/clone_iot_repos.sh)
+upstream/       nakala za miradi 8 ya IoT (IMEHIFADHIWA repo — .git zake kwenye /tmp backup)
 ```
 
 ## IOT + HERMES (seti ya FOCUS)
@@ -103,6 +103,9 @@ bash scripts/clone_iot_repos.sh --agents        # FOCUS 4 + agents 4 za focus (8
 bash scripts/clone_iot_repos.sh --all --agents  # zote (registry + agents)
 bash scripts/clone_iot_repos.sh --only afya     # vertical moja
 ```
+
+> Nakala za upstream/ zipo kwenye repo hii moja kwa moja (bila .git yao, ~731MB).
+> Kwa historia kamili ya kila mradi: `bash scripts/clone_iot_repos.sh --agents` (inadhihirisha .git upya).
 
 UI: tab **📡 IOT REGISTRY** (web-r) inaonyesha FOCUS/CLONED kwa kila mradi.
 

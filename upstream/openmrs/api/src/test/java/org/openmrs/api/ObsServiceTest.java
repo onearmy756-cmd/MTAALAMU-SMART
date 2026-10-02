@@ -1,0 +1,2729 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs.api;
+
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import java.io.CharArrayReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import javax.imageio.ImageIO;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptReferenceRange;
+import org.openmrs.Encounter;
+import org.openmrs.Location;
+import org.openmrs.Obs;
+import org.openmrs.ObsReferenceRange;
+import org.openmrs.Order;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.Visit;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.ObsServiceImpl;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.handler.BinaryDataHandler;
+import org.openmrs.obs.handler.ImageHandler;
+import org.openmrs.obs.handler.TextHandler;
+import org.openmrs.parameter.ObsSearchCriteria;
+import org.openmrs.parameter.ObsSearchCriteriaBuilder;
+import org.openmrs.test.jupiter.BaseContextSensitiveTest;
+import org.openmrs.util.DateUtil;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+/**
+ * TODO clean up and add tests for all methods in ObsService
+ */
+public class ObsServiceTest extends BaseContextSensitiveTest {
+
+	protected static final String INITIAL_OBS_XML = "org/openmrs/api/include/ObsServiceTest-initial.xml";
+
+	protected static final String ENCOUNTER_OBS_XML = "org/openmrs/api/include/ObsServiceTest-EncounterOverwrite.xml";
+
+	protected static final String COMPLEX_OBS_XML = "org/openmrs/api/include/ObsServiceTest-complex.xml";
+
+	protected static final String REVISION_OBS_XML = "org/openmrs/api/include/ObsServiceTest-RevisionObs.xml";
+
+	@Autowired
+	private ObsService obsService;
+
+	@Autowired
+	private AdministrationService adminService;
+
+	/**
+	 * This method gets the revision obs for voided obs
+	 *
+	 * @see ObsService#getRevisionObs(Obs)
+	 */
+	@Test
+	public void shouldGetRevisedObs() {
+		executeDataSet(INITIAL_OBS_XML);
+		executeDataSet(REVISION_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		Obs initialObs = os.getObsByUuid("uuid14");
+		Obs revisedObs = os.getRevisionObs(initialObs);
+		assertEquals(17, revisedObs.getId().intValue());
+		assertEquals(2, revisedObs.getGroupMembers(true).size());
+	}
+
+	@Test
+	public void shouldReturnAPIExceptionWhenObsIsNull() {
+		ObsService os = Context.getObsService();
+		APIException exception = assertThrows(APIException.class, () -> os.saveObs(null, "Null Obs"));
+		assertThat(exception.getMessage(), is(Context.getMessageSourceService().getMessage("Obs.error.cannot.be.null")));
+	}
+
+	/**
+	 * This test tests multi-level heirarchy obsGroup cascades for create, delete, update, void, and
+	 * unvoid
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldSaveUpdateDeleteVoidObsGroupCascades() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+
+		//create an obs
+		Obs o = new Obs();
+		o.setConcept(cs.getConcept(3));
+		o.setDateCreated(new Date());
+		o.setCreator(Context.getAuthenticatedUser());
+		o.setLocation(new Location(1));
+		o.setObsDatetime(new Date());
+		o.setPerson(new Patient(2));
+		o.setValueText("original obs value text");
+
+		//create a second obs
+		Obs o2 = new Obs();
+		o2.setConcept(cs.getConcept(3));
+		o2.setDateCreated(new Date());
+		o2.setCreator(Context.getAuthenticatedUser());
+		o2.setLocation(new Location(1));
+		o2.setObsDatetime(new Date());
+		o2.setValueText("second obs value text");
+		o2.setPerson(new Patient(2));
+
+		//create a parent obs
+		Obs oParent = new Obs();
+		oParent.setConcept(cs.getConcept(23)); //in the concept set table as a set
+		oParent.setDateCreated(new Date());
+		oParent.setCreator(Context.getAuthenticatedUser());
+		oParent.setLocation(new Location(1));
+		oParent.setObsDatetime(new Date());
+		oParent.setPerson(new Patient(2));
+
+		//add o and o2 to the parent obs
+		oParent.addGroupMember(o2);
+		oParent.addGroupMember(o);
+
+		//create a grandparent obs
+		Obs oGP = new Obs();
+		oGP.setConcept(cs.getConcept(3));
+		oGP.setDateCreated(new Date());
+		oGP.setCreator(Context.getAuthenticatedUser());
+		oGP.setLocation(new Location(1));
+		oGP.setObsDatetime(new Date());
+		oGP.setPerson(new Patient(2));
+		//oGP.setValueText("grandparent obs value text");
+
+		oGP.addGroupMember(oParent);
+
+		//create a leaf observation
+		Obs o3 = new Obs();
+		o3.setConcept(cs.getConcept(3));
+		o3.setDateCreated(new Date());
+		o3.setCreator(Context.getAuthenticatedUser());
+		o3.setLocation(new Location(1));
+		o3.setObsDatetime(new Date());
+		o3.setValueText("leaf obs value text");
+		o3.setPerson(new Patient(2));
+
+		//and add it to the grandparent
+		oGP.addGroupMember(o3);
+
+		//create a great-grandparent
+		Obs oGGP = new Obs();
+		oGGP.setConcept(cs.getConcept(3));
+		oGGP.setDateCreated(new Date());
+		oGGP.setCreator(Context.getAuthenticatedUser());
+		oGGP.setLocation(new Location(1));
+		oGGP.setObsDatetime(new Date());
+		//oGGP.setValueText("great grandparent value text");
+		oGGP.setPerson(new Patient(2));
+
+		oGGP.addGroupMember(oGP);
+
+		//create a great-great grandparent
+		Obs oGGGP = new Obs();
+		oGGGP.setConcept(cs.getConcept(3));
+		oGGGP.setDateCreated(new Date());
+		oGGGP.setCreator(Context.getAuthenticatedUser());
+		oGGGP.setLocation(new Location(1));
+		oGGGP.setObsDatetime(new Date());
+		//oGGGP.setValueText("great great grandparent value text");
+		oGGGP.setPerson(new Patient(2));
+
+		oGGGP.addGroupMember(oGGP);
+
+		//Create the great great grandparent
+		os.saveObs(oGGGP, null);
+		int oGGGPId = oGGGP.getObsId();
+
+		//now navigate the tree and make sure that all tree members have obs_ids
+		//indicating that they've been saved (unsaved_value in the hibernate mapping set to null so
+		// the notNull assertion is sufficient):
+		Obs testGGGP = os.getObs(oGGGPId);
+		assertTrue(testGGGP.isObsGrouping());
+		Set<Obs> GGGPmembers = testGGGP.getGroupMembers();
+		assertEquals(GGGPmembers.size(), 1);
+		for (Obs testGGP : GGGPmembers) {
+			assertTrue(testGGP.isObsGrouping());
+			assertEquals(testGGP.getGroupMembers().size(), 1);
+			assertNotNull(testGGP.getObsId());
+			for (Obs testGP : testGGP.getGroupMembers()) {
+				assertTrue(testGP.isObsGrouping());
+				assertEquals(testGP.getGroupMembers().size(), 2);
+				assertNotNull(testGP.getObsId());
+				for (Obs parent : testGP.getGroupMembers()) {
+					if (parent.isObsGrouping()) {
+						assertEquals(parent.getGroupMembers().size(), 2);
+						assertNotNull(parent.getObsId());
+						for (Obs child : parent.getGroupMembers()) {
+							assertNotNull(child.getObsId());
+							//make an edit to a value so that we can save the great great grandfather
+							//and see if the changes have been reflected:
+							child.setValueText("testingUpdate");
+						}
+					}
+
+				}
+
+			}
+		}
+
+		Obs oGGGPThatWasUpdated = os.saveObs(oGGGP, "Updating obs group parent");
+
+		//now, re-walk the tree to verify that the bottom-level leaf obs have the new text value:
+
+		int childOneId = 0;
+		int childTwoId = 0;
+		assertTrue(oGGGPThatWasUpdated.isObsGrouping());
+		Set<Obs> GGGPmembers2 = oGGGPThatWasUpdated.getGroupMembers();
+		assertEquals(GGGPmembers2.size(), 1);
+		for (Obs testGGP : GGGPmembers2) {
+			assertTrue(testGGP.isObsGrouping());
+			assertEquals(testGGP.getGroupMembers().size(), 1);
+			assertNotNull(testGGP.getObsId());
+			for (Obs testGP : testGGP.getGroupMembers()) {
+				assertTrue(testGP.isObsGrouping());
+				assertEquals(testGP.getGroupMembers().size(), 2);
+				assertNotNull(testGP.getObsId());
+				for (Obs parent : testGP.getGroupMembers()) {
+					if (parent.isObsGrouping()) {
+						assertEquals(parent.getGroupMembers().size(), 2);
+						assertNotNull(parent.getObsId());
+						int i = 0;
+						for (Obs child : parent.getGroupMembers()) {
+							assertEquals("testingUpdate", child.getValueText());
+							//set childIds, so that we can test voids/unvoids/delete
+							if (i == 0)
+								childOneId = child.getObsId();
+							else
+								childTwoId = child.getObsId();
+							i++;
+						}
+					}
+
+				}
+
+			}
+		}
+
+		//check voiding:
+		//first, just create an Obs, and void it, and verify:
+		Obs oVoidTest = new Obs();
+		oVoidTest.setConcept(cs.getConcept(1));
+		oVoidTest.setValueNumeric(50d);
+		oVoidTest.setDateCreated(new Date());
+		oVoidTest.setCreator(Context.getAuthenticatedUser());
+		oVoidTest.setLocation(new Location(1));
+		oVoidTest.setObsDatetime(new Date());
+		oVoidTest.setPerson(new Patient(2));
+		oVoidTest.setValueText("value text of soon-to-be-voided obs");
+
+		Obs obsThatWasVoided = os.saveObs(oVoidTest, null);
+		os.voidObs(obsThatWasVoided, "testing void method");
+
+		assertTrue(obsThatWasVoided.getVoided());
+
+		//unvoid:
+		obsThatWasVoided.setVoided(false);
+		assertFalse(obsThatWasVoided.getVoided());
+
+		//Now test voiding cascade:
+		// i.e. by voiding the grandparent, we void the n-th generation leaf obs
+		os.voidObs(oGGGPThatWasUpdated, "testing void cascade");
+		assertTrue(oGGGPThatWasUpdated.getVoided());
+
+		Obs childLeafObs = os.getObs(childOneId);
+		assertTrue(childLeafObs.getVoided());
+
+		//now test the un-void:
+		os.unvoidObs(oGGGPThatWasUpdated);
+		assertFalse(oGGGPThatWasUpdated.getVoided());
+		assertFalse(childLeafObs.getVoided());
+
+		//test this again using just the os.updateObs method on the great great grandparent:
+
+		os.voidObs(oGGGPThatWasUpdated, "testing void cascade");
+		childLeafObs = os.getObs(childOneId);
+		assertTrue(childLeafObs.getVoided());
+
+		os.unvoidObs(oGGGPThatWasUpdated);
+		childLeafObs = os.getObs(childOneId);
+		assertFalse(childLeafObs.getVoided());
+
+		//now, test the feature that unvoid doesn't happen unless child obs has the same dateVoided as
+		// the Obj argument that gets passed into unvoid:
+
+		os.voidObs(oGGGPThatWasUpdated, "testing void cascade");
+		childLeafObs = os.getObs(childOneId);
+		assertTrue(childLeafObs.getVoided());
+
+		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000));
+		//os.saveObs(childLeafObs, "saving child leaf obs");
+		os.unvoidObs(oGGGPThatWasUpdated);
+
+		// commenting this out because junit4 doesn't seem to care
+		//commitTransaction(false);
+
+		childLeafObs = os.getObs(childOneId);
+		Obs childLeafObsTwo = os.getObs(childTwoId);
+
+		//childLeafObs had its date voided date changed, so it should not get unvoided by the unvoid cascade
+		//childLeafObsTwo should be unvoided, as the dateVoided date is still the same as the great-great
+		//grandparent Obs
+
+		assertFalse(childLeafObsTwo.getVoided());
+		assertTrue(childLeafObs.getVoided());
+
+		//finally, check the delete cascade:
+
+		os.purgeObs(oGGGPThatWasUpdated);
+
+		assertNull(os.getObs(oGGGPThatWasUpdated.getObsId()));
+		assertNull(os.getObs(childOneId));
+		assertNull(os.getObs(childTwoId));
+	}
+
+	/**
+	 * This method gets observations and only fetches obs that are for patients
+	 *
+	 * @throws ParseException
+	 * @see ObsService#getObservations(List, List, List, List, List, List, List, Integer, Integer, Date,
+	 *      Date, boolean)
+	 */
+	@Test
+	public void getObservations_shouldCompareDatesUsingLteAndGte() throws ParseException {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+		// Test 1, No bounderies
+		Date sd = df.parse("2006-02-01");
+		Date ed = df.parse("2006-02-20");
+		List<Obs> obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(9, obs.size());
+
+		// Test 2, From boundary
+		sd = df.parse("2006-02-13");
+		ed = df.parse("2006-02-20");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(4, obs.size());
+
+		// Test 3, To boundary
+		sd = df.parse("2006-02-01");
+		ed = df.parse("2006-02-15");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(8, obs.size());
+
+		// Test 4, Both Boundaries
+		sd = df.parse("2006-02-11");
+		ed = new SimpleDateFormat("yyyy-MM-dd-hh-mm").parse("2006-02-11-11-59");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(1, obs.size());
+
+		// Test 5, Outside before
+		sd = df.parse("2006-02-01");
+		ed = df.parse("2006-02-08");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(0, obs.size());
+
+		// Test 6, Outside After
+		sd = df.parse("2006-02-17");
+		ed = df.parse("2006-02-20");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(0, obs.size());
+	}
+
+	/**
+	 * Uses the OpenmrsUtil.getLastMomentOfDay(Date) method to get all observations for a given day
+	 *
+	 * @throws ParseException
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetObservationsOnDay() throws ParseException {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+		Date sd = df.parse("2006-02-13");
+		Date ed = df.parse("2006-02-13");
+		List<Obs> obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd,
+		    OpenmrsUtil.getLastMomentOfDay(ed), false);
+		assertEquals(1, obs.size());
+	}
+
+	/**
+	 * @throws IOException
+	 * @see ObsService#getComplexObs(Integer,String)
+	 */
+	@Test
+	public void getComplexObs_shouldFillInComplexDataObjectForComplexObs() throws IOException {
+		executeDataSet(COMPLEX_OBS_XML);
+		// create gif file
+		// make sure the file isn't there to begin with
+		AdministrationService as = Context.getAdministrationService();
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
+		    as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = createImage(complexObsDir, "openmrs_logo_small.gif");
+		// end create gif file
+		ObsService os = Context.getObsService();
+
+		Obs complexObs = os.getObs(44);
+
+		assertNotNull(complexObs);
+		assertTrue(complexObs.isComplex());
+		assertNotNull(complexObs.getValueComplex());
+		assertNotNull(complexObs.getComplexData());
+		assertEquals(complexObs, os.getObsByUuid(complexObs.getUuid()));
+		// delete gif file
+		// we always have to delete this inside the same unit test because it is
+		// outside the
+		// database and hence can't be "rolled back" like everything else
+		createdFile.delete();
+	}
+
+	public static @NotNull File createImage(File complexObsDir, String filename) throws IOException {
+		File createdFile = new File(complexObsDir, filename);
+		if (createdFile.exists())
+			createdFile.delete();
+		int width = 10;
+		int height = 10;
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		WritableRaster raster = image.getRaster();
+		int[] colorArray = new int[3];
+		int h = 255;
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				if (i == 0 || j == 0 || i == width - 1 || j == height - 1
+				        || (i > width / 3 && i < 2 * width / 3) && (j > height / 3 && j < 2 * height / 3)) {
+					colorArray[0] = h;
+					colorArray[1] = h;
+					colorArray[2] = 0;
+				} else {
+					colorArray[0] = 0;
+					colorArray[1] = 0;
+					colorArray[2] = h;
+				}
+				raster.setPixel(i, j, colorArray);
+			}
+		}
+		ImageIO.write(image, "gif", createdFile);
+		return createdFile;
+	}
+
+	/**
+	 * @throws IOException
+	 * @see ObsService#getComplexObs(Integer,String)
+	 */
+	@Test
+	public void getComplexObs_shouldNotFailWithNullView() throws IOException {
+		executeDataSet(COMPLEX_OBS_XML);
+		// create gif file
+		// make sure the file isn't there to begin with
+		AdministrationService as = Context.getAdministrationService();
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
+		    as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = createImage(complexObsDir, "openmrs_logo_small.gif");
+		// end create gif file
+		ObsService os = Context.getObsService();
+
+		os.getComplexObs(44, null);
+		// delete gif file
+		// we always have to delete this inside the same unit test because it is
+		// outside the
+		// database and hence can't be "rolled back" like everything else
+		createdFile.delete();
+	}
+
+	/**
+	 * @see ObsService#getComplexObs(Integer,String)
+	 */
+	@Test
+	public void getComplexObs_shouldReturnNormalObsForNonComplexObs() {
+		executeDataSet(COMPLEX_OBS_XML);
+
+		ObsService os = Context.getObsService();
+
+		Obs normalObs = os.getComplexObs(7, ComplexObsHandler.RAW_VIEW);
+
+		assertFalse(normalObs.isComplex());
+	}
+
+	/**
+	 * @see ObsService#getHandler(String)
+	 */
+	@Test
+	public void getHandler_shouldHaveDefaultImageAndTextHandlersRegisteredBySpring() {
+		ObsService os = Context.getObsService();
+		ComplexObsHandler imgHandler = os.getHandler("ImageHandler");
+		assertNotNull(imgHandler);
+
+		ComplexObsHandler textHandler = os.getHandler("TextHandler");
+		assertNotNull(textHandler);
+	}
+
+	/**
+	 * @see ObsService#getHandler(String)
+	 */
+	@Test
+	public void getHandler_shouldGetHandlerWithMatchingKey() {
+		ObsService os = Context.getObsService();
+		ComplexObsHandler handler = os.getHandler("ImageHandler");
+		assertNotNull(handler);
+		assertTrue(handler instanceof ImageHandler);
+	}
+
+	/**
+	 * @see ObsService#getHandlers()
+	 */
+	@Test
+	public void getHandlers_shouldNeverReturnNull() {
+		assertNotNull(Context.getObsService().getHandlers());
+
+		// test our current implementation without it being initialized by spring
+		assertNotNull(new ObsServiceImpl().getHandlers());
+	}
+
+	/**
+	 * @see ObsService#registerHandler(String,ComplexObsHandler)
+	 */
+	@Test
+	public void registerHandler_shouldRegisterHandlerWithTheGivenKey() {
+		ObsService os = Context.getObsService();
+
+		os.registerHandler("DummyHandler", new ImageHandler());
+
+		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler");
+		assertNotNull(dummyHandler);
+	}
+
+	/**
+	 * @see ObsService#registerHandler(String,String)
+	 */
+	@Test
+	public void registerHandler_shouldLoadHandlerAndRegisterKey() {
+		ObsService os = Context.getObsService();
+
+		// name it something other than what we used in the previous test
+		os.registerHandler("DummyHandler2", "org.openmrs.obs.handler.ImageHandler");
+
+		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler2");
+		assertNotNull(dummyHandler);
+	}
+
+	/**
+	 * @see ObsService#removeHandler(String)
+	 */
+	@Test
+	public void removeHandler_shouldNotFailWithInvalidKey() {
+		assertDoesNotThrow(() -> Context.getObsService().removeHandler("SomeRandomHandler"));
+	}
+
+	/**
+	 * @see ObsService#removeHandler(String)
+	 */
+	@Test
+	public void removeHandler_shouldRemoveHandlerWithMatchingKey() {
+		ObsService os = Context.getObsService();
+
+		// add the handler and make sure its there
+		os.registerHandler("DummyHandler3", "org.openmrs.obs.handler.ImageHandler");
+		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler3");
+		assertNotNull(dummyHandler);
+
+		// now remove the handler and make sure its gone
+		os.removeHandler("DummyHandler3");
+		ComplexObsHandler dummyHandlerAgain = os.getHandler("DummyHandler3");
+		assertNull(dummyHandlerAgain);
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldCreateNewFileFromComplexDataForNewObs() {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		AdministrationService as = Context.getAdministrationService();
+
+		// the complex data to put onto an obs that will be saved
+		Reader input = new CharArrayReader("This is a string to save to a file".toCharArray());
+		ComplexData complexData = new ComplexData("nameOfFile.txt", input);
+
+		// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+		// this is a concept mapped to the text handler
+		Concept questionConcept = cs.getConcept(8474);
+
+		Obs obsToSave = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+		obsToSave.setComplexData(complexData);
+
+		try {
+			os.saveObs(obsToSave, null);
+
+			Obs savedObs = os.getObs(obsToSave.getObsId());
+			Object data = savedObs.getComplexData().getData();
+			assertThat(new String((byte[]) data), is("This is a string to save to a file"));
+		} finally {
+			os.purgeObs(obsToSave);
+		}
+	}
+
+	/**
+	 * @throws IOException
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldNotOverwriteFileWhenUpdatingAComplexObs() throws IOException {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+
+		Obs firstObs = null, secondObs = null;
+		try {
+			// the complex data to put onto an obs that will be saved
+			Reader input2 = new CharArrayReader("some string".toCharArray());
+			ComplexData complexData = new ComplexData("nameOfFile.txt", input2);
+
+			// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+			// this is a concept mapped to the text handler
+			Concept questionConcept = cs.getConcept(8474);
+
+			firstObs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+
+			firstObs.setComplexData(complexData);
+
+			os.saveObs(firstObs, null);
+
+			Reader newInput = new CharArrayReader("diff string to save to a file with the same name".toCharArray());
+			ComplexData newComplexData = new ComplexData("nameOfFile.txt", newInput);
+
+			secondObs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+			secondObs.setComplexData(newComplexData);
+			os.saveObs(secondObs, null);
+
+			// Load data again
+			firstObs = os.getObs(firstObs.getObsId());
+			secondObs = os.getObs(secondObs.getObsId());
+
+			assertThat(new String((byte[]) firstObs.getComplexData().getData()), is("some string"));
+			assertThat(new String((byte[]) secondObs.getComplexData().getData()),
+			    is("diff string to save to a " + "file with the same name"));
+		} finally {
+			if (firstObs != null)
+				os.purgeObs(firstObs);
+			if (secondObs != null)
+				os.purgeObs(secondObs);
+		}
+
+	}
+
+	@Test
+	public void updateObs_shouldUpdateAComplexObs() throws IOException {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+
+		Obs obs = null;
+		Obs updatedObs = null;
+
+		File obsFile = null;
+		File updatedObsFile = null;
+
+		try {
+			// the complex data to put onto an obs that will be saved
+			Reader input2 = new CharArrayReader("some string".toCharArray());
+			ComplexData complexData = new ComplexData("nameOfFile", input2);
+
+			// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+			// this is a concept mapped to the text handler
+			Concept questionConcept = cs.getConcept(8474);
+
+			obs = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+
+			obs.setComplexData(complexData);
+			os.saveObs(obs, null);
+
+			// sanity check, confirm the file exists
+			obs = os.getObs(obs.getObsId());
+			obsFile = new File(OpenmrsUtil.getApplicationDataDirectory() + File.separator + "storage" + File.separator
+			        + obs.getValueComplex().split("\\|")[1]);
+			assertTrue(obsFile.exists());
+
+			// now change the obs
+			// NOTE: this really should change an actual field instead of voidReason; I originally had this change
+			// the comment field but, somewhat disconcertingly, this caused an UnchangeableObjectException because it
+			// tries to flush the original obs (before it is cloned) when it attempts to do a "getGlobalProperty" call.
+			// This exception doesn't occur in real life, and getGlobalProperty is set to transactional=readOnly, so
+			// not sure why it causes a flush when testing.
+			obs.setVoidReason("some comment");
+			updatedObs = os.saveObs(obs, "updating obs");
+
+			// confirm old file has been removed and new one exists
+			updatedObsFile = new File(OpenmrsUtil.getApplicationDataDirectory() + File.separator + "storage" + File.separator
+			        + updatedObs.getValueComplex().split("\\|")[1]);
+			assertTrue(updatedObsFile.exists());
+			assertFalse(obsFile.exists());
+
+		} finally {
+			if (obsFile != null && obsFile.exists()) {
+				obsFile.delete();
+			}
+			if (updatedObsFile != null && updatedObsFile.exists()) {
+				updatedObsFile.delete();
+			}
+		}
+	}
+
+	private void confirmFileWithNameExists(File[] files, String name) {
+		assertTrue(Arrays.stream(files).anyMatch(f -> f.getName().equals(name)));
+	}
+
+	/**
+	 * @see ObsService#setHandlers(Map)}
+	 */
+	@Test
+	public void setHandlers_shouldAddNewHandlersWithNewKeys() {
+		ObsService os = Context.getObsService();
+
+		Map<String, ComplexObsHandler> handlers = new HashMap<>();
+		handlers.put("DummyHandler4", new ImageHandler());
+		handlers.put("DummyHandler5", new BinaryDataHandler());
+		handlers.put("DummyHandler6", new TextHandler());
+
+		// set the handlers and make sure they're there
+		os.setHandlers(handlers);
+
+		ComplexObsHandler dummyHandler4 = os.getHandler("DummyHandler4");
+		assertNotNull(dummyHandler4);
+
+		ComplexObsHandler dummyHandler5 = os.getHandler("DummyHandler5");
+		assertNotNull(dummyHandler5);
+
+		ComplexObsHandler dummyHandler6 = os.getHandler("DummyHandler6");
+		assertNotNull(dummyHandler6);
+	}
+
+	/**
+	 * @see ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
+	 */
+	@Test
+	public void setHandlers_shouldOverrideHandlersWithSameKey() {
+		ObsService os = Context.getObsService();
+
+		Map<String, ComplexObsHandler> handlers = new HashMap<>();
+		handlers.put("DummyHandlerToOverride", new ImageHandler());
+
+		// set the handlers and make sure they're there
+		os.setHandlers(handlers);
+
+		ComplexObsHandler dummyHandlerToOverride = os.getHandler("DummyHandlerToOverride");
+		assertTrue(dummyHandlerToOverride instanceof ImageHandler);
+
+		// now override that key and make sure the new class is stored
+
+		Map<String, ComplexObsHandler> handlersAgain = new HashMap<>();
+		handlersAgain.put("DummyHandlerToOverride", new BinaryDataHandler());
+
+		os.setHandlers(handlersAgain);
+
+		ComplexObsHandler dummyHandlerToOverrideAgain = os.getHandler("DummyHandlerToOverride");
+		assertTrue(dummyHandlerToOverrideAgain instanceof BinaryDataHandler);
+
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldVoidTheGivenObsInTheDatabase() {
+		Obs obs = Context.getObsService().getObs(7);
+		obs.setValueNumeric(1.0);
+		Context.getObsService().saveObs(obs, "just testing");
+
+		// fetch the obs from the database again
+		obs = Context.getObsService().getObs(7);
+		assertTrue(obs.getVoided());
+	}
+
+	/**
+	 * @see ObsService#getObs(Integer)
+	 */
+	@Test
+	public void getObs_shouldGetObsMatchingGivenObsId() {
+		ObsService obsService = Context.getObsService();
+
+		Obs obs = obsService.getObs(7);
+
+		assertEquals(5089, obs.getConcept().getId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldGetAllObsAssignedToGivenEncounters() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, Collections.singletonList(new Encounter(4)), null, null, null,
+		    null, null, null, null, null, null, false, null);
+
+		assertEquals(6, obss.size());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldGetCountOfObsAssignedToGivenEncounters() {
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, Collections.singletonList(new Encounter(4)), null, null, null,
+		    null, null, null, null, false, null);
+
+		assertEquals(6, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldGetAllObsInGivenVisits() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, null, null, null, null, null, null,
+		    Collections.singletonList(new Visit(8)), null, null, null, null, false, null);
+
+		assertEquals(2, obss.size());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldGetCountOfObsInGivenVisits() {
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, null, null, null, null,
+		    Collections.singletonList(new Visit(8)), null, null, null, false, null);
+
+		assertEquals(2, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldGetAllObsWithAnswerConceptInGivenAnswersParameter() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, null, null, Collections.singletonList(new Concept(7)), null, null,
+		    null, null, null, null, null, false, null);
+
+		// obs 11 in INITIAL_OBS_XML and obs 13 in standardTestDataset
+		assertEquals(3, obss.size());
+		Set<Integer> ids = new HashSet<>();
+		for (Obs o : obss) {
+			ids.add(o.getObsId());
+		}
+		assertTrue(ids.contains(11));
+		assertTrue(ids.contains(13));
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldGetCountOfObsWithAnswerConceptInGivenAnswersParameter() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, null, Collections.singletonList(new Concept(7)), null,
+		    null, null, null, null, false, null);
+
+		assertEquals(3, count.intValue());
+
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldGetAllObsWithQuestionConceptInGivenQuestionsParameter() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, null, Collections.singletonList(new Concept(5497)), null, null,
+		    null, null, null, null, null, null, false, null);
+
+		assertEquals(2, obss.size());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldGetCountOfObsWithQuestionConceptInGivenQuestionsParameter() {
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, Collections.singletonList(new Concept(5497)), null, null,
+		    null, null, null, null, false, null);
+
+		assertEquals(2, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldIncludeVoidedObsIfIncludeVoidedObsIsTrue() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(9)), null, null, null, null, null,
+		    null, null, null, null, null, true, null);
+
+		assertEquals(2, obss.size());
+
+		assertEquals(10, obss.get(0).getObsId().intValue());
+		assertEquals(9, obss.get(1).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldIncludeVoidedObsInTheCountIfIncludeVoidedObsIsTrue() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		Integer obss = obsService.getObservationCount(Collections.singletonList(new Person(9)), null, null, null, null, null,
+		    null, null, null, true, null);
+
+		assertEquals(2, obss.intValue());
+
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldLimitNumberOfObsReturnedToMostReturnNParameter() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> count = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
+		    null, 1, null, null, null, false, null);
+
+		assertEquals(1, count.size());
+
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnRequestedPageOfResults() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> page1 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 0, 2);
+		assertEquals(2, page1.size());
+		assertEquals(Integer.valueOf(1), page1.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), page1.get(1).getObsId());
+
+		List<Obs> page2 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 2, 2);
+		assertEquals(2, page2.size());
+		assertEquals(Integer.valueOf(11), page2.get(0).getObsId());
+		assertEquals(Integer.valueOf(17), page2.get(1).getObsId());
+
+		List<Obs> page3 = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 4, 2);
+		assertEquals(1, page3.size());
+		assertEquals(Integer.valueOf(18), page3.get(0).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnEmptyListWhenStartIndexBeyondResults() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, 10, 5);
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldIgnorePagingWhenMostRecentNIsSet() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		// paging would have skipped the first two rows and returned a single one
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, 2, null, null, null,
+		    false, null, 2, 1);
+		assertEquals(2, result.size());
+		assertEquals(Integer.valueOf(1), result.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), result.get(1).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String,Integer,Integer)
+	 */
+	@Test
+	public void getObservations_shouldReturnAllResultsWhenPagingParamsAreNull() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		List<Obs> result = obsService.getObservations(whom, null, null, null, null, null, sort, null, null, null, null, null,
+		    false, null, null, null);
+		assertEquals(5, result.size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnRequestedPageOfResultsUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(0)
+		        .setMaxResults(2).createObsSearchCriteria();
+		List<Obs> page1 = obsService.getObservations(criteria);
+		assertEquals(2, page1.size());
+		assertEquals(Integer.valueOf(1), page1.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), page1.get(1).getObsId());
+
+		criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(2).setMaxResults(2)
+		        .createObsSearchCriteria();
+		List<Obs> page2 = obsService.getObservations(criteria);
+		assertEquals(2, page2.size());
+		assertEquals(Integer.valueOf(11), page2.get(0).getObsId());
+		assertEquals(Integer.valueOf(17), page2.get(1).getObsId());
+
+		criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(4).setMaxResults(2)
+		        .createObsSearchCriteria();
+		List<Obs> page3 = obsService.getObservations(criteria);
+		assertEquals(1, page3.size());
+		assertEquals(Integer.valueOf(18), page3.get(0).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnEmptyListWhenStartIndexBeyondResultsUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(10)
+		        .setMaxResults(5).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertTrue(result.isEmpty());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldIgnorePagingWhenMostRecentNIsSetUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		// paging would have skipped the first two rows and returned a single one
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setMostRecentN(2)
+		        .setStartIndex(2).setMaxResults(1).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertEquals(2, result.size());
+		assertEquals(Integer.valueOf(1), result.get(0).getObsId());
+		assertEquals(Integer.valueOf(2), result.get(1).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldReturnAllResultsWhenPagingParamsAreNullUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = new ArrayList<>();
+		sort.add("obsId asc");
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).createObsSearchCriteria();
+
+		List<Obs> result = obsService.getObservations(criteria);
+		assertEquals(5, result.size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldSortByObsDatetimeWhenSortIsEmptyUsingObsSearchCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(Collections.singletonList(new Person(8)))
+		        .createObsSearchCriteria();
+
+		List<Obs> obss = obsService.getObservations(criteria);
+
+		assertEquals(8, obss.get(0).getObsId().intValue());
+		assertEquals(7, obss.get(1).getObsId().intValue());
+	}
+
+	/**
+	 * These tests exist to ensure we're pushing the paging parameters down to the Hibernate level (and
+	 * ultimately, the DB level).
+	 *
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldHydrateOnlyTheRequestedPage() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		// the full result set is larger than the page requested below
+		assertEquals(5,
+		    obsService.getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria()).size());
+
+		// otherwise the paged query below would be served from the persistence context
+		Context.clearSession();
+
+		Statistics statistics = getHibernateStatistics();
+		statistics.clear();
+
+		List<Obs> page = obsService.getObservations(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(0).setMaxResults(2).createObsSearchCriteria());
+
+		assertEquals(2, page.size());
+		assertEquals(2, statistics.getEntityStatistics(Obs.class.getName()).getLoadCount(),
+		    "a paged query should hydrate only the rows on the requested page");
+	}
+
+	/**
+	 * For paging, we use the obs_id to provide "total-ordering" of the results ensuring pages are
+	 * consistent across requests in the absence of data changes. These test verify that it is applied.
+	 *
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldOrderByObsIdOnlyForPagedQueries() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		String pagedOrderBy = getOrderByClauseOf(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setMaxResults(2).createObsSearchCriteria());
+		assertTrue(pagedOrderBy.contains("obs_id"),
+		    "a paged query should break ties on the obs id, but sorted by " + pagedOrderBy);
+
+		String unpagedOrderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria());
+		assertFalse(unpagedOrderBy.contains("obs_id"),
+		    "an unpaged query should sort exactly as it did before, but sorted by " + unpagedOrderBy);
+
+		String mostRecentNOrderBy = getOrderByClauseOf(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setMostRecentN(2).setMaxResults(2).createObsSearchCriteria());
+		assertFalse(mostRecentNOrderBy.contains("obs_id"),
+		    "mostRecentN wins over paging, so that query is not paged, but it sorted by " + mostRecentNOrderBy);
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldSortTiesInTheDirectionOfTheRequestedSort() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		String ascendingOrderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom)
+		        .setSort(Collections.singletonList("obsDatetime asc")).setMaxResults(2).createObsSearchCriteria());
+
+		// ascending is SQL's default, so it is rendered by the absence of "desc" rather than by "asc"
+		assertTrue(ascendingOrderBy.contains("obs_id"),
+		    "a paged query should break ties on the obs id, but sorted by " + ascendingOrderBy);
+		assertFalse(ascendingOrderBy.contains("desc"),
+		    "the tiebreaker should follow the direction of the requested sort, but sorted by " + ascendingOrderBy);
+
+		String descendingOrderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom)
+		        .setSort(Collections.singletonList("obsDatetime")).setMaxResults(2).createObsSearchCriteria());
+
+		assertTrue(descendingOrderBy.contains("obs_id desc"),
+		    "the tiebreaker should follow the direction of the requested sort, but sorted by " + descendingOrderBy);
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldNotRepeatAnObsIdSortTheCallerAlreadyAskedFor() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		String orderBy = getOrderByClauseOf(new ObsSearchCriteriaBuilder().setWhom(whom)
+		        .setSort(Collections.singletonList("obsId asc")).setMaxResults(2).createObsSearchCriteria());
+
+		// the caller's own sort already gives a total order, so no tiebreaker is needed on top of it
+		assertEquals(orderBy.indexOf("obs_id"), orderBy.lastIndexOf("obs_id"),
+		    "the obs id should be sorted on once, but sorted by " + orderBy);
+		assertFalse(orderBy.contains("desc"), "the caller asked to sort ascending, but sorted by " + orderBy);
+	}
+
+	/**
+	 * The first page of a walk needs the same total ordering as the pages that follow it, otherwise a
+	 * row can be served twice or skipped as the client moves on to page two.
+	 *
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldOrderTheFirstPageOfAWalkTheSameWayAsTheRest() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		String firstPageOrderBy = getOrderByClauseOf(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(0).createObsSearchCriteria());
+
+		assertTrue(firstPageOrderBy.contains("obs_id"),
+		    "a start index of 0 is still the first page of a walk, but sorted by " + firstPageOrderBy);
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldFailIfTheSearchCriteriaAreNull() {
+		assertThrows(IllegalArgumentException.class, () -> obsService.getObservations((ObsSearchCriteria) null));
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldCountTheObsMatchingTheCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(Collections.singletonList(new Person(2)))
+		        .createObsSearchCriteria();
+
+		assertEquals(Integer.valueOf(5), obsService.getObservationCount(criteria));
+	}
+
+	/**
+	 * The point of counting by criteria is that a client can hand the very same criteria object to both
+	 * calls and get a total that describes the result set it is paging through, so the row bounds and
+	 * the sort must not narrow the count.
+	 *
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldIgnoreTheSortAndRowBoundsInTheCriteria() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		ObsSearchCriteria pagedCriteria = new ObsSearchCriteriaBuilder().setWhom(whom)
+		        .setSort(Collections.singletonList("obsId asc")).setStartIndex(2).setMaxResults(2).createObsSearchCriteria();
+
+		assertEquals(2, obsService.getObservations(pagedCriteria).size());
+		assertEquals(Integer.valueOf(5), obsService.getObservationCount(pagedCriteria),
+		    "the count should describe the whole result set being paged through, not the page");
+
+		ObsSearchCriteria mostRecentNCriteria = new ObsSearchCriteriaBuilder().setWhom(whom).setMostRecentN(2)
+		        .createObsSearchCriteria();
+
+		assertEquals(Integer.valueOf(5), obsService.getObservationCount(mostRecentNCriteria),
+		    "mostRecentN bounds the rows returned, not the rows that match");
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldCountVoidedObsOnlyWhenAskedTo() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		// person 9 has obs 9 and the voided obs 10
+		List<Person> whom = Collections.singletonList(new Person(9));
+
+		assertEquals(Integer.valueOf(1),
+		    obsService.getObservationCount(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria()));
+
+		assertEquals(Integer.valueOf(2), obsService.getObservationCount(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setIncludeVoidedObs(true).createObsSearchCriteria()));
+	}
+
+	/**
+	 * The count is assembled from the criteria in a different place to the query it is meant to
+	 * describe, so this pins the invariant that ties the two together: however the criteria filter,
+	 * counting them has to give the size of the unbounded result those same criteria fetch.
+	 *
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldCountTheSameRowsTheQueryReturns() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		assertCountAgreesWithQuery(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setQuestions(Collections.singletonList(new Concept(1)))
+		            .setLocations(Collections.singletonList(new Location(1))),
+		    3);
+
+		assertCountAgreesWithQuery(new ObsSearchCriteriaBuilder().setWhom(whom).setObsGroupId(2), 1);
+
+		assertCountAgreesWithQuery(new ObsSearchCriteriaBuilder().setWhom(whom).setAccessionNumber("AN1"), 1);
+
+		assertCountAgreesWithQuery(new ObsSearchCriteriaBuilder().setVisits(Collections.singletonList(new Visit(8))), 2);
+	}
+
+	/**
+	 * Asserts that counting the given criteria agrees with fetching them, and that both agree with the
+	 * number of rows the caller expects, the latter so that an over-restrictive filter cannot make the
+	 * agreement vacuously true of an empty result.
+	 */
+	private void assertCountAgreesWithQuery(ObsSearchCriteriaBuilder criteria, int expected) {
+		List<Obs> matching = obsService.getObservations(criteria.createObsSearchCriteria());
+
+		assertEquals(expected, matching.size(), "the criteria should match the rows the test expects");
+		assertEquals(Integer.valueOf(expected), obsService.getObservationCount(criteria.createObsSearchCriteria()),
+		    "counting the criteria should agree with fetching them");
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldAgreeWithTheEquivalentPositionalCall() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		Integer expected = obsService.getObservationCount(whom, null, null, null, null, null, null, null, null, null, false,
+		    null);
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria();
+
+		assertEquals(expected, obsService.getObservationCount(criteria));
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservationCount_shouldFailIfTheSearchCriteriaAreNull() {
+		assertThrows(IllegalArgumentException.class, () -> obsService.getObservationCount((ObsSearchCriteria) null));
+	}
+
+	/**
+	 * Runs the query the given criteria describe and returns the ORDER BY clause of the SQL Hibernate
+	 * generated for it, lowercased.
+	 */
+	private String getOrderByClauseOf(ObsSearchCriteria criteria) {
+		Statistics statistics = getHibernateStatistics();
+		statistics.clear();
+
+		obsService.getObservations(criteria);
+
+		String sql = Arrays.stream(statistics.getQueries()).map(query -> query.toLowerCase(Locale.ROOT))
+		        .filter(query -> query.contains(" from obs ")).findFirst().orElseThrow(() -> new AssertionError(
+		                "no query against the obs table was recorded, only " + Arrays.toString(statistics.getQueries())));
+
+		int orderBy = sql.indexOf("order by");
+		assertTrue(orderBy >= 0, "the observations query should have an ORDER BY clause, but was " + sql);
+
+		return sql.substring(orderBy);
+	}
+
+	/**
+	 * @return the Hibernate statistics, which record the generated SQL and the entities loaded by it
+	 */
+	private Statistics getHibernateStatistics() {
+		Statistics statistics = ((SessionFactory) applicationContext.getBean("sessionFactory")).getStatistics();
+
+		// a test that silently measures nothing is worse than no test, so fail loudly if the platform
+		// ever stops collecting statistics rather than reporting it as a paging regression
+		assertTrue(statistics.isStatisticsEnabled(),
+		    "Hibernate statistics must be enabled for this test to observe the query");
+
+		return statistics;
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldOrderTiedRowsConsistentlyAcrossPages() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		// obs 11 and 18 share an obsDatetime, as do obs 2 and 17, so sorting on obsDatetime alone leaves
+		// the order of those rows, and therefore the page a row lands on, up to the database
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		List<Integer> pagedIds = new ArrayList<>();
+		for (int startIndex = 0; startIndex < 6; startIndex += 2) {
+			ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(startIndex)
+			        .setMaxResults(2).createObsSearchCriteria();
+
+			obsService.getObservations(criteria).forEach(obs -> pagedIds.add(obs.getObsId()));
+		}
+
+		assertEquals(Arrays.asList(18, 11, 17, 2, 1), pagedIds, "walking the pages should return each row exactly once");
+
+		List<Integer> unpagedIds = new ArrayList<>();
+		obsService.getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).createObsSearchCriteria())
+		        .forEach(obs -> unpagedIds.add(obs.getObsId()));
+
+		assertEquals(new HashSet<>(unpagedIds), new HashSet<>(pagedIds), "paging should not lose or duplicate rows");
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldIgnoreOutOfRangePagingParameters() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+
+		// a maxResults of zero is not a usable page size, so every matching row comes back
+		assertEquals(5,
+		    obsService
+		            .getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).setMaxResults(0).createObsSearchCriteria())
+		            .size());
+
+		// and neither is a negative one
+		assertEquals(5, obsService
+		        .getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).setMaxResults(-1).createObsSearchCriteria())
+		        .size());
+
+		// nor can a negative start index be an offset, so the results start from the first row
+		assertEquals(5, obsService
+		        .getObservations(new ObsSearchCriteriaBuilder().setWhom(whom).setStartIndex(-1).createObsSearchCriteria())
+		        .size());
+
+		// the same holds through the positional overload
+		assertEquals(5, obsService
+		        .getObservations(whom, null, null, null, null, null, null, null, null, null, null, null, false, null, -1, 0)
+		        .size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldOffsetWithoutALimitWhenOnlyStartIndexIsGiven() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		List<Person> whom = Collections.singletonList(new Person(2));
+		List<String> sort = Collections.singletonList("obsId asc");
+
+		List<Obs> result = obsService.getObservations(
+		    new ObsSearchCriteriaBuilder().setWhom(whom).setSort(sort).setStartIndex(2).createObsSearchCriteria());
+
+		assertEquals(3, result.size(), "the rows before the start index should be skipped and the rest returned");
+		assertEquals(Integer.valueOf(11), result.get(0).getObsId());
+		assertEquals(Integer.valueOf(18), result.get(2).getObsId());
+	}
+
+	/**
+	 * @see ObsService#getObservations(ObsSearchCriteria)
+	 */
+	@Test
+	public void getObservations_shouldNotModifyTheSortListItWasGiven() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		// an empty list is where the default sort gets applied, and callers are free to pass one they
+		// do not expect us to write to
+		List<String> sort = Collections.emptyList();
+
+		ObsSearchCriteria criteria = new ObsSearchCriteriaBuilder().setWhom(Collections.singletonList(new Person(2)))
+		        .setSort(sort).createObsSearchCriteria();
+
+		assertEquals(5, obsService.getObservations(criteria).size());
+		assertTrue(sort.isEmpty(), "the caller's sort list should be left alone");
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldNotIncludeVoidedObs() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(9)), null, null, null, null, null,
+		    null, null, null, null, null, false, null);
+
+		assertEquals(1, obss.size());
+
+		assertEquals(9, obss.get(0).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldNotIncludeVoidedObsInCount() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		Integer obss = obsService.getObservationCount(Collections.singletonList(new Person(9)), null, null, null, null, null,
+		    null, null, null, false, null);
+
+		assertEquals(1, obss.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldReturnObsWhoseGroupIdIsGivenObsGroupId() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, null, null, null, null, null, null, null, 2 /*obsGroupId*/, null,
+		    null, false, null);
+
+		assertEquals(2, obss.size());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldReturnCountOfObsWhoseGroupIdIsGivenObsGroupId() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, null, null, null, null, 2 /*obsGroupId*/, null, null,
+		    false, null);
+
+		assertEquals(2, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldReturnObsWhosePersonIsAPatientOnly() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PATIENT),
+		    null, null, null, null, null, null, false, null);
+
+		assertEquals(15, obss.size());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldReturnCountOfObsWhosePersonIsAPatientOnly() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, null, null,
+		    Collections.singletonList(PERSON_TYPE.PATIENT), null, null, null, null, false, null);
+
+		assertEquals(15, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldReturnAllObsWhosePersonIsAPersonOnly() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PERSON),
+		    null, null, null, null, null, null, false, null);
+
+		assertEquals(18, obss.size());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldReturnCountOfAllObsWhosePersonIsAPersonOnly() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, null, null, Collections.singletonList(PERSON_TYPE.PERSON),
+		    null, null, null, null, false, null);
+
+		assertEquals(18, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldReturnObsWhosePersonIsAUserOnly() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
+		    null, null, null, null, null, null, false, null);
+
+		assertEquals(2, obss.size());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldReturnCountOfObsWhosePersonIsAUserOnly() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
+		    null, null, null, null, false, null);
+
+		assertEquals(2, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldReturnObsWithLocationInGivenLocationsParameter() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(null, null, null, null, null, Collections.singletonList(new Location(1)),
+		    null, null, null, null, null, false, null);
+
+		assertEquals(8, obss.size());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldReturnCountOfObsWithLocationInGivenLocationsParameter() {
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, null, null, null,
+		    Collections.singletonList(new Location(1)), null, null, null, false, null);
+
+		assertEquals(8, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List,List,List,List,List,List,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservationCount_shouldReturnCountOfObsWithMatchingAccessionNumber() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		Integer count = obsService.getObservationCount(null, null, null, null, null, null, null, null, null, false, "AN1");
+
+		assertEquals(2, count.intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldSortReturnedObsByConceptIdIfSortIsConcept() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(7)), null, null, null, null, null,
+		    Arrays.asList("concept", "obsDatetime"), null, null, null, null, false, null);
+
+		// check the order of a few of the obs returned
+		assertEquals(11, obss.get(0).getObsId().intValue());
+		assertEquals(9, obss.get(1).getObsId().intValue());
+		assertEquals(16, obss.get(2).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldSortReturnedObsByObsDatetimeIfSortIsEmpty() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
+		    new ArrayList<>(), null, null, null, null, false, null);
+
+		assertEquals(8, obss.get(0).getObsId().intValue());
+		assertEquals(7, obss.get(1).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean,String)
+	 */
+	@Test
+	public void getObservations_shouldOnlyReturnedObsWithMatchingAccessionNumber() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss1 = obsService.getObservations(null, null, null, null, null, null, null, null, null, null, null, false,
+		    "AN1");
+
+		List<Obs> obss2 = obsService.getObservations(Collections.singletonList(new Person(6)), null, null, null, null, null,
+		    null, null, null, null, null, false, "AN2");
+
+		List<Obs> obss3 = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
+		    null, null, null, null, null, false, "AN2");
+
+		assertEquals(2, obss1.size());
+		assertEquals(1, obss2.size());
+		assertEquals(0, obss3.size());
+	}
+
+	/**
+	 * @see ObsService#getObservations(String)
+	 */
+	@Test
+	public void getObservations_shouldGetObsMatchingPatientIdentifierInSearchString() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		updateSearchIndex();
+
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations("12345K");
+
+		assertEquals(2, obss.size());
+		assertEquals(4, obss.get(0).getObsId().intValue());
+		assertEquals(3, obss.get(1).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(String)
+	 */
+	@Test
+	public void getObservations_shouldGetObsMatchingEncounterIdInSearchString() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations("5");
+
+		assertEquals(2, obss.size());
+		assertEquals(16, obss.get(0).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservations(String)
+	 */
+	@Test
+	public void getObservations_shouldGetObsMatchingObsIdInSearchString() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservations("15");
+
+		assertEquals(1, obss.size());
+		assertEquals(15, obss.get(0).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservationsByPerson(Person)
+	 */
+	@Test
+	public void getObservationsByPerson_shouldGetAllObservationsAssignedToGivenPerson() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservationsByPerson(new Person(7));
+
+		assertEquals(9, obss.size());
+		assertEquals(16, obss.get(0).getObsId().intValue());
+		assertEquals(7, obss.get(8).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservationsByPersonAndConcept(Person,Concept)
+	 */
+	@Test
+	public void getObservationsByPersonAndConcept_shouldGetObservationsMatchingPersonAndQuestion() {
+		ObsService obsService = Context.getObsService();
+
+		List<Obs> obss = obsService.getObservationsByPersonAndConcept(new Person(7), new Concept(5089));
+
+		assertEquals(3, obss.size());
+		assertEquals(16, obss.get(0).getObsId().intValue());
+		assertEquals(10, obss.get(1).getObsId().intValue());
+		assertEquals(7, obss.get(2).getObsId().intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservationsByPersonAndConcept(Person,Concept)
+	 */
+	@Test
+	public void getObservationsByPersonAndConcept_shouldNotFailWithNullPersonParameter() {
+		ObsService obsService = Context.getObsService();
+
+		assertDoesNotThrow(() -> obsService.getObservationsByPersonAndConcept(null, new Concept(7)));
+	}
+
+	/**
+	 * @see ObsService#purgeObs(Obs)
+	 */
+	@Test
+	public void purgeObs_shouldDeleteTheGivenObsFromTheDatabase() throws IOException {
+		ObsService obsService = Context.getObsService();
+		Obs obs = obsService.getObs(7);
+
+		obsService.purgeObs(obs);
+
+		assertNull(obsService.getObs(7));
+		executeDataSet(COMPLEX_OBS_XML);
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
+		    adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = null;
+		try {
+			//TODO: getComplexObs should fail if image is missing but legacy code did not fail so the logic is preserved
+			//createdFile = createImage(complexObsDir, "openmrs_logo_small.gif");
+
+			Obs complexObs = obsService.getComplexObs(44, ComplexObsHandler.RAW_VIEW);
+			// obs #44 is coded by the concept complex #8473 pointing to ImageHandler
+			// ImageHandler inherits AbstractHandler which handles complex data files on disk
+			assertNotNull(complexObs.getComplexData());
+			obsService.purgeObs(complexObs);
+			assertNull(obsService.getObs(obs.getObsId()));
+		} finally {
+			if (createdFile != null && createdFile.exists()) {
+				createdFile.delete();
+			}
+		}
+
+	}
+
+	@Test
+	public void purgeObs_shouldStillDeleteObsEvenIfPurgeComplexDataFails() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+
+		ObsService os = Context.getObsService();
+
+		// Store the original handler so we can restore it after the test.
+		ComplexObsHandler originalHandler = os.getHandler("ImageHandler");
+
+		/**
+		 * Define a custom handler that simulates failure by always returning false from purgeComplexData().
+		 * This mimics the scenario where the backing file is missing on disk.
+		 */
+		ComplexObsHandler failingHandler = new ComplexObsHandler() {
+
+			@Override
+			public Obs saveObs(Obs obs) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public Obs getObs(Obs obs, String view) {
+				return obs; // Not used in this test
+			}
+
+			@Override
+			public boolean purgeComplexData(Obs obs) {
+				return false; // Force failure
+			}
+
+			@Override
+			public String[] getSupportedViews() {
+				return new String[0]; // Not used in this test
+			}
+
+			@Override
+			public boolean supportsView(String view) {
+				return false; // Not used in this test
+			}
+		};
+
+		try {
+			// Override the ImageHandler with our failing version for this test scenario.
+			os.registerHandler("ImageHandler", failingHandler);
+
+			// Retrieve the known complex obs from the XML dataset.
+			Obs complexObs = os.getObs(44);
+			assertNotNull(complexObs);
+			assertTrue(complexObs.isComplex());
+
+			Integer obsId = complexObs.getObsId();
+
+			// Ensure purgeComplexData() returns false
+			assertFalse(failingHandler.purgeComplexData(complexObs));
+
+			// After the fix, purgeObs should NOT throw even when purgeComplexData fails.
+			assertDoesNotThrow(() -> os.purgeObs(complexObs));
+
+			// The obs should still be deleted from the database.
+			assertNull(os.getObs(obsId));
+
+		} finally {
+			// Ensure global state is restored so other tests are not affected.
+			os.registerHandler("ImageHandler", originalHandler);
+		}
+	}
+
+	/**
+	 * @see ObsService#purgeObs(Obs,boolean)
+	 */
+	@Test
+	public void purgeObs_shouldThrowAPIExceptionIfGivenTrueCascade() {
+		assertThrows(APIException.class, () -> Context.getObsService().purgeObs(new Obs(1), true));
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldAllowSettingPropertiesOnObs() {
+		ObsService obsService = Context.getObsService();
+
+		Order order = null;
+		Concept concept = Context.getConceptService().getConcept(3);
+		Patient patient = new Patient(2);
+		Encounter encounter = new Encounter(3);
+		Date datetime = new Date();
+		Location location = new Location(1);
+		Integer valueGroupId = 7;
+		Date valueDatetime = new Date();
+		Concept valueCoded = new Concept(3);
+		Double valueNumeric = 2.0;
+		String valueModifier = "cc";
+		String valueText = "value text2";
+		String comment = "commenting2";
+
+		Obs obs = new Obs();
+		obs.setOrder(order);
+		obs.setConcept(concept);
+		obs.setPerson(patient);
+		obs.setEncounter(encounter);
+		obs.setObsDatetime(datetime);
+		obs.setLocation(location);
+		obs.setValueGroupId(valueGroupId);
+		obs.setValueDatetime(valueDatetime);
+		obs.setValueCoded(valueCoded);
+		obs.setValueNumeric(valueNumeric);
+		obs.setValueModifier(valueModifier);
+		obs.setValueText(valueText);
+		obs.setComment(comment);
+
+		Obs saved = obsService.saveObs(obs, null);
+
+		assertEquals(order, saved.getOrder());
+		assertEquals(patient, saved.getPerson());
+		assertEquals(comment, saved.getComment());
+		assertEquals(concept, saved.getConcept());
+		assertEquals(encounter, saved.getEncounter());
+		assertEquals(DateUtil.truncateToSeconds(datetime), saved.getObsDatetime());
+		assertEquals(location, saved.getLocation());
+		assertEquals(valueGroupId, saved.getValueGroupId());
+		assertEquals(DateUtil.truncateToSeconds(valueDatetime), saved.getValueDatetime());
+		assertEquals(valueCoded, saved.getValueCoded());
+		assertEquals(valueNumeric, saved.getValueNumeric());
+		assertEquals(valueModifier, saved.getValueModifier());
+		assertEquals(valueText, saved.getValueText());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldCreateVeryBasicObsAndAddNewObsId() {
+		Obs o = new Obs();
+		o.setConcept(Context.getConceptService().getConcept(3));
+		o.setPerson(new Patient(2));
+		o.setEncounter(new Encounter(3));
+		o.setObsDatetime(new Date());
+		o.setLocation(new Location(1));
+		o.setValueNumeric(50d);
+
+		Obs oSaved = Context.getObsService().saveObs(o, null);
+
+		// make sure the returned Obs and the passed in obs
+		// now both have primary key obsIds
+		assertTrue(oSaved.getObsId().equals(o.getObsId()));
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldReturnADifferentObjectWhenUpdatingAnObs() {
+		ObsService obsService = Context.getObsService();
+
+		Obs obs = obsService.getObs(7);
+
+		// change something on the obs and save it again
+		obs.setComment("A new comment");
+		Obs obsSaved = obsService.saveObs(obs, "Testing that a new obs is returned");
+
+		assertFalse(obsSaved.getObsId().equals(obs.getObsId()));
+	}
+
+	/**
+	 * @see ObsService#unvoidObs(Obs)
+	 */
+	@Test
+	public void unvoidObs_shouldCascadeUnvoidToChildGroupedObs() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		// a obs with child groups
+		Obs parentObs = obsService.getObs(2);
+
+		obsService.voidObs(parentObs, "testing void cascade to child obs groups");
+
+		assertTrue(obsService.getObs(9).getVoided());
+		assertTrue(obsService.getObs(10).getVoided());
+	}
+
+	/**
+	 * @see ObsService#unvoidObs(Obs)
+	 */
+	@Test
+	public void unvoidObs_shouldUnsetVoidedBitOnGivenObs() {
+		ObsService obsService = Context.getObsService();
+
+		Obs obs = obsService.getObs(7);
+
+		obsService.unvoidObs(obs);
+
+		assertFalse(obs.getVoided());
+	}
+
+	/**
+	 * @see ObsService#voidObs(Obs,String)
+	 */
+	@Test
+	public void voidObs_shouldFailIfReasonParameterIsEmpty() {
+		ObsService obsService = Context.getObsService();
+
+		Obs obs = obsService.getObs(7);
+
+		assertThrows(IllegalArgumentException.class, () -> obsService.voidObs(obs, ""));
+	}
+
+	/**
+	 * @see ObsService#voidObs(Obs,String)
+	 */
+	@Test
+	public void voidObs_shouldSetVoidedBitOnGivenObs() {
+		ObsService obsService = Context.getObsService();
+
+		Obs obs = obsService.getObs(7);
+
+		obsService.voidObs(obs, "testing void function");
+
+		assertTrue(obs.getVoided());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldSetCreatorAndDateCreatedOnNewObs() {
+		Obs o = new Obs();
+		o.setConcept(Context.getConceptService().getConcept(3));
+		o.setPerson(new Patient(2));
+		o.setEncounter(new Encounter(3));
+		o.setObsDatetime(new Date());
+		o.setLocation(new Location(1));
+		o.setValueNumeric(50d);
+
+		Context.getObsService().saveObs(o, null);
+		assertNotNull(o.getDateCreated());
+		assertNotNull(o.getCreator());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldCascadeSaveToChildObsGroups() {
+		ObsService obsService = Context.getObsService();
+
+		Obs parentObs = new Obs();
+		parentObs.setConcept(Context.getConceptService().getConcept(3));
+		parentObs.setObsDatetime(new Date());
+		parentObs.setPerson(new Patient(2));
+		parentObs.setLocation(new Location(1));
+
+		Obs groupMember = new Obs();
+		groupMember.setConcept(Context.getConceptService().getConcept(3));
+		groupMember.setValueNumeric(1.0);
+		groupMember.setObsDatetime(new Date());
+		groupMember.setPerson(new Patient(2));
+		groupMember.setLocation(new Location(1));
+		parentObs.addGroupMember(groupMember);
+
+		obsService.saveObs(parentObs, null);
+
+		// make sure the child obs was saved
+		assertNotNull(groupMember.getObsId());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldCascadeUpdateToNewChildObsGroups() {
+		executeDataSet(INITIAL_OBS_XML);
+
+		ObsService obsService = Context.getObsService();
+
+		// a obs with child groups
+		Obs origParentObs = obsService.getObs(2);
+		Set<Obs> originalMembers = new HashSet<>(origParentObs.getGroupMembers(true));
+		assertEquals(3, originalMembers.size());
+		assertTrue(originalMembers.contains(obsService.getObs(9)));
+		assertTrue(originalMembers.contains(obsService.getObs(10)));
+
+		Obs groupMember = new Obs();
+		groupMember.setConcept(Context.getConceptService().getConcept(3));
+		groupMember.setObsDatetime(new Date());
+		groupMember.setPerson(new Patient(2));
+		groupMember.setLocation(new Location(2));
+		groupMember.setValueNumeric(50d);
+		origParentObs.addGroupMember(groupMember);
+		assertNotNull(groupMember.getObsGroup());
+
+		Obs newParentObs = obsService.saveObs(origParentObs, "Updating obs group");
+		assertEquals(origParentObs, newParentObs);
+		assertEquals(4, newParentObs.getGroupMembers(true).size());
+		// make sure the api filled in all of the necessary ids again
+		assertNotNull(groupMember.getObsId());
+		assertTrue(newParentObs.getGroupMembers(true).contains(obsService.getObs(9)));
+		assertTrue(newParentObs.getGroupMembers(true).contains(obsService.getObs(10)));
+		assertTrue(newParentObs.getGroupMembers(true).contains(obsService.getObs(groupMember.getObsId())));
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List, boolean)
+	 */
+	@Test
+	public void getObservationCount_shouldIncludeVoidedObservationsUsingTheSpecifiedConceptNamesAsAnswers() {
+		ObsService os = Context.getObsService();
+		Obs o = new Obs();
+		o.setConcept(Context.getConceptService().getConcept(3));
+		o.setPerson(new Patient(2));
+		o.setEncounter(new Encounter(3));
+		o.setObsDatetime(new Date());
+		o.setLocation(new Location(1));
+		ConceptName cn1 = new ConceptName(1847);
+		o.setValueCodedName(cn1);
+		os.saveObs(o, null);
+
+		Obs o2 = new Obs();
+		o2.setConcept(Context.getConceptService().getConcept(3));
+		o2.setPerson(new Patient(2));
+		o2.setEncounter(new Encounter(3));
+		o2.setObsDatetime(new Date());
+		o2.setLocation(new Location(1));
+		ConceptName cn2 = new ConceptName(2453);
+		o2.setValueCodedName(cn2);
+		o2.setVoided(true);
+		os.saveObs(o2, null);
+
+		List<ConceptName> names = new LinkedList<>();
+		names.add(cn1);
+		names.add(cn2);
+		assertEquals(2, os.getObservationCount(names, true).intValue());
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List, boolean)
+	 */
+	@Test
+	public void getObservationCount_shouldReturnTheCountOfAllObservationsUsingTheSpecifiedConceptNamesAsAnswers() {
+		ObsService os = Context.getObsService();
+		Obs o = new Obs();
+		o.setConcept(Context.getConceptService().getConcept(3));
+		o.setPerson(new Patient(2));
+		o.setEncounter(new Encounter(3));
+		o.setObsDatetime(new Date());
+		o.setLocation(new Location(1));
+		ConceptName cn1 = new ConceptName(1847);
+		o.setValueCodedName(cn1);
+		os.saveObs(o, null);
+
+		Obs o2 = new Obs();
+		o2.setConcept(Context.getConceptService().getConcept(3));
+		o2.setPerson(new Patient(2));
+		o2.setEncounter(new Encounter(3));
+		o2.setObsDatetime(new Date());
+		o2.setLocation(new Location(1));
+		ConceptName cn2 = new ConceptName(2453);
+		o2.setValueCodedName(cn2);
+		os.saveObs(o2, null);
+
+		List<ConceptName> names = new LinkedList<>();
+		names.add(cn1);
+		names.add(cn2);
+		assertEquals(2, os.getObservationCount(names, true).intValue());
+
+	}
+
+	/**
+	 * @see ObsService#getObservationCount(List, boolean)
+	 */
+	@Test
+	public void getObservationCount_shouldReturnZeroIfNoObservationIsUsingAnyOfTheConcepNamesInTheList() {
+		List<ConceptName> names = new LinkedList<>();
+		names.add(new ConceptName(1847));
+		names.add(new ConceptName(2453));
+		assertEquals(0, Context.getObsService().getObservationCount(names, true).intValue());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldLinkOriginalAndUpdatedObs() {
+		// build
+		int obsId = 7;
+		ObsService obsService = Context.getObsService();
+		Obs obs = obsService.getObs(obsId);
+
+		// operate
+		// change something on the obs and save it again
+		obs.setComment("A new comment");
+		Obs obsSaved = obsService.saveObs(obs, "Testing linkage");
+		obs = obsService.getObs(obsId);
+
+		// check
+		assertNotNull(obsSaved);
+		assertNotNull(obs);
+		assertEquals(obs, obsSaved.getPreviousVersion());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldSetVoidReasonMessageToChangeMessage() {
+
+		// Set changeMessage arg to saveObs() method - should equal void reason on new Obs
+		String changeMessage = "Testing TRUNK-3701";
+
+		int obsId = 7;
+		ObsService obsService = Context.getObsService();
+		Obs obs = obsService.getObs(obsId);
+
+		// change something on the obs and save it again
+		obs.setComment("Comment to make sure obs changes");
+
+		obsService.saveObs(obs, changeMessage);
+		obs = obsService.getObs(obsId); //refetch original (now voided) obs
+
+		// check
+		assertEquals(changeMessage, obs.getVoidReason());
+	}
+
+	@Test
+	public void saveObs_shouldOverwriteObsPersonValueWithEncounterPatient() {
+		String changeMessage = "Testing TRUNK-3283";
+
+		executeDataSet(ENCOUNTER_OBS_XML);
+		ObsService obsService = Context.getObsService();
+		Obs obs = obsService.getObs(13);
+		//overwrite ObsPerson with EncounterPatient
+		Obs obsSaved = obsService.saveObs(obs, changeMessage);
+
+		assertEquals(obs.getPerson(), obsSaved.getEncounter().getPatient());
+	}
+
+	/**
+	 * @see ObsService#purgeObs(Obs,boolean)
+	 */
+	@Test
+	public void purgeObs_shouldDeleteAnyObsGroupMembersBeforeDeletingTheObs() {
+
+		executeDataSet(INITIAL_OBS_XML);
+		ObsService obsService = Context.getObsService();
+
+		final int parentObsId = 1;
+		Obs obs = obsService.getObs(parentObsId);
+
+		final int childObsId = 2;
+		final int unrelatedObsId = 3;
+		final int orderReferencingObsId = 4;
+		obs.addGroupMember(obsService.getObs(childObsId));
+		obs.addGroupMember(obsService.getObs(orderReferencingObsId));
+
+		final int conceptProposalObsId = 5;
+		ConceptProposal conceptProposal = new ConceptProposal();
+		conceptProposal.setObs(obsService.getObs(conceptProposalObsId));
+		obs.addGroupMember(conceptProposal.getObs());
+
+		//before calling purgeObs method the Obs exists
+		assertNotNull(obsService.getObs(parentObsId));
+		assertNotNull(obsService.getObs(childObsId));
+		assertNotNull(obsService.getObs(unrelatedObsId));
+		assertNotNull(obsService.getObs(orderReferencingObsId));
+		assertNotNull(obsService.getObs(conceptProposalObsId));
+
+		Context.getObsService().purgeObs(obs, false);
+
+		//	After calling purgeObs method Obs are deleted
+		assertNull(obsService.getObs(parentObsId));
+		assertNull(obsService.getObs(childObsId));
+		assertNotNull(obsService.getObs(unrelatedObsId));
+		assertNull(obsService.getObs(orderReferencingObsId));
+		assertNull(obsService.getObs(conceptProposalObsId));
+	}
+
+	/**
+	 * @see ObsService#purgeObs(Obs,boolean)
+	 */
+	@Test
+	public void purgeObs_shouldNotDeleteReferencedOrdersWhenPurgingObs() {
+
+		executeDataSet(INITIAL_OBS_XML);
+		ObsService obsService = Context.getObsService();
+		final OrderService orderService = Context.getOrderService();
+
+		final int orderReferencingObsId = 4;
+		final Obs obs = obsService.getObs(orderReferencingObsId);
+
+		final Order order = obs.getOrder();
+		final Integer referencedOrderId = order.getOrderId();
+
+		Context.getObsService().purgeObs(obs, false);
+
+		assertNull(obsService.getObs(orderReferencingObsId));
+		assertNotNull(orderService.getOrder(referencedOrderId));
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldDeleteThePreviousFileWhenAComplexObservationIsUpdatedWithANewComplexValue() {
+
+		String changeMessage = "Testing TRUNK-4538";
+
+		executeDataSet(COMPLEX_OBS_XML);
+
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		AdministrationService as = Context.getAdministrationService();
+
+		// make sure the file isn't there to begin with
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(
+		    as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		final File createdFile = new File(complexObsDir, "nameOfFile.txt");
+		if (createdFile.exists())
+			createdFile.delete();
+
+		// the complex data to put onto an obs that will be saved
+		Reader input = new CharArrayReader("This is a string to save to a file".toCharArray());
+		ComplexData complexData = new ComplexData("nameOfFile.txt", input);
+
+		// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+		// this is a concept mapped to the text handler
+		Concept questionConcept = cs.getConcept(8474);
+
+		Obs obsToSave = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+		obsToSave.setComplexData(complexData);
+		os.saveObs(obsToSave, null);
+
+		File updatedFile = new File(complexObsDir, "nameOfUpdatedFile.txt");
+		if (updatedFile.exists())
+			updatedFile.delete();
+
+		// the complex data to put onto an obs that will be updated
+		Reader updatedInput = new CharArrayReader(
+		        "This is a string to save to a file which uploaded to update an obs".toCharArray());
+		ComplexData updatedComplexData = new ComplexData("nameOfUpdatedFile.txt", updatedInput);
+
+		obsToSave.setComplexData(updatedComplexData);
+		try {
+			os.saveObs(obsToSave, changeMessage);
+
+			assertFalse(createdFile.exists());
+		} finally {
+			// we always have to delete this inside the same unit test because it is outside the
+			// database and hence can't be "rolled back" like everything else
+			updatedFile.delete();
+		}
+
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldNotVoidAnObsWithNoChanges() {
+		executeDataSet(ENCOUNTER_OBS_XML);
+		ObsService os = Context.getObsService();
+		Obs obs = os.getObs(14);
+		assertFalse(obs.getGroupMembers(true).isEmpty());
+		assertFalse(obs.getGroupMembers(false).isEmpty());
+		assertFalse(obs.isDirty());
+		Set<Obs> originalMembers = new HashSet<>(obs.getGroupMembers());
+		for (Obs o : originalMembers) {
+			assertFalse(o.isDirty());
+		}
+		Obs saveObs = os.saveObs(obs, "no change");
+		assertEquals(obs, saveObs);
+		assertFalse(saveObs.getVoided());
+
+		Set<Obs> savedMembers = new HashSet<>(saveObs.getGroupMembers());
+		assertFalse(saveObs.isDirty());
+		for (Obs o : savedMembers) {
+			assertFalse(o.isDirty(), "obs" + o.getId());
+		}
+
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldCopyTheFormNamespaceAndPathFieldInEditedObs() {
+		executeDataSet(INITIAL_OBS_XML);
+		Obs obs = Context.getObsService().getObs(7);
+		obs.setValueNumeric(5.0);
+		Obs o2 = Context.getObsService().saveObs(obs, "just testing");
+		assertNotNull(obs.getFormFieldNamespace());
+
+		// fetch the obs from the database again
+		obs = Context.getObsService().getObs(o2.getObsId());
+		assertNotNull(obs.getFormFieldNamespace());
+		assertNotNull(obs.getFormFieldPath());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldVoidOnlyOldObsWhenAllObsEditedAndNewObsAdded() {
+		executeDataSet(INITIAL_OBS_XML);
+		ConceptService cs = Context.getConceptService();
+		Date newDate = new Date();
+		//Update the entire Obs Tree obsDateTime
+		Obs obs = Context.getObsService().getObs(2);
+		obs.setObsDatetime(new Date());
+		Obs child = null;
+		for (Obs member : obs.getGroupMembers()) {
+			member.setObsDatetime(newDate);
+			if (member.getId() == 17) {
+				child = member;
+			}
+		}
+
+		Obs child1 = child.getGroupMembers().iterator().next();
+		child1.setObsDatetime(newDate);
+
+		//add a new obs at depth>1
+		Obs o1 = new Obs();
+		o1.setConcept(cs.getConcept(3));
+		o1.setDateCreated(newDate);
+		o1.setCreator(Context.getAuthenticatedUser());
+		o1.setLocation(new Location(1));
+		o1.setObsDatetime(newDate);
+		o1.setValueText("NewObs Value");
+		o1.setPerson(new Patient(2));
+		child.addGroupMember(o1);
+
+		int count = 0;
+
+		Obs newObs = Context.getObsService().saveObs(obs, "just testing");
+
+		assertEquals(newObs.getObsDatetime().toString(), newDate.toString());
+
+		for (Obs member : newObs.getGroupMembers()) {
+			assertEquals(member.getObsDatetime().toString(), newDate.toString());
+			if (member.getGroupMembers() != null) {
+
+				for (Obs memberChild : member.getGroupMembers()) {
+					assertEquals(memberChild.getObsDatetime().toString(), newDate.toString());
+					if (memberChild.getValueText() != null && memberChild.getValueText().equals("NewObs Value")) {
+						count++;
+					}
+				}
+				if (count == 0) {
+					fail("New Obs not created");
+				}
+			}
+		}
+	}
+
+	@Test
+	public void saveObs_shouldSetStatusToAmendedWhenModifyingAnObsWithFinalStatus() throws Exception {
+		Obs existing = obsService.getObs(7);
+		existing.setValueNumeric(60.0);
+		Obs amended = obsService.saveObs(existing, "testing");
+		assertThat(amended.getValueNumeric(), is(60.0));
+		assertThat(amended.getStatus(), is(Obs.Status.AMENDED));
+		assertThat(existing.getStatus(), is(Obs.Status.FINAL));
+	}
+
+	@Test
+	public void saveObs_shouldNotChangeStatusOfPreliminaryWhenModifyingAnObs() throws Exception {
+		Obs existing = obsService.getObs(9);
+		existing.setValueNumeric(175.0);
+		Obs newObs = obsService.saveObs(existing, "testing");
+		assertThat(newObs.getValueNumeric(), is(175.0));
+		assertThat(newObs.getStatus(), is(Obs.Status.PRELIMINARY));
+	}
+
+	@Test
+	public void saveObs_shouldLetYouChangeStatusFromPreliminaryToFinalWhenModifyingAnObs() throws Exception {
+		Obs existing = obsService.getObs(9);
+		existing.setValueNumeric(175.0);
+		existing.setStatus(Obs.Status.FINAL);
+		Obs newObs = obsService.saveObs(existing, "testing");
+		assertThat(newObs.getValueNumeric(), is(175.0));
+		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
+	}
+
+	/**
+	 * Tests that we support a manual workaround in case you need to modify a FINAL obs and leave its
+	 * status as FINAL
+	 */
+	@Test
+	public void shouldNotAutomaticallySetStatusWhenManuallyCopyingAnObs() throws Exception {
+		Obs existing = obsService.getObs(7);
+		Obs newObs = Obs.newInstance(existing);
+		newObs.setValueNumeric(60.0);
+		newObs.setPreviousVersion(existing);
+		newObs = obsService.saveObs(newObs, null);
+		obsService.voidObs(existing, "testing");
+
+		assertThat(existing.getStatus(), is(Obs.Status.FINAL));
+		assertThat(existing.getVoided(), is(true));
+		assertThat(newObs.getStatus(), is(Obs.Status.FINAL));
+	}
+
+	@Test
+	public void saveObsReferenceRange_shouldSaveReferenceRangeAfterSavingObs() {
+		Obs obs = buildObservation();
+
+		obsService.saveObs(obs, null);
+
+		List<ConceptReferenceRange> conceptReferenceRange = Context.getConceptService()
+		        .getConceptReferenceRangesByConceptId(obs.getConcept().getId());
+
+		assertFalse(conceptReferenceRange.isEmpty());
+
+		Double expectedHiAbsolute = conceptReferenceRange.get(0).getHiAbsolute();
+
+		Context.flushSession();
+		Context.clearSession();
+
+		Obs savedObs = obsService.getObsByUuid(obs.getUuid());
+
+		ObsReferenceRange obsReferenceRange = savedObs.getReferenceRange();
+		assertEquals(expectedHiAbsolute, obsReferenceRange.getHiAbsolute());
+	}
+
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	public void saveObs_shouldVoidTheGivenObsAndSetReferenceRangeForTheNewObs() {
+		Obs obs = buildObservation();
+		Context.getObsService().saveObs(obs, null);
+
+		ObsReferenceRange originalRange = obs.getReferenceRange();
+		assertNotNull(originalRange);
+
+		obs.setValueNumeric(77.0);
+		Obs newObs = Context.getObsService().saveObs(obs, "just testing");
+
+		assertFalse(newObs.getVoided());
+		ObsReferenceRange newRange = newObs.getReferenceRange();
+		assertNotNull(newRange);
+		assertEquals(originalRange.getHiAbsolute(), newRange.getHiAbsolute());
+		assertEquals(originalRange.getHiCritical(), newRange.getHiCritical());
+		assertEquals(originalRange.getHiNormal(), newRange.getHiNormal());
+		assertEquals(originalRange.getLowAbsolute(), newRange.getLowAbsolute());
+		assertEquals(originalRange.getLowCritical(), newRange.getLowCritical());
+		assertEquals(originalRange.getLowNormal(), newRange.getLowNormal());
+	}
+
+	private Obs buildObservation() {
+		Concept concept = Context.getConceptService().getConcept(4089);
+		Patient patient = Context.getPatientService().getPatient(2);
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.YEAR, -5);
+		patient.setBirthdate(calendar.getTime());
+
+		Date newDate = new Date();
+
+		Obs obs = new Obs();
+		obs.setConcept(concept);
+		obs.setPerson(patient);
+		obs.setEncounter(Context.getEncounterService().getEncounter(3));
+		obs.setObsDatetime(newDate);
+		obs.setLocation(new Location(1));
+		obs.setValueGroupId(7);
+		obs.setValueDatetime(newDate);
+		obs.setValueCoded(new Concept(3));
+		obs.setValueNumeric(90.0);
+		obs.setValueModifier("cc");
+		obs.setValueText("value text2");
+
+		return obs;
+	}
+}
