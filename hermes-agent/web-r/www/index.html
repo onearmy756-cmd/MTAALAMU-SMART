@@ -621,6 +621,14 @@ async function loadUpstream() {
   const isHermes = dirs.includes("agent") && dirs.includes("gateway") && dirs.includes("plugins");
   const names = isHermes ? ["hermes-agent"] : [];
   const trees = isHermes ? { "hermes-agent": entries.map((e) => (e.dir ? e.name + "/" : e.name)) } : {};
+  if (isHermes && dirs.includes("upstream")) {
+    const up = await getJSON("../../upstream/");
+    for (const e of (up && up.entries ? up.entries.filter((x) => x.dir) : [])) {
+      names.push(e.name);
+      const t = await getJSON("../../upstream/" + encodeURIComponent(e.name) + "/");
+      trees[e.name] = t && t.entries ? t.entries.map((x) => (x.dir ? x.name + "/" : x.name)) : [];
+    }
+  }
   S.studio.upstream = { names, trees };
   if (TAB === "studio") renderAll();
 }
@@ -773,6 +781,8 @@ function vStudioModels() {
 }
 const UPSTREAM_META = {
   "hermes-agent": { name: "Hermes Agent (Nous Research)", repo: "https://github.com/NousResearch/hermes-agent", site: "", ui: "apps/desktop — Electron UI", note_sw: "HERMES anafuata kanuni zake: master-agent, memory ya kudumu, skills-loop. UI halisi ni app ya Electron (apps/desktop)." },
+  "home-assistant": { name: "Home Assistant", repo: "https://github.com/home-assistant/core", site: "https://demo.home-assistant.io", ui: ":8123 (hass)", note_sw: "UI halisi ya waundaji (frontend rasmi ya HA). Inaendesha kwa `hass` (Python) — huduma ya :8123; demo rasmi ya mtandaopo ipo kwenye kitufe." },
+  "openmrs": { name: "OpenMRS", repo: "https://github.com/openmrs/openmrs-core", site: "https://openmrs.org", ui: ":8080/openmrs", note_sw: "UI halisi ya waundaji (RefApp/SPA). Inaendesha kwa Java + Tomcat — huduma ya :8080/openmrs; demo rasmi ya mtandaopo ipo kwenye kitufe." },
   "crawl4ai": { name: "Crawl4AI", repo: "https://github.com/unclecode/crawl4ai", site: "https://docs.crawl4ai.com", ui: "docs (mkdocs)", note_sw: "Worker wa knowledge_grow — hulisha data/knowledge/crawl/ (CRAWL_ALLOWED_HOSTS)." },
   "frigate": { name: "Frigate NVR", repo: "https://github.com/blakeblackshear/frigate", site: "https://frigate.video", ui: "web — :5000", note_sw: "CCTV events kwa MQTT; UI halisi inaendesha kwenye server yake (:5000)." }
 };
@@ -787,7 +797,7 @@ function vStudioUpstream() {
     return `<div class="up-card">
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
         <b style="color:var(--cyan)">${esc(m.name)}</b>
-        ${cloned === null ? '<span class="badge">…</span>' : cloned ? `<span class="badge ok">CLONED ✓ upstream/${esc(id)}</span>` : '<span class="badge warn">HAIJA-CLONE</span>'}
+        ${cloned === null ? '<span class="badge">…</span>' : cloned ? '<span class="badge ok">CLONED ✓</span>' : '<span class="badge warn">HAIJA-CLONE</span>'}
       </div>
       <div style="font-size:.68rem;color:var(--dim);margin-top:4px">${esc(m.note_sw)} (${esc(m.ui)})</div>
       <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">

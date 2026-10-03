@@ -38,3 +38,6 @@ __pycache__/
 
 # Freebuff sponsored runtime (transient)
 .freebuff/sponsored-runtime/
+
+# --- Upstream reference clones (local-only; re-clone: codeload tarballs) ---
+hermes-agent/upstream/
