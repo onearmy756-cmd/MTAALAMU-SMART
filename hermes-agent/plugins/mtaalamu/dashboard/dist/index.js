@@ -6,6 +6,8 @@
  *   - Problem solver (solve / agentic run with HITL approve flow)
  *   - Fundi Deploy console (discover → select → HITL start → jobs)
  *   - Fundi Mobile-style actions (telecom calc, gov apps launcher)
+ *   - Home Assistant panel (real entities + HITL toggles, our dark-cyan theme)
+ *   - OpenMRS panel (real patient search + HITL registration, our theme)
  *   - Channels (WhatsApp / SMS / email dispatch)
  *   - Predictive maintenance + background scanner
  *   - Remote jobs queue
@@ -52,6 +54,18 @@
     });
   }
 
+  function errText(e) {
+    var m = (e && e.message) || String(e);
+    if (e && e.body) {
+      try {
+        var b = JSON.parse(e.body);
+        if (b && b.hint) m += " — 💡 " + b.hint;
+        else if (b && b.error && m.indexOf(b.error) < 0) m = b.error + (b.hint ? " — 💡 " + b.hint : "");
+      } catch (ex) { /* body si JSON */ }
+    }
+    return m;
+  }
+
   function H3(p) { return React.createElement("h3", { className: "mta-h3" }, p.children); }
 
   function Dot(p) {
@@ -70,7 +84,8 @@
     return React.createElement(
       "button",
       {
-        className: "mta-btn" + (p.primary ? " primary" : "") + (p.danger ? " danger" : ""),
+        className: "mta-btn" + (p.primary ? " primary" : "") + (p.danger ? " danger" : "") + (p.sm ? " sm" : ""),
+        title: p.title || undefined,
         disabled: !!p.disabled,
         onClick: p.onClick,
       },
@@ -132,7 +147,7 @@
       React.createElement(
         "nav",
         { className: "mta-tabs" },
-        [["solve", "🛠️ Tatua"], ["deploy", "💻 Fundi Deploy"], ["mobile", "📱 Fundi Mobile"], ["channels", "📨 Channels"], ["maintain", "🔮 Maintenance"], ["jobs", "🗂️ Remote Jobs"]].map(function (x) {
+        [["solve", "🛠️ Tatua"], ["deploy", "💻 Fundi Deploy"], ["mobile", "📱 Fundi Mobile"], ["ha", "🏠 Home Assistant"], ["omrs", "🏥 OpenMRS"], ["channels", "📨 Channels"], ["maintain", "🔮 Maintenance"], ["jobs", "🗂️ Remote Jobs"]].map(function (x) {
           return React.createElement("button", {
             key: x[0], className: "mta-tab" + (tab === x[0] ? " on" : ""),
             onClick: function () { setTab(x[0]); },
@@ -143,6 +158,8 @@
         tab === "solve" ? React.createElement(SolvePanel, sec) :
         tab === "deploy" ? React.createElement(DeployPanel, sec) :
         tab === "mobile" ? React.createElement(MobilePanel, sec) :
+        tab === "ha" ? React.createElement(HAPanel, sec) :
+        tab === "omrs" ? React.createElement(OmrsPanel, sec) :
         tab === "channels" ? React.createElement(ChannelsPanel, null) :
         tab === "maintain" ? React.createElement(MaintainPanel, sec) :
         React.createElement(JobsPanel, sec)
@@ -370,32 +387,215 @@
     );
   }
 
+  // ---------------------------------------------------------------- Home Assistant (real HA REST, our theme)
+
+  var HA_ICONS = { light: "💡", switch: "🔌", sensor: "📡", climate: "🌡️", binary_sensor: "🚨" };
+  var HA_DOMAINS = ["light", "switch", "sensor", "climate", "binary_sensor"];
+
+  function HAPanel(p) {
+    var _s = useJson(API + "/ha/state"), st = _s[0], reload = _s[1];
+    var _dom = useState("all"), dom = _dom[0], setDom = _dom[1];
+    var _pend = useState(null), pend = _pend[0], setPend = _pend[1];
+    var _ok = useState(null), okMsg = _ok[0], setOk = _ok[1];
+    var _e = useState(null), err = _e[0], setErr = _e[1];
+
+    var ents = (st.data && st.data.entities) || [];
+    var shown = dom === "all" ? ents : ents.filter(function (e) { return e.id.indexOf(dom + ".") === 0; });
+    var counts = {};
+    ents.forEach(function (e) { var d = e.id.split(".")[0]; counts[d] = (counts[d] || 0) + 1; });
+
+    function stage(e) {
+      setOk(null); setErr(null);
+      setPend({
+        entity: e.id, name: e.name,
+        domain: e.id.split(".")[0],
+        action: e.state === "on" ? "turn_off" : "turn_on",
+      });
+    }
+    function approve() {
+      if (!pend) return;
+      post(API + "/ha/service", { domain: pend.domain, action: pend.action, entity: pend.entity, role: p.role, approved: true })
+        .then(function () { setOk("✔ " + pend.name + " → " + pend.action); setPend(null); reload(); })
+        .catch(function (ex) { setErr(errText(ex)); setPend(null); });
+    }
+
+    return React.createElement(
+      "div", null,
+      React.createElement("div", { className: "mta-row" },
+        React.createElement(H3, null, "🏠 Home Assistant — nyumbani ndani ya Hermes"),
+        React.createElement("div", { style: { marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" } },
+          React.createElement("span", { className: "mta-pill" + (st.data && st.data.ok ? " ok" : st.error ? " bad" : " dim") },
+            st.loading ? "inapakia…" : st.error ? "HA haipatikani" : ((st.data.count || 0) + " entities · " + (st.data.base || ""))),
+          React.createElement(Btn, { sm: true, onClick: reload }, "↻ Rejesha"))),
+      React.createElement("div", { className: "mta-row" },
+        ["all"].concat(HA_DOMAINS).map(function (d) {
+          return React.createElement("button", {
+            key: d, className: "mta-chip" + (dom === d ? " on" : ""),
+            onClick: function () { setDom(d); },
+          }, (HA_ICONS[d] || "🏠") + " " + d + (counts[d] ? " (" + counts[d] + ")" : ""));
+        })),
+      React.createElement(Err, { e: err || st.error }),
+      React.createElement("div", { className: "mta-grid" },
+        shown.map(function (e) {
+          var d = e.id.split(".")[0];
+          var canDo = d === "light" || d === "switch" || d === "climate";
+          var on = e.state === "on";
+          return React.createElement("div", { key: e.id, className: "mta-ent" },
+            React.createElement("div", { className: "mta-ent-ico" }, HA_ICONS[d] || "🔧"),
+            React.createElement("div", { className: "mta-ent-body" },
+              React.createElement("b", { title: e.id }, e.name),
+              React.createElement("div", { className: "mta-ent-state" },
+                React.createElement("span", { className: "val" + (on ? "" : " off") }, e.state),
+                e.unit ? " " + e.unit : ""),
+              e.bri ? React.createElement("div", { className: "mta-bar" },
+                React.createElement("i", { style: { width: Math.round((e.bri / 255) * 100) + "%" } })) : null),
+            canDo && React.createElement(Btn, { sm: true, onClick: function () { stage(e); } }, on ? "Zima" : "Washa"));
+        })),
+      shown.length === 0 && !st.loading && !st.error &&
+      React.createElement("p", { className: "mta-dim" }, "Hakuna entities za aina hii."),
+      pend && React.createElement(
+        "div", { className: "mta-hitl" },
+        "🔒 HITL: ", React.createElement("b", null, pend.name), " → ", React.createElement("b", null, pend.action),
+        " — idhini ya mteja inahitajika kabla ya kutuma amri kwa Home Assistant.",
+        React.createElement("div", { className: "mta-row" },
+          React.createElement(Btn, { primary: true, disabled: p.role === "user", title: p.role === "user" ? "role 'user' hawezi kuidhinisha" : "tuma amri", onClick: approve }, "✅ Idhinisha"),
+          React.createElement(Btn, { sm: true, onClick: function () { setPend(null); } }, "❌ Ghairi"),
+          p.role === "user" && React.createElement("span", { className: "mta-dim" }, "(role 'user' hawezi — badilisha juu kuwa admin/specialist)"))),
+      okMsg && React.createElement("div", { className: "mta-ok" }, okMsg)
+    );
+  }
+
+  // ---------------------------------------------------------------- OpenMRS (real REST, our theme)
+
+  function OmrsPanel(p) {
+    var _q = useState(""), q = _q[0], setQ = _q[1];
+    var _r = useState(null), res = _r[0], setRes = _r[1];
+    var _b = useState(false), busy = _b[0], setB = _b[1];
+    var _ok = useState(null), okMsg = _ok[0], setOk = _ok[1];
+    var _e = useState(null), err = _e[0], setErr = _e[1];
+    var _pend = useState(null), pend = _pend[0], setPend = _pend[1];
+    var _f = useState({ given: "", family: "", gender: "M", age: "" }), f = _f[0], setF = _f[1];
+
+    function set(k, v) { var n = Object.assign({}, f); n[k] = v; setF(n); }
+    function search() {
+      setB(true); setErr(null); setOk(null);
+      fetchJSON(API + "/openmrs/patients?q=" + encodeURIComponent(q) + "&limit=15")
+        .then(function (d) { setRes(d); })
+        .catch(function (ex) { setRes(null); setErr(errText(ex)); })
+        .finally(function () { setB(false); });
+    }
+    function stage() {
+      setErr(null); setOk(null);
+      if (!(f.given && f.family && f.gender)) { setErr("Jina la kwanza, jina la ukoo na jinsia zinahitajika"); return; }
+      var person = { gender: f.gender };
+      if (f.age) person.age = Number(f.age);
+      setPend({ names: { given: f.given, family: f.family }, person: person });
+    }
+    function approve() {
+      if (!pend) return;
+      post(API + "/openmrs/patient", { names: pend.names, person: pend.person, role: p.role, approved: true })
+        .then(function (d) { setOk("✔ Mgonjwa amesajiliwa: " + (d.display || d.uuid)); setPend(null); setF({ given: "", family: "", gender: "M", age: "" }); if (q) search(); })
+        .catch(function (ex) { setErr(errText(ex)); setPend(null); });
+    }
+
+    return React.createElement(
+      "div", null,
+      React.createElement("div", { className: "mta-row" },
+        React.createElement(H3, null, "🏥 OpenMRS — EHR ndani ya Hermes"),
+        res && res.ok && React.createElement("span", { className: "mta-pill ok" }, (res.total || 0) + " patients · " + res.base),
+        React.createElement("div", { style: { marginLeft: "auto" } },
+          React.createElement(Btn, { sm: true, disabled: busy, onClick: search }, "↻ Rejesha"))),
+      React.createElement("div", { className: "mta-row" },
+        React.createElement(Field, { label: "Tafuta mgonjwa (jina)" },
+          React.createElement("input", { className: "mta-input", value: q, placeholder: "mf: Test",
+            onChange: function (e) { setQ(e.target.value); },
+            onKeyDown: function (e) { if (e.key === "Enter") search(); } })),
+        React.createElement(Btn, { primary: true, disabled: busy, onClick: search }, busy ? "…" : "🔎 Tafuta")),
+      res && res.patients && res.patients.length > 0 && React.createElement(
+        "div", { className: "mta-card" },
+        React.createElement("table", { className: "mta-table" },
+          React.createElement("thead", null, React.createElement("tr", null,
+            React.createElement("th", null, "Jina"), React.createElement("th", null, "Jinsia"),
+            React.createElement("th", null, "Umri"), React.createElement("th", null, "ID"))),
+          React.createElement("tbody", null, res.patients.map(function (pt) {
+            return React.createElement("tr", { key: pt.uuid },
+              React.createElement("td", null, React.createElement("b", null, pt.name)),
+              React.createElement("td", null, pt.gender === "M" ? "♂ M" : pt.gender === "F" ? "♀ F" : (pt.gender || "-")),
+              React.createElement("td", null, pt.age != null ? pt.age : "-"),
+              React.createElement("td", null, (pt.ids || []).filter(Boolean).join(", ") || "-"));
+          })))),
+      res && res.patients && res.patients.length === 0 &&
+      React.createElement("p", { className: "mta-dim" }, "Hakuna mgonjwa aliyepatikana kwa '" + q + "'."),
+      React.createElement(H3, null, "➕ Sajili mgonjwa mpya"),
+      React.createElement("div", { className: "mta-row" },
+        React.createElement(Field, { label: "Jina la kwanza" },
+          React.createElement("input", { className: "mta-input", value: f.given, onChange: function (e) { set("given", e.target.value); } })),
+        React.createElement(Field, { label: "Jina la ukoo" },
+          React.createElement("input", { className: "mta-input", value: f.family, onChange: function (e) { set("family", e.target.value); } })),
+        React.createElement(Field, { label: "Jinsia" },
+          React.createElement("select", { className: "mta-input", value: f.gender, onChange: function (e) { set("gender", e.target.value); } },
+            React.createElement("option", { value: "M" }, "M (mwanaume)"),
+            React.createElement("option", { value: "F" }, "F (mwanamke)"))),
+        React.createElement(Field, { label: "Umri (miaka)" },
+          React.createElement("input", { className: "mta-input", type: "number", min: 0, value: f.age, onChange: function (e) { set("age", e.target.value); } })),
+        React.createElement(Btn, { onClick: stage }, "Weka kwenye idhini (HITL)")),
+      pend && React.createElement(
+        "div", { className: "mta-hitl" },
+        "🔒 HITL: kumsajili ", React.createElement("b", null, pend.names.given + " " + pend.names.family),
+        " (", pend.person.gender, pend.person.age ? ", miaka " + pend.person.age : "", ") kwenye OpenMRS.",
+        React.createElement("div", { className: "mta-row" },
+          React.createElement(Btn, { primary: true, disabled: p.role === "user", title: p.role === "user" ? "role 'user' hawezi kuidhinisha" : "sajili", onClick: approve }, "✅ Idhinisha"),
+          React.createElement(Btn, { sm: true, onClick: function () { setPend(null); } }, "❌ Ghairi"),
+          p.role === "user" && React.createElement("span", { className: "mta-dim" }, "(role 'user' hawezi — badilisha juu kuwa admin/specialist)"))),
+      React.createElement(Err, { e: err }),
+      okMsg && React.createElement("div", { className: "mta-ok" }, okMsg)
+    );
+  }
+
   // ---------------------------------------------------------------- styles
 
+  /* MTAALAMU dark-cyan theme — sawa na web-r/www/index.html (--bg #04070d, --card #0a1628, --cyan #00e5ff, --green #00ff88) */
   var css = [
-    ".mta-wrap{display:flex;flex-direction:column;gap:10px;padding:14px;height:100%;overflow:auto}",
-    ".mta-top{display:flex;justify-content:space-between;align-items:center;gap:10px}",
-    ".mta-brand{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}",
-    ".mta-path{font-size:11px;opacity:.6;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-    ".mta-dot{width:9px;height:9px;border-radius:50%;display:inline-block}.mta-dot.ok{background:#3ecf6f}.mta-dot.bad{background:#e5484d}",
-    ".mta-rbac{display:flex;gap:6px}.mta-tabs{display:flex;gap:6px;flex-wrap:wrap}",
-    ".mta-tab{padding:6px 12px;border-radius:8px;border:1px solid var(--border,#333);background:transparent;cursor:pointer;font-size:13px}",
-    ".mta-tab.on{background:var(--primary,#4f6ef7);color:#fff;border-color:transparent}",
-    ".mta-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border,#333);background:var(--bg-elev,#1c1c1f);color:inherit;cursor:pointer;font-size:13px}",
-    ".mta-btn.primary{background:var(--primary,#4f6ef7);color:#fff;border-color:transparent}.mta-btn.danger{border-color:#e5484d;color:#e5484d}",
-    ".mta-btn.sm{padding:4px 10px;font-size:12px}.mta-btn:disabled{opacity:.5;cursor:default}",
+    ".mta-wrap{display:flex;flex-direction:column;gap:10px;padding:14px;height:100%;overflow:auto;background:#04070d;color:#cfe9f5;font-family:ui-monospace,Consolas,monospace}",
+    ".mta-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}",
+    ".mta-brand{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;color:#eafcff;letter-spacing:1px;text-shadow:0 0 12px rgba(0,229,255,.45)}",
+    ".mta-path{font-size:11px;color:#5e8aa3;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    ".mta-dot{width:9px;height:9px;border-radius:50%;display:inline-block}.mta-dot.ok{background:#00ff88;box-shadow:0 0 8px #00ff88}.mta-dot.bad{background:#ff3b3b;box-shadow:0 0 8px #ff3b3b}",
+    ".mta-rbac{display:flex;gap:6px}",
+    ".mta-tabs{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:rgba(4,7,13,.94);padding:4px 0;backdrop-filter:blur(4px)}",
+    ".mta-tab{padding:7px 12px;border-radius:8px;border:1px solid rgba(0,229,255,.35);background:#0f2233;color:#00e5ff;cursor:pointer;font-size:12.5px;font-weight:700;letter-spacing:.5px}",
+    ".mta-tab:hover{background:#143048}",
+    ".mta-tab.on{background:rgba(0,229,255,.16);color:#00ff88;border-color:#00ff88;box-shadow:0 0 12px rgba(0,255,136,.18)}",
+    ".mta-btn{padding:8px 14px;border-radius:6px;border:1px solid rgba(0,229,255,.35);background:#0f2233;color:#00e5ff;cursor:pointer;font-size:12.5px;font-weight:700;letter-spacing:.4px}",
+    ".mta-btn:hover{background:#143048}",
+    ".mta-btn.primary{background:rgba(0,229,255,.18);border-color:#00e5ff;color:#eafcff;box-shadow:0 0 12px rgba(0,229,255,.22)}",
+    ".mta-btn.danger{border-color:rgba(255,59,59,.55);color:#ff3b3b}.mta-btn.danger:hover{background:rgba(255,59,59,.12)}",
+    ".mta-btn.sm{padding:4px 10px;font-size:11.5px}.mta-btn:disabled{opacity:.45;cursor:default}",
     ".mta-main{flex:1;min-height:220px}.mta-row{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:8px 0}",
-    ".mta-field{display:flex;flex-direction:column;gap:4px;font-size:12px;opacity:.9}",
-    ".mta-input{background:var(--bg-elev,#1c1c1f);border:1px solid var(--border,#333);color:inherit;border-radius:8px;padding:7px 10px;font-size:13px;min-width:180px}",
-    ".mta-card{border:1px solid var(--border,#333);border-radius:10px;padding:10px;margin:8px 0;background:var(--bg-elev,#151517)}",
-    ".mta-pre{margin:0;font-size:11.5px;white-space:pre-wrap;word-break:break-word;max-height:380px;overflow:auto}",
-    ".mta-err{border:1px solid #e5484d;color:#e5484d;border-radius:8px;padding:8px 10px;font-size:13px;margin:6px 0}",
-    ".mta-ok{border:1px solid #3ecf6f;color:#3ecf6f;border-radius:8px;padding:8px 10px;font-size:13px;margin:6px 0}",
-    ".mta-hitl{border:1px dashed #f5a524;color:#f5a524;border-radius:8px;padding:8px 10px;font-size:13px;margin:6px 0}",
-    ".mta-table{width:100%;border-collapse:collapse;font-size:13px}.mta-table th{text-align:left;opacity:.6;font-weight:500;padding:4px}",
-    ".mta-table td{padding:5px 4px;border-top:1px solid var(--border,#2a2a2e)}",
-    ".mta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:8px}",
-    ".mta-dim{opacity:.6;font-size:12px}.mta-h3{margin:6px 0;font-size:14px}.mta-foot{opacity:.5;font-size:11px}",
+    ".mta-field{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:#5e8aa3}",
+    ".mta-input{background:#0d1b2e;border:1px solid rgba(0,229,255,.35);color:#cfe9f5;border-radius:6px;padding:8px 10px;font-size:12.5px;min-width:180px}",
+    ".mta-input:focus{outline:none;border-color:#00e5ff;box-shadow:0 0 8px rgba(0,229,255,.3)}",
+    ".mta-card{border:1px solid rgba(0,229,255,.22);border-radius:10px;padding:11px;margin:8px 0;background:#0f2233}",
+    ".mta-pre{margin:0;font-size:11.5px;white-space:pre-wrap;word-break:break-word;max-height:380px;overflow:auto;color:#9fd8e8}",
+    ".mta-err{border:1px solid rgba(255,59,59,.55);color:#ff3b3b;border-radius:8px;padding:9px 11px;font-size:12.5px;margin:6px 0;background:rgba(255,59,59,.06)}",
+    ".mta-ok{border:1px solid rgba(0,255,136,.5);color:#00ff88;border-radius:8px;padding:9px 11px;font-size:12.5px;margin:6px 0;background:rgba(0,255,136,.05)}",
+    ".mta-hitl{border:1px dashed #ffb300;color:#ffb300;border-radius:8px;padding:9px 11px;font-size:12.5px;margin:6px 0;background:rgba(255,179,0,.05)}",
+    ".mta-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11px;border:1px solid rgba(0,229,255,.35);background:#0f2233;color:#00e5ff}",
+    ".mta-pill.ok{color:#00ff88;border-color:rgba(0,255,136,.4)}.mta-pill.bad{color:#ff3b3b;border-color:rgba(255,59,59,.5)}.mta-pill.dim{color:#5e8aa3}",
+    ".mta-chip{padding:4px 10px;border-radius:999px;border:1px solid rgba(0,229,255,.3);background:#0f2233;color:#cfe9f5;cursor:pointer;font-size:11.5px}",
+    ".mta-chip:hover{background:#143048}",
+    ".mta-chip.on{color:#00ff88;border-color:#00ff88;background:rgba(0,255,136,.12)}",
+    ".mta-table{width:100%;border-collapse:collapse;font-size:12.5px}.mta-table th{text-align:left;color:#00e5ff;font-weight:700;letter-spacing:.6px;font-size:11.5px;padding:5px}",
+    ".mta-table td{padding:6px 5px;border-bottom:1px solid rgba(0,229,255,.12)}",
+    ".mta-table tbody tr:hover td{background:rgba(0,229,255,.05)}",
+    ".mta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}",
+    ".mta-ent{display:flex;gap:8px;align-items:flex-start;border:1px solid rgba(0,229,255,.22);border-radius:10px;background:#0f2233;padding:9px}",
+    ".mta-ent-ico{font-size:18px;line-height:1.2}",
+    ".mta-ent-body{flex:1;min-width:0}.mta-ent-body b{display:block;color:#eafcff;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
+    ".mta-ent-state{font-size:11.5px;color:#5e8aa3}.mta-ent-state .val{color:#00ff88}.mta-ent-state .val.off{color:#5e8aa3}",
+    ".mta-bar{height:6px;border-radius:3px;background:#0d1b2e;overflow:hidden;margin-top:5px}.mta-bar i{display:block;height:100%;background:#00e5ff}",
+    ".mta-dim{color:#5e8aa3;font-size:12px}.mta-h3{margin:6px 0;font-size:13.5px;color:#00e5ff;letter-spacing:1px}",
+    ".mta-foot{color:#5e8aa3;font-size:11px;opacity:.9}",
   ].join("\n");
 
   var style = document.createElement("style");

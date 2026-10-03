@@ -196,6 +196,94 @@ def _t_scanner(args: dict) -> dict:
     return _engine(["av-sessions"], timeout=30)
 
 
+def _ha_call(path: str, payload: Optional[dict] = None, method: str = "GET") -> dict:
+    """Real Home Assistant REST call — honest errors, no fake states."""
+    import urllib.request
+    base = os.environ.get("HASS_URL", "http://127.0.0.1:8123").rstrip("/")
+    tok = os.environ.get("HASS_TOKEN", "").strip()
+    if not tok:
+        return {"ok": False, "error": "HASS_TOKEN haijawekwa (Infisical)", "hint": "HA Profile → Security → Long-Lived Access Token"}
+    try:
+        data = json.dumps(payload).encode() if payload is not None else None
+        req = urllib.request.Request(f"{base}{path}", data=data,
+                                     headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"}, method=method)
+        with urllib.request.urlopen(req, timeout=8) as r:
+            return {"ok": True, "data": json.loads(r.read().decode())}
+    except Exception as exc:
+        return {"ok": False, "error": f"HA :8123 haipatikani: {exc}", "hint": "anzisha hass (Python) kwanza"}
+
+
+def _t_ha(args: dict) -> dict:
+    """Home Assistant via HERMES: states au (HITL) kuwasha/kuzima vifaa."""
+    action = args.get("action", "states")
+    if action == "states":
+        r = _ha_call("/api/states")
+        if not r.get("ok"):
+            return r
+        keep = [e for e in r["data"] if e["entity_id"].startswith(("light.", "switch.", "sensor.", "climate.", "binary_sensor."))]
+        return {"ok": True, "count": len(keep),
+                "entities": [{"id": e["entity_id"], "state": e["state"],
+                              "name": e["attributes"].get("friendly_name", e["entity_id"])} for e in keep[:60]]}
+    if action in ("turn_on", "turn_off", "toggle"):
+        approved = bool(args.get("approved", False))
+        err = _check_role(args.get("role", "user"), "remediate_run", approved)
+        if err:
+            return {"error": err, "hint": "uliza mteja kwanza (HITL) kisha rudia na approved=true"}
+        entity = args.get("entity", "").strip()
+        if not entity:
+            return {"error": "entity inahitajika (mf: light.bar_lamp)"}
+        domain = entity.split(".")[0]
+        return _ha_call(f"/api/services/{domain}/{action}", {"entity_id": entity}, method="POST")
+    return {"error": "action haipatikani (states|turn_on|turn_off|toggle)"}
+
+
+def _omrs_call(path: str, payload: Optional[dict] = None, method: str = "GET") -> dict:
+    """Real OpenMRS REST call — honest errors, no fake patients."""
+    import base64
+    import urllib.request
+    base = os.environ.get("OPENMRS_URL", "http://127.0.0.1:8080/openmrs").rstrip("/")
+    user = os.environ.get("OPENMRS_USER", "").strip()
+    pwd = os.environ.get("OPENMRS_PASS", "")
+    if not (user and pwd):
+        return {"ok": False, "error": "OPENMRS_USER/PASS hazijawekwa (Infisical)", "hint": "demo rasmi: o3.openmrs.org (admin/Admin123)"}
+    hdr = {"Authorization": "Basic " + base64.b64encode(f"{user}:{pwd}".encode()).decode(),
+           "Content-Type": "application/json"}
+    try:
+        data = json.dumps(payload).encode() if payload is not None else None
+        req = urllib.request.Request(f"{base}{path}", data=data, headers=hdr, method=method)
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return {"ok": True, "data": json.loads(r.read().decode())}
+    except Exception as exc:
+        return {"ok": False, "error": f"OpenMRS :8080 haipatikani: {exc}", "hint": "anzisha openmrs (Java+Tomcat) kwanza"}
+
+
+def _t_openmrs(args: dict) -> dict:
+    """OpenMRS via HERMES: tafuta wagonjwa au (HITL) sajili mgonjwa mpya."""
+    action = args.get("action", "find")
+    if action == "find":
+        q = args.get("q", "")
+        r = _omrs_call(f"/ws/rest/v1/patient?q={q}&limit=10&v=default")
+        if not r.get("ok"):
+            return r
+        return {"ok": True, "total": r["data"].get("totalCount", 0),
+                "patients": [{"uuid": p["uuid"], "name": p["person"].get("display", ""),
+                              "gender": p["person"].get("gender"), "age": p["person"].get("age")}
+                             for p in r["data"].get("results", [])]}
+    if action == "create":
+        approved = bool(args.get("approved", False))
+        err = _check_role(args.get("role", "user"), "remediate_run", approved)
+        if err:
+            return {"error": err, "hint": "HITL: usajili wa mgonjwa unahitaji idhini ya mteja/wataalamu"}
+        names, person = args.get("names") or {}, args.get("person") or {}
+        if not (names.get("given") and names.get("family") and person.get("gender")):
+            return {"error": "names.given, names.family, person.gender zinahitajika"}
+        payload = {"names": [{"givenName": names["given"], "familyName": names["family"]}],
+                   "person": {"gender": person["gender"], **({"age": person["age"]} if person.get("age") else {})}}
+        r = _omrs_call("/ws/rest/v1/patient", payload, method="POST")
+        return {"ok": True, "uuid": r["data"].get("uuid"), "display": r["data"].get("display")} if r.get("ok") else r
+    return {"error": "action haipatikani (find|create)"}
+
+
 def _t_job(args: dict) -> dict:
     """Remote job: kind in {solve, scan, deploy_summary, agentic} — runs now, returns result."""
     kind = args.get("kind", "solve")
@@ -370,6 +458,18 @@ def _register_tools(ctx) -> None:
             "Remote job submission: kind in {solve, scan, deploy_summary, agentic}.",
             {"type": "object", "properties": {"kind": {"type": "string"}, "msg": {"type": "string"}, **_ROLE_PROP}},
             _t_job, "🗂️",
+        ),
+        (
+            "mtaalamu_ha",
+            "Home Assistant: real states, or (HITL) turn_on/turn_off/toggle a light/switch entity.",
+            {"type": "object", "properties": {"action": {"type": "string"}, "entity": {"type": "string"}, "approved": {"type": "boolean"}, **_ROLE_PROP}},
+            _t_ha, "🏠",
+        ),
+        (
+            "mtaalamu_openmrs",
+            "OpenMRS: find patients, or (HITL) register a new patient (names + gender).",
+            {"type": "object", "properties": {"action": {"type": "string"}, "q": {"type": "string"}, "names": {"type": "object"}, "person": {"type": "object"}, "approved": {"type": "boolean"}, **_ROLE_PROP}},
+            _t_openmrs, "🏥",
         ),
     ]
     for name, desc, schema, handler, emoji in tools:

@@ -287,6 +287,111 @@ async def scanner(request: Request):
     return await _run_async(_engine, ["av-sessions"], 30)
 
 
+# ---------------------------------------------------------------- home assistant (real UI data, our theme)
+
+def _ha_cfg():
+    import urllib.request as _u
+    base = os.environ.get("HASS_URL", "http://127.0.0.1:8123").rstrip("/")
+    tok = os.environ.get("HASS_TOKEN", "").strip()
+    return base, tok, _u
+
+
+@router.get("/ha/state")
+async def ha_state():
+    base, tok, u = _ha_cfg()
+    if not tok:
+        return JSONResponse({"ok": False, "error": "HASS_TOKEN haijawekwa (Infisical)", "hint": "HA → Profile → Security → Long-Lived Access Token"}, status_code=503)
+    try:
+        req = u.Request(f"{base}/api/states", headers={"Authorization": f"Bearer {tok}"})
+        with u.urlopen(req, timeout=8) as r:
+            entities = json.loads(r.read().decode())
+        keep = [e for e in entities if e["entity_id"].startswith(("light.", "switch.", "sensor.", "climate.", "binary_sensor."))]
+        out = [{"id": e["entity_id"], "state": e["state"],
+                "name": e["attributes"].get("friendly_name", e["entity_id"]),
+                "unit": e["attributes"].get("unit_of_measurement", ""),
+                "bri": e["attributes"].get("brightness")} for e in keep]
+        return {"ok": True, "base": base, "count": len(out), "entities": out[:100]}
+    except Exception as exc:
+        return JSONResponse({"ok": False, "error": f"Home Assistant :8123 haipatikani: {exc}", "hint": "anzisha hass (Python) kisha weka HASS_TOKEN Infisical"}, status_code=502)
+
+
+@router.post("/ha/service")
+async def ha_service(request: Request):
+    b = await _body(request)
+    if (e := _rbac(b, "remediate_run")):
+        return e  # HITL: kuwasha/kuzima vifaa ni hatua inayobadilisha nyumbani
+    base, tok, u = _ha_cfg()
+    domain, action = str(b.get("domain", "light")), str(b.get("action", "turn_on"))
+    entity = str(b.get("entity", "")).strip()
+    if not entity or action not in ("turn_on", "turn_off", "toggle"):
+        return JSONResponse({"error": "entity + action (turn_on|turn_off|toggle) zinahitajika"}, status_code=400)
+    if not tok:
+        return JSONResponse({"ok": False, "error": "HASS_TOKEN haijawekwa (Infisical)"}, status_code=503)
+    try:
+        req = u.Request(f"{base}/api/services/{domain}/{action}",
+                        data=json.dumps({"entity_id": entity}).encode(),
+                        headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"}, method="POST")
+        with u.urlopen(req, timeout=8) as r:
+            return {"ok": True, "entity": entity, "action": action, "status": r.status}
+    except Exception as exc:
+        return JSONResponse({"ok": False, "error": str(exc)}, status_code=502)
+
+
+# ---------------------------------------------------------------- openmrs (real UI data, our theme)
+
+def _omrs_cfg():
+    import base64
+    import urllib.request as _u
+    base = os.environ.get("OPENMRS_URL", "http://127.0.0.1:8080/openmrs").rstrip("/")
+    user = os.environ.get("OPENMRS_USER", "").strip()
+    pwd = os.environ.get("OPENMRS_PASS", "")
+    hdr = {"Content-Type": "application/json"}
+    if user and pwd:
+        hdr["Authorization"] = "Basic " + base64.b64encode(f"{user}:{pwd}".encode()).decode()
+    return base, hdr, _u
+
+
+@router.get("/openmrs/patients")
+async def omrs_patients(q: str = "", limit: int = 10):
+    base, hdr, u = _omrs_cfg()
+    if "Authorization" not in hdr:
+        return JSONResponse({"ok": False, "error": "OPENMRS_USER/PASS hazijawekwa (Infisical)", "hint": "demo ya mtandaopo: o3.openmrs.org (admin/Admin123)"}, status_code=503)
+    try:
+        req = u.Request(f"{base}/ws/rest/v1/patient?q={q}&limit={max(1, min(limit, 25))}&v=default", headers=hdr)
+        with u.urlopen(req, timeout=8) as r:
+            data = json.loads(r.read().decode())
+        out = [{"uuid": p["uuid"], "name": p["person"].get("display", ""),
+                "age": p["person"].get("age"), "gender": p["person"].get("gender"),
+                "ids": [i.get("display") for i in p.get("identifiers", [])]} for p in data.get("results", [])]
+        return {"ok": True, "base": base, "total": data.get("totalCount", len(out)), "patients": out}
+    except Exception as exc:
+        return JSONResponse({"ok": False, "error": f"OpenMRS :8080 haipatikani: {exc}", "hint": "anzisha openmrs (Java+Tomcat) au tumia demo o3.openmrs.org"}, status_code=502)
+
+
+@router.post("/openmrs/patient")
+async def omrs_create_patient(request: Request):
+    b = await _body(request)
+    if (e := _rbac(b, "remediate_run")):
+        return e  # HITL: kuunda mgonjwa kwenye EHR ni hatua ya kliniki
+    base, hdr, u = _omrs_cfg()
+    names = b.get("names") or {}
+    person = b.get("person") or {}
+    if not (names.get("given") and names.get("family") and person.get("gender")):
+        return JSONResponse({"error": "names.given, names.family na person.gender zinahitajika"}, status_code=400)
+    if "Authorization" not in hdr:
+        return JSONResponse({"ok": False, "error": "OPENMRS_USER/PASS hazijawekwa (Infisical)"}, status_code=503)
+    payload = {"names": [{"givenName": names["given"], "familyName": names["family"]}],
+               "person": {"gender": person["gender"], **({"age": person["age"]} if person.get("age") else {}),
+                          **({"birthdate": person["birthdate"]} if person.get("birthdate") else {})}}
+    try:
+        req = u.Request(f"{base}/ws/rest/v1/patient", data=json.dumps(payload).encode(), headers=hdr, method="POST")
+        with u.urlopen(req, timeout=10) as r:
+            created = json.loads(r.read().decode())
+        return {"ok": True, "uuid": created.get("uuid"), "display": created.get("display")}
+    except Exception as exc:
+        return JSONResponse({"ok": False, "error": str(exc)}, status_code=502)
+
+
 # ---------------------------------------------------------------- remote jobs
 
 def _load_jobs() -> list:
