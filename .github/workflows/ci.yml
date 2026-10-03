@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  engine:
+    name: Build + test engine-rust
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hermes-agent/engine-rust
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: hermes-agent/engine-rust
+      - name: Build (release, locked)
+        run: cargo build --locked --release
+      - name: Unit tests (70 engine tests)
+        run: cargo test --locked --release -- --test-threads=2
+
+  dashboard:
+    name: Lint web dashboard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Lint hermes-agent/web-r/www/index.html
+        run: node hermes-agent/scripts/mtaalamu/lint_dashboard.mjs hermes-agent/web-r/www/index.html
