@@ -1,0 +1,16 @@
+{
+  "name": "mtaalamu",
+  "label": "MTAALAMU",
+  "description": "MTAALAMU SMART workspace ndani ya Hermes: tatua matatizo, Fundi Deploy, Fundi Mobile, channels (WhatsApp/SMS/email), maintenance, remote jobs — RBAC + HITL",
+  "icon": "Wrench",
+  "version": "1.0.0",
+  "tab": {
+    "path": "/mtaalamu",
+    "position": "after:chat"
+  },
+  "entry": "dist/index.js",
+  "css": null,
+  "api": "plugin_api.py",
+  "has_api": true,
+  "source": "bundled"
+}
