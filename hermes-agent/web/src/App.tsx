@@ -35,6 +35,9 @@ import {
   Globe,
   Heart,
   KeyRound,
+  House,
+  Stethoscope,
+  Bot,
   Menu,
   MessageSquare,
   Package,
@@ -144,6 +147,23 @@ const CHAT_NAV_ITEM: NavItem = {
   label: "Chat",
   icon: Terminal,
 };
+
+/**
+ * MTAALAMU: real-UI links served by the Hermes reverse proxy
+ * (plugins/mtaalamu/realui.py → top-level routes /ha, /openmrs, /hermes-ui).
+ * These live OUTSIDE the SPA router on purpose: plain <a href> triggers a
+ * full-page load so the REAL Home Assistant / OpenMRS / Hermes UIs render
+ * as standalone pages under Hermes (no iframe, no external URLs).
+ */
+const REAL_SYSTEM_LINKS: Array<{
+  href: string;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+}> = [
+  { href: "/ha/", label: "Home Assistant", icon: House },
+  { href: "/openmrs/", label: "OpenMRS", icon: Stethoscope },
+  { href: "/hermes-ui/", label: "Hermes UI", icon: Bot },
+];
 
 /**
  * Built-in routes except /chat.  Chat is rendered persistently (outside
@@ -698,6 +718,52 @@ export default function App() {
                         t={t}
                         tooltipWarmRef={tooltipWarmRef}
                       />
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {REAL_SYSTEM_LINKS.length > 0 && (
+                <div
+                  aria-labelledby="hermes-sidebar-realsys-nav-heading"
+                  className="flex flex-col border-t border-current/10 pb-2"
+                  role="group"
+                >
+                  <span
+                    className={cn(
+                      "px-5 pt-2.5 pb-1",
+                      "font-sans text-display text-xs tracking-[0.12em] text-text-tertiary",
+                      isDesktopCollapsed && "lg:hidden",
+                    )}
+                    id="hermes-sidebar-realsys-nav-heading"
+                  >
+                    MTAALAMU Systems
+                  </span>
+
+                  <ul className="flex flex-col">
+                    {REAL_SYSTEM_LINKS.map(({ href, label, icon: SysIcon }) => (
+                      <li key={href}>
+                        <a
+                          href={href}
+                          onClick={() => closeMobile()}
+                          className={cn(
+                            "group/nav relative flex items-center gap-3",
+                            "rounded-md px-5 py-2 text-sm text-text-secondary",
+                            "transition-colors hover:text-midground",
+                          )}
+                          aria-label={label}
+                        >
+                          <SysIcon className="h-4 w-4 shrink-0" />
+                          <span
+                            className={cn(
+                              "truncate",
+                              isDesktopCollapsed && "lg:hidden",
+                            )}
+                          >
+                            {label}
+                          </span>
+                        </a>
+                      </li>
                     ))}
                   </ul>
                 </div>
