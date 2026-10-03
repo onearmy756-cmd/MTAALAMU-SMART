@@ -9,9 +9,9 @@
 #   make run-ui            # wraps the existing start command in `infisical run`
 INFISICAL_ENV ?= dev
 
-ENGINE := engine-rust
+ENGINE := hermes-agent/engine-rust
 ENGINE_BIN := $(ENGINE)/target/release/mtaalamu
-MOBILE := fundi-mobile
+MOBILE := hermes-agent/fundi-mobile
 MOBILE_BIN := $(MOBILE)/target/release/fundi-mobile
 
 build:
@@ -29,8 +29,8 @@ health: build
 	@$(ENGINE_BIN) help >/dev/null && echo "[OK] CLI help"
 	@$(ENGINE_BIN) deep --top 5 >/tmp/mtaalamu_deep.json && echo "[OK] deep probe -> /tmp/mtaalamu_deep.json"
 	@$(ENGINE_BIN) sysprobe --top 5 >/tmp/mtaalamu_sys.json && echo "[OK] sysprobe"
-	@test -f data/agents/agents_10.json && echo "[OK] agents_10.json" || echo "[WARN] agents data missing"
-	@test -f web-r/app.R && echo "[OK] web-r/app.R" || echo "[WARN] UI missing"
+	@test -f hermes-agent/data/agents/agents_10.json && echo "[OK] agents_10.json" || echo "[WARN] agents data missing"
+	@test -f hermes-agent/web-r/app.R && echo "[OK] hermes-agent/web-r/app.R" || echo "[WARN] UI missing"
 	@echo "Health complete."
 
 deep: build
@@ -43,7 +43,7 @@ agentic: build
 	$(ENGINE_BIN) agentic --msg "Production smoke: kompyuta inaenda polepole" --approve
 
 run-ui:
-	infisical run --env=$(INFISICAL_ENV) -- Rscript -e "shiny::runApp('web-r', port=3838, host='127.0.0.1')"
+	infisical run --env=$(INFISICAL_ENV) -- Rscript -e "shiny::runApp('hermes-agent/web-r', port=3838, host='127.0.0.1')"
 
 # --- FUNDI MOBILE 🩺 ---
 mobile-build:

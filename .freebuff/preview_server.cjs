@@ -18,7 +18,7 @@ http.createServer((req, res) => {
   const u = new URL(req.url, "http://localhost");
   let p = decodeURIComponent(u.pathname);
   if (p === "/" || p === "/index.html") {
-    res.writeHead(302, { Location: "/web-r/www/index.html" });
+    res.writeHead(302, { Location: "/hermes-agent/web-r/www/index.html" });
     res.end();
     return;
   }
@@ -40,4 +40,4 @@ http.createServer((req, res) => {
       res.end(buf);
     });
   });
-}).listen(PORT, "0.0.0.0", () => console.log("MTAALAMU preview (node): http://0.0.0.0:" + PORT + "/web-r/www/index.html"));
+}).listen(PORT, "0.0.0.0", () => console.log("MTAALAMU preview (node): http://0.0.0.0:" + PORT + "/hermes-agent/web-r/www/index.html"));
