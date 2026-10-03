@@ -158,8 +158,8 @@
         tab === "solve" ? React.createElement(SolvePanel, sec) :
         tab === "deploy" ? React.createElement(DeployPanel, sec) :
         tab === "mobile" ? React.createElement(MobilePanel, sec) :
-        tab === "ha" ? React.createElement(HAPanel, sec) :
-        tab === "omrs" ? React.createElement(OmrsPanel, sec) :
+        tab === "ha" ? React.createElement(RealUiPanel, { role: role, kind: "ha" }) :
+        tab === "omrs" ? React.createElement(RealUiPanel, { role: role, kind: "omrs" }) :
         tab === "channels" ? React.createElement(ChannelsPanel, null) :
         tab === "maintain" ? React.createElement(MaintainPanel, sec) :
         React.createElement(JobsPanel, sec)
@@ -387,168 +387,82 @@
     );
   }
 
-  // ---------------------------------------------------------------- Home Assistant (real HA REST, our theme)
+  // ------------------------------ UI HALISI chini ya Hermes (source halisi, si iframe si URL za nje)
 
-  var HA_ICONS = { light: "💡", switch: "🔌", sensor: "📡", climate: "🌡️", binary_sensor: "🚨" };
-  var HA_DOMAINS = ["light", "switch", "sensor", "climate", "binary_sensor"];
+  var REALUI_META = {
+    ha: { ico: '🏠', title: 'Home Assistant — UI HALISI (Lovelace)', src: 'hermes-agent/home-assistant/', route: '/ha/' },
+    omrs: { ico: '🏥', title: 'OpenMRS — UI HALISI (o3)', src: 'hermes-agent/openmrs/', route: '/openmrs/' },
+    hermes: { ico: '🤖', title: 'Hermes Agent — UI HALISI yake', src: 'hermes-agent/web/', route: '/hermes-ui/' },
+  };
 
-  function HAPanel(p) {
-    var _s = useJson(API + "/ha/state"), st = _s[0], reload = _s[1];
-    var _dom = useState("all"), dom = _dom[0], setDom = _dom[1];
-    var _pend = useState(null), pend = _pend[0], setPend = _pend[1];
-    var _ok = useState(null), okMsg = _ok[0], setOk = _ok[1];
-    var _e = useState(null), err = _e[0], setErr = _e[1];
-
-    var ents = (st.data && st.data.entities) || [];
-    var shown = dom === "all" ? ents : ents.filter(function (e) { return e.id.indexOf(dom + ".") === 0; });
-    var counts = {};
-    ents.forEach(function (e) { var d = e.id.split(".")[0]; counts[d] = (counts[d] || 0) + 1; });
-
-    function stage(e) {
-      setOk(null); setErr(null);
-      setPend({
-        entity: e.id, name: e.name,
-        domain: e.id.split(".")[0],
-        action: e.state === "on" ? "turn_off" : "turn_on",
-      });
-    }
-    function approve() {
-      if (!pend) return;
-      post(API + "/ha/service", { domain: pend.domain, action: pend.action, entity: pend.entity, role: p.role, approved: true })
-        .then(function () { setOk("✔ " + pend.name + " → " + pend.action); setPend(null); reload(); })
-        .catch(function (ex) { setErr(errText(ex)); setPend(null); });
-    }
+  function RealUiPanel(p) {
+    var meta = REALUI_META[p.kind];
+    var _s = useJson(API + '/integrations'), st = _s[0];
+    var info = st.data && st.data.integrations && st.data.integrations[p.kind === 'omrs' ? 'openmrs' : p.kind];
+    var present = !!(info && info.present);
+    function openReal() { window.location.assign(meta.route); }
 
     return React.createElement(
-      "div", null,
-      React.createElement("div", { className: "mta-row" },
-        React.createElement(H3, null, "🏠 Home Assistant — nyumbani ndani ya Hermes"),
-        React.createElement("div", { style: { marginLeft: "auto", display: "flex", gap: "8px", alignItems: "center" } },
-          React.createElement("span", { className: "mta-pill" + (st.data && st.data.ok ? " ok" : st.error ? " bad" : " dim") },
-            st.loading ? "inapakia…" : st.error ? "HA haipatikani" : ((st.data.count || 0) + " entities · " + (st.data.base || ""))),
-          React.createElement(Btn, { sm: true, onClick: reload }, "↻ Rejesha"))),
-      React.createElement("div", { className: "mta-row" },
-        ["all"].concat(HA_DOMAINS).map(function (d) {
-          return React.createElement("button", {
-            key: d, className: "mta-chip" + (dom === d ? " on" : ""),
-            onClick: function () { setDom(d); },
-          }, (HA_ICONS[d] || "🏠") + " " + d + (counts[d] ? " (" + counts[d] + ")" : ""));
-        })),
-      React.createElement(Err, { e: err || st.error }),
-      React.createElement("div", { className: "mta-grid" },
-        shown.map(function (e) {
-          var d = e.id.split(".")[0];
-          var canDo = d === "light" || d === "switch" || d === "climate";
-          var on = e.state === "on";
-          return React.createElement("div", { key: e.id, className: "mta-ent" },
-            React.createElement("div", { className: "mta-ent-ico" }, HA_ICONS[d] || "🔧"),
-            React.createElement("div", { className: "mta-ent-body" },
-              React.createElement("b", { title: e.id }, e.name),
-              React.createElement("div", { className: "mta-ent-state" },
-                React.createElement("span", { className: "val" + (on ? "" : " off") }, e.state),
-                e.unit ? " " + e.unit : ""),
-              e.bri ? React.createElement("div", { className: "mta-bar" },
-                React.createElement("i", { style: { width: Math.round((e.bri / 255) * 100) + "%" } })) : null),
-            canDo && React.createElement(Btn, { sm: true, onClick: function () { stage(e); } }, on ? "Zima" : "Washa"));
-        })),
-      shown.length === 0 && !st.loading && !st.error &&
-      React.createElement("p", { className: "mta-dim" }, "Hakuna entities za aina hii."),
-      pend && React.createElement(
-        "div", { className: "mta-hitl" },
-        "🔒 HITL: ", React.createElement("b", null, pend.name), " → ", React.createElement("b", null, pend.action),
-        " — idhini ya mteja inahitajika kabla ya kutuma amri kwa Home Assistant.",
-        React.createElement("div", { className: "mta-row" },
-          React.createElement(Btn, { primary: true, disabled: p.role === "user", title: p.role === "user" ? "role 'user' hawezi kuidhinisha" : "tuma amri", onClick: approve }, "✅ Idhinisha"),
-          React.createElement(Btn, { sm: true, onClick: function () { setPend(null); } }, "❌ Ghairi"),
-          p.role === "user" && React.createElement("span", { className: "mta-dim" }, "(role 'user' hawezi — badilisha juu kuwa admin/specialist)"))),
-      okMsg && React.createElement("div", { className: "mta-ok" }, okMsg)
+      'div', null,
+      React.createElement('div', { className: 'mta-row' },
+        React.createElement(H3, null, meta.ico + ' ' + meta.title),
+        React.createElement('div', { style: { marginLeft: 'auto' } },
+          React.createElement('span', { className: 'mta-pill' + (present ? ' ok' : ' dim') },
+            'source: ' + meta.src + (present ? ' ✅' : ' (inavutwa kwenye server)')))),
+      React.createElement('div', { className: 'mta-card' },
+        React.createElement('p', { className: 'mta-dim' },
+          'Hii ni UI HALISI ya mfumo huo — source yake ipo NDANI ya hermes-agent. Hermes inapitisha UI hiyo HALISI chini ya route ' + meta.route + ' (ukurasa KAMILI — si iframe, si URL ya nje). Kwa sasa: ', React.createElement('b', null, info && info.ui)),
+        React.createElement('div', { className: 'mta-row' },
+          React.createElement(Btn, { primary: true, onClick: openReal }, meta.ico + ' FUNGUA UI HALISI (' + meta.route + ')')),
+        info && !present && React.createElement('p', { className: 'mta-dim' },
+          'Kwenye PC hii source haijavutwa kamili — kwenye server yako endesha: node hermes-agent/scripts/mtaalamu/fetch_integrations.mjs, kisha docker compose -f hermes-agent/deploy/docker-compose.mtaalamu.yml up -d --build')),
+      st.error && React.createElement(Err, { e: st.error }),
+      React.createElement('div', { className: 'mta-card' },
+        React.createElement(H3, null, '🤝 HERMES anaitumia kama agent'),
+        React.createElement('p', { className: 'mta-dim' },
+          p.kind === 'ha'
+            ? 'Tools: mtaalamu_ha — states / turn_on / turn_off / toggle (REST halisi ya HA, HITL + RBAC).'
+            : 'Tools: mtaalamu_openmrs — find / create patient (REST halisi ya OpenMRS, HITL + RBAC).'),
+        p.kind === 'ha' && React.createElement(HAMiniPanel, p))
     );
   }
 
-  // ---------------------------------------------------------------- OpenMRS (real REST, our theme)
-
-  function OmrsPanel(p) {
-    var _q = useState(""), q = _q[0], setQ = _q[1];
-    var _r = useState(null), res = _r[0], setRes = _r[1];
-    var _b = useState(false), busy = _b[0], setB = _b[1];
-    var _ok = useState(null), okMsg = _ok[0], setOk = _ok[1];
-    var _e = useState(null), err = _e[0], setErr = _e[1];
+  function HAMiniPanel(p) {
+    var _s = useJson(API + '/ha/state'), st = _s[0], reload = _s[1];
     var _pend = useState(null), pend = _pend[0], setPend = _pend[1];
-    var _f = useState({ given: "", family: "", gender: "M", age: "" }), f = _f[0], setF = _f[1];
-
-    function set(k, v) { var n = Object.assign({}, f); n[k] = v; setF(n); }
-    function search() {
-      setB(true); setErr(null); setOk(null);
-      fetchJSON(API + "/openmrs/patients?q=" + encodeURIComponent(q) + "&limit=15")
-        .then(function (d) { setRes(d); })
-        .catch(function (ex) { setRes(null); setErr(errText(ex)); })
-        .finally(function () { setB(false); });
-    }
-    function stage() {
-      setErr(null); setOk(null);
-      if (!(f.given && f.family && f.gender)) { setErr("Jina la kwanza, jina la ukoo na jinsia zinahitajika"); return; }
-      var person = { gender: f.gender };
-      if (f.age) person.age = Number(f.age);
-      setPend({ names: { given: f.given, family: f.family }, person: person });
-    }
+    var _e = useState(null), err = _e[0], setErr = _e[1];
+    var ents = (st.data && st.data.entities) || [];
     function approve() {
       if (!pend) return;
-      post(API + "/openmrs/patient", { names: pend.names, person: pend.person, role: p.role, approved: true })
-        .then(function (d) { setOk("✔ Mgonjwa amesajiliwa: " + (d.display || d.uuid)); setPend(null); setF({ given: "", family: "", gender: "M", age: "" }); if (q) search(); })
+      post(API + '/ha/service', { domain: pend.domain, action: pend.action, entity: pend.entity, role: p.role, approved: true })
+        .then(function () { setPend(null); reload(); })
         .catch(function (ex) { setErr(errText(ex)); setPend(null); });
     }
-
     return React.createElement(
-      "div", null,
-      React.createElement("div", { className: "mta-row" },
-        React.createElement(H3, null, "🏥 OpenMRS — EHR ndani ya Hermes"),
-        res && res.ok && React.createElement("span", { className: "mta-pill ok" }, (res.total || 0) + " patients · " + res.base),
-        React.createElement("div", { style: { marginLeft: "auto" } },
-          React.createElement(Btn, { sm: true, disabled: busy, onClick: search }, "↻ Rejesha"))),
-      React.createElement("div", { className: "mta-row" },
-        React.createElement(Field, { label: "Tafuta mgonjwa (jina)" },
-          React.createElement("input", { className: "mta-input", value: q, placeholder: "mf: Test",
-            onChange: function (e) { setQ(e.target.value); },
-            onKeyDown: function (e) { if (e.key === "Enter") search(); } })),
-        React.createElement(Btn, { primary: true, disabled: busy, onClick: search }, busy ? "…" : "🔎 Tafuta")),
-      res && res.patients && res.patients.length > 0 && React.createElement(
-        "div", { className: "mta-card" },
-        React.createElement("table", { className: "mta-table" },
-          React.createElement("thead", null, React.createElement("tr", null,
-            React.createElement("th", null, "Jina"), React.createElement("th", null, "Jinsia"),
-            React.createElement("th", null, "Umri"), React.createElement("th", null, "ID"))),
-          React.createElement("tbody", null, res.patients.map(function (pt) {
-            return React.createElement("tr", { key: pt.uuid },
-              React.createElement("td", null, React.createElement("b", null, pt.name)),
-              React.createElement("td", null, pt.gender === "M" ? "♂ M" : pt.gender === "F" ? "♀ F" : (pt.gender || "-")),
-              React.createElement("td", null, pt.age != null ? pt.age : "-"),
-              React.createElement("td", null, (pt.ids || []).filter(Boolean).join(", ") || "-"));
-          })))),
-      res && res.patients && res.patients.length === 0 &&
-      React.createElement("p", { className: "mta-dim" }, "Hakuna mgonjwa aliyepatikana kwa '" + q + "'."),
-      React.createElement(H3, null, "➕ Sajili mgonjwa mpya"),
-      React.createElement("div", { className: "mta-row" },
-        React.createElement(Field, { label: "Jina la kwanza" },
-          React.createElement("input", { className: "mta-input", value: f.given, onChange: function (e) { set("given", e.target.value); } })),
-        React.createElement(Field, { label: "Jina la ukoo" },
-          React.createElement("input", { className: "mta-input", value: f.family, onChange: function (e) { set("family", e.target.value); } })),
-        React.createElement(Field, { label: "Jinsia" },
-          React.createElement("select", { className: "mta-input", value: f.gender, onChange: function (e) { set("gender", e.target.value); } },
-            React.createElement("option", { value: "M" }, "M (mwanaume)"),
-            React.createElement("option", { value: "F" }, "F (mwanamke)"))),
-        React.createElement(Field, { label: "Umri (miaka)" },
-          React.createElement("input", { className: "mta-input", type: "number", min: 0, value: f.age, onChange: function (e) { set("age", e.target.value); } })),
-        React.createElement(Btn, { onClick: stage }, "Weka kwenye idhini (HITL)")),
+      'div', null,
+      React.createElement('div', { className: 'mta-row' },
+        React.createElement('span', { className: 'mta-pill' + (st.data && st.data.ok ? ' ok' : st.error ? ' bad' : ' dim') },
+          st.loading ? 'inapakia…' : st.error ? 'HA server haipatikani (weka HASS_URL/HASS_TOKEN)' : ((st.data.count || 0) + ' entities')),
+        React.createElement(Btn, { sm: true, onClick: reload }, '↻ Rejesha')),
+      React.createElement(Err, { e: err || st.error }),
+      React.createElement('div', { className: 'mta-grid' },
+        ents.slice(0, 12).map(function (e) {
+          var d = e.id.split('.')[0];
+          var canDo = d === 'light' || d === 'switch' || d === 'climate';
+          var on = e.state === 'on';
+          return React.createElement('div', { key: e.id, className: 'mta-ent' },
+            React.createElement('div', { className: 'mta-ent-body' },
+              React.createElement('b', { title: e.id }, e.name),
+              React.createElement('div', { className: 'mta-ent-state' },
+                React.createElement('span', { className: 'val' + (on ? '' : ' off') }, e.state), e.unit ? ' ' + e.unit : '')),
+            canDo && React.createElement(Btn, { sm: true, onClick: function () { setPend({ entity: e.id, name: e.name, domain: d, action: on ? 'turn_off' : 'turn_on' }); } }, on ? 'Zima' : 'Washa'));
+        })),
       pend && React.createElement(
-        "div", { className: "mta-hitl" },
-        "🔒 HITL: kumsajili ", React.createElement("b", null, pend.names.given + " " + pend.names.family),
-        " (", pend.person.gender, pend.person.age ? ", miaka " + pend.person.age : "", ") kwenye OpenMRS.",
-        React.createElement("div", { className: "mta-row" },
-          React.createElement(Btn, { primary: true, disabled: p.role === "user", title: p.role === "user" ? "role 'user' hawezi kuidhinisha" : "sajili", onClick: approve }, "✅ Idhinisha"),
-          React.createElement(Btn, { sm: true, onClick: function () { setPend(null); } }, "❌ Ghairi"),
-          p.role === "user" && React.createElement("span", { className: "mta-dim" }, "(role 'user' hawezi — badilisha juu kuwa admin/specialist)"))),
-      React.createElement(Err, { e: err }),
-      okMsg && React.createElement("div", { className: "mta-ok" }, okMsg)
+        'div', { className: 'mta-hitl' },
+        '🔒 HITL: ', React.createElement('b', null, pend.name), ' → ', React.createElement('b', null, pend.action),
+        React.createElement('div', { className: 'mta-row' },
+          React.createElement(Btn, { primary: true, disabled: p.role === 'user', onClick: approve }, '✅ Idhinisha'),
+          React.createElement(Btn, { sm: true, onClick: function () { setPend(null); } }, '❌ Ghairi')))
     );
   }
 

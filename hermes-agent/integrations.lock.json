@@ -1,0 +1,30 @@
+{
+  "note": "Vyanzo HALISI vya miradi inayounganishwa na MTAALAMU ndani ya hermes-agent — folda: hermes-agent/<name>/. Kwenye server yako endesha: node hermes-agent/scripts/mtaalamu/fetch_integrations.mjs — itavuta commits hizi exactly.",
+  "generated": "2026-10-03",
+  "integrations": [
+    {
+      "name": "home-assistant",
+      "path": "hermes-agent/home-assistant",
+      "repo": "https://github.com/home-assistant/core.git",
+      "branch": "dev",
+      "commit": "0a96db3c40397bcbdd52d4085c5d7fbff227b2c2",
+      "commit_date": "2026-10-03",
+      "license": "Apache-2.0",
+      "ui": "Lovelace (frontend/ — Lit/Polymer, hubinawi; inatumika kama ilivyo)",
+      "api": "REST /api + WebSocket /api/websocket (long-lived token)",
+      "integration": "tools: mtaalamu_ha (states/turn_on/turn_off/toggle, HITL) · dashboard: UI halisi kupitia /api/plugins/mtaalamu/ha/proxy/ au iframe moja kwa moja"
+    },
+    {
+      "name": "openmrs",
+      "path": "hermes-agent/openmrs",
+      "repo": "https://github.com/openmrs/openmrs-core.git",
+      "branch": "master",
+      "commit": "015b9c67043f0585d0ed6a99b46793fc46fa03a2",
+      "commit_date": "2026-10-02",
+      "license": "MPL-2.0 (OpenMRS)",
+      "ui": "OpenMRS 3 (o3 SPA — React) + UI ya jadi ya 2.x",
+      "api": "REST /ws/rest/v1 (Basic auth)",
+      "integration": "tools: mtaalamu_openmrs (find/create patient, HITL) · dashboard: UI halisi kupitia /api/plugins/mtaalamu/openmrs/proxy/ au iframe moja kwa moja"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+# MTAALAMU × HERMES — server stack: UI HALISI tatu kutoka source iliyoko NDANI ya hermes-agent/
+#
+#   http://SERVER:18080            → Hermes Agent dashboard (source: hermes-agent/web/)
+#   http://SERVER:18080/ha/        → Home Assistant HALISI chini ya Hermes (source: hermes-agent/home-assistant/)
+#   http://SERVER:18080/openmrs/   → OpenMRS HALISI chini ya Hermes (source: hermes-agent/openmrs/)
+#   http://SERVER:8123             → Home Assistant moja kwa moja
+#   http://SERVER:8081/openmrs     → OpenMRS moja kwa moja
+#
+# Source (folders) ipo ndani ya hermes-agent kabisa — hakuna submodule, hakuna URL ya nje:
+#   hermes-agent/home-assistant/   (Apache-2.0, pinned kwenye integrations.lock.json)
+#   hermes-agent/openmrs/          (MPL-2.0,  pinned kwenye integrations.lock.json)
+#   hermes-agent/web/              (MIT)
+#
+# Kwanza (mara moja): kuvuta/vakisha source kwenye server — commits za lock:
+#   node hermes-agent/scripts/mtaalamu/fetch_integrations.mjs
+#
+# Kisha kuendeleza UI halisi kutoka source:
+#   cp hermes-agent/home-assistant/homeassistant/  ha-build/homeassistant/        (copied src ya HA core)
+#   docker compose -f hermes-agent/deploy/docker-compose.mtaalamu.yml up -d --build
+#
+# Siri zote kupitia Infisical: HASS_TOKEN, OPENMRS_USER, OPENMRS_PASS (ona .env.example)
+
+services:
+  # ---------- Home Assistant HALISI (kutoka source iliyopimwa) ----------
+  home-assistant:
+    build:
+      context: ../home-assistant          # ← source halisi ndani ya hermes-agent
+      dockerfile: docker/Dockerfile       # Dockerfile rasmi ya HA core
+    container_name: mtaalamu-ha
+    ports: ["8123:8123"]
+    volumes:
+      - ha-config:/config                 # config yako ya HA
+    environment:
+      - TZ=Africa/Dar_es_Salaam
+    restart: unless-stopped
+
+  # ---------- OpenMRS HALISI 2.x (kutoka source iliyopimwa) ----------
+  openmrs-db:
+    image: mysql:8.0
+    container_name: mtaalamu-omrs-db
+    environment:
+      MYSQL_DATABASE: openmrs
+      MYSQL_USER: openmrs
+      MYSQL_PASSWORD: openmrs
+      MYSQL_ROOT_PASSWORD: openmrs-root
+    volumes: [omrs-db:/var/lib/mysql]
+    restart: unless-stopped
+
+  openmrs:
+    # OpenMRS core: WAR inajengwa na Maven kutoka source (dQueries zimepimwa).
+    # Kwa ujenzi wa mara moja tu, tembea: docker build -t mtaalamu/openmrs:core ../openmrs
+    image: mtaalamu/openmrs:core
+    build:
+      context: ../openmrs                 # ← source halisi ndani ya hermes-agent
+      dockerfile: Dockerfile              # Dockerfile rasmi ya openmrs-core (ama tengeneza: mvn package)
+    container_name: mtaalamu-openmrs
+    depends_on: [openmrs-db]
+    ports: ["8081:8080"]
+    environment:
+      OMRS_DB_HOST: openmrs-db
+      OMRS_DB_USER: openmrs
+      OMRS_DB_PASS: openmrs
+    restart: unless-stopped
+
+  # ---------- Hermes Agent (UI halisi + real-UI proxies /ha /openmrs /hermes-ui) ----------
+  hermes:
+    build:
+      context: ..                         # hermes-agent/ yenyewe
+      dockerfile: Dockerfile
+    container_name: mtaalamu-hermes
+    depends_on: [home-assistant, openmrs]
+    ports: ["18080:8080"]
+    environment:
+      - HASS_URL=http://home-assistant:8123
+      - HASS_TOKEN=${HASS_TOKEN}
+      - OPENMRS_URL=http://openmrs:8080/openmrs
+      - OPENMRS_USER=${OPENMRS_USER:-admin}
+      - OPENMRS_PASS=${OPENMRS_PASS}
+      - HERMES_UI_URL=http://127.0.0.1:8080  # UI ya Hermes yenyewe (self)
+    restart: unless-stopped
+
+volumes:
+  ha-config:
+  omrs-db:

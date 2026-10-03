@@ -392,6 +392,49 @@ async def omrs_create_patient(request: Request):
         return JSONResponse({"ok": False, "error": str(exc)}, status_code=502)
 
 
+# ------------------------------------- real-UI: UI HALISI chini ya Hermes (source halisi)
+
+# Source halisi ipo hermes-agent/home-assistant/ na hermes-agent/openmrs/ na huendeshwa
+# kwenye server ya mtumiaji (HASS_URL / OPENMRS_URL). Proxy ya kina (top-level /ha, /openmrs,
+# /hermes-ui) ipo plugins/mtaalamu/realui.py na inaandikishwa na Hermes kabla ya SPA catch-all.
+# Hapa chini ni taarifa ndogo tu kwa dashboard tab: ieleze njia ya UI halisi + source ipo wapi.
+
+_INTEGRATIONS_ROOT = Path(__file__).resolve().parents[3]  # .../hermes-agent
+
+
+def _integrations_status() -> dict:
+    def _has(root: str, marker: str) -> bool:
+        return (_INTEGRATIONS_ROOT / root / marker).exists()
+
+    return {
+        "home_assistant": {
+            "source": "hermes-agent/home-assistant/",
+            "present": _has("home-assistant", "pyproject.toml"),
+            "ui": "Lovelace (kama ilivyo kwenye source)",
+            "route": "/ha/",
+        },
+        "openmrs": {
+            "source": "hermes-agent/openmrs/",
+            "present": _has("openmrs", "pom.xml"),
+            "ui": "OpenMRS 3 / o3 (kama ilivyo kwenye source)",
+            "route": "/openmrs/",
+        },
+        "hermes": {
+            "source": "hermes-agent/web/",
+            "present": (_INTEGRATIONS_ROOT / "web" / "package.json").exists(),
+            "ui": "Hermes Agent dashboard (kama ilivyo kwenye source)",
+            "route": "/hermes-ui/",
+        },
+    }
+
+
+@router.get("/integrations")
+async def integrations_status():
+    st = _integrations_status()
+    return {"ok": True, "integrations": st,
+            "note": "UI halisi zinapitishwa chini ya Hermes kupitia plugins/mtaalamu/realui.py — si iframe, si URL za nje."}
+
+
 # ---------------------------------------------------------------- remote jobs
 
 def _load_jobs() -> list:

@@ -39,5 +39,10 @@ __pycache__/
 # Freebuff sponsored runtime (transient)
 .freebuff/sponsored-runtime/
 
-# --- Upstream reference clones (local-only; re-clone: codeload tarballs) ---
-hermes-agent/upstream/
+# --- Miradi iliyounganishwa (source halisi ndani ya hermes-agent) ---
+# Source yenyewe INAFUATILIWA (hermes-agent/home-assistant/, hermes-agent/openmrs/).
+# Tunapuuza tu artifacts za ujenzi zitakazotokea wakati wa kujenga kwenye server:
+hermes-agent/home-assistant/config/
+hermes-agent/home-assistant/.venv/
+hermes-agent/openmrs/core/.gradle/
+hermes-agent/openmrs/omod/*/target/

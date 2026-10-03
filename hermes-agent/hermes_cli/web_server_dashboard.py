@@ -883,3 +883,21 @@ def _mount_plugin_api_routes():
             _log.info("Mounted plugin API routes: /api/plugins/%s/", plugin["name"])
         except Exception as exc:
             _log.warning("Failed to load plugin %s API routes: %s", plugin["name"], exc)
+
+    # MTAALAMU: top-level real-UI proxies (/ha, /openmrs, /hermes-ui) — UI halisi za source
+    # (hermes-agent/home-assistant, hermes-agent/openmrs, hermes-agent/web) zinazoendeshwa
+    # kwenye server ya mtumiaji. Lazima ziandikishwe KABLA ya SPA catch-all ya mount_spa().
+    try:
+        realui_path = Path(__file__).resolve().parent.parent / "plugins" / "mtaalamu" / "realui.py"
+        if realui_path.exists():
+            spec = importlib.util.spec_from_file_location("mtaalamu_realui", realui_path)
+            if spec is not None and spec.loader is not None:
+                mod = importlib.util.module_from_spec(spec)
+                sys.modules["mtaalamu_realui"] = mod
+                spec.loader.exec_module(mod)
+                router = getattr(mod, "realui_router", None)
+                if router is not None:
+                    app.include_router(router)
+                    _log.info("Mounted MTAALAMU real-UI routes: /ha /openmrs /hermes-ui")
+    except Exception as exc:
+        _log.debug("MTAALAMU real-UI routes not mounted: %s", exc)
