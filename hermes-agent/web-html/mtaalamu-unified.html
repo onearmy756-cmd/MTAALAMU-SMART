@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="utf-8">
+<title>MTAALAMU SMART — Unified Solver</title>
+<style>
+  :root { --bg:#0b0f0e; --panel:#101715; --line:#1d2a26; --green:#00ff9c; --dim:#5df2a6; --txt:#d9ffe9; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font-family:'JetBrains Mono','Fira Code',monospace; font-size:13px; }
+  header { display:flex; gap:12px; align-items:center; padding:10px 16px; border-bottom:1px solid var(--line); }
+  header h1 { color:var(--green); font-size:15px; letter-spacing:2px; margin:0; flex:1; }
+  select, button, input { background:var(--panel); color:var(--txt); border:1px solid var(--line); border-radius:6px; padding:6px 10px; font:inherit; }
+  button { cursor:pointer; } button:hover { border-color:var(--green); color:var(--green); }
+  main { display:grid; grid-template-columns: 1fr 340px; gap:12px; padding:12px 16px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px; }
+  #chat { height:52vh; overflow:auto; display:flex; flex-direction:column; gap:8px; }
+  .msg { padding:8px 10px; border-radius:8px; border:1px solid var(--line); max-width:92%; }
+  .me { align-self:flex-end; background:#12321f; }
+  .bot { align-self:flex-start; background:#0d1a16; }
+  .qform { margin-top:8px; display:flex; flex-direction:column; gap:6px; }
+  .qrow { display:flex; gap:6px; align-items:center; }
+  #input { flex:1; }
+  .bar { display:flex; gap:8px; margin-top:8px; }
+  .tag { font-size:11px; color:var(--dim); }
+  .ops { max-height:44vh; overflow:auto; }
+  .op { padding:6px 8px; border:1px solid var(--line); border-radius:8px; margin-bottom:6px; cursor:pointer; }
+  .op:hover { border-color:var(--green); }
+  .lic { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>◤ MTAALAMU SMART</h1>
+  <span class="tag" id="status">…</span>
+  <select id="lang" onchange="setLang(this.value)"><option value="sw">🇹🇿 Kiswahili</option><option value="en">🇬🇧 English</option></select>
+</header>
+<main>
+  <section class="panel">
+    <div id="chat"></div>
+    <div id="qarea"></div>
+    <div class="bar">
+      <input id="input" placeholder="Andika tatizo la computer… (mf: disk cleanup, partition, office, wifi)">
+      <button onclick="send()">TUMA ▸</button>
+    </div>
+  </section>
+  <aside class="panel">
+    <div><b>LISENI</b> <span class="tag" id="lic"></span></div>
+    <div class="lic">
+      <input id="email" placeholder="email (jina@gmail.com)">
+      <select id="plan"><option>INDIVIDUAL</option><option>CORPORATION</option><option>ORGANIZATION</option></select>
+      <select id="tier"><option>BASIC</option><option>BRONZE</option><option>GOLD</option><option>PLATINUM</option><option>DIAMOND</option></select>
+      <button onclick="register()">JISAJILI / LICENSE</button>
+      <div class="tag" id="keyout"></div>
+    </div>
+    <hr style="border-color:var(--line)">
+    <b>ZANA (OPERESHENI)</b> <span class="tag">— bofya ili isolve</span>
+    <div class="ops" id="ops"></div>
+  </aside>
+</main>
+<script>
+const API='http://127.0.0.1:8795';
+const chat=document.getElementById('chat'), qa=document.getElementById('qarea');
+function add(t,me=false){ const d=document.createElement('div'); d.className='msg '+(me?'me':'bot'); d.textContent=t; chat.appendChild(d); chat.scrollTop=1e9; }
+async function jpost(p,b){ const r=await fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})}); return r.json(); }
+async function jget(p){ return (await fetch(API+p)).json(); }
+
+async function refresh(){
+  try{
+    const s=await jget('/api/status');
+    document.getElementById('status').textContent=`${s.os} · ${s.catalog_ops} ops · ${s.license.tier||'hakuna leseni'} · credits ${s.license.credits_left??'—'}`;
+    document.getElementById('lic').textContent=s.license.key?('✔ '+s.license.key):'— hakuna';
+    const c=await jget('/api/catalog');
+    const ops=document.getElementById('ops'); ops.innerHTML='';
+    for(const o of c.ops){
+      const d=document.createElement('div'); d.className='op';
+      d.innerHTML=`<b>${o.sw}</b><br><span class="tag">${o.group} · ${o.offline?'offline':'mtandao'} · ${o.credits}cr · ${o.risk}</span>`;
+      d.onclick=()=>solveOp(o.id);
+      ops.appendChild(d);
+    }
+  }catch(e){ document.getElementById('status').textContent='API imezimwa — endesha: mtaalamu serve'; }
+}
+async function solveOp(id){
+  add('▸ Zana: '+id);
+  const r=await jpost('/api/solve',{text:id});
+  render(r);
+}
+async function send(){
+  const t=document.getElementById('input').value.trim(); if(!t)return;
+  document.getElementById('input').value='';
+  add(t,true);
+  const r=await jpost('/api/solve',{text:t});
+  render(r);
+}
+function render(r){
+  if(r.stage==='denied'){ add(r.msg); return; }
+  if(r.stage==='plan'){
+    if(r.memory) add(r.memory);
+    if(r.thinking) add('🧠 '+r.thinking);
+    add(`📋 Mpango: ${r.op_name||'—'} (${r.credits} credits, ${r.offline?'offline':'mtandao'})`);
+    qa.innerHTML='';
+    const f=document.createElement('div'); f.className='qform';
+    f.innerHTML=`<div class="tag">❓ Maswali (HITL) — jaza kisha chagua:</div>`;
+    (r.questions||[]).forEach(q=>{
+      const row=document.createElement('div'); row.className='qrow';
+      const inp=q.options?`<select data-k="${q.k}">${q.options.map(o=>`<option>${o}</option>`).join('')}</select>`
+                         :`<input data-k="${q.k}" placeholder="${q.q_sw}">`;
+      row.innerHTML=`<span style="min-width:220px">${q.q_sw}</span>${inp}`;
+      f.appendChild(row);
+    });
+    const b=document.createElement('button'); b.textContent='IDHINISA & ENDELEA ▸';
+    b.onclick=async()=>{
+      const answers={op:r.op};
+      f.querySelectorAll('[data-k]').forEach(el=>answers[el.dataset.k]=el.value);
+      const res=await jpost('/api/solve/answer',{text:document.getElementById('input').value||r.op,answers});
+      qa.innerHTML=''; render(res); refresh();
+    };
+    f.appendChild(b); qa.appendChild(f);
+    return;
+  }
+  if(r.stage==='done'){
+    add(r.message);
+    (r.result?.results||[]).forEach(x=>add(`$ ${x.cmd}\n→ code ${x.code}\n${(x.out||x.err||'').slice(0,400)}`));
+    add('📚 '+(r.result?.ok?'Ripoti imehifadhiwa (Kitabu Kidigitali).':'Ona matokeo hapo juu.'));
+    return;
+  }
+  add(JSON.stringify(r).slice(0,600));
+}
+async function register(){
+  const r=await jpost('/api/register',{email:email.value,plan:plan.value,tier:tier.value,seats:plan.value==='ORGANIZATION'?parseInt(prompt('Watu wangapi?','25')):undefined});
+  document.getElementById('keyout').textContent=r.ok?('KEY: '+r.license.key):('✖ '+r.error);
+  refresh();
+}
+async function setLang(l){ await jpost('/api/lang',{lang:l}); add(l==='sw'?'🇹🇿 Kiswahili':'🇬🇧 English'); }
+add('Karibu MTAALAMU SMART! Andika tatizo la computer — nalisolve mpaka mwisho.');
+refresh(); setInterval(refresh, 15000);
+</script>
+</body>
+</html>
