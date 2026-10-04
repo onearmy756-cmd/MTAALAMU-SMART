@@ -27,11 +27,19 @@ Admin (FULL SYSTEM — inahitaji mtaalamu admin unlock):
   GET  /api/admin/dashboard   FULL SYSTEM: OS + leseni + wallet + catalog (bei/tier)
   POST /api/admin/price       {"op_id", "amount_tzs"} (0 = BURE)
   POST /api/admin/tier        {"op_id", "tier"} (ANY/BASIC/.../DIAMOND)
+
+System view (tabs za dashboard — zote huru, hakuna admin inayohitajika):
+  GET  /api/boot              mfululizo wa UKIWAKA (kernel→session→akili→agent→GUI)
+  GET  /api/system            ramani ya OS (cpu/mem/disk/processes/network/services)
+  GET  /api/components        MTECH OS + kila kilichomo (paths halisi)
+  GET  /api/book              Kitabu Kidigitali (kesi + maarifa)
+  GET  /api/payments          malipo yote (audit) + wallet + gateway
+  GET  /api/full              KILA KITU pamoja (boot+components+map+book+payments)
 """
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import admin, billing, clickpesa, ipc, models, scope, unified
+from . import admin, billing, clickpesa, ipc, models, scope, system_view, unified
 from .catalog import CATALOG, GROUPS
 from .shortcuts import ALL_SHORTCUTS, run_shortcut
 
@@ -90,6 +98,18 @@ class API(BaseHTTPRequestHandler):
                 self._send(200, admin.dashboard(probe=unified.probe_system()))
             except PermissionError as e:
                 self._send(401, {"ok": False, "error": str(e)})
+        elif p == "/api/boot":
+            self._send(200, {"family": system_view.FAMILY, "stages": system_view.boot_timeline()})
+        elif p == "/api/system":
+            self._send(200, system_view.system_map())
+        elif p == "/api/components":
+            self._send(200, {"components": system_view.mtech_components()})
+        elif p == "/api/book":
+            self._send(200, system_view.book_recent())
+        elif p == "/api/payments":
+            self._send(200, system_view.payments_recent())
+        elif p == "/api/full":
+            self._send(200, system_view.full_system())
         else:
             self._send(404, {"error": "hakuna"})
 

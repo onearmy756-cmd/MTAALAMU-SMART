@@ -17,6 +17,8 @@
     mtaalamu admin price disk.cleanup 20000           # badilisha bei (0 = BURE)
     mtaalamu admin tier disk.partition.create GOLD    # huduma kwa GOLD+ tu
     mtaalamu admin dashboard                          # FULL SYSTEM (OS nzima)
+    mtaalamu boot                                     # mfululizo wa UKIWAKA (checks halisi)
+    mtaalamu system                                   # ramani ya OS (cpu/mem/disk/net/services)
     mtaalamu doctor                                   # ukaguzi
     mtaalamu serve                                    # HTTP API kwa UI ya hermes
 """
@@ -24,7 +26,7 @@ import argparse
 import json
 import sys
 
-from . import admin, billing, clickpesa, ipc, models, scope, unified
+from . import admin, billing, clickpesa, ipc, models, scope, system_view, unified
 from .catalog import CATALOG
 from .shortcuts import ALL_SHORTCUTS, run_shortcut
 
@@ -48,6 +50,7 @@ def main() -> None:
     m = sub.add_parser("model"); m.add_argument("mode", choices=("local", "api")); m.add_argument("model"); m.add_argument("api_url", nargs="?", default=""); m.add_argument("api_key_env", nargs="?", default="")
     pay = sub.add_parser("pay"); pay.add_argument("amount", nargs="?", type=int, default=0); pay.add_argument("--op", default=""); pay.add_argument("--phone", required=True); pay.add_argument("--wait", type=int, default=90)
     ad = sub.add_parser("admin"); ad.add_argument("action", choices=("unlock", "lock", "price", "tier", "dashboard")); ad.add_argument("arg1", nargs="?", default=None); ad.add_argument("arg2", nargs="?", default=None); ad.add_argument("--key", default=None)
+    sub.add_parser("boot"); sub.add_parser("system")
     sub.add_parser("wallet")
     sub.add_parser("usage"); sub.add_parser("doctor"); sub.add_parser("serve")
     args = ap.parse_args()
@@ -145,6 +148,18 @@ def main() -> None:
             print(f"✖ Malipo hayakukamilika: {out.get('status')} (ref {out.get('ref')})"); sys.exit(1)
     elif args.cmd == "usage":
         _p(billing.usage_summary())
+    elif args.cmd == "boot":
+        stages = system_view.boot_timeline()
+        print("══ UKIWAKA WA MTECH OS / MTAALAMU SMART ══")
+        for s in stages:
+            mark = "✔" if s["ok"] else "✗"
+            print(f" {mark} [{s['n']}] {s['stage']:<12} {s['sw']}")
+            if s.get("detail"):
+                print(f"       {s['detail']}")
+        ok = sum(1 for s in stages if s["ok"])
+        print(f"— hatua {ok}/{len(stages)} zimewaka —")
+    elif args.cmd == "system":
+        _p(system_view.system_map())
     elif args.cmd == "doctor":
         from .doctor_lite import run_checks
         _p(run_checks())

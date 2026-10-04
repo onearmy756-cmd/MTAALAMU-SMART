@@ -35,7 +35,8 @@ inagundulika kiotomatiki.
 | **Setup binaries** (download & use): Windows/Linux/macOS onefile | ✅ `setup_builder.py` (PyInstaller) |
 | IPC (unix socket) + **R bridge** (uchambuzi halisi wa usage kwa Rscript) | ✅ |
 | Storage kidogo: JSONL ndogo + catalog ndogo; hakuna DB kubwa | ✅ |
-| UI ya hermes: chat + HITL fomu + catalog + leseni + charts | ✅ `web-html/mtaalamu-unified.html` (offline single-file) |
+| UI ya hermes: **TABS 9** — BOOT (ukiwaka) · CHAT · ZANA · KITABU · MALIPO · LESENI · SHORTCUTS · DOCTOR · ADMIN | ✅ `web-html/mtaalamu-unified.html` (offline single-file) |
+| **System view**: mfululizo wa UKIWAKA (kernel→session→akili→agent→GUI, checks halisi za OS), MTECH OS components 12, ramani ya OS, Kitabu, malipo | ✅ `mtaalamu/system_view.py` + `/api/boot /api/system /api/components /api/book /api/payments /api/full` |
 
 ## Sakinisha / Tumia
 
@@ -44,6 +45,8 @@ inagundulika kiotomatiki.
 # 1) Pata repo, hakuna dependencies nzito (stdlib tu; hiari: Pillow, PySide6)
 cd hermes-agent
 python3 -m mtaalamu register jina@gmail.com INDIVIDUAL GOLD
+python3 -m mtaalamu boot              # mfululizo wa UKIWAKA (checks halisi + marekebisho)
+python3 -m mtaalamu system            # ramani ya OS (cpu/mem/disk/net/services)
 python3 -m mtaalamu doctor            # ukaguzi wa mashine
 python3 -m mtaalamu serve             # API http://127.0.0.1:8795 (IPC: /tmp/mtaalamu.sock)
 # UI: fungua web-html/mtaalamu-unified.html (browser) — chat, fomu, catalog, leseni
