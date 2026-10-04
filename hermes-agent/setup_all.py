@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """MTAALAMU SMART + MTECH OS — ONE-CLICK INSTALL (kila kitu kwa amri moja).
 
-    python3 setup_all.py                 # kila kitu: C, Rust, R, Python, Ollama+Qwen, deps
+    python3 setup_all.py                 # KILA KITU: C, Rust, R, venv, Ollama+Qwen,
+                                         #   account ya kiotomatiki, ADMIN, server + dashboard
     python3 setup_all.py --check         # angalia tu — usisakinise chochote
+    python3 setup_all.py --email me@mail.com   # tumia barua pepe yako (hiari)
     python3 setup_all.py --skip-rust     # ruka Rust
     python3 setup_all.py --skip-r        # ruka R
     python3 setup_all.py --no-model      # usivute qwen2.5vl:3b (baadaye: ollama pull)
+    python3 setup_all.py --no-start      # usianze server/dashboard kiotomatiki
 
 INAYOSAKINISHWA (kwa mpangilio, OS zote 3):
   1. Zana za C:        gcc/clang + make (+ build-essential / xcode CLT / VS Build Tools hint)
@@ -13,7 +16,8 @@ INAYOSAKINISHWA (kwa mpangilio, OS zote 3):
   3. R:                R + Rscript (apt/brew/winget)      [--skip-r kwa kuruka]
   4. Python + venv:    venv ndani ya hermes-agent + deps zote (Pillow, pyautogui kwa win/mac)
   5. Ollama + Qwen:    ollama (rasmi) + ollama pull qwen2.5vl:3b  [--no-model kwa kuruka]
-  6. Mwisho:           register + admin unlock + boot wiring + serve amri zinazoonyeshwa
+  6. KIOTOMATIKI:      account (auto-register DIAMOND) + ADMIN (zana BURE)
+                       + server inaanza + dashboard inafunguka browser — HAKUNA configuration
 
 HUDUMA ZA PYTHON (stdlib tu kwa mtaalamu; venv ina Pillow/pyautogui kwa MTECH agent):
   mtaalamu inafanya kazi BILA venv — venv ni kwa ajili ya MTECH OS agent + GUI.
@@ -160,24 +164,60 @@ def step_ollama(check: bool, no_model: bool) -> bool:
     return rc == 0
 
 
-def step_finish(check: bool) -> None:
-    print("[6/6] Mwisho — amri zako (nakili moja moja):")
+def step_finish(check: bool, email: str | None, start: bool) -> None:
     py = "python" if FAMILY == "windows" else "python3"
-    print(f"""
-  cd {HERE}
-  {py} -m mtaalamu register BARUA-YAKO@mail.com INDIVIDUAL DIAMOND
-  {py} -m mtaalamu admin unlock          # wewe mmiliki → zana ZOTE BURE
-  {py} -m mtaalamu boot                  # ona kuanzia ukiwaka (checks halisi)
-  {py} -m mtaalamu serve                 # kisha fungua web-html/mtaalamu-unified.html
-""")
-    if not check:
+    if check:
+        print("[6/6] Mwisho (UKAGUZI TU — hakuna kinachosakinishwa)")
+        return
+    # AUTO-REGISTER: hakuna maswali — email ya default (au --email) + DIAMOND + admin
+    mail = (email or "owner@mtaalamu.local").strip()
+    print(f"[6/6] KUANZISHA KIOTOMATIKI (hakuna configuration — account: {mail})")
+    run(f"{py} -m mtaalamu register {mail} INDIVIDUAL DIAMOND")
+    run(f"{py} -m mtaalamu admin unlock")   # owner-mode: zana ZOTE BURE
+    if start:
+        _start_server(py)
+
+
+def _start_server(py: str) -> None:
+    """Anzisha mtaalamu serve KIOTOMATIKI (detached) + fungua dashboard ya browser."""
+    log = os.path.join(HERE, ".serve.log")
+    if _api_up():
+        print("      API tayari inaendesha (http://127.0.0.1:8795) ✔")
+    else:
+        kwargs: dict = {}
+        if FAMILY == "windows":
+            kwargs.update(creationflags=0x00000008)  # DETACHED_PROCESS
+        else:
+            kwargs.update(start_new_session=True)
         try:
-            reg = input("  Barua pepe ya kujisajili (Enter = ruka): ").strip()
-        except (EOFError, KeyboardInterrupt):
-            reg = ""  # bila terminal ya mwingiliano — ruka register (unaweza baadaye)
-        if reg:
-            run(f"{py} -m mtaalamu register {reg} INDIVIDUAL DIAMOND")
-            run(f"{py} -m mtaalamu admin unlock")
+            with open(log, "ab") as lf:
+                subprocess.Popen([py, "-m", "mtaalamu", "serve"], cwd=HERE,
+                                 stdout=lf, stderr=lf, stdin=subprocess.DEVNULL, **kwargs)
+        except OSError as e:
+            print(f"      ⚠ serve haikuanza ({e}) — endesha wewe: {py} -m mtaalamu serve")
+            return
+        import time as _t
+        for _ in range(20):
+            if _api_up():
+                break
+            _t.sleep(0.5)
+        print("      API: http://127.0.0.1:8795 ✔ (log: .serve.log)" if _api_up()
+              else "      ⚠ API haikufika kwa wakati — endesha: mtaalamu serve")
+    # fungua dashboard (faili la ndani)
+    dash = os.path.join(HERE, "web-html", "mtaalamu-unified.html")
+    if os.path.exists(dash):
+        import webbrowser
+        webbrowser.open("file://" + dash.replace(os.sep, "/"))
+        print("      Dashboard imefunguka kwenye browser ✔ (tabs 9)")
+
+
+def _api_up() -> bool:
+    try:
+        import urllib.request
+        with urllib.request.urlopen("http://127.0.0.1:8795/api/status", timeout=2):
+            return True
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def main() -> None:
@@ -186,7 +226,12 @@ def main() -> None:
     skip_rust = "--skip-rust" in args
     skip_r = "--skip-r" in args
     no_model = "--no-model" in args
-    print(f"══ MTAALAMU SMART — ONE-CLICK INSTALL ({FAMILY}, {'UKAGUZI TU' if check else 'SAKINISHA KILA KITU'}) ══")
+    start = "--no-start" not in args
+    email = None
+    if "--email" in args:
+        i = args.index("--email")
+        email = args[i + 1] if i + 1 < len(args) else None
+    print(f"══ MTAALAMU SMART — ONE-CLICK INSTALL ({FAMILY}, {'UKAGUZI TU' if check else 'KILA KITU — HAKUNA CONFIGURATION'}) ══")
     results = {
         "C (gcc/make)": step_c(check),
         "Rust (cargo)": step_rust(check, skip_rust),
@@ -194,12 +239,15 @@ def main() -> None:
         "Python venv": step_python_venv(check),
         "Ollama + Qwen": step_ollama(check, no_model),
     }
-    step_finish(check)
+    step_finish(check, email, start)
     print("══ MUHTASARI ══")
     for k, v in results.items():
         print(f"  {'✔' if v else '✗'} {k}")
+    print("  ✔ Account (auto-register + ADMIN, zana BURE)" if not check else "  – account: (hakuna, ukaguzi tu)")
+    if start and not check:
+        print("  ✔ Server http://127.0.0.1:8795 + Dashboard (tabs 9)")
     bad = [k for k, v in results.items() if not v]
-    print(f"\n{len(results)-len(bad)}/{len(results)} sawa." + (f" Zilizobaki: {', '.join(bad)} — endesha tena setup_all.py baada ya kuzirekebisha." if bad else " KILA KITU TAYARI!"))
+    print(f"\n{len(results)-len(bad)}/{len(results)} sawa." + (f" Zilizobaki: {', '.join(bad)} — endesha tena setup_all.py baada ya kuzirekebisha." if bad else " KILA KITU TAYARI — Dashboard iko browser yako!"))
 
 
 if __name__ == "__main__":
