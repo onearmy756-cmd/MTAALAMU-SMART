@@ -106,6 +106,11 @@ install -m 644 "$DEST/services/mtech-agent.service"     /etc/systemd/system/
 install -m 644 "$DEST/services/mtech-firstboot.service" /etc/systemd/system/
 install -m 755 "$HERE/services/mtech-firstboot.sh"      /usr/local/sbin/mtech-firstboot
 
+# BOOT: MTAALAMU inaload kiotomatiki inapowaka OS (autostart ya kila user + icon)
+install -D -m 644 "$HERE/boot/mtech-mtaalamu-autostart.desktop" /etc/xdg/autostart/mtech-mtaalamu.desktop
+install -D -m 644 "$HERE/desktop/mtaalamu.svg" /usr/share/icons/hicolor/scalable/apps/mtaalamu.svg
+install -D -m 644 "$HERE/boot/mtech-session.desktop" /usr/share/xsessions/mtech.desktop
+
 systemctl daemon-reload
 systemctl enable --now mtech-ollama.service
 systemctl enable --now mtech-agent.service
@@ -157,6 +162,9 @@ fi
 echo ""
 echo "✅ MTAALAMU SMART imewekwa kama APP ndani ya OS yako!"
 echo "   GUI:      menyu ya Applications → MTAALAMU SMART (au icon ya Desktop)"
+echo "   Boot:     inaload KIOTOMATIKI inapowaka OS (+ session 'MTECH OS' kwenye login)"
 echo "   CLI:      mtech skills | mtech ask \"tatizo la kompyuta\" | mtech watch"
+echo "   Doctor:   mtech doctor   ← hakiki kila kitu kwenye computer hii"
 echo "   Huduma:   systemctl status mtech-agent mtech-ollama"
 echo "   Kernel:   cat /proc/mtech_status  (baada ya insmod mtech_dev.ko)"
+echo "   Control:  mtech allow on  (full control — mouse/keyboard, mtumiaji akiruhusu)"

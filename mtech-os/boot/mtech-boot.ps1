@@ -32,27 +32,36 @@ Write-Host "  ✓ Sysmon inaona KILA process (kernel-level) — Event Log: 'Micr
 
 # ---------- 2) Startup: MTAALAMU inaload inapowaka OS ----------
 Write-Host "[2/3] Startup shortcuts (inaload na OS)…"
-$startup = [Environment]::GetFolderPath("Startup")
 $py = "$env:LOCALAPPDATA\MTECH\venv\Scripts\python.exe"
+if (-not (Test-Path $py)) {
+    Write-Host "  ✖ venv haipo — endesha KWANZA: python install.py (kwenye $env:LOCALAPPDATA\MTECH)" -ForegroundColor Red
+    exit 1
+}
+$startup = [Environment]::GetFolderPath("Startup")
 $ws = New-Object -ComObject WScript.Shell
+# NOTE: .lnk icons zinahitaji .ico/.exe — SVG haiwezi; tunatumia icon ya python
 $s1 = $ws.CreateShortcut("$startup\MTAALAMU SMART.lnk")
 $s1.TargetPath = $py
 $s1.Arguments  = "$env:LOCALAPPDATA\MTECH\gui\mtech_shell.py"
-$s1.IconLocation = "$env:LOCALAPPDATA\MTECH\desktop\mtaalamu.svg"
+$s1.IconLocation = "$py,0"
 $s1.Save()
 $s2 = $ws.CreateShortcut("$startup\Kali Tools.lnk")
 $s2.TargetPath = $py
 $s2.Arguments  = "$env:LOCALAPPDATA\MTECH\desktop\kali-tools-window.py"
+$s2.IconLocation = "$py,0"
 $s2.Save()
 Write-Host "  ✓ Startup → $startup"
 
-# ---------- 3) Branding: logo + wallpaper ya MTECH ----------
-Write-Host "[3/3] Branding ya MTECH (logo/desktop)…"
+# ---------- 3) Branding: wallpaper ya MTECH (HALISI, inatengenezwa na installer) ----------
+Write-Host "[3/3] Branding ya MTECH…"
 $wall = "$env:LOCALAPPDATA\MTECH\desktop\mtech-wallpaper.png"
 if (Test-Path $wall) {
     Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wall
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value 10  # Fill
     rundll32.exe user32.dll,UpdatePerUserSystemParameters | Out-Null
     Write-Host "  ✓ Wallpaper ya MTECH imewekwa"
+} else {
+    Write-Host "  (i) wallpaper haipo — install.py inaitengeneza; endesha install.py --boot tena"
 }
 Write-Host ""
 Write-Host "✅ IMEKAMILIKA — restart: MTAALAMU inaanza na Windows, Sysmon inaona kila kitu." -ForegroundColor Green

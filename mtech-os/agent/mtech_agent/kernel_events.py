@@ -110,8 +110,10 @@ FEED: EventFeed = None
 
 
 def start_feed() -> EventFeed:
+    """Rudisha feed iliyopo (thread isianzishwe mara mbili)."""
     global FEED
-    if FEED is None or not FEED.is_alive():
-        FEED = EventFeed()
-        FEED.start()
+    if FEED is not None:
+        return FEED  # tayari ipo — hata kama imefeli, usiianzishe tena
+    FEED = EventFeed()
+    FEED.start()
     return FEED

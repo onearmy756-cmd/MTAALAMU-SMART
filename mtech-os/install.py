@@ -66,6 +66,51 @@ def setup_venv(with_gui: bool) -> Path:
     return pip
 
 
+def make_wallpaper() -> Path:
+    """Wallpaper HALISI ya MTECH (PNG 1920x1080) — haraka (bytearray + row reuse)."""
+    import struct, zlib
+    W, H = 1920, 1080
+    # mstari wa msingi: gradient ya giza (0b1220 → 101715) + galaxy band diagonali + nyota
+    base = bytearray()
+    stars = set()
+    for x in range(W):
+        # nyota (deterministic hash — wachache tu)
+        if ((x * 73856093) ^ ((x * 19349663) & 0xffff)) % 40961 == 0:
+            stars.add(x)
+    for y in range(H):
+        base.append(0)  # filter None
+    # tunga mstari kwa kila y mara moja (bytes-level)
+    def row_bytes(y: int) -> bytes:
+        row = bytearray(W * 3 + 1)
+        for x in range(W):
+            t = (x + y) / (W + H)
+            r = 0x0b + (0x10 - 0x0b) * t
+            g = 0x12 + (0x17 - 0x12) * t
+            b = 0x20 + (0x15 - 0x20) * t
+            d = abs((x * H // W) - y)
+            if 40 < d < 120:  # "galaxy band" ya kike nyepesi kando ya diagonal
+                f = 1 - abs(d - 80) / 80
+                r += 120 * f; g += 80 * f; b += 150 * f
+            if x in stars and y % 11 == 3:
+                r = g = b = 235
+            i = 1 + x * 3
+            row[i] = min(255, int(r)); row[i+1] = min(255, int(g)); row[i+2] = min(255, int(b))
+        row[0] = 0
+        return bytes(row)
+    raw = bytearray()
+    for y in range(H):
+        raw += row_bytes(y)
+    def chunk(tag, data):
+        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xffffffff)
+    png = (b"\x89PNG\r\n\x1a\n"
+           + chunk(b"IHDR", struct.pack(">IIBBBBB", W, H, 8, 2, 0, 0, 0))
+           + chunk(b"IDAT", zlib.compress(bytes(raw), 6))
+           + chunk(b"IEND", b""))
+    out = HERE / "desktop" / "mtech-wallpaper.png"
+    out.write_bytes(png)
+    return out
+
+
 # ----------------------------------------------------------------- 2) ollama
 def install_ollama() -> bool:
     step(2, "Ollama (LLM engine halisi)…")
@@ -196,11 +241,17 @@ def main() -> None:
     ap.add_argument("--allow-control", action="store_true", help="fungua full control (mouse/keyboard) — ALLOW ya mtumiaji")
     ap.add_argument("--kernel", action="store_true", help="(Linux) build + load module ya /dev/mtech")
     ap.add_argument("--boot", action="store_true", help="inaload kiotomatiki inapowaka OS (autostart + logo + Sysmon kwa Windows)")
+    ap.add_argument("--only-wallpaper", action="store_true", help="tengeneza wallpaper ya MTECH tu")
     args = ap.parse_args()
 
     print("═══════════════════════════════════════════════")
     print(f" MTECH — installer ({FAMILY}, {platform.release()})")
     print("═══════════════════════════════════════════════")
+
+    if args.only_wallpaper:
+        w = make_wallpaper()
+        print(f"✓ wallpaper: {w} ({w.stat().st_size//1024} KB)")
+        return
 
     DEST.mkdir(parents=True, exist_ok=True)
     pip = setup_venv(with_gui=not args.no_gui)
@@ -217,6 +268,7 @@ def main() -> None:
         data["allow_control"] = True
     cfg.write_text(json.dumps(data, indent=1))
 
+    make_wallpaper()
     make_launchers(pip)
     if args.boot:
         setup_boot(pip)

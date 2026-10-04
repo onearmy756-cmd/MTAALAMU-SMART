@@ -10,6 +10,7 @@
 import argparse
 import json
 import re
+import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -170,6 +171,7 @@ def main() -> None:
                        help="Ruhusu FULL CONTROL ya kompyuta (mouse/keyboard) kwa session hii")
     p_ask.add_argument("--quiet", action="store_true")
     sub.add_parser("watch")
+    sub.add_parser("doctor", help="ukaguzi halisi wa computer hii — kila kitu kinachofanya kazi au kinachorekebishwa")
     p_allow = sub.add_parser("allow", help="Ruhusu/kataa full control (dumufuli)")
     p_allow.add_argument("state", nargs="?", choices=("on", "off"), default="on")
     p_serve = sub.add_parser("serve")
@@ -206,6 +208,9 @@ def main() -> None:
                     seen += 1
         except KeyboardInterrupt:
             pass
+    elif args.cmd == "doctor":
+        from .doctor import run_all
+        sys.exit(run_all())
     elif args.cmd == "allow":
         from .config import CONFIG as _C
         _C.set_allow_control(args.state == "on")
