@@ -1,9 +1,0 @@
-{
-  "entity": {
-    "binary_sensor": {
-      "event_in_progress": {
-        "default": "mdi:calendar-clock"
-      }
-    }
-  }
-}
