@@ -40,6 +40,14 @@ inagundulika kiotomatiki.
 
 ## Sakinisha / Tumia
 
+### 0) ONE-CLICK — BONYEZA INSTALL (kila kitu)
+```bash
+cd hermes-agent
+sh ./install.sh            # C (gcc/make) + Rust (rustup) + R + venv+deps + Ollama+qwen2.5vl:3b
+# hiari:  sh ./install.sh --check | --skip-rust | --skip-r | --no-model
+```
+Au moja kwa moja: `python3 setup_all.py` — muhtasari ✔/✗ mwishoni; endesha tena kurekebisha zilizobaki.
+
 ### A) Binafsi (computer yako — OS yoyote)
 ```bash
 # 1) Pata repo, hakuna dependencies nzito (stdlib tu; hiari: Pillow, PySide6)
