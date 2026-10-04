@@ -9,7 +9,7 @@ kali-desktop-live
 ## Desktop halisi ya Kali (kama picha: XFCE + dragon wallpaper + panel + menyu za zana)
 kali-desktop-xfce
 kali-themes
-kali-wallpapers
+kali-wallpapers-2022
 kali-menu
 kali-tweaks
 xdg-user-dirs
@@ -21,6 +21,14 @@ conky-all
 ##   kali-linux-large  = seti kamili ya Kali rasmi (kali-linux-default + extra, ≈ tools 400+)
 ##   kali-linux-everything = ZOTE (~1800) — badalishwa na build-iso.sh --everything
 kali-linux-large
+## (metasploit-framework, wireshark, burpsuite, hashcat, nmap… zote zimo NDANI ya
+##  kali-linux-large — hatutaziandika tena kwa jina ili kuepuka makosa ya majina)
+
+## Dock/desktop za Kali (zinazotajwa na xfce4-panel.xml na hook ya icons)
+kali-undercover
+network-manager-applet
+mousepad
+xfce4-appfinder
 
 ## Kernel na DRIVERS halisi za Kali (WiFi, GPU, USB, sound…)
 linux-image-amd64
