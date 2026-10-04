@@ -56,3 +56,4 @@ hermes-agent/home-assistant/config/
 hermes-agent/home-assistant/.venv/
 hermes-agent/openmrs/core/.gradle/
 hermes-agent/openmrs/omod/*/target/
+.serve.log
