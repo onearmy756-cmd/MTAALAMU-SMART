@@ -42,6 +42,7 @@ mtech_dev.ko
 mtech_dev.mod*
 mtech_dev.o
 *.cmd
+!hermes-agent/setup.cmd
 .tmp_versions/
 
 # --- Freebuff local state ---
@@ -57,3 +58,7 @@ hermes-agent/home-assistant/.venv/
 hermes-agent/openmrs/core/.gradle/
 hermes-agent/openmrs/omod/*/target/
 .serve.log
+
+# --- MTAALAMU build artifacts ---
+hermes-agent/mtaalamu/dist/
+hermes-agent/mtaalamu/build/
