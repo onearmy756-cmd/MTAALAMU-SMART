@@ -1,3 +1,4 @@
-# MTECH OS agent — deps ndogo (stdlib kwa kila kitu muhimu)
-# Pillow ni kwa screenshots (vision ya Qwen 2.5 VL)
+# MTECH OS agent — deps (OS zote)
 Pillow>=10.0
+# Full control native (mouse/keyboard) kwa Windows na macOS; Linux ina xdotool
+pyautogui>=0.9.54; sys_platform == "win32" or sys_platform == "darwin"

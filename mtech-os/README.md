@@ -1,12 +1,31 @@
 # MTECH OS
 
-**OS HALISI ya Kali Linux + MTAALAMU SMART kama app ndani yake.**
+**Akili halisi ya mtaalamu ndani ya OS YOYOTE (Linux, Windows, macOS) — hakuna ISO,
+hakuna Docker, hakuna dual-boot.**
 
-> Jengo lake: **Kali Linux kamili** (desktop XFCE + dragon wallpaper, drivers zote
-> (firmware-linux, iwlwifi, realtek…), **zana zote za Kali** (`kali-linux-large`, au
-> `--everything` ≈ zana 1800), kernel halisi + headers — na **MTAALAMU SMART**
-> ikitu kama **app ya desktop** (menyu ya Applications + icon ya Desktop, kama
-> Nmap/Firefox): Qwen 2.5 VL 3B + skills 146 + kernel bridge (`/dev/mtech`).
+> MTECH inasakinishwa moja kwa moja kwenye OS iliyopo (`python3 install.py`) na:
+> 1) **inaona full screen yote** (vision ya Qwen 2.5 VL 3B), 2) **inadhibiti kompyuta
+> kwa ukamilifu** (mouse + keyboard — mtumiaji akiruhusu `--allow-control`),
+> 3) **inaunganisha kernel** (Linux: module halisi `/dev/mtech`; Windows: Sysmon
+> Event Log; macOS: Unified Log), 4) zana + drivers za OS husika zinawasili halisi.
+> Nayo pia inaweza kujengwa kama **ISO kamili ya Kali** (hiari — angalia chini).
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  APPS: MTAALAMU SMART + Kali Tools (desktop launchers)       ║
+║   • console ya Qwen  • skills 146  • full screen vision      ║
+║   • FULL CONTROL (mouse/keyboard, ALLOW ya mtumiaji)         ║
+╠══════════════════════════════════════════════════════════════╣
+║  MTECH AGENT (Python, cross-OS)                              ║
+║   Qwen 2.5 VL 3B (Ollama) ⇄ tools: shell, files, probe,      ║
+║   vision (full screen), control, events, MTAALAMU skills 146 ║
+╠══════════════════════════════════════════════════════════════╣
+║  OS yoyote: Linux ⇄ Windows ⇄ macOS (HALISI)                 ║
+║  screenshot: ImageGrab/scrot/PowerShell — input: pyautogui/  ║
+║  xdotool — probe: /proc/CIM/sysctl — events: kernel module/  ║
+║  Sysmon/Unified Log — shell: bash/PowerShell/zsh             ║
+╚══════════════════════════════════════════════════════════════╝
+```
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
@@ -40,6 +59,64 @@
 > App ya **MTAALAMU SMART** iko menyu ya Applications + Desktop, na ina kitufe
 > **"KALI TOOLS ▸"** kinachofungua dirisha hilo la categories 11.
 
+## ⚡ KUTOKA GITHUB HADI DESKTOP — HATUA 5 (OS yoyote, hakuna ISO/Docker/dual-boot)
+
+### Hatua 1: Pata code
+```bash
+git clone https://github.com/onearmy756-cmd/MTAALAMU-SMART.git
+cd MTAALAMU-SMART/mtech-os
+```
+
+### Hatua 2: Sakinisha (kila kitu: venv + Ollama + modeli + apps)
+```bash
+python3 install.py                     # Linux / macOS / Windows (python install.py)
+# chaguo: --no-model  |  --no-gui  |  --kernel (Linux: module ya /dev/mtech)
+```
+
+### Hatua 3: Fungua APP ya desktop
+- **Linux**: menyu ya Applications → **MTAALAMU SMART** (au `~/.local/share/applications`)
+- **Windows**: Desktop → **MTAALAMU SMART.lnk**
+- **macOS**: Desktop → **MTAALAMU SMART.command**
+
+### Hatua 4: Ruhusu FULL CONTROL (mtu akiruhusu — inadumu)
+```bash
+python3 install.py --allow-control     # au baadaye: python -m mtech_agent allow on
+# au kwa session moja tu:  python -m mtech_agent ask "..." --allow-control
+# au env:                  MTECH_ALLOW_CONTROL=1
+```
+Agent sasa inaweza kubofya, kuandika, kusogeza kipanya — **kila hatua bado inauliza
+kibali (HITL)**, na `mtech allow off` inazima wakati wowote. PyAutoGUI FAILSAFE:
+sogeza kipanya kona ya 0,0 kusimamisha kila kitu mara moja.
+
+### Hatua 5: Tumia kama mtaalamu halisi
+```bash
+mtech ask "kompyuta yangu inaenda polepole, tafuta tatizo na ulimize"   # inafanya kazi yote
+mtech skills --q betri          # skills 146 za MTAALAMU
+mtech watch                     # matukio ya OS/kernel LIVE
+mtech probe                     # hali kamili ya mfumo (OS yoyote)
+```
+
+## Kila kitu ni HALISI (OS zote tatu)
+
+| Uwezo | Linux | Windows | macOS |
+|---|---|---|---|
+| **Full screen vision** | Pillow/scrot | Pillow ImageGrab / PowerShell | Pillow / `screencapture` |
+| **Full control** (mouse/kiiboard) | xdotool | pyautogui (native) | pyautogui (native) |
+| **Probe ya mfumo** | `/proc` | PowerShell/CIM | `sw_vers`, `/proc`-kama |
+| **Matukio ya chini** | **module `/dev/mtech`** (kprobes) | **Sysmon Event Log** | **Unified Log** (`log stream`) |
+| **Shell** | bash/zsh | PowerShell | zsh |
+| **Drivers/zana** | packages za distro yako | winget/choco | brew |
+
+## (HIARI) ISO kamili ya Kali — kama unataka OS yake
+
+```bash
+sudo ./mtech-os/kali/build-iso.sh            # Kali halisi (kali-linux-large)
+sudo ./mtech-os/kali/build-iso.sh --everything  # zana ZOTE (~1800)
+./mtech-os/kali/build-iso.sh --container     # kutoka OS yoyote yenye Docker/Podman
+./mtech-os/kali/build-iso.sh --check         # hakiki packages dhidi ya repo halisi ya Kali
+```
+Kisha flash kwenye USB (balenaEtcher / `dd`) → boot → **Live** au **Install**.
+
 ## Vyanzo (vilivyopakuliwa kwenye `upstream/`)
 
 | Chanzo | Kazi | Mahali |
@@ -54,10 +131,12 @@
 ```
 mtech-os/
 ├── README.md            ← hii (nyaraka kuu)
-├── Makefile             → make skills|ask|watch|serve|shell|module|kernel|iso|install|smoke
-├── install.sh           ← weka kwenye OS iliyopo (wrapper mode)
+├── Makefile             → make skills|ask|watch|serve|app|module|kernel|iso|iso-everything|install|smoke
+├── install.py           ← INSTALLER MOJA ya OS zote 3 (hakuna ISO/Docker/dual-boot)
+├── install.sh           ← (Linux) kama install.py + systemd services
 ├── agent/               ← AKILI: Qwen 2.5 VL 3B + tools + skills bridge + HITL
-│   ├── mtech_agent/     (config, llm, tools, skills_bridge, kernel_events, vision, safety)
+│   ├── mtech_agent/     (config, llm, tools, skills_bridge, kernel_events, vision, safety,
+│   │                     platform ← adapters za OS zote: screenshot/input/probe/events/shell)
 │   └── requirements.txt
 ├── kernel/              ← KIUNGANISHI CHA KERNEL
 │   ├── mtech_dev.c      → moduli ya kernel: /dev/mtech (kprobes: exec/exit)
@@ -76,24 +155,22 @@ mtech-os/
 └── services/            ← systemd: mtech-agent, mtech-ollama, mtech-firstboot
 ```
 
-## Njia 1 — Jenga ISO kamili ya MTECH OS (Kali halisi)
+## Njia 1 — OS yoyote (NALIYO MSINGI — hakuna ISO/Docker/dual-boot)
 
 ```bash
-sudo apt install -y live-build rsync
-make -C mtech-os iso                     # Kali kamili (kali-linux-large ≈ tools 400+)
-make -C mtech-os iso-everything          # ZANA ZOTE za Kali (≈ 1800 — ISO kubwa)
+python3 mtech-os/install.py              # Linux/Windows/macOS — kila kitu
+python3 mtech-os/install.py --allow-control   # + full control (mouse/keyboard)
+python3 mtech-os/install.py --kernel          # (Linux) + module ya /dev/mtech
 ```
 
-ISO ina: **Kali halisi** — desktop XFCE + wallpaper + menyu za zana + drivers zote
-(firmware) + kernel + headers + zana (`kali-linux-large`) — na **MTAALAMU SMART**
-iko **menyu ya Applications** na **icon ya Desktop**. Mara ya kwanza inapoanza,
-`mtech-firstboot` inavuta `qwen2.5vl:3b` (GB ~2.3 — mtandao unahitajika mara moja).
+Angalia **"KUTOKA GITHUB HADI DESKTOP — HATUA 5"** hapo juu kwa maelezo kamili.
 
-## Njia 2 — Weka kwenye OS yako (app mode)
+## Njia 2 — Weka kwenye Linux na systemd (huduma zote)
 
 ```bash
 sudo ./mtech-os/install.sh                # MTAALAMU SMART kama app + Qwen 2.5 VL 3B
 sudo ./mtech-os/install.sh --with-kernel  # + kernel ya MTECH (Linux 7.3 + /dev/mtech)
+sudo ./mtech-os/install.sh --kali-look    # + panel/dock/conky kama Kali halisi
 ```
 
 Desktop yako haibadilishwi — **MTAALAMU SMART inaonekana kama app tu**:
@@ -106,8 +183,10 @@ app ina udhibiti wa kompyuta yote:
 | `mtech skills` | skills zote 146 za MTAALAMU (na `--q neno` kutafuta) |
 | `mtech skill --id … --inputs …` | tekeleza skill (formula halisi) |
 | `mtech ask "kompyuta inaenda polepole"` | agent loop kamili: Qwen + zana + HITL |
-| `mtech watch` | matukio ya kernel live (`/dev/mtech` au fallback ya `/proc`) |
-| `mtech serve` | API ya HTTP kwa MTECH Shell (port 8790) |
+| `mtech ask "..." --allow-control` | + full control (mouse/keyboard) kwa session |
+| `mtech allow on/off` | fungua/funga full control (dumufuli) |
+| `mtech watch` | matukio ya kernel/OS live (kila OS) |
+| `mtech serve` | API ya HTTP kwa MTAALAMU app (port 8790) |
 
 ## Kernel — "inaona kila kitu kupitia kernel"
 

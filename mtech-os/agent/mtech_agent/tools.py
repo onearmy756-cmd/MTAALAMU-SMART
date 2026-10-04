@@ -71,6 +71,7 @@ def file_list(args: dict, gate: Gate) -> dict:
 
 # ---------------------------------------------------------------- kernel probe
 def sys_probe(args: dict, gate: Gate) -> dict:
+    from .platform import probe_extra
     out = {"kernel": platform.release(), "arch": platform.machine(), "hostname": platform.node()}
     try:
         load1, load5, load15 = os.getloadavg()
@@ -110,33 +111,24 @@ def sys_probe(args: dict, gate: Gate) -> dict:
             continue
     out["processes"] = procs[:60]
     out["process_count"] = len(procs)
-    return {"ok": True, "system": out}
+    return {"ok": True, "system": probe_extra(out)}
 
 
 # ---------------------------------------------------------------- GUI control
-def _xdotool(*xargs: str) -> dict:
-    if not shutil.which("xdotool"):
-        return {"ok": False, "error": "xdotool haipo (saki: apt install xdotool)"}
-    p = subprocess.run(["xdotool", *xargs], capture_output=True, text=True, timeout=30)
-    return {"ok": p.returncode == 0, "out": _clip(p.stdout), "err": _clip(p.stderr)}
-
-
 def control_input(args: dict, gate: Gate) -> dict:
-    """Mikono ya agent juu ya GUI: mouse + keyboard kupitia X11."""
+    """Mikono ya agent juu ya GUI — FULL CONTROL, OS yoyote.
+
+    Mtumiaji LAZIMA aaruhusu mara moja: MTECH_ALLOW_CONTROL=1 (env)
+    au --allow-control (CLI). Baada ya hapo, kila hatua bado inapita
+    kwenye HITL gate (kibali cha hatua kwa hatua)."""
     action = args.get("action", "")
+    from .config import CONFIG
+    from .platform import input_control
+    if not CONFIG.allow_control:
+        return {"ok": False, "error": "Full control imezimwa — mtumiaji: endesha 'mtech allow' au MTECH_ALLOW_CONTROL=1"}
     if not gate.allow(f"control:{action}", "HIGH"):
-        return {"ok": False, "error": "HITL: udhibiti wa GUI unahitaji kibali"}
-    if action == "move":
-        return _xdotool("mousemove", str(args.get("x", 0)), str(args.get("y", 0)))
-    if action == "click":
-        return _xdotool("click", str(args.get("button", 1)))
-    if action == "type":
-        return _xdotool("type", "--delay", "40", str(args.get("text", "")))
-    if action == "key":
-        return _xdotool("key", str(args.get("key", "Return")))
-    if action == "focus":
-        return _xdotool("windowactivate", str(args.get("window", "")))
-    return {"ok": False, "error": f"action haijulikani: {action}"}
+        return {"ok": False, "error": "HITL: kibali cha hatua hii hakipatikani"}
+    return input_control(action, args)
 
 
 def process_kill(args: dict, gate: Gate) -> dict:

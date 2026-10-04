@@ -166,8 +166,12 @@ def main() -> None:
     p_ask = sub.add_parser("ask")
     p_ask.add_argument("msg")
     p_ask.add_argument("--approve", action="store_true")
+    p_ask.add_argument("--allow-control", action="store_true",
+                       help="Ruhusu FULL CONTROL ya kompyuta (mouse/keyboard) kwa session hii")
     p_ask.add_argument("--quiet", action="store_true")
     sub.add_parser("watch")
+    p_allow = sub.add_parser("allow", help="Ruhusu/kataa full control (dumufuli)")
+    p_allow.add_argument("state", nargs="?", choices=("on", "off"), default="on")
     p_serve = sub.add_parser("serve")
     p_serve.add_argument("--port", type=int, default=CONFIG.serve_port)
     p_serve.add_argument("--approve", action="store_true")
@@ -185,6 +189,9 @@ def main() -> None:
         from .skills_bridge import run_skill
         print(json.dumps(run_skill(args.id, json.loads(args.inputs)), ensure_ascii=False, indent=1))
     elif args.cmd == "ask":
+        if getattr(args, "allow_control", False):
+            from .config import CONFIG as _C
+            _C.allow_control = True
         agent = Agent(approve=args.approve)
         res = agent.run(args.msg, verbose=not args.quiet)
         print("\n" + ("◆ " + res.get("answer", res.get("error", "")) if res["ok"] else "✖ " + str(res.get("error"))))
@@ -199,7 +206,17 @@ def main() -> None:
                     seen += 1
         except KeyboardInterrupt:
             pass
+    elif args.cmd == "allow":
+        from .config import CONFIG as _C
+        _C.set_allow_control(args.state == "on")
+        state = "IMEFUNGULIWA ✅ — agent sasa inaweza kudhibiti mouse/keyboard (kwa HITL bado)" \
+            if args.state == "on" else "IMEFUNGWA 🔒"
+        print(f"[MTECH] Full control: {state}")
+        print(f"  config: {_C.config_file}")
     elif args.cmd == "serve":
+        if getattr(args, "approve", False):
+            from .config import CONFIG as _C
+            _C.allow_control = True
         serve(args.port, getattr(args, "approve", False))
     else:
         ap.print_help()

@@ -25,11 +25,19 @@ class EventFeed(threading.Thread):
 
     # ---------------------------------------------------------- public
     def run(self) -> None:
-        if self._dev.exists():
+        from .platform import IS_LINUX
+        if IS_LINUX and self._dev.exists():
             self.source = "dev/mtech"
             self._read_dev()
-        else:
+        elif IS_LINUX:
             self.source = "proc-fallback"
+            self._poll_proc()
+        else:
+            # Windows: Sysmon Event Log; macOS: Unified Log (halisi)
+            self._read_platform()
+            if self.source in ("sysmon", "unified-log"):
+                return
+            self.source = "platform-fallback"
             self._poll_proc()
 
     def stop(self) -> None:
@@ -45,6 +53,15 @@ class EventFeed(threading.Thread):
             self.events.append(ev)
             if len(self.events) > self.maxlen:
                 self.events = self.events[-self.maxlen:]
+
+    def _read_platform(self) -> None:
+        """Windows (Sysmon Event Log) na macOS (Unified Log) — HALISI."""
+        from .platform import tail_events
+        stop = threading.Event()
+        self.source = tail_events(lambda ev: self._push(ev), stop)
+        while not self._stop.is_set():
+            time.sleep(0.5)
+        stop.set()
 
     def _read_dev(self) -> None:
         try:

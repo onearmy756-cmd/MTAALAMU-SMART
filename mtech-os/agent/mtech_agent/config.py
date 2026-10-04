@@ -32,6 +32,32 @@ class Config:
         self.approve_all = os.environ.get("MTECH_APPROVE", "").lower() in ("1", "true", "yes")
         self.serve_port = int(os.environ.get("MTECH_PORT", "8790"))
 
+        # --- FULL CONTROL ya kompyuta (inahitaji ALLOW ya mtumiaji) ---
+        self.config_file = Path.home() / ".mtech" / "config.json"
+        self.allow_control = self._allow_control()
+
+    def _allow_control(self) -> bool:
+        if os.environ.get("MTECH_ALLOW_CONTROL", "").lower() in ("1", "true", "yes"):
+            return True
+        try:
+            import json
+            return bool(json.loads(self.config_file.read_text()).get("allow_control", False))
+        except (OSError, ValueError):
+            return False
+
+    def set_allow_control(self, value: bool) -> None:
+        """Mteja anapo-ruhusu full control ('mtech allow')."""
+        import json
+        self.config_file.parent.mkdir(parents=True, exist_ok=True)
+        data = {}
+        try:
+            data = json.loads(self.config_file.read_text())
+        except (OSError, ValueError):
+            pass
+        data["allow_control"] = value
+        self.config_file.write_text(json.dumps(data, indent=1))
+        self.allow_control = value
+
     def _find_engine(self, repo: Path) -> Path:
         for cand in (
             repo / "dist" / "mtaalamu",

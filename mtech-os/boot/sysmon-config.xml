@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MTECH OS Sysmon config: inamata KILA process inayoanza/kufa (kama /dev/mtech ya Linux). -->
+<Sysmon schemaversion="4.90">
+  <EventFiltering>
+    <RuleGroup name="" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <CommandLine condition="is"></CommandLine>
+      </ProcessCreate>
+    </RuleGroup>
+    <RuleGroup name="" groupRelation="or">
+      <ProcessTerminate onmatch="exclude">
+        <Image condition="is"></Image>
+      </ProcessTerminate>
+    </RuleGroup>
+  </EventFiltering>
+</Sysmon>

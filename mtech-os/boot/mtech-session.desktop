@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=MTECH OS (Kali + MTAALAMU)
+Comment=Session kamili ya MTECH: Kali XFCE + MTAALAMU SMART inaload kiotomatiki
+Exec=startxfce4
+TryExec=startxfce4
+Icon=mtaalamu
+Type=XSession
+DesktopNames=MTECH;XFCE;
+Keywords=mtech;kali;mtaalamu;session;

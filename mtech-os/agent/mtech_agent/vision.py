@@ -13,21 +13,9 @@ from .config import CONFIG
 
 
 def take_screenshot() -> Path:
-    """Piga picha ya screen; inarudisha njia ya PNG."""
-    out = Path(tempfile.gettempdir()) / "mtech_screen.png"
-    for cmd in (
-        ["scrot", "-o", str(out)],
-        ["gnome-screenshot", "-f", str(out)],
-        ["import", "-window", "root", str(out)],
-    ):
-        if shutil.which(cmd[0]):
-            try:
-                p = subprocess.run(cmd, capture_output=True, timeout=30)
-                if p.returncode == 0 and out.exists() and out.stat().st_size > 0:
-                    return out
-            except (OSError, subprocess.TimeoutExpired):
-                continue
-    raise RuntimeError("Hakuna tool ya screenshot (saki: apt install scrot) — au huendeshi X11/Wayland session")
+    """Piga picha ya FULL SCREEN — OS yoyote (Linux/Windows/macOS)."""
+    from .platform import screenshot_path
+    return screenshot_path()
 
 
 def see_screen(agent, args: dict) -> dict:

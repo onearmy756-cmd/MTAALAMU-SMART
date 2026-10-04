@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=MTAALAMU SMART
+Comment=MTECH OS — inaload kiotomatiki inapowaka OS (akili + kernel events + full screen vision)
+Exec=/usr/local/bin/mtaalamu-app
+TryExec=/usr/local/bin/mtaalamu-app
+Icon=mtaalamu
+Terminal=false
+Categories=System;
+X-GNOME-Autostart-enabled=true
+NoDisplay=false
