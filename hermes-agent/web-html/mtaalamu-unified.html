@@ -55,6 +55,22 @@
     <hr style="border-color:var(--line)">
     <b>ZANA (OPERESHENI)</b> <span class="tag">— bofya ili isolve</span>
     <div class="ops" id="ops"></div>
+    <hr style="border-color:var(--line)">
+    <b>⚑ FULL SYSTEM</b> <span class="tag" id="admintag">(ADMIN)</span>
+    <div class="lic">
+      <input id="admkey" type="password" placeholder="Admin key (owner: acha wazi)">
+      <button onclick="admUnlock()">FUNGUA ADMIN</button>
+      <button onclick="admLock()">ZIMA</button>
+    </div>
+    <div id="adminarea" style="display:none">
+      <div class="tag" style="margin:6px 0">BEI (TZS) — 0 = BURE:</div>
+      <div class="qrow"><input id="pop" placeholder="op_id (mf disk.cleanup)" style="flex:1"><input id="pamt" placeholder="TZS" style="width:90px"><button onclick="admPrice()">WEKA</button></div>
+      <div class="tag" style="margin:6px 0">TIER kwa huduma:</div>
+      <div class="qrow"><input id="top" placeholder="op_id" style="flex:1">
+        <select id="ttier"><option>ANY</option><option>BASIC</option><option>BRONZE</option><option>GOLD</option><option>PLATINUM</option><option>DIAMOND</option></select><button onclick="admTier()">WEKA</button></div>
+      <button onclick="admDash()" style="margin-top:8px;width:100%">ONYESHA FULL SYSTEM ▸</button>
+      <pre id="admdash" style="white-space:pre-wrap;font-size:11px;max-height:40vh;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:6px"></pre>
+    </div>
   </aside>
 </main>
 <script>
@@ -131,6 +147,37 @@ async function register(){
   refresh();
 }
 async function setLang(l){ await jpost('/api/lang',{lang:l}); add(l==='sw'?'🇹🇿 Kiswahili':'🇬🇧 English'); }
+
+/* ---------- ADMIN: FULL SYSTEM ---------- */
+async function admUnlock(){
+  const r=await jpost('/api/admin/unlock',{key:document.getElementById('admkey').value||null});
+  if(r.ok){ document.getElementById('adminarea').style.display='block'; document.getElementById('admintag').textContent='(ADMIN ✔ '+(r.admin?.mode||'')+')'; add('👑 ADMIN umefunguliwa ('+(r.admin?.mode||'')+')'); admDash(); }
+  else add('✖ '+r.error);
+}
+async function admLock(){ await jpost('/api/admin/lock',{}); document.getElementById('adminarea').style.display='none'; document.getElementById('admintag').textContent='(ADMIN)'; add('🔒 Admin umezimwa.'); }
+async function admPrice(){
+  const r=await jpost('/api/admin/price',{op_id:document.getElementById('pop').value,amount_tzs:parseInt(document.getElementById('pamt').value||'0')});
+  add(r.ok?('💰 '+r.op+' = '+r.price+(r.free?' (BURE kwa wote)':'')):('✖ '+r.error)); if(r.ok) admDash();
+}
+async function admTier(){
+  const r=await jpost('/api/admin/tier',{op_id:document.getElementById('top').value,tier:document.getElementById('ttier').value});
+  add(r.ok?('🔒 '+r.op+': '+r.note):('✖ '+r.error)); if(r.ok) admDash();
+}
+async function admDash(){
+  const r=await fetch(API+'/api/admin/dashboard');
+  if(r.status===401){ add('✖ Admin hajafunguliwa.'); return; }
+  const d=await r.json();
+  const o=d.os||{};
+  document.getElementById('admdash').textContent=
+    `OS: ${o.family||'?'} ${o.release||''} (${o.machine||''}) @ ${o.node||''}\n`+
+    `Leseni: ${d.license?.email||'—'} · ${d.license?.plan||'—'} ${d.license?.tier||'—'}\n`+
+    `Wallet: TZS ${(d.wallet_tzs||0).toLocaleString()} · Malipo: TZS ${(d.payments_total_tzs||0).toLocaleString()}\n`+
+    `Gateway: ${d.gateway||'—'}\n`+
+    `Ops: ${d.catalog_ops} · BURE ${d.free_ops} · zenye bei ${d.priced_ops}\n`+
+    `Bei maalum: ${Object.keys(d.price_overrides||{}).map(k=>k+'='+d.price_overrides[k].price).join(', ')||'—'}\n`+
+    `Tier: ${Object.keys(d.tier_overrides||{}).map(k=>k+'→'+d.tier_overrides[k]+'+').join(', ')||'—'}\n\n`+
+    `— Snapshot ya OS —\n${(o.snapshot||'').slice(0,600)}`;
+}
 add('Karibu MTAALAMU SMART! Andika tatizo la computer — nalisolve mpaka mwisho.');
 refresh(); setInterval(refresh, 15000);
 </script>

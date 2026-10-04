@@ -58,7 +58,14 @@ PRICE_OVERRIDES_TZS = {
 
 
 def price_tzs(op_id: str, risk: str, tier: str | None = None) -> int:
-    """Bei ya zana moja (TZS) — overrides kwanza, vinginevyo kwa risk; tier inapunguza."""
+    """Bei ya zana (TZS): ADMIN override kwanza → overrides za mradi → kwa risk; tier inapunguza."""
+    # ADMIN override (prices.json — admin anaweka kwa mtaalamu admin price)
+    try:
+        ov = json.loads((STORE_DIR / "prices.json").read_text())
+        if op_id in ov:
+            return int(ov[op_id])
+    except (OSError, json.JSONDecodeError, ValueError):
+        pass
     base = PRICE_OVERRIDES_TZS.get(op_id, BASE_PRICE_TZS.get(risk, 5_000))
     if tier:
         base = int(base * (1 - TIER_DISCOUNT.get(tier.upper(), 0.0)))
@@ -176,24 +183,79 @@ def charge(op_id: str, credits: int) -> bool:
     return True
 
 
-def usage_summary() -> dict:
-    lic = current_license() or {}
-    return {
-        "email": lic.get("email"), "plan": lic.get("plan"), "tier": lic.get("tier"),
-        "seats": lic.get("seats"), "key": lic.get("key"),
-        "credits_used": credits_used(), "credits_left": credits_left(),
-        "monthly_credits": lic.get("monthly_credits", 0),
-        "total_paid_tzs": int(lic.get("total_paid_tzs", 0)),
-    }
+# ------------------------------------------------------------------ tier kwa huduma (admin)
+TIER_ORDER = {"BASIC": 0, "BRONZE": 1, "GOLD": 2, "PLATINUM": 3, "DIAMOND": 4}
+
+
+def tool_tier(op_id: str) -> str | None:
+    """Tier ndogo inayoruhusiwa kwa huduma (admin anaweka; None/ANY = wote)."""
+    try:
+        t = json.loads((STORE_DIR / "tool_tiers.json").read_text())
+        v = str(t.get(op_id, "") or "").upper()
+        return v if v in TIER_ORDER else None
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def tier_allows(required: str | None, user_tier: str | None) -> bool:
+    """Kweli kama tier ya mtumiaji inatosha (GOLD inatosha kwa BRONZE+)."""
+    if not required or required.upper() in ("ANY", ""):
+        return True
+    u = TIER_ORDER.get((user_tier or "").upper(), -1)
+    r = TIER_ORDER.get(required.upper(), 0)
+    return u >= r
+
+
+def record_admin_use(op_id: str) -> dict:
+    """Audit ya matumizi ya ADMIN (bure — amount 0)."""
+    STORE_DIR.mkdir(parents=True, exist_ok=True)
+    rec = {"t": int(time.time()), "op": op_id, "amount_tzs": 0, "tier": "ADMIN"}
+    with PAYMENTS_FILE.open("a") as f:
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    return rec
 
 
 # ------------------------------------------------------------------ payments (kila zana)
 PAYMENTS_FILE = STORE_DIR / "payments.jsonl"
+WALLET_FILE = STORE_DIR / "wallet.json"
 
 
-def record_payment(op_id: str, amount_tzs: int, tier: str | None = None) -> dict:
-    """Malipo ya zana moja (pay-per-use) — imehifadhiwa kwa audit."""
+def wallet_balance() -> int:
+    """Salio la wallet (TZS) — linaongezeka TU kwa malipo HALISI ya ClickPesa."""
+    try:
+        return int(json.loads(WALLET_FILE.read_text()).get("balance_tzs", 0))
+    except (OSError, json.JSONDecodeError, ValueError):
+        return 0
+
+
+def wallet_topup(amount_tzs: int, source: str = "clickpesa", **gateway) -> dict:
+    """Ongeza salio — itwa TU baada ya uthibitisho wa ClickPesa (SUCCESS/webhook).
+
+    gateway: {ref, tx, channel} — huhifadhiwa kwenye audit (hakuna kujionesha).
+    """
+    amount_tzs = int(amount_tzs)
+    if amount_tzs <= 0:
+        raise ValueError("Kiasi lazima kiwe > 0")
     STORE_DIR.mkdir(parents=True, exist_ok=True)
+    w = {"balance_tzs": wallet_balance() + amount_tzs,
+         "last_topup": {"t": int(time.time()), "amount_tzs": amount_tzs,
+                        "source": source, **gateway}}
+    WALLET_FILE.write_text(json.dumps(w, indent=1))
+    return w
+
+
+def wallet_spend(op_id: str, amount_tzs: int, tier: str | None = None) -> dict:
+    """Pay-BEFORE-use: kata salio + rekodi audit. Inatoa ValueError kama salio halitoshi.
+
+    Zana HAITEKELEZWI kabla ya hii kufanikiwa (kulinda kutoibiwa).
+    """
+    amount_tzs = int(amount_tzs)
+    if wallet_balance() < amount_tzs:
+        raise ValueError(f"WALLET HAITOSHI — salio: {fmt_tzs(wallet_balance())}, zinahitajika: {fmt_tzs(amount_tzs)}")
+    STORE_DIR.mkdir(parents=True, exist_ok=True)
+    w = {"balance_tzs": wallet_balance() - amount_tzs,
+         "last_topup": json.loads(WALLET_FILE.read_text()).get("last_topup", {}) if WALLET_FILE.exists() else {}}
+    WALLET_FILE.write_text(json.dumps(w, indent=1))
     rec = {"t": int(time.time()), "op": op_id, "amount_tzs": amount_tzs, "tier": tier}
     with PAYMENTS_FILE.open("a") as f:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
@@ -202,6 +264,19 @@ def record_payment(op_id: str, amount_tzs: int, tier: str | None = None) -> dict
     lic["total_paid_tzs"] = int(lic.get("total_paid_tzs", 0)) + amount_tzs
     LICENSE_FILE.write_text(json.dumps(lic, indent=1))
     return rec
+
+
+def usage_summary() -> dict:
+    lic = current_license() or {}
+    s = {
+        "email": lic.get("email"), "plan": lic.get("plan"), "tier": lic.get("tier"),
+        "seats": lic.get("seats"), "key": lic.get("key"),
+        "credits_used": credits_used(), "credits_left": credits_left(),
+        "monthly_credits": lic.get("monthly_credits", 0),
+        "total_paid_tzs": int(lic.get("total_paid_tzs", 0)),
+        "wallet_tzs": wallet_balance(),
+    }
+    return s
 
 
 def payments_total() -> int:

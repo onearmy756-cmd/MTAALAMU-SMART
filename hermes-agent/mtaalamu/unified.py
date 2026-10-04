@@ -16,7 +16,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from . import billing, models, scope
+from . import admin, billing, clickpesa, models, scope
 from .catalog import CATALOG, CATALOG_BY_ID, build_command, ops_for_os
 
 import sys as _sys
@@ -66,6 +66,7 @@ def detect_issues(text: str = "") -> list:
             "driver.update": ("update", "updating", "sasi"),
             "user.create": ("create", "tengeneza"),
             "app.install": ("install", "sakinisha"),
+            "disk.cleanup": ("cleanup", "safisha", "clean", "safisha", "punguza"),
         }
         verbs = pair.get(op.id, ())
         if any(v in blob for v in verbs):
@@ -134,15 +135,39 @@ def _run(cmds: list) -> list:
 
 
 def execute(op, answers: dict) -> dict:
-    """Tekeleza op HALISI (baada ya HITL + billing + malipo ya zana)."""
+    """Tekeleza op HALISI (baada ya HITL + billing + MALIPO KABLA YA ZANA).
+
+    PAY-BEFORE-USE (kulinda kutoibiwa): salio la wallet LINAKATWA KABLA
+    ya amri yoyote kuendeshwa. Wallet inaongezeka tu kwa malipo halisi ya
+    ClickPesa (USSD push + webhook iliyothibitishwa).
+    """
     if not billing.is_active():
         return {"ok": False, "stage": "gate", "msg": scope.t("not_licensed")}
     if not billing.charge(op.id, op.credits):
         return {"ok": False, "stage": "gate", "msg": scope.t("no_credits")}
-    # MALIPO YA KILA ZANA (TZS 5,000 → milioni, kwa tier discount)
-    price = billing.price_tzs(op.id, op.risk, (billing.current_license() or {}).get("tier"))
-    billing.record_payment(op.id, price, (billing.current_license() or {}).get("tier"))
-    pay_note = f"💳 Malipo: {billing.fmt_tzs(price)} (zana: {op.id})"
+    tier = (billing.current_license() or {}).get("tier")
+    is_admin = admin.is_admin()
+    # TIER GATE: huduma yenye min-tier (admin anaweka) — admin anapita
+    required = billing.tool_tier(op.id)
+    if not is_admin and not billing.tier_allows(required, tier):
+        return {"ok": False, "stage": "tier", "op": op.id, "min_tier": required,
+                "your_tier": tier,
+                "msg": f"🔒 Zana hii inahitaji tier {required}+ (wako: {tier or 'hakuna'}) — panda tier au muulize admin"}
+    # MALIPO YA KILA ZANA (TZS 5,000 → milioni) — KABLA YA EXECUTE; ADMIN = BURE
+    price = billing.price_tzs(op.id, op.risk, tier)
+    if is_admin:
+        billing.record_admin_use(op.id)
+        pay_note = f"👑 ADMIN — {op.id} ni BURE (hakuna malipo; audit imehifadhiwa)"
+    else:
+        try:
+            billing.wallet_spend(op.id, price, tier)
+        except ValueError as e:
+            return {"ok": False, "stage": "payment", "payment_required": True,
+                    "op": op.id, "price_tzs": price, "price": billing.fmt_tzs(price),
+                    "wallet_tzs": billing.wallet_balance(), "msg": f"💳 {e}",
+                    "how": ("Lipa:  mtaalamu pay " + str(price) + " --phone 255712345678"
+                            + "  (au POST /api/pay)  — USSD prompt itafika kwenye simu yako")}
+        pay_note = f"💳 Malipo: {billing.fmt_tzs(price)} (zana: {op.id}) — wallet: {billing.fmt_tzs(billing.wallet_balance())}"
     if not op.offline:
         # online check halisi (ping 1.1.1.1 — bila kubadilisha mfumo)
         online = subprocess.run("ping -c 1 -W 2 1.1.1.1" if FAMILY != "windows" else "ping -n 1 -w 2000 1.1.1.1",
@@ -218,10 +243,18 @@ def solve(text: str, answers: dict | None = None, auto_confirm: bool = False) ->
     if answers is None:
         # awamu ya 1: mpango + maswali (UI inaonyesha fomu)
         op = issues[0] if issues else None
+        tier = (billing.current_license() or {}).get("tier")
+        price = billing.price_tzs(op.id, op.risk, tier) if op else 0
+        is_adm = admin.is_admin()
+        need = bool(op) and not is_adm and billing.wallet_balance() < price
         plan = {
             "stage": "plan", "lang": scope.LANG, "op": op.id if op else None,
             "op_name": (op.name_sw if op else None), "credits": op.credits if op else 0,
-            "price_tzs": billing.price_tzs(op.id, op.risk, (billing.current_license() or {}).get("tier")) if op else 0,
+            "price_tzs": price, "price": billing.fmt_tzs(price) if op else "TZS 0",
+            "payment_required": need,
+            "admin_free": is_adm, "min_tier": billing.tool_tier(op.id) if op else None,
+            "wallet_tzs": billing.wallet_balance(),
+            "gateway": clickpesa.status_mode(),
             "offline": op.offline if op else True,
             "questions": questions_for(op) if op else [],
             "alternatives": [i.id for i in issues[1:4]],
