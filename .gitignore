@@ -34,6 +34,16 @@ desktop.ini
 __pycache__/
 *.pyc
 
+# --- MTECH OS build artifacts ---
+mtech-os/build/
+*.iso
+mtech-os/**/venv/
+mtech_dev.ko
+mtech_dev.mod*
+mtech_dev.o
+*.cmd
+.tmp_versions/
+
 # --- Freebuff local state ---
 
 # Freebuff sponsored runtime (transient)

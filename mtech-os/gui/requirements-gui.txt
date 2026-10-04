@@ -1,0 +1,2 @@
+# MTECH Shell (GUI ya kipekee) — PySide6/Qt6
+PySide6>=6.6

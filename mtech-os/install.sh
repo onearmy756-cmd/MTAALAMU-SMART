@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# MTECH OS — install kwenye OS iliyopo (wrapper mode)
+#
+#   sudo ./install.sh                  # weka kila kitu + vuta Qwen 2.5 VL 3B
+#   sudo ./install.sh --no-gui         # bila MTECH Shell (PySide6)
+#   sudo ./install.sh --no-model       # usivute modeli sasa (baadaye: ollama pull)
+#   sudo ./install.sh --with-kernel    # build kernel ya MTECH kutoka upstream/linux
+#
+# Inafanya kazi kwenye: Kali, Debian, Ubuntu (arm64/amd64)
+set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$HERE/.." && pwd)"
+DEST=/opt/mtech
+DATA_DEST=/opt/mtaalamu
+WITH_GUI=1
+WITH_MODEL=1
+WITH_KERNEL=0
+
+for arg in "$@"; do
+  case "$arg" in
+    --no-gui)     WITH_GUI=0 ;;
+    --no-model)   WITH_MODEL=0 ;;
+    --with-kernel) WITH_KERNEL=1 ;;
+    *) echo "hoja haijulikani: $arg" >&2; exit 2 ;;
+  esac
+done
+
+[ "$(id -u)" -eq 0 ] || { echo "Endesha kwa sudo — inasakinisha kwenye /opt na systemd." >&2; exit 1; }
+
+echo "════════════════════════════════════════"
+echo " MTECH OS — install (wrapper mode)"
+echo "════════════════════════════════════════"
+
+# --- 1) Vitega vya mfumo ---
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -qq
+apt-get install -y -qq python3 python3-venv python3-pip python3-dev \
+    curl xdotool wmctrl scrot xclip imagemagick rsync >/dev/null
+
+# --- 2) Ollama (binary rasmi) ---
+if [ ! -x /usr/local/bin/ollama ]; then
+    echo "[1/6] kupakua Ollama…"
+    curl -fsSL -o /tmp/ollama.tgz https://ollama.com/download/ollama-linux-amd64.tgz
+    tar -xzf /tmp/ollama.tgz -C /usr/local && rm -f /tmp/ollama.tgz
+else
+    echo "[1/6] Ollama ipo tayari"
+fi
+
+# --- 3) Nakili layer ya MTECH + akili ya MTAALAMU ---
+echo "[2/6] nakili MTECH → $DEST na MTAALAMU SMART → $DATA_DEST"
+mkdir -p "$DEST" "$DATA_DEST/hermes-agent"
+rsync -a "$HERE/agent/"    "$DEST/agent/"
+rsync -a "$HERE/gui/"      "$DEST/gui/"
+rsync -a "$HERE/services/" "$DEST/services/"
+rsync -a "$HERE/kernel/"   "$DEST/kernel/"
+rsync -a --exclude 'target/' --exclude '__pycache__/' \
+      "$REPO_ROOT/hermes-agent/data/"        "$DATA_DEST/hermes-agent/data/"
+rsync -a --exclude 'target/' --exclude '__pycache__/' \
+      "$REPO_ROOT/hermes-agent/engine-rust/" "$DATA_DEST/hermes-agent/engine-rust/"
+
+# --- 4) venv + deps ---
+echo "[3/6] venv ya agent…"
+python3 -m venv "$DEST/venv"
+"$DEST/venv/bin/pip" install -q -r "$DEST/agent/requirements.txt"
+if [ "$WITH_GUI" -eq 1 ]; then
+    "$DEST/venv/bin/pip" install -q -r "$DEST/gui/requirements-gui.txt" || echo "  (WARNING: GUI deps zimeshindikana — endesha tena baadaye)"
+fi
+
+# --- 5) Systemd: ollama + agent + firstboot ---
+echo "[4/6] systemd units…"
+install -m 644 "$DEST/services/mtech-ollama.service"   /etc/systemd/system/
+install -m 644 "$DEST/services/mtech-agent.service"    /etc/systemd/system/
+install -m 644 "$DEST/services/mtech-firstboot.service" /etc/systemd/system/
+install -m 755 "$HERE/services/mtech-firstboot.sh" /usr/local/sbin/mtech-firstboot
+
+cat > /usr/local/bin/mtech <<'EOF'
+#!/bin/sh
+export MTECH_ROOT=/opt/mtech
+export MTAALAMU_ROOT=/opt/mtaalamu/hermes-agent
+export PYTHONPATH=/opt/mtech/agent
+exec /opt/mtech/venv/bin/python -m mtech_agent "$@"
+EOF
+chmod +x /usr/local/bin/mtech
+
+# GUI inaanza na kila session ya desktop
+mkdir -p /etc/xdg/autostart
+cat > /etc/xdg/autostart/mtech-shell.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=MTECH Shell
+Comment=GUI ya kipekee ya MTECH OS
+Exec=/opt/mtech/venv/bin/python /opt/mtech/gui/mtech_shell.py
+Terminal=false
+Categories=System;
+X-GNOME-Autostart-enabled=true
+EOF
+
+systemctl daemon-reload
+systemctl enable --now mtech-ollama.service
+systemctl enable --now mtech-agent.service
+systemctl enable mtech-firstboot.service
+
+# --- 6) Modeli ya Qwen 2.5 VL 3B ---
+if [ "$WITH_MODEL" -eq 1 ]; then
+    echo "[5/6] ollama pull qwen2.5vl:3b (GB chache — subiri)…"
+    /usr/local/bin/ollama pull qwen2.5vl:3b && touch /var/lib/mtech/.bootstrapped 2>/dev/null || {
+        mkdir -p /var/lib/mtech
+        /usr/local/bin/ollama pull qwen2.5vl:3b && touch /var/lib/mtech/.bootstrapped
+    }
+else
+    echo "[5/6] --no-model: endesha baadaye → ollama pull qwen2.5vl:3b"
+fi
+
+# --- 7) Kernel (hiari) ---
+if [ "$WITH_KERNEL" -eq 1 ]; then
+    echo "[6/6] kernel ya MTECH (build + install — dakika 10-40)…"
+    bash "$HERE/kernel/build-kernel.sh" --install
+else
+    echo "[6/6] kernel: ruka (endesha → make -C mtech-os kernel)"
+fi
+
+echo ""
+echo "✅ MTECH OS imewekwa!"
+echo "   CLI:        mtech skills | mtech ask \"tatizo la kompyuta\" | mtech watch"
+echo "   GUI:        MTECH Shell inaanza na desktop (au: /opt/mtech/venv/bin/python /opt/mtech/gui/mtech_shell.py)"
+echo "   Kernel:     cat /proc/mtech_status  (baada ya insmod mtech_dev.ko)"
+echo "   Huduma:     systemctl status mtech-agent mtech-ollama"

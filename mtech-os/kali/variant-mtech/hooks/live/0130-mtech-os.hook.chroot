@@ -1,0 +1,39 @@
+#!/bin/sh
+## MTECH OS — hook ya chroot (inawakala ndani ya ISO)
+## - venv ya agent + deps (Pillow)
+## - binary ya Ollama (haiwepo kwenye repos za Kali)
+## - systemd units enabled (firstboot itavuta Qwen 2.5 VL 3B)
+set -e
+
+echo "[MTECH] hook: kuanza"
+
+# --- 1) venv ya agent ---
+if [ -d /opt/mtech/agent ]; then
+    python3 -m venv /opt/mtech/venv
+    /opt/mtech/venv/bin/pip install --no-input -r /opt/mtech/agent/requirements.txt || \
+        echo "[MTECH] WARNING: pip requirements zimeshindikana (agent itaendelea na stdlib)"
+    # GUI (PySide6) — ikiwa imeshindikana, GUI inasakinishwa baadaye kwa 'pip install -r /opt/mtech/gui/requirements-gui.txt'
+    /opt/mtech/venv/bin/pip install --no-input -r /opt/mtech/gui/requirements-gui.txt || \
+        echo "[MTECH] WARNING: PySide6 haijawekwa — MTECH Shell itasakinishwa baadaye"
+else
+    echo "[MTECH] WARNING: /opt/mtech/agent haipo — build-iso.sh haikunakili mteja?"
+fi
+
+# --- 2) Ollama (binary rasmi, bila installer ya systemd) ---
+if [ ! -x /usr/local/bin/ollama ]; then
+    echo "[MTECH] kupakua ollama-linux-amd64.tgz ..."
+    tmp=$(mktemp -d)
+    if curl -fsSL -o "$tmp/ollama.tgz" https://ollama.com/download/ollama-linux-amd64.tgz; then
+        tar -xzf "$tmp/ollama.tgz" -C /usr/local
+        rm -rf "$tmp"
+    else
+        echo "[MTECH] WARNING: kupakua kwa Ollama kumeshindikana — firstboot itaijaribu tena"
+    fi
+fi
+
+# --- 3) systemd units ---
+systemctl enable mtech-ollama.service 2>/dev/null || true
+systemctl enable mtech-agent.service  2>/dev/null || true
+systemctl enable mtech-firstboot.service 2>/dev/null || true
+
+echo "[MTECH] hook: imekamilika"

@@ -1,0 +1,19 @@
+[Unit]
+Description=MTECH OS Agent (Qwen 2.5 VL 3B + MTAALAMU SMART)
+Documentation=file:///opt/mtech/README.md
+After=network-online.target mtech-ollama.service
+Wants=mtech-ollama.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/mtech/agent
+Environment=MTECH_ROOT=/opt/mtech
+Environment=MTAALAMU_ROOT=/opt/mtaalamu/hermes-agent
+Environment=MTECH_MODEL=qwen2.5vl:3b
+Environment=PYTHONPATH=/opt/mtech/agent
+ExecStart=/opt/mtech/venv/bin/python -m mtech_agent serve --port 8790
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

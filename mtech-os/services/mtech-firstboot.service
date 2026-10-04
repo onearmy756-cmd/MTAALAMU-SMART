@@ -1,0 +1,14 @@
+[Unit]
+Description=MTECH firstboot (vuta Qwen 2.5 VL 3B + tayari za kernel)
+After=mtech-ollama.service
+Wants=mtech-ollama.service
+ConditionPathExists=!/var/lib/mtech/.bootstrapped
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/mtech-firstboot
+RemainAfterExit=yes
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

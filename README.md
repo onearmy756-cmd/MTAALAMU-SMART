@@ -2,6 +2,23 @@
 
 **Rust** (engine) + **R/Shiny** (dashboard) — data-driven JSON.
 
+## MTECH OS 🖥️ (Linux + Akili)
+
+OS kamili: **Kali Linux** (live-build rasmi) + **Linux kernel** (torvalds) + akili ya
+**Qwen 2.5 VL 3B** (Ollama) + skills zote **146** za MTAALAMU SMART + kernel bridge
+(`/dev/mtech`) + GUI ya kipekee (**MTECH Shell**).
+
+```bash
+make -C mtech-os skills                  # skills 146 kwa haraka
+make -C mtech-os ask MSG="kompyuta inaenda polepole"
+sudo ./mtech-os/install.sh               # weka kwenye OS yako (wrapper mode)
+make -C mtech-os iso                     # jenga ISO kamili ya MTECH OS
+make -C mtech-os smoke                   # ukaguzi wa haraka
+```
+
+Vyanzo: `upstream/linux` (torvalds), `upstream/kali-live` (GitLab rasmi ya Kali).
+Nyaraka kamili: [`mtech-os/README.md`](mtech-os/README.md)
+
 ## Production (Agentic Vision + OS probe)
 
 ```bash

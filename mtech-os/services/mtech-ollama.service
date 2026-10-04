@@ -1,0 +1,14 @@
+[Unit]
+Description=MTECH Ollama (local LLM server kwa Qwen 2.5 VL 3B)
+After=network.target
+
+[Service]
+Type=simple
+Environment=OLLAMA_HOST=127.0.0.1:11434
+Environment=OLLAMA_KEEP_ALIVE=24h
+ExecStart=/usr/local/bin/ollama serve
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
