@@ -1,8 +1,10 @@
 #!/bin/sh
-## MTECH OS — hook ya chroot (inawakala ndani ya ISO)
-## - venv ya agent + deps (Pillow)
-## - binary ya Ollama (haiwepo kwenye repos za Kali)
-## - systemd units enabled (firstboot itavuta Qwen 2.5 VL 3B)
+## MTECH OS — hook ya chroot (inawakala ndani ya ISO ya Kali halisi)
+##  - venv ya agent + deps (Pillow, PySide6)
+##  - binary ya Ollama (haiwepo kwenye repos za Kali)
+##  - systemd units enabled (firstboot itavuta qwen2.5vl:3b)
+##  - app ya MTAALAMU SMART: tayari imewekwa na build-iso.sh (includes.chroot)
+##    (menyu ya Applications + icon ya Desktop — hakuna kubadilisha desktop ya Kali)
 set -e
 
 echo "[MTECH] hook: kuanza"
@@ -12,9 +14,9 @@ if [ -d /opt/mtech/agent ]; then
     python3 -m venv /opt/mtech/venv
     /opt/mtech/venv/bin/pip install --no-input -r /opt/mtech/agent/requirements.txt || \
         echo "[MTECH] WARNING: pip requirements zimeshindikana (agent itaendelea na stdlib)"
-    # GUI (PySide6) — ikiwa imeshindikana, GUI inasakinishwa baadaye kwa 'pip install -r /opt/mtech/gui/requirements-gui.txt'
+    # GUI (PySide6) ya MTAALAMU SMART app
     /opt/mtech/venv/bin/pip install --no-input -r /opt/mtech/gui/requirements-gui.txt || \
-        echo "[MTECH] WARNING: PySide6 haijawekwa — MTECH Shell itasakinishwa baadaye"
+        echo "[MTECH] WARNING: PySide6 haijawekwa — endesha: /opt/mtech/venv/bin/pip install -r /opt/mtech/gui/requirements-gui.txt"
 else
     echo "[MTECH] WARNING: /opt/mtech/agent haipo — build-iso.sh haikunakili mteja?"
 fi
@@ -31,9 +33,9 @@ if [ ! -x /usr/local/bin/ollama ]; then
     fi
 fi
 
-# --- 3) systemd units ---
+# --- 3) systemd units (API ya app + ollama + firstboot) ---
 systemctl enable mtech-ollama.service 2>/dev/null || true
 systemctl enable mtech-agent.service  2>/dev/null || true
 systemctl enable mtech-firstboot.service 2>/dev/null || true
 
-echo "[MTECH] hook: imekamilika"
+echo "[MTECH] hook: imekamilika (MTAALAMU SMART ipo kwenye menyu ya Applications)"

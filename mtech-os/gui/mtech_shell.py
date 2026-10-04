@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-"""MTECH OS — MTECH Shell (GUI ya kipekee).
+"""MTAALAMU SMART — app ya desktop ndani ya MTECH OS / Kali Linux.
 
-Wrapper ya desktop: inaelea juu ya XFCE (Kali), inasikiliza matukio ya
-kernel (/dev/mtech kupitia agent API), ina console ya Qwen 2.5 VL,
-utafutaji wa skills 146 za MTAALAMU, na vitufe vya HITL approval.
+App ya kawaida ya desktop (kama Nmap, Firefox): inaanzwa kutoka menyu ya
+Applications au icon ya Desktop (mtaalamu.desktop). Ina:
+  • console ya Qwen 2.5 VL 3B (akili ya mtaalamu)
+  • skills 146 za MTAALAMU
+  • matukio ya kernel live (/dev/mtech kupitia agent API)
+  • vitufe vya kuanzisha zana halisi za Kali (nmap, metasploit, wireshark…)
 
-Inaendesha: python3 mtech_shell.py  (mtech serve iko nyuma: systemd)
+Huduma yake (API) iko systemd: mtech-agent.service (port 8790).
 """
 import json
+import subprocess
 import sys
 import urllib.error
 import urllib.request
@@ -62,17 +66,29 @@ class APIWorker(QtCore.QThread):
 
 
 class Shell(QtWidgets.QWidget):
+    # Zana halisi za Kali — zinaanzishwa kama programu zao za kawaida
+    KALI_TOOLS = [
+        ("Terminal", "xfce4-terminal &"),
+        ("Nmap", "xfce4-terminal -x nmap &"),
+        ("Metasploit", "xfce4-terminal -x msfconsole &"),
+        ("Wireshark", "wireshark &"),
+        ("Burp Suite", "burpsuite &"),
+        ("Firefox", "firefox &"),
+        ("John", "xfce4-terminal -x john &"),
+        ("SQLMap", "xfce4-terminal -x sqlmap &"),
+    ]
+
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("MTECH OS — Shell")
-        self.resize(1080, 700)
+        self.setWindowTitle("MTAALAMU SMART — MTECH OS")
+        self.resize(1120, 720)
         self.setObjectName("root")
 
         root = QtWidgets.QVBoxLayout(self)
 
         # ---- header
         head = QtWidgets.QHBoxLayout()
-        brand = QtWidgets.QLabel("◤ MTECH OS")
+        brand = QtWidgets.QLabel("◤ MTAALAMU SMART")
         brand.setObjectName("brand")
         self.status = QtWidgets.QLabel("inaguza agent…")
         self.status.setObjectName("sub")
@@ -130,6 +146,21 @@ class Shell(QtWidgets.QWidget):
         sk_lay.addWidget(self.skills)
         right.addWidget(gb_sk, 2)
         cols.addLayout(right, 6)
+
+        # ---- chini: zana halisi za Kali (kama "Kali Tools" ya picha)
+        gb_tools = QtWidgets.QGroupBox("🐧 ZANA ZA KALI HALISI — bofya kuanzisha")
+        tools_lay = QtWidgets.QHBoxLayout(gb_tools)
+        tools_lay.setSpacing(6)
+        for name, launch in self.KALI_TOOLS:
+            b = QtWidgets.QPushButton(name)
+            b.setToolTip(launch)
+            b.clicked.connect(lambda _=False, cmd=launch: self.launch_tool(cmd))
+            tools_lay.addWidget(b)
+        b_kt = QtWidgets.QPushButton("KALI TOOLS ▸")
+        b_kt.setToolTip("Dirisha kamili la Kali Tools (search + categories 11 kama Kali)")
+        b_kt.clicked.connect(self.open_kali_tools)
+        tools_lay.addWidget(b_kt)
+        root.addWidget(gb_tools)
 
         b_send.clicked.connect(self.send_task)
         self.input.returnPressed.connect(self.send_task)
@@ -201,6 +232,26 @@ class Shell(QtWidgets.QWidget):
     # ------------------------------------------------------------- HITL
     def decide(self, allow: bool):
         self.log(("✔" if allow else "✖") + " uamuzi wa HITH umerekodiwa (HITL kamili inaendelea kwenye agent)")
+
+    # ------------------------------------------------------------- Kali tools
+    def launch_tool(self, cmd: str):
+        try:
+            subprocess.Popen(cmd, shell=True, start_new_session=True)
+            self.log(f"▸ nimeanzisha: {cmd.split('&')[0].strip()}")
+        except OSError as e:
+            self.log(f"✖ {e}")
+
+    def open_kali_tools(self):
+        """Fungua dirisha 'Kali Tools' (search + categories 11, kama picha)."""
+        import os
+        import shutil
+        exe = shutil.which("kali-tools") or "/usr/local/bin/kali-tools"
+        if os.path.exists(exe):
+            subprocess.Popen([exe], start_new_session=True)
+        else:
+            win = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "desktop", "kali-tools-window.py")
+            subprocess.Popen([sys.executable, os.path.abspath(win)], start_new_session=True)
+        self.log("▸ Kali Tools imefunguliwa")
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Escape:

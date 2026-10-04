@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MTECH OS — panel za XFCE kama Kali halisi (kama picha):
+    panel-1 (juu): Whisker Menu (Applications), Places, icons za tray (display,
+                   network, audio, mail), Clock "Tue, 02:45", Power/Show Desktop
+    panel-2 (chini, Dock): File Manager, Terminal, Trash, Wireshark, Burp Suite,
+                   Mousepad, Settings, Kali Undercover, | , App Finder (grid 9-dot)
+-->
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+
+  <!-- ============ PANEL 1 — JUU ============ -->
+  <property name="panels" type="array">
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=6;x=0;y=0"/>
+      <property name="length" type="double" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="icon-size" type="uint" value="0"/>
+      <property name="size" type="uint" value="30"/>
+      <property name="mode" type="uint" value="0"/>
+      <property name="autohide-behavior" type="uint" value="0"/>
+      <property name="background-style" type="uint" value="0"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>   <!-- Whisker: Applications -->
+        <value type="int" value="2"/>   <!-- Places -->
+        <value type="int" value="6"/>   <!-- windowmenu/display icon -->
+        <value type="int" value="7"/>   <!-- systray (network) -->
+        <value type="int" value="8"/>   <!-- pulseaudio -->
+        <value type="int" value="9"/>   <!-- mail -->
+        <value type="int" value="10"/>  <!-- clock: Tue, 02:45 -->
+        <value type="int" value="11"/>  <!-- power -->
+        <value type="int" value="12"/>  <!-- show desktop -->
+      </property>
+    </property>
+
+    <!-- ============ PANEL 2 — CHINI (DOCK) ============ -->
+    <property name="panel-2" type="empty">
+      <property name="position" type="string" value="p=8;x=0;y=0"/>
+      <property name="length" type="uint" value="0"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="48"/>
+      <property name="icon-size" type="uint" value="32"/>
+      <property name="mode" type="uint" value="0"/>
+      <property name="autohide-behavior" type="uint" value="0"/>
+      <property name="background-style" type="uint" value="0"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="21"/>  <!-- File Manager -->
+        <value type="int" value="22"/>  <!-- Terminal -->
+        <value type="int" value="23"/>  <!-- Trash -->
+        <value type="int" value="24"/>  <!-- Wireshark -->
+        <value type="int" value="25"/>  <!-- Burp Suite -->
+        <value type="int" value="26"/>  <!-- Mousepad -->
+        <value type="int" value="27"/>  <!-- Settings -->
+        <value type="int" value="28"/>  <!-- Kali Undercover -->
+        <value type="int" value="29"/>  <!-- separator -->
+        <value type="int" value="30"/>  <!-- App Finder (grid) -->
+      </property>
+    </property>
+  </property>
+
+  <!-- ============ PLUGINS ZOTE ============ -->
+  <property name="plugins" type="empty">
+    <!-- Applications (Whisker Menu) -->
+    <property name="plugin-1" type="string" value="whiskermenu"/>
+    <!-- Places -->
+    <property name="plugin-2" type="string" value="places"/>
+    <!-- window menu (icon ya dirisha) -->
+    <property name="plugin-6" type="string" value="windowmenu"/>
+    <!-- tray: NetworkManager -->
+    <property name="plugin-7" type="string" value="systray">
+      <property name="names-visible" type="array">
+        <value type="string" value="network-manager-applet"/>
+        <value type="string" value="nm-applet"/>
+      </property>
+    </property>
+    <!-- Audio -->
+    <property name="plugin-8" type="string" value="pulseaudio">
+      <property name="enable-legacy-flat" type="bool" value="true"/>
+    </property>
+    <!-- Mail (mail-notification kama picha) -->
+    <property name="plugin-9" type="string" value="systray"/>
+    <!-- Clock: "Tue, 02:45" -->
+    <property name="plugin-10" type="string" value="clock">
+      <property name="mode" type="uint" value="2"/>
+      <property name="format" type="string" value="%a, %H:%M"/>
+      <property name="tooltip-format" type="string" value="%A %d %B %Y"/>
+    </property>
+    <!-- Power -->
+    <property name="plugin-11" type="string" value="power-manager-plugin"/>
+    <!-- Show Desktop -->
+    <property name="plugin-12" type="string" value="showdesktop"/>
+
+    <!-- ======== DOCK (panel-2) ======== -->
+    <property name="plugin-21" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/thunar.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-22" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/xfce4-terminal-emulator.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-23" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/mtech-trash.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-24" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/org.wireshark.Wireshark.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-25" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/burpsuite.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-26" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/mtech-mousepad.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-27" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/xfce4-settings-manager.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-28" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/kali-undercover.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-29" type="string" value="separator">
+      <property name="style" type="uint" value="0"/>
+      <property name="expand" type="bool" value="false"/>
+    </property>
+    <!-- App Finder: grid ya dots 3x3 (kama picha) -->
+    <property name="plugin-30" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/usr/share/applications/xfce4-appfinder.desktop"/>
+      </property>
+    </property>
+  </property>
+</channel>

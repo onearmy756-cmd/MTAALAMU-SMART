@@ -1,0 +1,49 @@
+#!/bin/sh
+## MTECH OS — desktop icons kama picha ya Kali:
+##   kali (Home), File System  → default za XFCE (xfdesktop)
+##   Firefox, Burp Suite, Nmap, Metasploit, Terminal → hook hii
+##   MTAALAMU SMART → build-iso.sh imeweka tayari (/etc/skel/Desktop/mtaalamu.desktop)
+set -e
+
+SKEL=/etc/skel/Desktop
+mkdir -p "$SKEL"
+
+# --- copy .desktop rasmi kutoka packages (kama zipo) ---
+for f in firefox-esr.desktop firefox.desktop burpsuite.desktop xfce4-terminal-emulator.desktop; do
+    if [ -f "/usr/share/applications/$f" ]; then
+        cp -f "/usr/share/applications/$f" "$SKEL/"
+    fi
+done
+
+# --- custom: Nmap (kwa terminal, kama Kali inavyozindua CLI tools) ---
+if [ ! -f "$SKEL/nmap.desktop" ]; then
+    cat > "$SKEL/nmap.desktop" <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Nmap
+GenericName=Network Scanner
+Comment=Kuscan mitandao (nmap CLI)
+Exec=xfce4-terminal -x nmap
+Icon=kali-nmap
+Terminal=false
+Categories=Network;Security;
+EOF
+fi
+
+# --- custom: Metasploit (msfconsole kwa terminal) ---
+if [ ! -f "$SKEL/metasploit.desktop" ]; then
+    cat > "$SKEL/metasploit.desktop" <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Metasploit
+GenericName=Penetration Testing Framework
+Comment=msfconsole — exploitation framework ya Kali
+Exec=xfce4-terminal -x msfconsole
+Icon=kali-metasploit
+Terminal=false
+Categories=Network;Security;
+EOF
+fi
+
+echo "[MTECH] desktop icons za Kali zimetawekwa (skel):"
+ls "$SKEL" | sed 's/^/  - /'

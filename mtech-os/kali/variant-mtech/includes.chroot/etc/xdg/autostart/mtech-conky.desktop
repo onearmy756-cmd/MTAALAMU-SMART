@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=CPU/RAM Widget
+Comment=MTECH OS — widget ya CPU na RAM (chini-kulia, kama Kali)
+Exec=/usr/bin/conky
+TryExec=/usr/bin/conky
+Terminal=false
+Categories=System;
+X-GNOME-Autostart-enabled=true
+Hidden=false

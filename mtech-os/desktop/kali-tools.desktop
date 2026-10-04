@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Kali Tools
+Name[sw]=Zana za Kali
+GenericName=Kali tool launcher
+Comment=Categories zote za zana za Kali (Information Gathering, Forensics, n.k.) — kama dirisha rasmi
+Exec=/usr/local/bin/kali-tools
+TryExec=/usr/local/bin/kali-tools
+Icon=kali-menu
+Terminal=false
+Categories=System;Security;Network;
+Keywords=kali;tools;hacking;pentest;
+StartupNotify=true

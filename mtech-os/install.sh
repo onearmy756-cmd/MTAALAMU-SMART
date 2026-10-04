@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# MTECH OS — install kwenye OS iliyopo (wrapper mode)
+# MTECH OS — install MTAALAMU SMART kama APP kwenye OS iliyopo (Kali/Debian/Ubuntu)
 #
-#   sudo ./install.sh                  # weka kila kitu + vuta Qwen 2.5 VL 3B
-#   sudo ./install.sh --no-gui         # bila MTECH Shell (PySide6)
+#   sudo ./install.sh                  # app + huduma + Qwen 2.5 VL 3B
+#   sudo ./install.sh --no-gui         # bila app ya GUI (CLI tu: mtech …)
 #   sudo ./install.sh --no-model       # usivute modeli sasa (baadaye: ollama pull)
 #   sudo ./install.sh --with-kernel    # build kernel ya MTECH kutoka upstream/linux
+#   sudo ./install.sh --kali-look      # + panel/dock/conky/desktop icons kama Kali halisi
 #
-# Inafanya kazi kwenye: Kali, Debian, Ubuntu (arm64/amd64)
+# Desktop yako haiguswi — MTAALAMU SMART inaonekana kama app tu:
+#   menyu ya Applications → MTAALAMU SMART (na icon kwenye Desktop).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,12 +18,14 @@ DATA_DEST=/opt/mtaalamu
 WITH_GUI=1
 WITH_MODEL=1
 WITH_KERNEL=0
+KALI_LOOK=0
 
 for arg in "$@"; do
   case "$arg" in
-    --no-gui)     WITH_GUI=0 ;;
-    --no-model)   WITH_MODEL=0 ;;
+    --no-gui)      WITH_GUI=0 ;;
+    --no-model)    WITH_MODEL=0 ;;
     --with-kernel) WITH_KERNEL=1 ;;
+    --kali-look)   KALI_LOOK=1 ;;
     *) echo "hoja haijulikani: $arg" >&2; exit 2 ;;
   esac
 done
@@ -29,14 +33,14 @@ done
 [ "$(id -u)" -eq 0 ] || { echo "Endesha kwa sudo — inasakinisha kwenye /opt na systemd." >&2; exit 1; }
 
 echo "════════════════════════════════════════"
-echo " MTECH OS — install (wrapper mode)"
+echo " MTAALAMU SMART — install (app ndani ya OS yako)"
 echo "════════════════════════════════════════"
 
 # --- 1) Vitega vya mfumo ---
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get install -y -qq python3 python3-venv python3-pip python3-dev \
-    curl xdotool wmctrl scrot xclip imagemagick rsync >/dev/null
+    curl xdotool wmctrl scrot xclip imagemagick rsync desktop-file-utils >/dev/null
 
 # --- 2) Ollama (binary rasmi) ---
 if [ ! -x /usr/local/bin/ollama ]; then
@@ -47,32 +51,46 @@ else
     echo "[1/6] Ollama ipo tayari"
 fi
 
-# --- 3) Nakili layer ya MTECH + akili ya MTAALAMU ---
-echo "[2/6] nakili MTECH → $DEST na MTAALAMU SMART → $DATA_DEST"
+# --- 3) Nakili app + akili ya MTAALAMU ---
+echo "[2/6] nakili MTAALAMU SMART → $DEST (akili: $DATA_DEST)"
 mkdir -p "$DEST" "$DATA_DEST/hermes-agent"
 rsync -a "$HERE/agent/"    "$DEST/agent/"
 rsync -a "$HERE/gui/"      "$DEST/gui/"
 rsync -a "$HERE/services/" "$DEST/services/"
 rsync -a "$HERE/kernel/"   "$DEST/kernel/"
+rsync -a "$HERE/desktop/"  "$DEST/desktop/"
 rsync -a --exclude 'target/' --exclude '__pycache__/' \
       "$REPO_ROOT/hermes-agent/data/"        "$DATA_DEST/hermes-agent/data/"
 rsync -a --exclude 'target/' --exclude '__pycache__/' \
       "$REPO_ROOT/hermes-agent/engine-rust/" "$DATA_DEST/hermes-agent/engine-rust/"
 
 # --- 4) venv + deps ---
-echo "[3/6] venv ya agent…"
+echo "[3/6] venv ya app…"
 python3 -m venv "$DEST/venv"
 "$DEST/venv/bin/pip" install -q -r "$DEST/agent/requirements.txt"
 if [ "$WITH_GUI" -eq 1 ]; then
     "$DEST/venv/bin/pip" install -q -r "$DEST/gui/requirements-gui.txt" || echo "  (WARNING: GUI deps zimeshindikana — endesha tena baadaye)"
 fi
 
-# --- 5) Systemd: ollama + agent + firstboot ---
-echo "[4/6] systemd units…"
-install -m 644 "$DEST/services/mtech-ollama.service"   /etc/systemd/system/
-install -m 644 "$DEST/services/mtech-agent.service"    /etc/systemd/system/
-install -m 644 "$DEST/services/mtech-firstboot.service" /etc/systemd/system/
-install -m 755 "$HERE/services/mtech-firstboot.sh" /usr/local/sbin/mtech-firstboot
+# --- 5) App ya desktop + CLI + systemd ---
+echo "[4/6] app ya desktop (menyu + icon) na huduma…"
+install -D -m 755 "$HERE/desktop/mtaalamu-app"     /usr/local/bin/mtaalamu-app
+install -D -m 644 "$HERE/desktop/mtaalamu.desktop" /usr/share/applications/mtaalamu.desktop
+install -D -m 644 "$HERE/desktop/mtaalamu.svg"     /usr/share/icons/hicolor/scalable/apps/mtaalamu.svg
+
+# --- Dirisha "Kali Tools" (search + categories 11 kama Kali) ---
+install -D -m 755 "$HERE/desktop/kali-tools"         /usr/local/bin/kali-tools
+install -D -m 644 "$HERE/desktop/kali-tools.desktop" /usr/share/applications/kali-tools.desktop
+install -D -m 644 "$HERE/desktop/kali-tools-window.py" "$DEST/desktop/kali-tools-window.py"
+# Icon kwenye Desktop ya kila user (desktop icon kama picha ya Kali)
+for d in /home/*/ /root/; do
+    [ -d "$d" ] || continue
+    u="$(basename "$d")"
+    mkdir -p "$d/Desktop"
+    install -m 644 "$HERE/desktop/mtaalamu.desktop" "$d/Desktop/mtaalamu.desktop"
+    chown -R "${u}:${u}" "$d/Desktop/mtaalamu.desktop" 2>/dev/null || true
+done
+update-desktop-database /usr/share/applications 2>/dev/null || true
 
 cat > /usr/local/bin/mtech <<'EOF'
 #!/bin/sh
@@ -83,18 +101,10 @@ exec /opt/mtech/venv/bin/python -m mtech_agent "$@"
 EOF
 chmod +x /usr/local/bin/mtech
 
-# GUI inaanza na kila session ya desktop
-mkdir -p /etc/xdg/autostart
-cat > /etc/xdg/autostart/mtech-shell.desktop <<'EOF'
-[Desktop Entry]
-Type=Application
-Name=MTECH Shell
-Comment=GUI ya kipekee ya MTECH OS
-Exec=/opt/mtech/venv/bin/python /opt/mtech/gui/mtech_shell.py
-Terminal=false
-Categories=System;
-X-GNOME-Autostart-enabled=true
-EOF
+install -m 644 "$DEST/services/mtech-ollama.service"    /etc/systemd/system/
+install -m 644 "$DEST/services/mtech-agent.service"     /etc/systemd/system/
+install -m 644 "$DEST/services/mtech-firstboot.service" /etc/systemd/system/
+install -m 755 "$HERE/services/mtech-firstboot.sh"      /usr/local/sbin/mtech-firstboot
 
 systemctl daemon-reload
 systemctl enable --now mtech-ollama.service
@@ -103,11 +113,9 @@ systemctl enable mtech-firstboot.service
 
 # --- 6) Modeli ya Qwen 2.5 VL 3B ---
 if [ "$WITH_MODEL" -eq 1 ]; then
-    echo "[5/6] ollama pull qwen2.5vl:3b (GB chache — subiri)…"
-    /usr/local/bin/ollama pull qwen2.5vl:3b && touch /var/lib/mtech/.bootstrapped 2>/dev/null || {
-        mkdir -p /var/lib/mtech
-        /usr/local/bin/ollama pull qwen2.5vl:3b && touch /var/lib/mtech/.bootstrapped
-    }
+    echo "[5/6] ollama pull qwen2.5vl:3b (subiri…)"
+    mkdir -p /var/lib/mtech
+    /usr/local/bin/ollama pull qwen2.5vl:3b && touch /var/lib/mtech/.bootstrapped
 else
     echo "[5/6] --no-model: endesha baadaye → ollama pull qwen2.5vl:3b"
 fi
@@ -120,9 +128,35 @@ else
     echo "[6/6] kernel: ruka (endesha → make -C mtech-os kernel)"
 fi
 
+# --- 8) Kali look (hiari): panel/dock/conky/icons kama picha ---
+if [ "$KALI_LOOK" -eq 1 ]; then
+    echo "[+] Kali look: panel + dock + conky + desktop icons…"
+    apt-get install -y -qq conky-all xfce4-panel >/dev/null || true
+    mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
+    install -m 644 "$HERE/kali/variant-mtech/includes.chroot/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml" \
+        /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+    install -m 644 "$HERE/kali/variant-mtech/includes.chroot/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" \
+        /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+    install -m 644 "$HERE/kali/variant-mtech/includes.chroot/etc/skel/.conkyrc" /etc/skel/.conkyrc
+    install -D -m 644 "$HERE/kali/variant-mtech/includes.chroot/etc/xdg/autostart/mtech-conky.desktop" \
+        /etc/xdg/autostart/mtech-conky.desktop
+    for d in /home/*/ /root/; do
+        [ -d "$d" ] || continue
+        u="$(basename "$d")"
+        install -m 644 "$HERE/kali/variant-mtech/includes.chroot/etc/skel/.conkyrc" "$d/.conkyrc"
+        chown "${u}:${u}" "$d/.conkyrc" 2>/dev/null || true
+        mkdir -p "$d/Desktop"
+        for f in mtaalamu.desktop kali-tools.desktop; do
+            install -m 644 "$HERE/desktop/$f" "$d/Desktop/$f" 2>/dev/null || true
+            chown "${u}:${u}" "$d/Desktop/$f" 2>/dev/null || true
+        done
+    done
+    echo "[+] Kali look imewekwa — login tena (au: xfce4-panel -r) ili panel mpya ionekane."
+fi
+
 echo ""
-echo "✅ MTECH OS imewekwa!"
-echo "   CLI:        mtech skills | mtech ask \"tatizo la kompyuta\" | mtech watch"
-echo "   GUI:        MTECH Shell inaanza na desktop (au: /opt/mtech/venv/bin/python /opt/mtech/gui/mtech_shell.py)"
-echo "   Kernel:     cat /proc/mtech_status  (baada ya insmod mtech_dev.ko)"
-echo "   Huduma:     systemctl status mtech-agent mtech-ollama"
+echo "✅ MTAALAMU SMART imewekwa kama APP ndani ya OS yako!"
+echo "   GUI:      menyu ya Applications → MTAALAMU SMART (au icon ya Desktop)"
+echo "   CLI:      mtech skills | mtech ask \"tatizo la kompyuta\" | mtech watch"
+echo "   Huduma:   systemctl status mtech-agent mtech-ollama"
+echo "   Kernel:   cat /proc/mtech_status  (baada ya insmod mtech_dev.ko)"

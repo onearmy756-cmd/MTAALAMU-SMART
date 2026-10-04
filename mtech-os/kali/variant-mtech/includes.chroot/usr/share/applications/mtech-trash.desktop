@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Trash
+Name[sw]=Takataka
+GenericName=File Trash
+Comment=Fungua takataka (Thunar)
+Exec=thunar trash:///
+Icon=user-trash-full
+Terminal=false
+Categories=Utility;FileManager;
+StartupNotify=true

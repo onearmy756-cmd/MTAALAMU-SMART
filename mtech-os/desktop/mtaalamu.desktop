@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=MTAALAMU SMART
+Name[sw]=MTAALAMU SMART
+GenericName=Mtaalamu wa AI (Qwen 2.5 VL 3B)
+Comment=Akili ya MTECH OS: swali/kazi zote, skills 146, kernel events, vision na zana za Kali
+Comment[sw]=Akili ya MTECH OS: swali/kazi zote, skills 146, kernel events, vision na zana za Kali
+Exec=/usr/local/bin/mtaalamu-app
+TryExec=/usr/local/bin/mtaalamu-app
+Icon=mtaalamu
+Terminal=false
+Categories=System;Utility;Security;Network;
+Keywords=mtaalamu;mtech;ai;qwen;agent;skills;kernel;
+StartupNotify=true

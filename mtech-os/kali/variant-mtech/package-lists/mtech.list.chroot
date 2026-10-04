@@ -1,32 +1,65 @@
-## MTECH OS — variant ya Kali Linux
-##   Msingi: kali-linux-core + desktop XFCE + zana za mtaalamu
-##   Jenga:  ./mtech-os/kali/build-iso.sh
+## MTECH OS — variant ya Kali Linux (OS HALISI kama Kali)
+##   Jenga:  ./mtech-os/kali/build-iso.sh            # Kali kamili (≈ kali-linux-large)
+##           ./mtech-os/kali/build-iso.sh --everything  # zana ZOTE za Kali (kali-linux-everything)
 
 ## Live images always want these
 kali-linux-core
 kali-desktop-live
 
-## Desktop (GUI ya Linux ambayo MTECH Shell inaifunga)
+## Desktop halisi ya Kali (kama picha: XFCE + dragon wallpaper + panel + menyu za zana)
 kali-desktop-xfce
-xfce4-terminal
+kali-themes
+kali-wallpapers
+kali-menu
+kali-tweaks
+xdg-user-dirs
+gvfs-backends
+firefox-esr
+conky-all
 
-## Zana za mtaalamu (computer, mtandao, usalama)
-kali-linux-default
-nmap wireshark netcat-openbsd john hashcat sqlmap hydra metasploit
-bloodhound.py impacket responder bettercap
-binwalk foremost volatility3 autopsy
-gobuster dirb nikto wpscan whatweb
+## Zana za Kali halisi
+##   kali-linux-large  = seti kamili ya Kali rasmi (kali-linux-default + extra, ≈ tools 400+)
+##   kali-linux-everything = ZOTE (~1800) — badalishwa na build-iso.sh --everything
+kali-linux-large
 
-## Kernel + headers (module ya /dev/mtech na eBPF)
+## Kernel na DRIVERS halisi za Kali (WiFi, GPU, USB, sound…)
+linux-image-amd64
 linux-headers-amd64
-bpfcc-tools bpftool clang llvm libbpf-dev
+firmware-linux
+firmware-linux-nonfree
+firmware-misc-nonfree
+firmware-realtek
+firmware-atheros
+firmware-iwlwifi
+firmware-brcm80211
+firmware-libertas
+firmware-sof-signed
 
-## Akili ya MTECH (agent + GUI)
-python3 python3-pip python3-venv python3-dev
+## Kernel dev (module ya /dev/mtech na eBPF)
+bpfcc-tools
+bpftool
+clang
+llvm
+libbpf-dev
+
+## Akili ya MTAALAMU SMART (app ya desktop + API ya systemd)
+python3
+python3-pip
+python3-venv
+python3-dev
 python3-pil
-curl git wget unzip xz-utils file
+curl
+git
+wget
+unzip
+xz-utils
+file
 
-## Udhibiti wa GUI na vision
-xdotool wmctrl scrot xclip imagemagick
+## Udhibiti wa GUI na vision (macho/mikono ya MTAALAMU)
+xdotool
+wmctrl
+scrot
+xclip
+imagemagick
 pulseaudio-utils
-## Kumbuka: Ollama + Qwen 2.5 VL 3B zinawekwa na hook/firstboot (hazipo kwenye repos za Kali)
+## Kumbuka: Ollama + qwen2.5vl:3b zinawekwa na hook/firstboot (hazipo kwenye repos za Kali)

@@ -1,0 +1,7 @@
+#!/bin/sh
+# MTAALAMU SMART — launcher ya desktop app (ndani ya Kali/MTECH OS)
+export MTECH_ROOT="${MTECH_ROOT:-/opt/mtech}"
+export MTAALAMU_ROOT="${MTAALAMU_ROOT:-/opt/mtaalamu/hermes-agent}"
+export MTECH_MODEL="${MTECH_MODEL:-qwen2.5vl:3b}"
+export PYTHONPATH="/opt/mtech/agent${PYTHONPATH:+:$PYTHONPATH}"
+exec /opt/mtech/venv/bin/python /opt/mtech/gui/mtech_shell.py "$@"

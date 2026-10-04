@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Mousepad
+GenericName=Text Editor
+Comment=Hariri maandishi (Mousepad)
+Exec=mousepad
+Icon=org.xfce.mousepad
+Terminal=false
+Categories=Utility;TextEditor;
+StartupNotify=true

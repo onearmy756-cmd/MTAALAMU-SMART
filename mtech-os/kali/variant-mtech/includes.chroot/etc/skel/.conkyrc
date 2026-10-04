@@ -1,0 +1,26 @@
+-- MTECH OS — CPU/RAM widget kama picha (chini-kulia)
+-- Chips mbili: "CPU: 7%" (bar ya kijani) na "RAM: 40%" (bar ya bluu)
+conky.config = {
+    alignment = 'bottom_right',
+    gap_x = 24,
+    gap_y = 40,
+    own_window = true,
+    own_window_type = 'desktop',
+    own_window_argb_visual = true,
+    own_window_argb_value = 160,
+    own_window_transparent = false,
+    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+    double_buffer = true,
+    minimum_width = 130,
+    update_interval = 2,
+    use_xft = true,
+    font = 'DejaVu Sans Mono:size=10:bold',
+    default_color = '#e6e6e6',
+    format_human_readable = true,
+    no_buffers = true,
+}
+
+conky.text = [[
+${color #101010}${color}CPU: ${color #00ff9c}${cpu}%$color
+${color #101010}${color}RAM: ${color #4da6ff}${memperc}%$color
+]]

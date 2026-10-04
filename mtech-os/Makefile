@@ -1,11 +1,11 @@
 # MTECH OS — targets
-#   make skills | ask MSG="..." | watch | serve | shell
-#   make module | kernel | iso | install | smoke
+#   make skills | ask MSG="..." | watch | serve | app
+#   make module | kernel | iso | iso-everything | install | smoke
 
 AGENT := agent
 PY    := python3
 
-.PHONY: skills ask watch serve shell module kernel iso install smoke clean
+.PHONY: skills ask watch serve app module kernel iso iso-everything install smoke clean
 
 skills:
 	cd $(AGENT) && $(PY) -m mtech_agent skills
@@ -19,8 +19,10 @@ watch:
 serve:
 	cd $(AGENT) && $(PY) -m mtech_agent serve
 
-shell:
+app:
 	$(PY) gui/mtech_shell.py
+
+shell: app
 
 module:
 	bash kernel/build-kernel.sh --module-only
@@ -30,6 +32,9 @@ kernel:
 
 iso:
 	sudo bash kali/build-iso.sh
+
+iso-everything:
+	sudo bash kali/build-iso.sh --everything
 
 install:
 	sudo bash install.sh

@@ -1,0 +1,4 @@
+#!/bin/sh
+# MTECH OS — launcher ya dirisha "Kali Tools" (kama picha ya Kali)
+export PYTHONPATH="/opt/mtech/agent${PYTHONPATH:+:$PYTHONPATH}"
+exec /opt/mtech/venv/bin/python /opt/mtech/desktop/kali-tools-window.py "$@"
