@@ -19,6 +19,11 @@ make -C mtech-os smoke                   # ukaguzi wa haraka
 Vyanzo: `upstream/linux` (torvalds), `upstream/kali-live` (GitLab rasmi ya Kali).
 Nyaraka kamili: [`mtech-os/README.md`](mtech-os/README.md)
 
+## 📥 INSTALL — HATUA ZOTE (njia 4)
+**[`HATUA-ZA-KUSAKINISHA.md`](HATUA-ZA-KUSAKINISHA.md)** — computer yako
+(setup_all.py one-click) · bundle bila Python/R/Rust · Docker (amd64+arm64) ·
+ISO kamili ya Kali + amri zote za kila siku (`mtaalamu apps/kali/fs/env`).
+
 ## Production (Agentic Vision + OS probe)
 
 ```bash
