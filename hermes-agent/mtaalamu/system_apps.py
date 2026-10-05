@@ -270,11 +270,13 @@ def launch(app_id: str) -> dict:
         app = ROOT / "web-r" / "app.R"
         if not app.exists():
             return {"ok": False, "error": "web-r/app.R haipo"}
-        return {**_spawn([rscript, str(app)], app_id, port=8089,
-                         log=str(ROOT / ".webr.log")),                "ui": "http://localhost:8089",
-                "note": "Shiny inafunguka — subiri sekunde 5 kisha fungua UI"
-}
-
+        # CWD lazima iwe web-r/ (app.R inasoma R/*.R kutoka APP_DIR na data/ kutoka p_root)
+        # na port 8089 tunaiweka waziwazi (Shiny default ni 8100).
+        return {**_spawn([rscript, "-e", 'shiny::runApp("app.R", port=8089, launch.browser=FALSE)'],
+                         app_id, port=8089, cwd=str(ROOT / "web-r"),
+                         log=str(ROOT / ".webr.log")),
+                "ui": "http://localhost:8089",
+                "note": "Shiny inafunguka — subiri sekunde 5 kisha fungua UI"}
 
     if app_id == "desktop":
         npm = shutil.which("npm")
