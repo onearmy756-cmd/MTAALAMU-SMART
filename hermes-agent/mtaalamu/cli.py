@@ -33,7 +33,7 @@ import argparse
 import json
 import sys
 
-from . import admin, billing, clickpesa, ipc, kali, models, scope, system_apps, system_view, unified
+from . import admin, billing, clickpesa, envsetup, ipc, kali, models, scope, system_apps, system_view, unified
 from .catalog import CATALOG
 from .shortcuts import ALL_SHORTCUTS, run_shortcut
 
@@ -61,6 +61,7 @@ def main() -> None:
     apps = sub.add_parser("apps"); apps.add_argument("action", nargs="?", default=None); apps.add_argument("app_id", nargs="?", default=None)
     kal = sub.add_parser("kali"); kal.add_argument("action", nargs="?", default=None); kal.add_argument("arg1", nargs="*", default=[])
     term = sub.add_parser("term"); term.add_argument("cmd", nargs="*", default=[])
+    env = sub.add_parser("env"); env.add_argument("action", nargs="?", default=None); env.add_argument("target", nargs="?", default=None)
     sub.add_parser("wallet")
     sub.add_parser("usage"); sub.add_parser("doctor"); sub.add_parser("serve")
     args = ap.parse_args()
@@ -216,6 +217,22 @@ def main() -> None:
             print("\n amri: mtaalamu kali tool nmap · mtaalamu term · mtaalamu term 'htop'")
     elif args.cmd == "term":
         _p(kali.open_terminal(" ".join(args.cmd)))
+    elif args.cmd == "env":
+        if args.action == "install" and args.target:
+            _p(envsetup.install(args.target))
+        else:
+            st = envsetup.status()
+            print(f"══ MAZINGIRA ({st['family']}) — mtaalamu env install <target> ══")
+            rows = [("cargo (Rust)", st["cargo"]), ("engine (Rust)", st["engine"]),
+                    ("R + packages", st["r"]), ("Ollama+Qwen", st["ollama"]),
+                    ("Node.js", st["node"]), ("LibreOffice", st["libreoffice"])]
+            for name, info in rows:
+                mark = "✔" if info.get("ok") else "✗"
+                extra = info.get("version") or info.get("packages") or (", ".join(info.get("models", [])[:3])) or ""
+                print(f"  {mark} {name:<16} {extra}")
+                if not info.get("ok") and info.get("fix"):
+                    print(f"       → {info['fix']}")
+            print(f"  dirs: {st['dirs']['base']} ✔")
     elif args.cmd == "doctor":
         from .doctor_lite import run_checks
         _p(run_checks())

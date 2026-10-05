@@ -127,22 +127,34 @@ def app_home_assistant() -> dict:
 
 
 def app_web_r() -> dict:
-    """Web R — dashboard ya Shiny (R halisi: Rscript app.R → UI ya Shiny)."""
+    """Web R — dashboard ya Shiny (R halisi) — port 3838 (README ya web-r).
+
+    Tabu za ndani zilizoshughulikiwa:
+      • port 3838 (README) — si 8089, si default 8100
+      • inahitaji shiny + jsonlite (auto-install kwenye launch)
+      • CWD lazima iwe web-r/ (app.R inasoma R/ + data kutoka ../data)
+      • data/ haiipo ndani ya web-r — p_root("data") = hermes-agent/data ✔
+    """
     d = _app_dir("web-r")
     app = d / "app.R"
     has_src = app.exists()
     rscript = shutil.which("Rscript")
-    up = _port_up(8089)
+    up = _port_up(3838)
+    libs_ok = False
+    if rscript:
+        code, out = _run(f"'{rscript}' -e 'cat(requireNamespace(\"shiny\",quietly=TRUE), requireNamespace(\"jsonlite\",quietly=TRUE))'", timeout=60)
+        libs_ok = code == 0 and "1 1" in out
     return {
         "id": "web-r", "name": "Web R (Dashboard ya Analytics)",
-        "desc": "App ya Shiny (R) — chati na vipimo vya mfumo, UI halisi ya Shiny",
-        "ui": "http://localhost:8089",
+        "desc": "App ya Shiny (R) — chati, ramani ya TZ (Leaflet), agentic vision; port 3838",
+        "ui": "http://localhost:3838",
         "source": str(d.relative_to(ROOT.parent)) if has_src else "",
         "installed": has_src,
-        "runtime": "Rscript + shiny",
-        "runtime_ok": bool(rscript),
+        "runtime": "Rscript + shiny + jsonlite",
+        "runtime_ok": bool(rscript) and libs_ok,
         "running": up,
-        "launch_hint": "Rscript web-r/app.R (port 8089)",
+        "launch_hint": "mtaalamu apps launch web-r (au: cd web-r && Rscript -e 'shiny::runApp(\"app.R\", port=3838)')",
+        "fix": "" if libs_ok else "mtaalamu env install r-packages (shiny + jsonlite)",
     }
 
 
@@ -172,8 +184,8 @@ def app_website() -> dict:
     node = shutil.which("node")
     return {
         "id": "website", "name": "MTAALAMU Website (Docusaurus)",
-        "desc": "Tovuti rasmi ya docs (Docusaurus) — UI ya waundaji",
-        "ui": "http://localhost:3000",
+        "desc": "Tovuti rasmi ya docs (Docusaurus) — UI ya waundaji (baseUrl: /docs/)",
+        "ui": "http://localhost:3000/docs/",
         "source": str(d.relative_to(ROOT.parent)) if has_src else "",
         "installed": has_src,
         "runtime": "node + npm (docusaurus start)",
@@ -266,17 +278,24 @@ def launch(app_id: str) -> dict:
     if app_id == "web-r":
         rscript = shutil.which("Rscript")
         if not rscript:
-            return {"ok": False, "error": "Rscript haipo — sakinisha R (apt install r-base / winget RProject.R) kisha rudia"}
+            return {"ok": False, "error": "Rscript haipo — endesha: mtaalamu env install r", "fix": "mtaalamu env install r"}
         app = ROOT / "web-r" / "app.R"
         if not app.exists():
             return {"ok": False, "error": "web-r/app.R haipo"}
+        # Tabu za ndani: shiny/jsonlite zinaweza kukosekana → install kiotomatiki
+        # (user-lib, bila maswali); CWD=web-r; port 3838 (README ya web-r).
+        code, out = _run(f"'{rscript}' -e 'cat(requireNamespace(\"shiny\",quietly=TRUE))'", timeout=60)
+        if "1" not in out:
+            print("[web-r] shiny haipo — inasakinishwa (dakika 1-3, CRAN)…")
+            from . import envsetup
+            envsetup.ensure_dirs()
+            envsetup._install_r_packages()
         # CWD lazima iwe web-r/ (app.R inasoma R/*.R kutoka APP_DIR na data/ kutoka p_root)
-        # na port 8089 tunaiweka waziwazi (Shiny default ni 8100).
-        return {**_spawn([rscript, "-e", 'shiny::runApp("app.R", port=8089, launch.browser=FALSE)'],
-                         app_id, port=8089, cwd=str(ROOT / "web-r"),
+        return {**_spawn([rscript, "-e", 'shiny::runApp("app.R", port=3838, launch.browser=FALSE)'],
+                         app_id, port=3838, cwd=str(ROOT / "web-r"),
                          log=str(ROOT / ".webr.log")),
-                "ui": "http://localhost:8089",
-                "note": "Shiny inafunguka — subiri sekunde 5 kisha fungua UI"}
+                "ui": "http://localhost:3838",
+                "note": "Shiny inafunguka — subiri sekunde 5 kisha fungua UI (port 3838)"}
 
     if app_id == "desktop":
         npm = shutil.which("npm")
