@@ -3,6 +3,7 @@
 ##   kali (Home), File System  → default za XFCE (xfdesktop)
 ##   Firefox, Burp Suite, Nmap, Metasploit, Terminal → hook hii
 ##   MTAALAMU SMART → build-iso.sh imeweka tayari (/etc/skel/Desktop/mtaalamu.desktop)
+##   SYSTEM APPS → hook hii (OpenMRS, Home Assistant, Web R, Desktop, Website…)
 set -e
 
 SKEL=/etc/skel/Desktop
@@ -14,6 +15,11 @@ for f in firefox-esr.desktop firefox.desktop burpsuite.desktop xfce4-terminal-em
         cp -f "/usr/share/applications/$f" "$SKEL/"
     fi
 done
+
+# --- SYSTEM APPS: dirisha la apps za mfumo kwenye Desktop pia ---
+if [ -f /usr/share/applications/system-apps.desktop ]; then
+    cp -f /usr/share/applications/system-apps.desktop "$SKEL/system-apps.desktop"
+fi
 
 # --- custom: Nmap (kwa terminal, kama Kali inavyozindua CLI tools) ---
 if [ ! -f "$SKEL/nmap.desktop" ]; then

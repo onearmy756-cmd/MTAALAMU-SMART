@@ -70,4 +70,26 @@ scrot
 xclip
 imagemagick
 pulseaudio-utils
-## Kumbuka: Ollama + qwen2.5vl:3b zinawekwa na hook/firstboot (hazipo kwenye repos za Kali)
+
+## RUST — kasi na usalama wa OS (compiler + toolchain halisi za Debian/Kali)
+rustc
+cargo
+
+## R — charti/picha/visualizations za OS yenye mvuto wa kipekee
+r-base
+r-base-dev
+r-recommended
+libcurl4-openssl-dev
+libssl-dev
+libxml2-dev
+
+## LIBREOFFICE ILIYOBORESHWA — kazi zote za ofisi (Word/Excel/PowerPoint/PDF)
+libreoffice
+libreoffice-gtk3
+libreoffice-l10n-sw
+libreoffice-style-breeze
+
+## Kumbuka:
+##  • Ollama + qwen2.5vl:3b zinawekwa na hook/firstboot (hazipo kwenye repos za Kali)
+##  • shiny (R) inasakinishwa na hook 0135-integrations.hook.chroot (CRAN)
+##  • engine ya Rust inajengwa na hook ile ile (cargo build --release)

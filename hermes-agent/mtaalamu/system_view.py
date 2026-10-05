@@ -20,7 +20,7 @@ import subprocess
 import sys as _sys
 from pathlib import Path
 
-from . import admin, billing, clickpesa
+from . import admin, billing, clickpesa, kali, system_apps
 
 FAMILY = "windows" if os.name == "nt" else ("macos" if _sys.platform == "darwin" else "linux")
 HOME = Path.home()
@@ -147,6 +147,13 @@ def mtech_components() -> list:
         ("INSTALL", "mtech-os/install.py", "Installer moja ya OS zote 3 (--boot --allow-control)"),
         ("DOCTOR", "mtech-os/agent/mtech_agent/doctor.py", "mtech doctor (ukaguzi wa computer halisi)"),
         ("MTAALAMU", "hermes-agent/mtaalamu", "Unified Solver: catalog 31 ops, HITL, ClickPesa, admin"),
+        ("KALI-BRIDGE", "hermes-agent/mtaalamu/kali.py", "Kali HALISI: zana zote, terminals zote, drivers, partitions"),
+        ("SYSTEM-APPS", "hermes-agent/mtaalamu/system_apps.py", "Apps za mfumo: OpenMRS, Home Assistant, Web R, Desktop, Website"),
+        ("ENGINE-RUST", "hermes-agent/engine-rust", "Rust engine: reason/knowledge/solve (kasi + usalama)"),
+        ("ANALYTICS-R", "hermes-agent/analytics-r", "R analytics: ripoti + chati za OS"),
+        ("WEB-R", "hermes-agent/web-r", "Shiny dashboard (R) ya analytics"),
+        ("OPENMRS", "hermes-agent/openmrs", "OpenMRS EHR (UI rasmi) — app ya mfumo"),
+        ("HOME-ASSISTANT", "hermes-agent/home-assistant", "Home Assistant (UI rasmi) — app ya mfumo"),
         ("UI", "hermes-agent/web-html/mtaalamu-unified.html", "Dashboard ya tabs (offline, single-file)"),
         ("SERVER", "hermes-agent/mtaalamu/server.py", "HTTP API + IPC + R bridge"),
     ]
@@ -226,6 +233,9 @@ def full_system() -> dict:
         "boot": boot_timeline(),
         "components": mtech_components(),
         "map": system_map(),
+        "kali": {"family": kali.FAMILY, "is_kali": kali.is_kali(),
+                 "tools": len(kali.tools()), "terminals": len(kali.terminals())},
+        "apps": system_apps.status(),
         "license": billing.usage_summary(),
         "payments": payments_recent(),
         "book": book_recent(),

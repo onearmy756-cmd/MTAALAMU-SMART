@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=System Apps (MTECH)
+Name[sw]=Apps za Mfumo (MTECH)
+GenericName=OpenMRS, Home Assistant, Web R, Desktop, Website, Rust, R
+Comment=Apps ZA MFUMO za MTECH OS — UI halisi za waundaji (OpenMRS, Home Assistant, Web R…)
+Comment[sw]=Apps ZA MFUMO za MTECH OS — UI halisi za waundaji (OpenMRS, Home Assistant, Web R…)
+Exec=/usr/local/bin/system-apps
+TryExec=/usr/local/bin/system-apps
+Icon=mtaalamu
+Terminal=false
+Categories=System;Utility;
+Keywords=apps;openmrs;home-assistant;webr;shiny;rust;analytics;system;
+StartupNotify=true

@@ -50,6 +50,8 @@
   <button data-t="boot" class="on">🚀 BOOT</button>
   <button data-t="chat">💬 CHAT</button>
   <button data-t="ops">🧰 ZANA</button>
+  <button data-t="apps">🖥 APPS</button>
+  <button data-t="kali">🐉 KALI</button>
   <button data-t="book">📖 KITABU</button>
   <button data-t="pay">💳 MALIPO</button>
   <button data-t="lic">🎫 LESENI</button>
@@ -68,6 +70,20 @@
     <aside class="panel"><b>ZANA (bofya)</b><div class="ops" id="ops-mini"></div></aside></div></div>
 
   <div class="tab" id="tab-ops"><div class="panel"><b>ZANA ZOTE</b> <span class="tag" id="opscount"></span><div class="ops" id="ops"></div></div></div>
+
+  <div class="tab" id="tab-apps">
+    <div class="kpi" id="appkpi"></div>
+    <div class="panel"><b>🖥 APPS ZA MFUMO — UI HALISI ZA WAUNDAJI</b> <span class="tag">zilizoundwa na mfumo — zinaonekana pamoja na apps zingine ulizosakinisha</span><div class="ops" id="apps"></div></div></div>
+
+  <div class="tab" id="tab-kali">
+    <div class="kpi" id="kalikpi"></div>
+    <div class="panel"><b>🐉 KALI LINUX — ZANA ZOTE (zilizosakinishwa kwenye OS)</b> <span class="tag" id="kalitoolscount"></span><div class="ops" id="kalitools"></div></div>
+    <div class="grid2">
+      <div class="panel"><b>TERMINALS ZOTE (command prompts)</b><div class="ops" id="kaliterms"></div></div>
+      <div class="panel"><b>DRIVERS · PARTITIONS · SERVICES</b><pre id="kalihw"></pre></div></div>
+    <div class="panel"><b>FUNGUA TERMINAL / ZANA</b>
+      <div class="qrow"><input id="kalitermcmd" placeholder="amri (mf: htop, nmap -sV target)" style="flex:1"><button onclick="openTerm()">TERMINAL ▸</button><input id="kalitoolcmd" placeholder="zana (mf: nmap)" style="width:180px"><button onclick="openTool()">ZANA ▸</button></div>
+      <div class="tag" id="kalimsg" style="margin-top:6px"></div></div></div>
 
   <div class="tab" id="tab-book"><div class="panel"><b>📖 KITABU KIDIGITALI</b> <span class="tag" id="bookcount"></span><div id="book"></div></div></div>
 
@@ -118,6 +134,8 @@ document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
 function loadTab(t){
   if(t==='boot') loadBoot();
   else if(t==='ops'||t==='chat') loadOps();
+  else if(t==='apps') loadApps();
+  else if(t==='kali') loadKali();
   else if(t==='book') loadBook();
   else if(t==='pay') loadPay();
   else if(t==='lic') loadLic();
@@ -182,6 +200,71 @@ function render(r){
   }
   add(JSON.stringify(r).slice(0,600));
 }
+
+/* ---------- APPS ZA MFUMO ---------- */
+async function loadApps(){
+  try{
+    const a=await jget('/api/apps');
+    $('appkpi').innerHTML=`<div><b>${a.count}</b>APPS</div><div><b>${(a.running||[]).length}</b>RUNNING</div><div><b>${(a.available||[]).length}</b>ZILIZOSAKINISHWA</div><div><b style="font-size:12px">${Object.entries(a.runtimes||{}).map(([k,v])=>k+':'+(v?'✔':'✗')).join(' ')}</b>RUNTIMES</div>`;
+    const box=$('apps'); box.innerHTML='';
+    (a.apps||[]).forEach(x=>{
+      const st=x.running?'<span class="ok">▶ RUNNING</span>':(x.installed?'<span class="ok">✔ IPO</span>':'<span class="bad">✗ HAIPO</span>');
+      const d=el('div',{class:'op'},`<b>${x.name}</b> <span class="tag">${x.id}</span><br><span class="tag">${x.desc||''}</span><br><span class="tag">UI: ${x.ui||'—'} · runtime: ${x.runtime||'—'} ${x.runtime_ok?'✔':'✗'}</span>`);
+      const row=el('div',{class:'qrow',style:'margin-top:6px'});
+      const bL=el('button',{},'ANZISHA ▸');
+      bL.onclick=async()=>{ add('▸ Inaanzisha '+x.id+'…'); const r=await jpost('/api/apps/launch',{app:x.id}); add(r.ok?('✔ '+(r.note||'imeanzishwa')+(r.ui?' → '+r.ui:'')):('✖ '+(r.error||''))); loadApps(); };
+      const bS=el('button',{},'SIMAMISHA');
+      bS.onclick=async()=>{ const r=await jpost('/api/apps/stop',{app:x.id}); add(r.ok?'✔ Imesimama':('✖ '+(r.error||''))); loadApps(); };
+      const bU=el('button',{},'FUNGUA UI ▸'); const url=String(x.ui||'');
+      if(url.startsWith('http')) bU.onclick=()=>window.open(url,'_blank'); else { bU.disabled=true; bU.style.opacity=.4; }
+      row.appendChild(bL); row.appendChild(bS); row.appendChild(bU);
+      d.appendChild(row); d.appendChild(el('div',{style:'margin-top:4px'},st));
+      box.appendChild(d);
+    });
+  }catch(e){}
+}
+
+/* ---------- KALI LINUX ---------- */
+async function loadKali(){
+  try{
+    const k=await jget('/api/kali');
+    $('kalikpi').innerHTML=`<div><b>${k.tools_count}</b>ZANA ZA KALI</div><div><b>${k.terminals_count}</b>TERMINALS</div><div><b>${k.packages?.packages_total||'—'}</b>PACKAGES</div><div><b style="font-size:12px">${k.kernel?.is_kali?'KALI HALISI ✔':(k.kernel?.kali||k.family)}</b>OS</div>`;
+    const box=$('kalitools'); box.innerHTML='';
+    const by={}; (k.tools||[]).forEach(t=>(by[t.category]=by[t.category]||[]).push(t));
+    Object.keys(by).sort().forEach(cat=>{
+      box.appendChild(el('div',{class:'tag',style:'margin:8px 0 2px'},'▸ '+cat));
+      by[cat].forEach(t=>{
+        const d=el('div',{class:'op'},`<b>${t.name}</b> <span class="tag">${t.cmd}</span>`);
+        d.onclick=async()=>{ $('kalimsg').textContent='▸ Inafungua '+t.cmd+'…'; const r=await jpost('/api/kali/tool',{exec:t.cmd}); $('kalimsg').textContent=r.ok?('✔ '+t.cmd+' imefunguka kwenye terminal'):('✖ '+(r.error||'')); };
+        box.appendChild(d);
+      });
+    });
+    $('kalitoolscount').textContent='— bofya zana ili ifunguke kwenye terminal HALISI';
+    const tb=$('kaliterms'); tb.innerHTML='';
+    (k.terminals||[]).forEach(t=>{
+      const d=el('div',{class:'op'},`<b>${t.name}</b> <span class="tag">${t.path}</span>`);
+      d.onclick=async()=>{ $('kalimsg').textContent='▸ Inafungua '+t.name+'…'; const r=await jpost('/api/kali/terminal',{terminal:t.id}); $('kalimsg').textContent=r.ok?('✔ '+t.name+' imefunguka'):('✖ '+(r.error||'')); };
+      tb.appendChild(d);
+    });
+    if(!(k.terminals||[]).length) tb.innerHTML='<span class="tag">Hakuna terminal kwenye OS hii — kwenye MTECH OS/Kali: xfce4-terminal, qterminal, konsole…</span>';
+    const dv=k.drivers||{};
+    $('kalihw').textContent=
+`KERNEL: ${k.kernel?.release||'—'} (${k.kernel?.arch||'—'})
+OS: ${k.kernel?.kali||k.family}${k.kernel?.is_kali?' · KALI HALISI':''}
+/dev/mtech: ${k.kernel?.mtech_module?'✔':'✗'}
+
+DRIVERS:
+${((dv.pci||dv.drivers||dv.extensions||'')+'').slice(0,420)||'—'}
+
+PARTITIONS:
+${k.partitions?.devices?JSON.stringify(k.partitions.devices,null,1).slice(0,700):((k.partitions?.text||'—')+'').slice(0,700)}
+
+SERVICES:
+${(k.services?.running||[]).slice(0,14).join('\n')||'—'}`;
+  }catch(e){}
+}
+async function openTerm(){ const r=await jpost('/api/kali/terminal',{cmd:$('kalitermcmd').value}); $('kalimsg').textContent=r.ok?'✔ Terminal imefunguka':('✖ '+(r.error||'')); }
+async function openTool(){ const r=await jpost('/api/kali/tool',{exec:$('kalitoolcmd').value}); $('kalimsg').textContent=r.ok?'✔ Zana imefunguka kwenye terminal':('✖ '+(r.error||'')); }
 
 /* ---------- KITABU ---------- */
 async function loadBook(){

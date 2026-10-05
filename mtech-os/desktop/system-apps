@@ -1,0 +1,7 @@
+#!/bin/sh
+# MTECH OS — launcher ya dirisha la "System Apps" (apps za mfumo zilizounganishwa)
+# OpenMRS · Home Assistant · Web R · Hermes Desktop · Website · Engine Rust · Analytics R
+export MTECH_ROOT="${MTECH_ROOT:-/opt/mtech}"
+export MTAALAMU_ROOT="${MTAALAMU_ROOT:-/opt/mtaalamu/hermes-agent}"
+export PYTHONPATH="/opt/mtech/agent${PYTHONPATH:+:$PYTHONPATH}"
+exec /opt/mtech/venv/bin/python /opt/mtech/desktop/system-apps-window.py "$@"

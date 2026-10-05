@@ -112,10 +112,32 @@ mtech probe                     # hali kamili ya mfumo (OS yoyote)
 ```bash
 sudo ./mtech-os/kali/build-iso.sh            # Kali halisi (kali-linux-large)
 sudo ./mtech-os/kali/build-iso.sh --everything  # zana ZOTE (~1800)
+sudo ./mtech-os/kali/build-iso.sh --arch arm64  # ARM64 (simu/PC za 64-bit ARM, Raspberry Pi)
+sudo ./mtech-os/kali/build-iso.sh --arch armhf  # ARM32
 ./mtech-os/kali/build-iso.sh --container     # kutoka OS yoyote yenye Docker/Podman
 ./mtech-os/kali/build-iso.sh --check         # hakiki packages dhidi ya repo halisi ya Kali
 ```
 Kisha flash kwenye USB (balenaEtcher / `dd`) → boot → **Live** au **Install**.
+
+Ndani ya ISO (zote zimeunganiwa moja kwa moja):
+- **Kali kamili** — zana zote, drivers halisi (firmware zote), partitions tools, terminals zote
+- **Rust + R + LibreOffice** — compiler, analytics/chati, ofisi kamili (packages za Kali)
+- **MTAALAMU SMART + apps za mfumo** — OpenMRS, Home Assistant, Web R, Desktop, Website
+  (dirisha la "System Apps" + tab ya APPS kwenye dashboard)
+
+## DOCKER — MTECH OS kama container (bila ISO, bila kusakinisha)
+
+```bash
+docker build -t mtech-os -f mtech-os/kali/Dockerfile.mtech .
+./mtech-os/kali/docker-run.sh              # shell ya MTECH OS + API 8795
+./mtech-os/kali/docker-run.sh serve        # API tu
+
+# Multi-arch (amd64 + arm64 — simu zote na PC):
+docker buildx build --platform linux/amd64,linux/arm64 -t mtech-os --push .
+```
+Ndani ya container: Kali halisi + Rust + R + LibreOffice + apps za mfumo zote
+(OpenMRS/Home Assistant/Web R/Desktop/Website) — `mtaalamu apps`, `mtaalamu kali`,
+`mtaalamu serve`.
 
 ## Vyanzo (vilivyopakuliwa kwenye `upstream/`)
 

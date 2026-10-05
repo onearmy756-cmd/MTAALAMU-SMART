@@ -12,6 +12,11 @@ INAZALISHA (mtaalamu/dist/):
   mtaalamu-linux       (Linux onefile)
   MTAALAMU-macos       (macOS onefile)
 
+  --bundle-runtime     runtime/ + ZIP KAMILI: binary ya Python (onefile —
+                       Python NDANI yake) + engine ya Rust (kama ipo) +
+                       launchers + README-INSTALL — mtumiaji HATAKIWI
+                       kusakinisha Python, R, wala Rust: anafungua ZIP → anarun
+
 Binary ina CLI + server zima (mtaalamu ni stdlib-only). Ollama/Qwen na
 C/Rust/R bado ni hiari — setup_all inawashughulikia.
 """
@@ -81,7 +86,96 @@ def fetch_embedded_windows(dest: Path) -> Path | None:
     return exe
 
 
+def bundle_runtime() -> int:
+    """Bundle KAMILI: binary zote ndani ya runtime/ + ZIP — hakuna dependencies.
+
+    Mtumiaji anachukua ZIP pekee:
+      • bin/mtaalamu (au MTAALAMU-Setup.exe) — ina Python NDANI yake (PyInstaller)
+      • bin/mtaalamu-engine — engine ya Rust (kama ilijengwa kwenye host hii)
+      • launchers + README-INSTALL.md — unzip → run, HAKUNA kusakinisha
+    """
+    import shutil
+    import zipfile
+
+    rc = build_onefile()
+    if rc != 0:
+        return rc
+    name = {"windows": "MTAALAMU-Setup.exe", "darwin": "MTAALAMU-macos",
+            "linux": "mtaalamu-linux"}.get(platform.system().lower(), "mtaalamu")
+    bin_file = DIST / name
+    if not bin_file.exists():
+        print("✖ binary haipatikani baada ya build")
+        return 1
+
+    rt = HERE / "runtime"
+    bins = rt / "bin"
+    bins.mkdir(parents=True, exist_ok=True)
+    dest = bins / bin_file.name
+    shutil.copy2(bin_file, dest)
+    try:
+        dest.chmod(0o755)
+    except OSError:
+        pass
+    print(f"  ✔ binary: {dest.name}")
+
+    # Engine ya Rust (kama binary ya release ipo — imetengenezwa na cargo)
+    engine = HERE.parent / "engine-rust" / "target" / "release" / ("mtaalamu.exe" if platform.system().lower() == "windows" else "mtaalamu")
+    if engine.exists():
+        shutil.copy2(engine, bins / "mtaalamu-engine")
+        try:
+            (bins / "mtaalamu-engine").chmod(0o755)
+        except OSError:
+            pass
+        print("  ✔ engine ya Rust: bin/mtaalamu-engine")
+    else:
+        print("  – engine ya Rust: haipo (ijengwe kwanza: cd engine-rust && cargo build --release)")
+
+    # Launchers (mtaalamu.sh / mtaalamu.cmd — hazihitaji python kwenye PATH)
+    if platform.system().lower() == "windows":
+        (rt / "mtaalamu.cmd").write_text("@echo off\r\n\"%~dp0bin\\MTAALAMU-Setup.exe\" %*\r\n")
+    else:
+        sh_launch = rt / "mtaalamu.sh"
+        sh_launch.write_text("#!/bin/sh\nexec \"$(dirname \"$0\")/bin/mtaalamu-linux\" \"$@\"\n")
+        sh_launch.chmod(0o755)
+
+    # README-INSTALL + VERSION
+    (rt / "README-INSTALL.md").write_text("""# MTAALAMU SMART — BUNDLE (hakuna kusakinisha chochote)
+
+## Windows
+1. Fungua folder hii
+2. Double-click: `mtaalamu.cmd` (mfano: `mtaalamu.cmd serve`)
+
+## Linux / macOS
+```sh
+chmod +x mtaalamu.sh
+./mtaalamu.sh serve          # API: http://127.0.0.1:8795
+./mtaalamu.sh apps           # apps za mfumo (OpenMRS, Home Assistant, Web R…)
+./mtaalamu.sh kali           # ramani ya OS (zana, terminals, drivers, partitions)
+```
+
+Python ipo NDANI ya binary (PyInstaller onefile) — HAKUNA kusakinisha
+Python, R, wala Rust. Engine ya Rust (bin/mtaalamu-engine) na R (analytics)
+ndani ya bundle zinatumika zikizapatikana; mtaalamu ina fallback za stdlib.
+""")
+    (rt / "VERSION").write_text(platform.platform() + "\n")
+
+    # ZIP moja (mtaalamu/dist/)
+    import os as _os
+    arch = _os.uname().machine if hasattr(_os, "uname") else "win"
+    tag = {"Windows": "win", "Darwin": "macos"}.get(platform.system(), "linux")
+    zpath = DIST / f"MTAALAMU-bundle-{tag}-{arch}.zip"
+    with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
+        for f in sorted(rt.rglob("*")):
+            if f.is_file() and "python-embed" not in f.name:
+                z.write(f, f.relative_to(rt))
+    print(f"\n✅ BUNDLE IMEKAMILIKA: {zpath}")
+    print("   Mtumiaji: fungua ZIP → run mtaalamu.sh (au mtaalamu.cmd) — HAKUNA installs")
+    return 0
+
+
 def main() -> None:
+    if "--bundle-runtime" in sys.argv:
+        sys.exit(bundle_runtime())
     if "--embedded-win" in sys.argv:
         exe = fetch_embedded_windows(HERE / "runtime")
         sys.exit(0 if exe else 1)

@@ -35,11 +35,21 @@ System view (tabs za dashboard — zote huru, hakuna admin inayohitajika):
   GET  /api/book              Kitabu Kidigitali (kesi + maarifa)
   GET  /api/payments          malipo yote (audit) + wallet + gateway
   GET  /api/full              KILA KITU pamoja (boot+components+map+book+payments)
+
+KALI LINUX HALISI (zana, terminals zote, drivers, partitions, services):
+  GET  /api/kali              ramani KAMILI ya Kali/OS (zana + terminals + drivers)
+  POST /api/kali/terminal     {"cmd"?, "terminal"?}  → fungua command prompt mpya
+  POST /api/kali/tool         {"exec": "nmap"}       → zana kwenye terminal halisi
+
+APPS ZA MFUMO (OpenMRS, Home Assistant, Web R, Desktop, Website, Rust, R):
+  GET  /api/apps              hali ya apps zote (installed/running/runtime)
+  POST /api/apps/launch       {"app": "web-r"}       → UI HALISI inafunguka
+  POST /api/apps/stop         {"app": "openmrs"}     → simamisha app
 """
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import admin, billing, clickpesa, ipc, models, scope, system_view, unified
+from . import admin, billing, clickpesa, ipc, kali, models, scope, system_apps, system_view, unified
 from .catalog import CATALOG, GROUPS
 from .shortcuts import ALL_SHORTCUTS, run_shortcut
 
@@ -110,6 +120,10 @@ class API(BaseHTTPRequestHandler):
             self._send(200, system_view.payments_recent())
         elif p == "/api/full":
             self._send(200, system_view.full_system())
+        elif p == "/api/kali":
+            self._send(200, kali.integrate())
+        elif p == "/api/apps":
+            self._send(200, system_apps.status())
         else:
             self._send(404, {"error": "hakuna"})
 
@@ -177,6 +191,19 @@ class API(BaseHTTPRequestHandler):
                                                                        body.get("tier", "ANY"))})
                 except PermissionError as e:
                     self._send(401, {"ok": False, "error": str(e)})
+            elif p == "/api/kali/terminal":
+                self._send(200, kali.open_terminal(body.get("cmd", ""),
+                                                   body.get("terminal", "")))
+            elif p == "/api/kali/tool":
+                self._send(200, kali.launch_tool(body.get("exec", ""),
+                                                 body.get("terminal", "")))
+            elif p == "/api/apps/launch":
+                out = system_apps.launch(body.get("app", ""))
+                if out.get("ok") and str(out.get("ui", "")).startswith("http"):
+                    system_apps._open_browser(out["ui"])
+                self._send(200, out)
+            elif p == "/api/apps/stop":
+                self._send(200, system_apps.stop(body.get("app", "")))
             elif p == "/api/webhook/clickpesa":
                 sig = self.headers.get("X-ClickPesa-Signature", "")
                 if not clickpesa.verify_webhook(body, sig):

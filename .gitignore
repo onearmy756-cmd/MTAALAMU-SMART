@@ -62,3 +62,4 @@ hermes-agent/openmrs/omod/*/target/
 # --- MTAALAMU build artifacts ---
 hermes-agent/mtaalamu/dist/
 hermes-agent/mtaalamu/build/
+hermes-agent/mtaalamu/runtime/
