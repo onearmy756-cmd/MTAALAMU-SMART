@@ -21,7 +21,7 @@ import math
 import os
 from collections import OrderedDict
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # hermes-agent (script iko scripts/mtaalamu/)
 GEO = os.path.join(ROOT, "data", "geo")
 WEBR_DATA = os.path.join(ROOT, "web-r", "data")
 OUT_WEBR = os.path.join(WEBR_DATA, "geo_hierarchy_index.json")

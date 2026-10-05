@@ -68,7 +68,7 @@ def _linux_pkg() -> str:
 def step_c(check: bool) -> bool:
     ok = have("gcc") or have("clang")
     mk = have("make")
-    print(f"[1/8] Zana za C: gcc/clang {'✔' if ok else '✗'} · make {'✔' if mk else '✗'}")
+    print(f"[1/9] Zana za C: gcc/clang {'✔' if ok else '✗'} · make {'✔' if mk else '✗'}")
     if (ok and mk) or check:
         return ok and mk
     if FAMILY == "linux":
@@ -89,10 +89,10 @@ def step_c(check: bool) -> bool:
 
 def step_rust(check: bool, skip: bool) -> bool:
     if skip:
-        print("[2/8] Rust: IMERUKIWA (--skip-rust)")
+        print("[2/9] Rust: IMERUKIWA (--skip-rust)")
         return have("cargo")
     ok = have("cargo") and have("rustc")
-    print(f"[2/8] Rust: {'✔ ' + subprocess.getoutput('rustc --version') if ok else '✗'}")
+    print(f"[2/9] Rust: {'✔ ' + subprocess.getoutput('rustc --version') if ok else '✗'}")
     if ok or check:
         return ok
     if FAMILY == "windows":
@@ -108,10 +108,10 @@ def step_rust(check: bool, skip: bool) -> bool:
 
 def step_r(check: bool, skip: bool) -> bool:
     if skip:
-        print("[3/8] R: IMERUKIWA (--skip-r)")
+        print("[3/9] R: IMERUKIWA (--skip-r)")
         return have("Rscript")
     ok = have("Rscript")
-    print(f"[3/8] R: {'✔ ' + subprocess.getoutput('Rscript --version 2>&1').strip() if ok else '✗'}")
+    print(f"[3/9] R: {'✔ ' + subprocess.getoutput('Rscript --version 2>&1').strip() if ok else '✗'}")
     if ok or check:
         return ok
     if FAMILY == "linux":
@@ -128,10 +128,10 @@ def step_r(check: bool, skip: bool) -> bool:
 def step_office(check: bool, skip: bool) -> bool:
     """LibreOffice iliyoreshwa — kazi zote za ofisi ndani ya mfumo (Word/Excel/PPT/PDF)."""
     if skip:
-        print("[4/8] LibreOffice: IMERUKIWA (--skip-office)")
+        print("[4/9] LibreOffice: IMERUKIWA (--skip-office)")
         return have("libreoffice") or have("soffice")
     ok = have("libreoffice") or have("soffice")
-    print(f"[4/8] LibreOffice: {'✔' if ok else '✗'}")
+    print(f"[4/9] LibreOffice: {'✔' if ok else '✗'}")
     if ok or check:
         return ok
     if FAMILY == "linux":
@@ -159,11 +159,29 @@ def binary_path() -> str:
     return p if os.path.exists(p) else ""
 
 
+def step_geo(check: bool) -> bool:
+    """Ramani data (geo.json + hierarchy index) — generators za stdlib, hakuna mtandao."""
+    geojson = os.path.join(HERE, "web-r", "data", "geo.json")
+    ok = os.path.exists(geojson) and os.path.getsize(geojson) > 50000
+    print(f"[5/9] Ramani data (geo.json): {'✔ web-r/data/geo.json tayari' if ok else '– itatengenezwa'}")
+    if ok or check:
+        return ok
+    try:
+        run(f"{shlex_quote(sys.executable)} web-r/scripts/build_geo.py", timeout=120)
+        run(f"{shlex_quote(sys.executable)} scripts/mtaalamu/gen_geo_index.py", timeout=120)
+    except Exception as e:  # noqa: BLE001
+        print(f"      ⚠ geo generators zimeshindikana ({e})")
+    ok = os.path.exists(geojson)
+    if not ok:
+        print("      ⚠ geo.json haipo — RAMANI itatumia fallback (dashboard bado inafanya kazi)")
+    return ok
+
+
 def step_binary(check: bool) -> bool:
     """Binary (onefile) — Python NDANI yake. Account/admin/serve zote hii itatumika."""
     binp = binary_path()
     ok = bool(binp)
-    print(f"[5/8] Binary (onefile, Python ndani): {'✔ ' + binp if ok else '✗ (itajengwa)'}")
+    print(f"[6/9] Binary (onefile, Python ndani): {'✔ ' + binp if ok else '✗ (itajengwa)'}")
     if ok or check:
         return ok
     # jenga yenyewe (PyInstaller inasakinishwa kiotomatiki ndani ya build_onefile)
@@ -178,10 +196,10 @@ def step_python_venv(check: bool, with_agent: bool) -> bool:
     pybin = os.path.join(venv, "Scripts", "python.exe") if FAMILY == "windows" else os.path.join(venv, "bin", "python")
     ok = os.path.exists(pybin)
     if not with_agent:
-        print(f"[6/8] MTECH Agent venv (Python): {'✔ ' + venv + ' (tayari ipo)' if ok else '– IMERUKIWA (chaguomsingi: binary inatosha)'}")
+        print(f"[7/9] MTECH Agent venv (Python): {'✔ ' + venv + ' (tayari ipo)' if ok else '– IMERUKIWA (chaguomsingi: binary inatosha)'}")
         print("      weka --with-agent kama unataka agent ya vision/control + GUI (PySide6)")
         return True
-    print(f"[6/8] Python venv + deps (agent/GUI): {'✔ ' + venv if ok else '✗'}")
+    print(f"[7/9] Python venv + deps (agent/GUI): {'✔ ' + venv if ok else '✗'}")
     if ok or check:
         return ok
     run(f"{sys.executable} -m venv {shlex_quote(venv)}")
@@ -200,7 +218,7 @@ def shlex_quote(s: str) -> str:
 
 def step_ollama(check: bool, no_model: bool) -> bool:
     ok = have("ollama")
-    print(f"[7/8] Ollama: {'✔' if ok else '✗'}")
+    print(f"[8/9] Ollama: {'✔' if ok else '✗'}")
     if not ok and not check:
         if FAMILY == "linux":
             run("curl -fsSL https://ollama.com/install.sh | sh", timeout=1800)
@@ -231,11 +249,11 @@ def step_finish(check: bool, email: str | None, start: bool) -> None:
     # BINARY-FIRST: kila kitu (account/admin/serve) kinatumia binary — Python NDANI yake
     mta = shlex_quote(binp) if binp else f"{py} -m mtaalamu"
     if check:
-        print("[8/8] Mwisho (UKAGUZI TU — hakuna kinachosakinishwa)")
+        print("[9/9] Mwisho (UKAGUZI TU — hakuna kinachosakinishwa)")
         return
     # AUTO-REGISTER: hakuna maswali — email ya default (au --email) + DIAMOND + admin
     mail = (email or "owner@mtaalamu.local").strip()
-    print(f"[8/8] KUANZISHA KIOTOMATIKI (hakuna configuration — account: {mail})")
+    print(f"[9/9] KUANZISHA KIOTOMATIKI (hakuna configuration — account: {mail})")
     print(f"      kipimo: {'BINARY (' + binary_name() + ') — hakuna Python inayohitajika' if binp else 'python -m mtaalamu'}")
     run(f"{mta} register {mail} INDIVIDUAL DIAMOND")
     run(f"{mta} admin unlock")   # owner-mode: zana ZOTE BURE
@@ -306,6 +324,7 @@ def main() -> None:
         "Rust (cargo)": step_rust(check, skip_rust),
         "R (Rscript)": step_r(check, skip_r),
         "LibreOffice": step_office(check, skip_office),
+        "Ramani (geo.json)": step_geo(check),
         "Binary (onefile)": step_binary(check),
         "MTECH Agent venv": step_python_venv(check, with_agent),
         "Ollama + Qwen": step_ollama(check, no_model),

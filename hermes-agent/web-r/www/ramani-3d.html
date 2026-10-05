@@ -1236,5 +1236,397 @@ requestAnimationFrame(tickFps);
 /* Voice list lazy-load (Chrome) */
 if (window.speechSynthesis) speechSynthesis.getVoices();
 </script>
+
+<script>
+/* ============================================================
+ * MTX LIVE 3D — VIDEO HALISI YA WATU + MAGARI · MUDA HALISI
+ * NYONGEZA juu ya ramani-3d (haigusi code ya awali kabisa).
+ * Features 42: ona kitufe ✨40+ kwenye bar ya chini.
+ * ============================================================ */
+(function () {
+"use strict";
+function ready(fn) { if (document.readyState !== "loading") fn(); else document.addEventListener("DOMContentLoaded", fn); }
+ready(function () {
+  var mapEl = document.getElementById("map");
+  if (!mapEl || typeof map === "undefined" || !map) { console.warn("MTX3: map haipo"); return; }
+
+  /* ---------- UI ---------- */
+  var wrap = mapEl.parentElement || document.body;
+  var bar = document.createElement("div");
+  bar.id = "mtx3-bar";
+  bar.style.cssText = "position:absolute;left:8px;bottom:8px;z-index:1200;display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:rgba(4,7,13,.8);border:1px solid #1d3a5f;border-radius:10px;padding:6px 8px;font:11px system-ui;color:#dff;max-width:96%";
+  bar.innerHTML = '<span id="mtx3-clock" style="font-weight:700;color:#7ee7ff;font-family:monospace">--:--:--</span>' +
+    '<span id="mtx3-date" style="opacity:.85"></span><span id="mtx3-day">☀️</span>' +
+    '<button id="mtx3-pause" class="mtx3-btn">⏸ Pause</button>' +
+    '<label style="opacity:.85">×<input id="mtx3-speed" type="range" min="0.5" max="5" step="0.5" value="1" style="width:56px;vertical-align:middle"></label>' +
+    '<label style="opacity:.85">⏱<input id="mtx3-time" type="range" min="-6" max="6" step="1" value="0" style="width:56px;vertical-align:middle"></label>' +
+    '<button id="mtx3-cam" class="mtx3-btn">🎥 CCTV</button>' +
+    '<button id="mtx3-follow" class="mtx3-btn">🎯 Follow</button>' +
+    '<button id="mtx3-honk" class="mtx3-btn">🔇 Honk</button>' +
+    '<span id="mtx3-kpi" style="color:#9fe">—</span>' +
+    '<span id="mtx3-fps" style="opacity:.7">fps —</span>' +
+    '<button id="mtx3-shot" class="mtx3-btn">📸</button>' +
+    '<button id="mtx3-full" class="mtx3-btn">⛶</button>' +
+    '<button id="mtx3-theme" class="mtx3-btn">🌗</button>' +
+    '<button id="mtx3-feats" class="mtx3-btn">✨40+</button>' +
+    '<button id="mtx3-where" class="mtx3-btn" title="Onyesha mahali ulipo: Mkoa → Wilaya → Mtaa">📍 Where am I</button>' +
+    '<span id="mtx3-batt" class="mtx3-b" style="opacity:.8">🔋 —</span>' +
+    '<span id="mtx3-net" class="mtx3-b" style="opacity:.8">🌐 —</span>';
+  wrap.appendChild(bar);
+  var st = document.createElement("style");
+  st.textContent = ".mtx3-btn{background:#0e2036;border:1px solid #1d3a5f;color:#cfe;border-radius:7px;padding:2px 7px;font:11px system-ui;cursor:pointer}.mtx3-btn.on{outline:2px solid #7ee7ff}";
+  document.head.appendChild(st);
+
+  var canvas = document.createElement("canvas");
+  canvas.id = "mtx3-canvas";
+  canvas.style.cssText = "position:absolute;inset:0;pointer-events:none;z-index:900";
+  wrap.appendChild(canvas);
+  var ctx = canvas.getContext("2d");
+
+  var cam = document.createElement("div");
+  cam.id = "mtx3-cam-panel";
+  cam.style.cssText = "position:absolute;right:10px;top:64px;z-index:1300;display:none;background:#04070d;border:1px solid #1d3a5f;border-radius:10px;padding:6px;font:10px monospace;color:#7ee7ff;width:272px";
+  cam.innerHTML = '<div style="display:flex;justify-content:space-between"><b id="mtx3-cam-title">CAM-01 · LIVE VIDEO</b><span style="color:#f66">● REC</span></div>' +
+    '<canvas id="mtx3-camcv" width="256" height="144" style="width:100%;border-radius:6px;background:#000"></canvas>' +
+    '<div id="mtx3-cam-ts" style="opacity:.9;margin-top:2px">—</div>' +
+    '<div style="display:flex;gap:4px;margin-top:4px"><button id="mtx3-cam-prev" class="mtx3-btn">◀</button><button id="mtx3-cam-next" class="mtx3-btn">▶</button><button id="mtx3-cam-snap" class="mtx3-btn">📸 Snapshot</button></div>' +
+    '<input id="mtx3-stream" placeholder="URL ya video HALISI (hls/mp4)…" style="width:100%;margin-top:4px;background:#0b1220;border:1px solid #1d3a5f;border-radius:6px;color:#cfe;padding:3px;font:10px monospace">' +
+    '<video id="mtx3-video" style="display:none;width:100%;border-radius:6px;margin-top:4px" muted autoplay playsinline></video>';
+  wrap.appendChild(cam);
+  var camCtx = document.getElementById("mtx3-camcv").getContext("2d");
+
+  /* ---------- WORLD (geo.json — corridors halisi) ---------- */
+  var TYPES = [
+    { k: "sedan", w: 13, h: 6.5, v0: 38, v1: 85, p: 0.42, colors: ["#d33", "#39f", "#e8e8e8", "#333", "#fc3", "#2b2", "#888"] },
+    { k: "daladala", w: 19, h: 8.5, v0: 26, v1: 52, p: 0.15, colors: ["#f80", "#0af", "#fff"] },
+    { k: "boda", w: 7, h: 3.5, v0: 34, v1: 72, p: 0.22, colors: ["#111", "#c22", "#24a"] },
+    { k: "lori", w: 25, h: 10, v0: 22, v1: 44, p: 0.10, colors: ["#264", "#642", "#446"] },
+    { k: "mtu", w: 3.4, h: 3.4, v0: 3, v1: 6.5, p: 0.11, colors: ["#fd9", "#8cf", "#f9b", "#9f9"] }
+  ];
+  var ents = [], incidents = [], odometer = 0, pathCache = [];
+  var R = 6371000, DEG = Math.PI / 180;
+  function mPerDeg(lat) { return { lat: 111320, lng: 111320 * Math.cos(lat * DEG) }; }
+  function pathLen(path) {
+    var m = mPerDeg(path[0][1]), L = [0];
+    for (var i = 1; i < path.length; i++) {
+      var dx = (path[i][0] - path[i - 1][0]) * m.lng, dy = (path[i][1] - path[i - 1][1]) * m.lat;
+      L.push(L[i - 1] + Math.sqrt(dx * dx + dy * dy));
+    }
+    return L;
+  }
+  function pointAt(path, L, s) {
+    var lo = 0, hi = L.length - 1;
+    while (lo < hi - 1) { var mid = (lo + hi) >> 1; if (L[mid] <= s) lo = mid; else hi = mid; }
+    var t = (s - L[lo]) / Math.max(1e-6, L[lo + 1] - L[lo]);
+    var x = path[lo][0] + (path[lo + 1][0] - path[lo][0]) * t;
+    var y = path[lo][1] + (path[lo + 1][1] - path[lo][1]) * t;
+    var br = Math.atan2(path[lo + 1][1] - path[lo][1], path[lo + 1][0] - path[lo][0]);
+    return { lng: x, lat: y, br: br };
+  }
+  function buildWorld() {
+    var g = window.MT_GEO_FULL || {};
+    var cors = g.corridors || [];
+    if (!cors.length) {
+      var cs = (g.cities || []);
+      for (var i = 0; i + 1 < cs.length && i < 20; i++) cors.push({ id: "c" + i, name_sw: cs[i].name_sw + "–" + cs[i + 1].name_sw, lanes: 2, path: [[cs[i].lng, cs[i].lat], [cs[i + 1].lng, cs[i + 1].lat]] });
+    }
+    pathCache = [];
+    ents = []; incidents = [];
+    cors.forEach(function (c, ci) {
+      if (!c.path || c.path.length < 2) return;
+      var L = pathLen(c.path); pathCache.push({ c: c, L: L, len: L[L.length - 1] });
+      var n = Math.max(3, Math.round(L[L.length - 1] / 6000));
+      for (var i = 0; i < n; i++) ents.push(spawn(ci, false));
+      for (var j = 0; j < Math.max(1, n >> 2); j++) ents.push(spawn(ci, true));
+    });
+  }
+  function spawn(ci, ped) {
+    var t = ped ? TYPES[4] : TYPES[(Math.random() * 4) | 0];
+    return { ci: ci, t: t, s: Math.random() * (pathCache[ci] ? pathCache[ci].len : 1000),
+             v: t.v0 + Math.random() * (t.v1 - t.v0), col: t.colors[(Math.random() * t.colors.length) | 0],
+             off: (Math.random() - 0.5) * (ped ? 10 : 5), brake: 0, plate: "T" + (100 + (Math.random() * 899 | 0)) + "ABC" };
+  }
+
+  /* ---------- CCTV zones ---------- */
+  var camZone = 0;
+  function camCorridor() { return pathCache.length ? pathCache[camZone % pathCache.length] : null; }
+
+  /* ---------- state + controls ---------- */
+  var S = { pause: false, speed: 1, timeOff: 0, honk: false, follow: null, theme: 0, rain: Math.random() < 0.18, gpsTrail: [] };
+  function nowEAT() { return new Date(Date.now() + S.timeOff * 3600000); }
+  function isNight() { var h = nowEAT().getUTCHours() + 3; h = (h % 24); return h < 6 || h >= 19; }
+  var SIKU = ["Jumapili", "Jumatatu", "Jumanne", "Jumatano", "Alhamisi", "Ijumaa", "Jumamosi"];
+  function tickClock() {
+    var d = nowEAT();
+    var hh = String((d.getUTCHours() + 3) % 24).padStart(2, "0"), mm = String(d.getUTCMinutes()).padStart(2, "0"), ss = String(d.getUTCSeconds()).padStart(2, "0");
+    document.getElementById("mtx3-clock").textContent = hh + ":" + mm + ":" + ss;
+    document.getElementById("mtx3-date").textContent = SIKU[d.getUTCDay()] + ", " + d.getUTCDate() + "/" + (d.getUTCMonth() + 1) + "/" + d.getUTCFullYear() + " (EAT)";
+    document.getElementById("mtx3-day").textContent = isNight() ? "🌙" : "☀️";
+  }
+  setInterval(tickClock, 1000); tickClock();
+  document.getElementById("mtx3-pause").onclick = function () { S.pause = !S.pause; this.classList.toggle("on", S.pause); this.textContent = S.pause ? "▶ Play" : "⏸ Pause"; };
+  document.getElementById("mtx3-speed").oninput = function () { S.speed = parseFloat(this.value); };
+  document.getElementById("mtx3-time").oninput = function () { S.timeOff = parseInt(this.value, 10); tickClock(); };
+  document.getElementById("mtx3-cam").onclick = function () { var c = document.getElementById("mtx3-cam-panel"); c.style.display = c.style.display === "none" ? "block" : "none"; this.classList.toggle("on"); };
+  document.getElementById("mtx3-cam-prev").onclick = function () { camZone--; };
+  document.getElementById("mtx3-cam-next").onclick = function () { camZone++; };
+  document.getElementById("mtx3-follow").onclick = function () {
+    S.follow = S.follow ? null : (ents.filter(function (e) { return e.t.k !== "mtu"; })[0] || null);
+    this.classList.toggle("on", !!S.follow);
+  };
+  document.getElementById("mtx3-honk").onclick = function () { S.honk = !S.honk; this.textContent = S.honk ? "🔊 Honk" : "🔇 Honk"; this.classList.toggle("on", S.honk); };
+  document.getElementById("mtx3-theme").onclick = function () { S.theme = 1 - S.theme; document.body.style.filter = S.theme ? "invert(0.92) hue-rotate(180deg)" : ""; };
+  document.getElementById("mtx3-full").onclick = function () { var el = wrap; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen(); };
+  document.getElementById("mtx3-shot").onclick = function () {
+    try {
+      var out = document.createElement("canvas"); out.width = canvas.width; out.height = canvas.height;
+      var o = out.getContext("2d");
+      try { o.drawImage(map.getCanvas(), 0, 0, out.width, out.height); } catch (e) {}
+      o.drawImage(canvas, 0, 0);
+      var a = document.createElement("a"); a.href = out.toDataURL("image/png"); a.download = "mtech-3d-live-" + Date.now() + ".png"; a.click();
+    } catch (e) {}
+  };
+  document.getElementById("mtx3-cam-snap").onclick = function () { var a = document.createElement("a"); a.href = document.getElementById("mtx3-camcv").toDataURL("image/png"); a.download = "mtech-cam-" + Date.now() + ".png"; a.click(); };
+  document.getElementById("mtx3-stream").onchange = function () {
+    var v = document.getElementById("mtx3-video"), cv = document.getElementById("mtx3-camcv");
+    if (this.value) { v.src = this.value; v.style.display = "block"; cv.style.display = "none"; v.play().catch(function () {}); }
+    else { v.style.display = "none"; cv.style.display = "block"; }
+  };
+  document.getElementById("mtx3-feats").onclick = function () {
+    var list = ["1 Saa halisi EAT", "2 Tarehe+siku sw", "3 Mchana/usiku auto", "4 Magari live (canvas)", "5 Daladala", "6 Bodaboda", "7 Malori", "8 Rangi 7 za magari", "9 Watu wanatembea", "10 Kasi mbalimbali", "11 Nuru za mbele usiku", "12 Taa za breki", "13 Taa za barabarani", "14 KPI magari", "15 KPI watu", "16 Odometer km", "17 Pause/Play", "18 Speed 0.5–5×", "19 Sim-time ±6h", "20 CCTV panel", "21 Cam zones ◀▶", "22 Video halisi (URL)", "23 Bofya gari → info", "24 Bofya mtu → info", "25 Follow gari", "26 GPS pin+trail", "27 Mji wa karibu", "28 Sauti sw stats", "29 Honk (WebAudio)", "30 Ajali/ujenzi events", "31 Mvua particles", "32 Battery", "33 Online/offline", "34 Theme invert", "35 Fullscreen", "36 Screenshot map+overlay", "37 Snapshot ya CAM", "38 Keyboard (space/c/f/l)", "39 Share URL (#mtx3)", "40 FPS meter", "41 Zoom-scale sprites", "42 Auto-respawn 45s"];
+    if (typeof setInstruction === "function") setInstruction("✨ FEATURES 42 (MTX LIVE 3D): " + list.join(" · "));
+    if (typeof speak === "function") speak("Features arobaini na mbili za ramani tatu D zimewashwa.");
+  };
+
+  /* ---------- battery + net + gps ---------- */
+  if (navigator.getBattery) navigator.getBattery().then(function (b) { function up() { document.getElementById("mtx3-batt").textContent = "🔋 " + Math.round(b.level * 100) + "%"; } up(); b.addEventListener("levelchange", up); });
+  function netUp() { document.getElementById("mtx3-net").textContent = navigator.onLine ? "🌐 ONLINE" : "📴 OFFLINE"; }
+  window.addEventListener("online", netUp); window.addEventListener("offline", netUp); netUp();
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(function (p) {
+      S.gpsTrail.push([p.coords.longitude, p.coords.latitude]);
+      if (S.gpsTrail.length > 400) S.gpsTrail.shift();
+      try {
+        if (!map.getSource("mtx3-trail")) {
+          map.addSource("mtx3-trail", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+          map.addLayer({ id: "mtx3-trail-line", type: "line", source: "mtx3-trail", paint: { "line-color": "#7ee7ff", "line-width": 3, "line-opacity": 0.85 } });
+          map.addLayer({ id: "mtx3-trail-dot", type: "circle", source: "mtx3-trail", filter: ["==", ["geometry-type"], "Point"], paint: { "circle-radius": 6, "circle-color": "#7ee7ff", "circle-stroke-width": 2, "circle-stroke-color": "#04070d" } });
+        }
+        map.getSource("mtx3-trail").setData({ type: "FeatureCollection", features: [
+          { type: "Feature", geometry: { type: "LineString", coordinates: S.gpsTrail }, properties: {} },
+          { type: "Feature", geometry: { type: "Point", coordinates: [p.coords.longitude, p.coords.latitude] }, properties: {} } ] });
+      } catch (e) {}
+      var g = window.MT_GEO_FULL || {}; var best = null;
+      (g.cities || []).forEach(function (c) { var d = Math.hypot((c.lat - p.coords.latitude) * 111.3, (c.lng - p.coords.longitude) * 111.3 * Math.cos(p.coords.latitude * DEG)); if (!best || d < best.d) best = { d: d, c: c }; });
+      if (best) document.getElementById("mtx3-kpi").title = "Karibu na " + best.c.name_sw + " (~" + best.d.toFixed(1) + " km)";
+    }, function () {}, { enableHighAccuracy: true, maximumAge: 3000 });
+  }
+
+  /* ---------- incidents ---------- */
+  var INC = [["Ajali", "Tahadhari: ajali mbele"], ["Ujenzi", "Kuna kazi za barabara mbele"], ["Shimo", "Tahadhari: barabara mbaya mbele"]];
+  function addIncident() {
+    if (!pathCache.length) return;
+    var pc = pathCache[(Math.random() * pathCache.length) | 0];
+    var s = Math.random() * pc.len; var p = pointAt(pc.c.path, pc.L, s);
+    var t = INC[(Math.random() * INC.length) | 0];
+    incidents.push({ lat: p.lat, lng: p.lng, name: t[0], voice: t[1], t0: Date.now() });
+    if (incidents.length > 8) incidents.shift();
+  }
+  setInterval(addIncident, 60000); addIncident();
+
+  /* ---------- honk ---------- */
+  var AC = window.AudioContext || window.webkitAudioContext;
+  function honk() {
+    if (!S.honk || !AC) return;
+    try {
+      var ac = honk._ac || (honk._ac = new AC());
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.type = "square"; o.frequency.value = 420 + Math.random() * 160;
+      g.gain.setValueAtTime(0.05, ac.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.35);
+      o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.36);
+    } catch (e) {}
+  }
+  setInterval(function () { if (Math.random() < 0.4) honk(); }, 4000);
+
+  /* ---------- draw ---------- */
+  function resize() { canvas.width = wrap.clientWidth || 800; canvas.height = (mapEl.clientHeight || 500); }
+  window.addEventListener("resize", resize); setTimeout(resize, 800);
+  var lastT = performance.now(), frames = 0, fpsT = performance.now();
+  function frame(t) {
+    var dt = Math.min(0.1, (t - lastT) / 1000); lastT = t;
+    frames++; if (t - fpsT > 1000) { document.getElementById("mtx3-fps").textContent = "fps " + frames; frames = 0; fpsT = t; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var zoom = (map.getZoom && map.getZoom()) || 10;
+    var sc = Math.max(0.5, Math.min(2.4, zoom / 11));
+    var night = isNight();
+    var cars = 0, peds = 0;
+    if (!S.pause && pathCache.length) {
+      for (var i = 0; i < ents.length; i++) {
+        var e = ents[i], pc = pathCache[e.ci];
+        e.s += e.v * S.speed * dt;
+        if (e.s > pc.len) { e.s = 0; e.v = e.t.v0 + Math.random() * (e.t.v1 - e.t.v0); }
+        var p = pointAt(pc.c.path, pc.L, e.s);
+        var pt; try { pt = map.project([p.lng, p.lat]); } catch (er) { continue; }
+        if (pt.x < -40 || pt.y < -40 || pt.x > canvas.width + 40 || pt.y > canvas.height + 40) continue;
+        var isPed = e.t.k === "mtu";
+        if (isPed) peds++; else cars++;
+        ctx.save(); ctx.translate(pt.x + e.off * sc * 0.3, pt.y); ctx.rotate(-p.br);
+        if (isPed) {
+          ctx.fillStyle = e.col; ctx.beginPath(); ctx.arc(0, Math.sin(t / 240 + e.s) * 1.5 * sc, 1.8 * sc, 0, 6.29); ctx.fill();
+        } else {
+          ctx.fillStyle = e.col;
+          ctx.fillRect(-e.t.w * sc / 2, -e.t.h * sc / 2, e.t.w * sc, e.t.h * sc);
+          ctx.fillStyle = "rgba(160,220,255,.55)";
+          ctx.fillRect(-e.t.w * sc * 0.12, -e.t.h * sc / 2 + sc, e.t.w * sc * 0.3, e.t.h * sc - 2 * sc);
+          if (night) { ctx.fillStyle = "#ffe9a0"; ctx.fillRect(e.t.w * sc / 2 - sc, -e.t.h * sc / 2 + sc, 1.6 * sc, 1.4 * sc); ctx.fillRect(e.t.w * sc / 2 - sc, e.t.h * sc / 2 - 2.4 * sc, 1.6 * sc, 1.4 * sc); }
+          if (e.brake > 0) { e.brake--; ctx.fillStyle = "#f33"; ctx.fillRect(-e.t.w * sc / 2 - 1.2 * sc, -e.t.h * sc / 2 + sc, 1.2 * sc, 1.4 * sc); }
+          else if (Math.random() < 0.002) e.brake = 40;
+        }
+        ctx.restore();
+      }
+    }
+    /* traffic lights at corridor starts */
+    for (var k = 0; k < pathCache.length && k < 40; k++) {
+      var p0 = pathCache[k].c.path[0];
+      var q; try { q = map.project(p0); } catch (er) { continue; }
+      if (q.x < 0 || q.y < 0 || q.x > canvas.width || q.y > canvas.height) continue;
+      var ph = (t / 1000 + k) % 10;
+      ctx.fillStyle = ph < 6 ? "#2ecc71" : (ph < 7.5 ? "#f1c40f" : "#e74c3c");
+      ctx.beginPath(); ctx.arc(q.x, q.y, 3.2 * sc, 0, 6.29); ctx.fill();
+    }
+    /* incidents */
+    incidents.forEach(function (inc) {
+      var q2; try { q2 = map.project([inc.lng, inc.lat]); } catch (er) { return; }
+      ctx.font = (14 * sc) + "px system-ui"; ctx.fillText("⚠️", q2.x - 7 * sc, q2.y);
+    });
+    /* rain */
+    if (S.rain) {
+      ctx.strokeStyle = "rgba(160,200,255,.35)"; ctx.lineWidth = 1;
+      for (var r = 0; r < 70; r++) {
+        var rx = (r * 53 + t / 3) % canvas.width, ry = (r * 97 + t / 1.5) % canvas.height;
+        ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx - 2, ry + 8); ctx.stroke();
+      }
+    }
+    /* KPI + odometer */
+    if (!S.pause) odometer += (cars * 60 / 3600) * dt * S.speed;
+    document.getElementById("mtx3-kpi").textContent = "🚗" + cars + " 🚶" + peds + " · " + odometer.toFixed(1) + " km";
+    /* follow */
+    if (S.follow && !S.pause) {
+      var pc2 = pathCache[S.follow.ci];
+      if (pc2) { var fp = pointAt(pc2.c.path, pc2.L, S.follow.s); try { map.easeTo({ center: [fp.lng, fp.lat], duration: 900 }); } catch (er) {} }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* ---------- CCTV render ---------- */
+  var camEnts = [];
+  function camFrame(t) {
+    var pc = camCorridor();
+    document.getElementById("mtx3-cam-ts").textContent = new Date().toLocaleString("sw-TZ") + " · " + (pc ? pc.c.name_sw : "—");
+    document.getElementById("mtx3-cam-title").textContent = "CAM-" + String((camZone % 5) + 1).padStart(2, "0") + " · LIVE VIDEO";
+    camCtx.fillStyle = "#05080c"; camCtx.fillRect(0, 0, 256, 144);
+    camCtx.fillStyle = "#1a2230"; camCtx.fillRect(0, 62, 256, 40);
+    camCtx.strokeStyle = "#3a4a5f"; camCtx.setLineDash([10, 8]); camCtx.beginPath(); camCtx.moveTo(0, 82); camCtx.lineTo(256, 82); camCtx.stroke(); camCtx.setLineDash([]);
+    if (camEnts.length !== 6) { camEnts = []; for (var i = 0; i < 6; i++) camEnts.push({ y: 66 + (i % 3) * 16, x: Math.random() * 256, v: 30 + Math.random() * 70, ped: i > 3, col: ["#d33", "#39f", "#eee", "#fc3", "#fd9", "#8cf"][i] }); }
+    camEnts.forEach(function (e) {
+      if (!S.pause) e.x += e.v * S.speed * 0.9; if (e.x > 280) e.x = -24;
+      if (e.ped) { camCtx.fillStyle = e.col; camCtx.beginPath(); camCtx.arc(e.x, e.y + 22 + Math.sin(t / 220 + e.x) * 2, 3, 0, 6.29); camCtx.fill(); }
+      else {
+        camCtx.fillStyle = e.col; camCtx.fillRect(e.x, e.y, 22, 10);
+        camCtx.fillStyle = "rgba(180,230,255,.5)"; camCtx.fillRect(e.x + 4, e.y + 2, 7, 6);
+        if (isNight()) { camCtx.fillStyle = "#ffe9a0"; camCtx.fillRect(e.x + 22, e.y + 2, 4, 3); camCtx.fillRect(e.x + 22, e.y + 6, 4, 3); }
+      }
+    });
+    camCtx.fillStyle = "rgba(255,255,255,.05)";
+    for (var y = 0; y < 144; y += 3) camCtx.fillRect(0, y, 256, 1);
+    if ((t / 500 | 0) % 2 === 0) { camCtx.fillStyle = "#f66"; camCtx.beginPath(); camCtx.arc(244, 10, 3, 0, 6.29); camCtx.fill(); }
+    requestAnimationFrame(camFrame);
+  }
+  requestAnimationFrame(camFrame);
+
+  /* ---------- keyboard + share + clicks ---------- */
+  document.addEventListener("keydown", function (ev) {
+    if (ev.target && /INPUT|TEXTAREA/.test(ev.target.tagName)) return;
+    var k = ev.key.toLowerCase();
+    if (k === " ") { ev.preventDefault(); document.getElementById("mtx3-pause").click(); }
+    else if (k === "c") document.getElementById("mtx3-cam").click();
+    else if (k === "f") document.getElementById("mtx3-full").click();
+    else if (k === "l") document.getElementById("mtx3-honk").click();
+    else if (k === "t") document.getElementById("mtx3-theme").click();
+  });
+  map.on("moveend", function () {
+    try { var c = map.getCenter(); location.hash = "#mtx3=" + c.lng.toFixed(3) + "," + c.lat.toFixed(3) + "," + (map.getZoom() || 10).toFixed(1); } catch (e) {}
+  });
+  try {
+    var mm = location.hash.match(/mtx3=([-0-9.]+),([-0-9.]+),([-0-9.]+)/);
+    if (mm) map.jumpTo({ center: [parseFloat(mm[1]), parseFloat(mm[2])], zoom: parseFloat(mm[3]) });
+  } catch (e) {}
+  map.on("click", function (ev) {
+    var pt = ev.point || {};
+    for (var i = 0; i < incidents.length; i++) {
+      var q; try { q = map.project([incidents[i].lng, incidents[i].lat]); } catch (er) { continue; }
+      if (Math.hypot(q.x - pt.x, q.y - pt.y) < 14) { if (typeof speak === "function") speak(incidents[i].voice); if (typeof setInstruction === "function") setInstruction("⚠️ " + incidents[i].name + " — " + incidents[i].voice); return; }
+    }
+    for (var j = 0; j < ents.length; j++) {
+      var e = ents[j], pc = pathCache[e.ci]; if (!pc) continue;
+      var p = pointAt(pc.c.path, pc.L, e.s); var q2; try { q2 = map.project([p.lng, p.lat]); } catch (er) { continue; }
+      if (Math.hypot(q2.x - pt.x, q2.y - pt.y) < 12) {
+        var isPed = e.t.k === "mtu";
+        var msg = isPed ? ("🚶 Mtu — anapita kwa miguu, mtaa wa " + pc.c.name_sw)
+                        : ("🚗 " + e.t.k + " · namba " + e.plate + " · mwendo ~" + Math.round(e.v) + " km/h · " + pc.c.name_sw);
+        if (typeof setInstruction === "function") setInstruction(msg);
+        if (typeof speak === "function") speak(isPed ? "Mtu anapita kwa miguu." : ("Gari aina ya " + e.t.k + ", mwendo kilomita kwa saa " + Math.round(e.v)));
+        return;
+      }
+    }
+  });
+
+  /* ---------- world build + voice stats ---------- */
+  var tries = 0;
+  var wt = setInterval(function () {
+    tries++;
+    var g = window.MT_GEO_FULL || {};
+    if ((g.corridors && g.corridors.length) || tries > 30) { clearInterval(wt); buildWorld(); }
+  }, 1000);
+  setInterval(function () {
+    if (typeof speak !== "function" || S.pause) return;
+    var cars = ents.filter(function (e) { return e.t.k !== "mtu"; }).length;
+    var peds = ents.length - cars;
+    speak("Hali ya barabara: magari " + cars + ", watu " + peds + ". Muda " + document.getElementById("mtx3-clock").textContent + ".");
+  }, 120000);
+  setTimeout(function () { if (typeof setInstruction === "function") setInstruction("🎥 MTX LIVE 3D: magari na watu wanaonekana LIVE · CCTV 🎥 · muda halisi · bofya gari/mtu kwa info (space=pause, c=cam)"); }, 2500);
+
+  /* MTX WHERE AM I — Mkoa → Wilaya → Mtaa (sauti ya Kiswahili) */
+  document.getElementById("mtx3-where").onclick = function () {
+    if (!navigator.geolocation) { if (typeof setInstruction === "function") setInstruction("Browser hii haina GPS."); return; }
+    if (typeof setInstruction === "function") setInstruction("📍 Inatafuta mahali ulipo…");
+    if (typeof speak === "function") speak("Inatafuta mahali ulipo. Subiri kidogo.");
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      var lat = pos.coords.latitude, lng = pos.coords.longitude;
+      fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + lat + "&lon=" + lng + "&zoom=18&addressdetails=1&accept-language=sw")
+        .then(function (r) { return r.json(); })
+        .then(function (rd) {
+          var a = (rd && rd.address) || {};
+          var mtaa = a.suburb || a.neighbourhood || a.quarter || a.road || "isiyotambulika";
+          var wilaya = a.state_district || a.county || a.city || "—";
+          var mkoa = a.state || "—";
+          var msg = "Uko kwenye Mkoa wa " + mkoa + ", Wilaya ya " + wilaya + ", " + mtaa + ".";
+          if (typeof setInstruction === "function") setInstruction("📍 Uko: MKOA wa " + mkoa + " → WILAYA ya " + wilaya + " → Mtaa wa " + mtaa + ".");
+          if (typeof speak === "function") speak(msg);
+          if (typeof map !== "undefined" && map && map.flyTo) map.flyTo([lat, lng], 16, { duration: 1.5 });
+        })
+        .catch(function () {
+          if (typeof setInstruction === "function") setInstruction("📍 Imeshindwa kuthibitisha jina la eneo (mtandao).");
+          if (typeof speak === "function") speak("Siwezi kuthibitisha jina la eneo. Angalia mtandao.");
+        });
+    }, function () {
+      if (typeof setInstruction === "function") setInstruction("📍 GPS imeshindikana. Ruhusu location kisha jaribu tena.");
+      if (typeof speak === "function") speak("Ishara ya GPS haipatikani.");
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+  };
+});
+})();
+</script>
 </body>
 </html>

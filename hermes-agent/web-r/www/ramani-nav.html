@@ -63,6 +63,22 @@
       margin-top: 0.35rem; padding: 0.4rem 0.5rem; border-radius: 6px;
       background: #0f1a2e; border: 1px solid var(--border); font-size: 0.8rem;
     }
+    .modal-ov {
+      position: fixed; inset: 0; z-index: 5000; background: rgba(2,8,20,.72);
+      display: flex; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      max-width: 520px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 1rem 1.1rem;
+      box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    }
+    .modal-card h3 { font-size: .95rem; margin-bottom: .5rem; color: #bae6fd; }
+    .modal-card ol { margin-left: 1.1rem; font-size: .78rem; color: var(--muted); line-height: 1.55; }
+    .modal-card .close-x { float: right; }
+    .where-chip {
+      display: inline-block; padding: 0.18rem 0.5rem; border-radius: 6px;
+      background: #052e16; color: #bbf7d0; border: 1px solid #166534; font-size: 0.72rem; font-weight: 600;
+    }
     .person-dot { background: transparent !important; border: none !important; }
     .person-dot span {
       display: block; width: 14px; height: 14px; border-radius: 50%;
@@ -80,6 +96,7 @@
     </div>
     <div class="btns">
       <button type="button" id="btnGps">📍 GPS</button>
+      <button type="button" id="btnWhere" class="sec" title="Onyesha mahali ulipo: Mkoa → Wilaya → Kata/Mtaa (kwa sauti)">📌 WHERE AM I</button>
       <button type="button" id="btnRoute" class="sec">🛣️ Njia</button>
       <button type="button" id="btnNav" class="sec">▶️ Anza</button>
       <button type="button" id="btnSpeak" class="sec">🔊 Sauti</button>
@@ -87,6 +104,7 @@
       <button type="button" id="btnWeather" class="sec">☁️ Hewa</button>
       <button type="button" id="btnHazards" class="sec">⚠️ Hatari</button>
       <button type="button" id="btnLive" class="sec">🚶 Live</button>
+      <button type="button" id="btnFeats" class="sec" title="Features 40+ za Navigation+Voice">✨40</button>
       <button type="button" id="btnStop" class="danger" style="display:none">⏹ Simamisha</button>
     </div>
   </header>
@@ -101,6 +119,14 @@
       <span class="badge info" id="weatherBadge">Hewa: —</span>
     </div>
     <div id="weatherBox" class="weather-box" style="display:none"></div>
+  </div>
+</div>
+
+<div id="featsModal" class="modal-ov" style="display:none">
+  <div class="modal-card">
+    <button type="button" class="sec close-x" id="featsClose">✕ Funga</button>
+    <h3>✨ FEATURES 40 — Navigation + Voice (Kiswahili)</h3>
+    <ol id="featsList"></ol>
   </div>
 </div>
 
@@ -520,6 +546,149 @@ document.getElementById("btnLive").onclick=()=>{
     b.title=has?"Voice ya Kiswahili ipo — itasoma maelekezo":"Hakuna voice ya sw kwenye browser hii — itatumia voice nyingine"; };
   check(); if(speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged=check;
 })();
+/* ================= WHERE AM I — Mkoa → Wilaya → Kata/Mtaa (MTX) ================= */
+const MTX_GEO={regions:[],districts:[],mitaa:[],cities:[],loaded:false};
+let whereMarker=null;
+function mtxPname(p){return p.name_sw||p.name||"";}
+function swNorm(s){return (s||"").toString().toLowerCase().replace(/mkoa wa|wilaya ya|mtaa wa|mji wa|kata ya|city|municipal|council|district|region|urban|rural/g,"").replace(/\s+/g," ").trim();}
+async function mtxLoadGeo(){
+  if(MTX_GEO.loaded)return MTX_GEO;
+  try{
+    const g=await (await fetch("../data/geo.json")).json();
+    MTX_GEO.regions=g.regions||[];MTX_GEO.districts=g.districts||[];MTX_GEO.mitaa=g.mitaa||[];MTX_GEO.cities=g.cities||[];
+    MTX_GEO.loaded=true;
+  }catch(e){/* offline: PLACES pekee */}
+  return MTX_GEO;
+}
+function mtxNearest(lat,lng,list){
+  let best=null,bd=Infinity;
+  (list||[]).forEach(p=>{
+    if(typeof p.lat!=="number"||typeof p.lng!=="number")return;
+    const d=distM([lat,lng],[p.lat,p.lng]);
+    if(d<bd){bd=d;best=p;}
+  });
+  return best?{p:best,d:bd}:null;
+}
+async function whereAmI(){
+  if(!navigator.geolocation){setInstruction("Browser hii haina GPS.");speak("Browser hii haina GPS.");return;}
+  setInstruction("📍 Inatafuta mahali ulipo…");speak("Inatafuta mahali ulipo. Subiri kidogo.");
+  navigator.geolocation.getCurrentPosition(async(pos)=>{
+    const lat=pos.coords.latitude,lng=pos.coords.longitude;
+    currentPos=[lat,lng];placeUser(currentPos,pos.coords.accuracy);
+    await mtxLoadGeo();
+    /* 1) Reverse geocode halisi (Nominatim, majina kwa Kiswahili pale yanapopatikana) */
+    let a={},disp="";
+    try{
+      const rd=await (await fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+lat+"&lon="+lng+"&zoom=18&addressdetails=1&accept-language=sw")).json();
+      if(rd){a=rd.address||{};disp=rd.display_name||"";}
+    }catch(e){/* endelea na data ya TZ */}
+    /* 2) MKOA: data ya TZ (geo.json), kisha linganisha na reverse geocode */
+    const rsrc=MTX_GEO.regions.length?MTX_GEO.regions:PLACES.filter(p=>p.level==="mkoa");
+    let nr=mtxNearest(lat,lng,rsrc);
+    let mkoa=nr?mtxPname(nr.p):"";
+    let mkoaId=nr&&nr.p.id?nr.p.id:null;
+    if(a.state){
+      const hit=rsrc.find(r=>{const rn=swNorm(mtxPname(r));return rn.length>1&&(rn.includes(swNorm(a.state))||swNorm(a.state).includes(rn));});
+      if(hit){mkoa=mtxPname(hit);mkoaId=hit.id;nr={p:hit};}
+    }
+    /* 3) WILAYA: reverse geocode + orodha ya wilaya za mkoa huo (geo.json: 190) */
+    let wilaya=a.state_district||a.county||"";
+    const dlist=MTX_GEO.districts.length?(mkoaId?MTX_GEO.districts.filter(d=>d.region_id===mkoaId):MTX_GEO.districts):[];
+    if(wilaya&&dlist.length){
+      const hd=dlist.find(d=>{const dn=swNorm(d.name_sw);return dn.length>1&&(dn.includes(swNorm(wilaya))||swNorm(wilaya).includes(dn));});
+      if(hd)wilaya=hd.name_sw;
+    }
+    if(!wilaya&&nr&&nr.p&&nr.p.districts&&nr.p.districts.length)wilaya=nr.p.districts[0];
+    if(!wilaya&&dlist.length)wilaya=dlist[0].name_sw;
+    /* 4) KATA/MTAA: reverse geocode + mitaa ya TZ (geo.json: 198, mfano "Mtaa wa Sokoine") */
+    let mtaa=a.suburb||a.neighbourhood||a.quarter||a.hamlet||a.city_district||"";
+    const msrc=MTX_GEO.mitaa.length?(mkoaId?MTX_GEO.mitaa.filter(m=>m.region_id===mkoaId):MTX_GEO.mitaa):PLACES.filter(p=>p.level==="mtaa"||p.level==="kata");
+    if(mtaa&&msrc.length){
+      const hm=msrc.find(m=>{const mn=swNorm(mtxPname(m));return mn.length>1&&(mn.includes(swNorm(mtaa))||swNorm(mtaa).includes(mn));});
+      if(hm)mtaa=mtxPname(hm);
+    }
+    if(!mtaa){
+      const nm=mtxNearest(lat,lng,msrc.filter(m=>typeof m.lat==="number"&&typeof m.lng==="number"));
+      if(nm)mtaa=mtxPname(nm.p)+(nm.d>8000?" (karibu, "+(Math.round(nm.d/100)/10)+" km)":"");
+    }
+    if(!mtaa)mtaa=a.road||"isiyotambulika";
+    /* 5) Onyesha: MKOA → WILAYA → KATA/MTAA + sauti + chip + marker */
+    const msg="Uko: MKOA wa "+mkoa+" → WILAYA ya "+(wilaya||"—")+" → KATA/MTAA wa "+mtaa+".";
+    setInstruction("📍 "+msg);
+    const old=document.getElementById("whereChip");if(old)old.remove();
+    const chip=document.createElement("span");
+    chip.className="where-chip";chip.id="whereChip";
+    chip.textContent="📍 "+mtaa+" · "+(wilaya||"—")+" · "+mkoa;
+    document.getElementById("meta").appendChild(chip);
+    if(whereMarker)map.removeLayer(whereMarker);
+    whereMarker=L.circleMarker([lat,lng],{radius:10,color:"#22c55e",fillColor:"#22c55e",fillOpacity:.85,weight:3})
+      .addTo(map).bindPopup("<b>📍 Mahali ulipo</b><br/>Mkoa: "+mkoa+"<br/>Wilaya: "+(wilaya||"—")+"<br/>Mtaa: "+mtaa);
+    whereMarker.openPopup();
+    map.flyTo([lat,lng],15,{duration:1.2});
+    let say="Uko kwenye Mkoa wa "+mkoa;
+    if(wilaya)say+=", Wilaya ya "+wilaya;
+    say+=", "+mtaa+".";
+    speak(say);
+    if(disp)console.log("[WHERE AM I]",disp);
+  },()=>{
+    setInstruction("📍 GPS imeshindikana. Ruhusu location kisha jaribu tena.");
+    speak("Ishara ya GPS haipatikani. Ruhusu mahali ulipo kwenye browser.");
+  },{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+}
+document.getElementById("btnWhere").onclick=whereAmI;
+
+/* ================= FEATURES 40 (modal) ================= */
+const MTX_FEATS=[
+ "GPS halisi (watchPosition) + accuracy",
+ "WHERE AM I: Mkoa → Wilaya → Kata/Mtaa",
+ "Reverse geocoding ya Nominatim kwa Kiswahili",
+ "Data halisi ya TZ: mikoa 31 (geo.json)",
+ "Data halisi ya TZ: wilaya 190",
+ "Data halisi ya TZ: mitaa 198",
+ "Miji 32 + maeneo maarufu ya TZ",
+ "Utafutaji OSM + data ya TZ (suggestions)",
+ "Sauti ya Kiswahili (TTS sw-TZ)",
+ "Zima/washa sauti (kitufe cha Sauti)",
+ "Soma upya maelekezo (kitufe Sauti 2)",
+ "Njia halisi OSRM (driving)",
+ "Umbali (km) + muda (dakika)",
+ "Maelekezo 12 ya kwanza kwa Kiswahili",
+ "Maneuvers 16 kwa Kiswahili (pinda, mzunguko…)",
+ "Sauti inafuata hatua moja kwa moja",
+ "Tamko 'Umefika' + kusimamisha (40m)",
+ "Tamko 'Uko karibu' (120m)",
+ "Alama ya mtumiaji + duara la accuracy",
+ "Anza GPS upya (btnGps)",
+ "Simamisha navigation (btnStop)",
+ "Hali ya hewa (Open-Meteo) ya sasa",
+ "Onyo la hali mbaya (mvua kubwa / radi)",
+ "Kisanduku cha hewa: upepo + unyevu + mvua",
+ "Hatari za barabara zenye sauti (hazards)",
+ "Hatari halisi kutoka geo.json",
+ "Onyo la hatari ukiwa karibu (≤200m)",
+ "Watu live wakitembea njiani (demo)",
+ "Badges za hali 4 (GPS/Njia/Nav/Hewa)",
+ "Panel ya maelekezo + hatua zinazopishina",
+ "Njia bluu ya Leaflet + popup za hatua",
+ "Zoom otomatiki kwenye njia (fitBounds)",
+ "Mji chaguo-msingi: Dodoma (view ya TZ)",
+ "Chip ya anwani: mtaa · wilaya · mkoa",
+ "Marker ya WHERE AM I + flyTo + popup",
+ "Fallback bila mtandao: mkoa/jiji karibu (km)",
+ "Utafutaji unaonyesha level (mkoa/wilaya/kata)",
+ "Majina ya sehemu kwa Kiswahili (name_sw)",
+ "Unganisha na data ya fundis/customers (markers)",
+ "Modal ya FEATURES hii (✨40) — onyesha/ficha"
+];
+(function(){
+  const ov=document.getElementById("featsModal"),list=document.getElementById("featsList");
+  if(!ov||!list)return;
+  list.innerHTML=MTX_FEATS.map(f=>"<li>"+f+"</li>").join("");
+  document.getElementById("btnFeats").onclick=()=>{ov.style.display="flex";};
+  document.getElementById("featsClose").onclick=()=>{ov.style.display="none";};
+  ov.onclick=(e)=>{if(e.target===ov)ov.style.display="none";};
+})();
+
 setTimeout(()=>speak(VOICE_PROMPTS.welcome),600);
 </script>
 </body>
