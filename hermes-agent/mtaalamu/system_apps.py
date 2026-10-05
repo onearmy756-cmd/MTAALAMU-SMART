@@ -61,6 +61,13 @@ def _spawn(args: list[str], name: str, port: int | None = None, log: str = "", c
     kwargs: dict = {}
     if FAMILY != "windows":
         kwargs["start_new_session"] = True
+    # ENV nzuri ile ile ya envsetup (R_LIBS_USER, PATH ya cargo…) — vinginevyo
+    # shiny iliyoisakinisha envsetup ingewekwa mahali process ya Shiny haitaona.
+    try:
+        from .envsetup import process_env
+        kwargs["env"] = process_env()
+    except Exception:  # noqa: BLE001 — env ya server inatosha kama fallback
+        pass
     try:
         lf = open(log, "ab") if log else subprocess.DEVNULL
         subprocess.Popen(args, cwd=cwd or str(ROOT), stdin=subprocess.DEVNULL,
