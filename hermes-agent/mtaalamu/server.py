@@ -49,11 +49,22 @@ APPS ZA MFUMO (OpenMRS, Home Assistant, Web R, Desktop, Website, Rust, R):
 MAZINGIRA (env setup — Ollama/Qwen/Rust/Cargo ndani ya OS):
   GET  /api/env               hali: cargo/engine/r/ollama/qwen/node/libreoffice
   POST /api/env/install       {"target": "qwen"} — ollama|qwen|rust|engine|r|r-packages|libreoffice|node|all
+
+FILESYSTEM + INSTALL (folder, kupata, download, memory, partition):
+  GET  /api/fs/memory                       memory halisi (meminfo/used_pct)
+  GET  /api/fs/find?pattern=*.pdf&dir=~     pata files/folders
+  GET  /api/fs/read?path=/etc/os-release    somesha file (60KB max)
+  POST /api/fs/mkdir        {"path": "~/MTECH/ripoti"}
+  POST /api/fs/download     {"url": "https://…", "dest": "~/Downloads"}
+  POST /api/fs/install      {"pkg": "htop"} — apt/brew/winget/pip:/npm:
+  POST /api/fs/partition    {"disk": "/dev/sdb", "size": "8G", "confirm": "NDIYO"} (ADMIN)
+  POST /api/apps/install    {"app": "web-r"} — docker pull/npm install/R packages/engine
 """
 import json
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import admin, billing, clickpesa, envsetup, ipc, kali, models, scope, system_apps, system_view, unified
+from . import admin, billing, clickpesa, envsetup, fsops, ipc, kali, models, scope, system_apps, system_view, unified
 from .catalog import CATALOG, GROUPS
 from .shortcuts import ALL_SHORTCUTS, run_shortcut
 
@@ -130,6 +141,14 @@ class API(BaseHTTPRequestHandler):
             self._send(200, system_apps.status())
         elif p == "/api/env":
             self._send(200, envsetup.status())
+        elif p == "/api/fs/memory":
+            self._send(200, fsops.memory())
+        elif p == "/api/fs/find":
+            q = urllib.parse.parse_qs(self.path.split("?", 1)[1] if "?" in self.path else "")
+            self._send(200, fsops.find(q.get("pattern", ["*"])[0], q.get("dir", ["~"])[0]))
+        elif p == "/api/fs/read":
+            q = urllib.parse.parse_qs(self.path.split("?", 1)[1] if "?" in self.path else "")
+            self._send(200, fsops.read(q.get("path", [""])[0]))
         else:
             self._send(404, {"error": "hakuna"})
 
@@ -212,6 +231,24 @@ class API(BaseHTTPRequestHandler):
                 self._send(200, system_apps.stop(body.get("app", "")))
             elif p == "/api/env/install":
                 self._send(200, envsetup.install(body.get("target", "")))
+            elif p == "/api/fs/mkdir":
+                self._send(200, fsops.mkdir(body.get("path", "")))
+            elif p == "/api/fs/download":
+                self._send(200, fsops.download(body.get("url", ""), body.get("dest", "")))
+            elif p == "/api/fs/install":
+                self._send(200, fsops.install(body.get("pkg", "")))
+            elif p == "/api/fs/partition":
+                try:
+                    admin.assert_admin()
+                except PermissionError as e:
+                    self._send(401, {"ok": False, "error": str(e)})
+                    return
+                self._send(200, fsops.partition_create(body.get("disk", ""),
+                                                       body.get("size", ""),
+                                                       body.get("confirm", ""),
+                                                       admin_ok=True))
+            elif p == "/api/apps/install":
+                self._send(200, system_apps.install(body.get("app", "")))
             elif p == "/api/webhook/clickpesa":
                 sig = self.headers.get("X-ClickPesa-Signature", "")
                 if not clickpesa.verify_webhook(body, sig):

@@ -91,7 +91,13 @@
       <div class="panel"><b>DRIVERS · PARTITIONS · SERVICES</b><pre id="kalihw"></pre></div></div>
     <div class="panel"><b>FUNGUA TERMINAL / ZANA</b>
       <div class="qrow"><input id="kalitermcmd" placeholder="amri (mf: htop, nmap -sV target)" style="flex:1"><button onclick="openTerm()">TERMINAL ▸</button><input id="kalitoolcmd" placeholder="zana (mf: nmap)" style="width:180px"><button onclick="openTool()">ZANA ▸</button></div>
-      <div class="tag" id="kalimsg" style="margin-top:6px"></div></div></div>
+      <div class="tag" id="kalimsg" style="margin-top:6px"></div></div>
+    <div class="panel"><b>📁 FILESYSTEM — TENGENEZA · PATA · PAKUA · MEMORY · PARTITION · INSTALL</b>
+      <div class="qrow"><input id="fspath" placeholder="njia mpya ya folder (mf: ~/MTECH/ripoti)" style="flex:1"><button onclick="fsMkdir()">FOLDER ▸</button></div>
+      <div class="qrow"><input id="fspattern" placeholder="pata: *.pdf" style="flex:1"><input id="fsdir" placeholder="kutoka (mf: ~)" style="width:160px"><button onclick="fsFind()">PATA ▸</button></div>
+      <div class="qrow"><input id="fsurl" placeholder="URL ya app/file (https://…)" style="flex:1"><input id="fsdest" placeholder="~/Downloads" style="width:160px"><button onclick="fsDownload()">PAKUA ▸</button><input id="fspkg" placeholder="install: htop" style="width:150px"><button onclick="fsInstall()">INSTALL ▸</button></div>
+      <div class="qrow"><button onclick="fsMemory()">MEMORY ▸</button><button onclick="fsPartitions()">PARTITIONS ▸</button></div>
+      <pre id="fsout" style="margin-top:8px">bofya kitufe — matokeo yanaonekana hapa</pre></div></div>
 
   <div class="tab" id="tab-book"><div class="panel"><b>📖 KITABU KIDIGITALI</b> <span class="tag" id="bookcount"></span><div id="book"></div></div></div>
 
@@ -299,6 +305,15 @@ ${(k.services?.running||[]).slice(0,14).join('\n')||'—'}`;
 }
 async function openTerm(){ const r=await jpost('/api/kali/terminal',{cmd:$('kalitermcmd').value}); $('kalimsg').textContent=r.ok?'✔ Terminal imefunguka':('✖ '+(r.error||'')); }
 async function openTool(){ const r=await jpost('/api/kali/tool',{exec:$('kalitoolcmd').value}); $('kalimsg').textContent=r.ok?'✔ Zana imefunguka kwenye terminal':('✖ '+(r.error||'')); }
+
+/* ---------- FILESYSTEM OPS ---------- */
+function _fsShow(r){ $('fsout').textContent=JSON.stringify(r,null,1).slice(0,2000); }
+async function fsMkdir(){ const r=await jpost('/api/fs/mkdir',{path:$('fspath').value}); _fsShow(r); }
+async function fsFind(){ const r=await jget(`/api/fs/find?pattern=${encodeURIComponent($('fspattern').value||'*')}&dir=${encodeURIComponent($('fsdir').value||'~')}`); _fsShow(r); }
+async function fsDownload(){ const r=await jpost('/api/fs/download',{url:$('fsurl').value,dest:$('fsdest').value}); _fsShow(r); }
+async function fsInstall(){ const r=await jpost('/api/fs/install',{pkg:$('fspkg').value}); _fsShow(r); }
+async function fsMemory(){ _fsShow(await jget('/api/fs/memory')); }
+async function fsPartitions(){ _fsShow(await jget('/api/kali')); }
 
 /* ---------- KITABU ---------- */
 async function loadBook(){

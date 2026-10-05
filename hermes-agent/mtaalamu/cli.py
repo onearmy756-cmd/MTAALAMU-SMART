@@ -33,7 +33,7 @@ import argparse
 import json
 import sys
 
-from . import admin, billing, clickpesa, envsetup, ipc, kali, models, scope, system_apps, system_view, unified
+from . import admin, billing, clickpesa, envsetup, fsops, ipc, kali, models, scope, system_apps, system_view, unified
 from .catalog import CATALOG
 from .shortcuts import ALL_SHORTCUTS, run_shortcut
 
@@ -62,6 +62,7 @@ def main() -> None:
     kal = sub.add_parser("kali"); kal.add_argument("action", nargs="?", default=None); kal.add_argument("arg1", nargs="*", default=[])
     term = sub.add_parser("term"); term.add_argument("cmd", nargs="*", default=[])
     env = sub.add_parser("env"); env.add_argument("action", nargs="?", default=None); env.add_argument("target", nargs="?", default=None)
+    fs = sub.add_parser("fs"); fs.add_argument("op", nargs="?", default=None); fs.add_argument("args", nargs="*", default=[])
     sub.add_parser("wallet")
     sub.add_parser("usage"); sub.add_parser("doctor"); sub.add_parser("serve")
     args = ap.parse_args()
@@ -233,6 +234,31 @@ def main() -> None:
                 if not info.get("ok") and info.get("fix"):
                     print(f"       → {info['fix']}")
             print(f"  dirs: {st['dirs']['base']} ✔")
+    elif args.cmd == "fs":
+        if args.op == "mkdir" and args.args:
+            _p(fsops.mkdir(" ".join(args.args)))
+        elif args.op == "find" and args.args:
+            _p(fsops.find(args.args[0], args.args[1] if len(args.args) > 1 else "~"))
+        elif args.op == "read" and args.args:
+            _p(fsops.read(args.args[0]))
+        elif args.op == "download" and args.args:
+            _p(fsops.download(args.args[0], args.args[1] if len(args.args) > 1 else ""))
+        elif args.op == "memory":
+            _p(fsops.memory())
+        elif args.op == "partitions":
+            _p(fsops.partitions())
+        elif args.op == "install" and args.args:
+            _p(fsops.install(args.args[0]))
+        else:
+            print("══ FILESYSTEM OPS — mtaalamu fs <op> ══")
+            print("  mkdir ~/MTECH/ripoti          # tengeneza folder/directory")
+            print("  find '*.pdf' ~                # kupata vitu")
+            print("  read /etc/os-release          # somesha file")
+            print("  download https://… ~/Downloads  # pakua app/file")
+            print("  memory                        # memory access halisi")
+            print("  partitions                    # orodha ya partitions")
+            print("  install htop                  # apt/brew/winget/pip:/npm:")
+            print("  partition-create (API/ADMIN)  # unda partition (HITL: NDIYO)")
     elif args.cmd == "doctor":
         from .doctor_lite import run_checks
         _p(run_checks())

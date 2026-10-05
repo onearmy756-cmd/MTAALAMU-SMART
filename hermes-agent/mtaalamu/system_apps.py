@@ -141,6 +141,10 @@ def app_web_r() -> dict:
       • inahitaji shiny + jsonlite (auto-install kwenye launch)
       • CWD lazima iwe web-r/ (app.R inasoma R/ + data kutoka ../data)
       • data/ haiipo ndani ya web-r — p_root("data") = hermes-agent/data ✔
+    Tabs (AGENTIC VISION/WIRING) zinaunganishwa na:
+      • engine (Rust) — wiring_snapshot inaita ../engine-rust/target/release/mtaalamu
+      • Ollama/Qwen VL — env OLLAMA_HOST inarithiwa na _spawn (process_env)
+      • kernel — sysprobe.R (/proc halisi) + engine PCI/USB/DMI
     """
     d = _app_dir("web-r")
     app = d / "app.R"
@@ -151,6 +155,15 @@ def app_web_r() -> dict:
     if rscript:
         code, out = _run(f"'{rscript}' -e 'cat(requireNamespace(\"shiny\",quietly=TRUE), requireNamespace(\"jsonlite\",quietly=TRUE))'", timeout=60)
         libs_ok = code == 0 and "1 1" in out
+    # wiring: engine + ollama/qwen + kernel (tabs za web-r zinazoona vitu halisi)
+    engine_bin = ROOT / "engine-rust" / "target" / "release" / ("mtaalamu.exe" if FAMILY == "windows" else "mtaalamu")
+    try:
+        from . import envsetup as _env
+        ollama_up = _env.ollama_api_up()
+        qwen = _env.qwen_pulled()
+    except Exception:  # noqa: BLE001
+        ollama_up = qwen = False
+    kernel_ok = FAMILY != "linux" or (ROOT.parent / "").exists()  # /proc inapatikana (sysprobe)
     return {
         "id": "web-r", "name": "Web R (Dashboard ya Analytics)",
         "desc": "App ya Shiny (R) — chati, ramani ya TZ (Leaflet), agentic vision; port 3838",
@@ -162,6 +175,10 @@ def app_web_r() -> dict:
         "running": up,
         "launch_hint": "mtaalamu apps launch web-r (au: cd web-r && Rscript -e 'shiny::runApp(\"app.R\", port=3838)')",
         "fix": "" if libs_ok else "mtaalamu env install r-packages (shiny + jsonlite)",
+        "wiring": {"engine_rust": engine_bin.exists(), "ollama": ollama_up,
+                   "qwen2_5vl": qwen, "kernel_sysprobe": kernel_ok,
+                   "tabs": ["LIVE MONITOR", "AGENTIC VISION", "FORMULA", "DIAGNOSIS",
+                            "VISUALIZATION", "MAP", "MAP 3D", "NAV", "FUNDI DEPLOY", "FUNDI MOBILE"]},
     }
 
 
@@ -346,6 +363,40 @@ def launch(app_id: str) -> dict:
                 "note": "Ripoti ya R imekamilika (JSON stdout)"}
 
     return {"ok": False, "error": f"app haijulikani: {app_id}"}
+
+
+def install(app_id: str) -> dict:
+    """Sakinisha/pakua mahitaji ya app (docker pull, npm install, R packages, cargo build)."""
+    app_id = (app_id or "").strip().lower()
+    if app_id not in APPS:
+        return {"ok": False, "error": f"app haijulikani: {app_id} (zipo: {', '.join(APPS)})"}
+    docker = _docker()
+    if app_id == "openmrs":
+        if not docker:
+            return {"ok": False, "error": "docker haipo — mtaalamu env ni kwa rust/r; docker: https://docs.docker.com/get-docker/"}
+        return {**_run2ok(f"cd {shlex_q(str(ROOT / 'openmrs'))} && {docker} compose pull", timeout=1800),
+                "note": "images za OpenMRS zimepakuliwa — launch kisha uzindue"}
+    if app_id == "home-assistant":
+        if not docker:
+            return {"ok": False, "error": "docker haipo"}
+        return {**_run2ok(f"{docker} pull ghcr.io/home-assistant/home-assistant:stable", timeout=1800),
+                "note": "image ya Home Assistant imepakuliwa ✔"}
+    if app_id in ("web-r", "analytics-r"):
+        from . import envsetup
+        envsetup.ensure_dirs()
+        out = envsetup._install_r_packages()
+        return {**out, "note": "shiny + jsonlite (user-lib) — launch web-r sasa"}
+    if app_id in ("desktop", "website"):
+        npm = shutil.which("npm")
+        if not npm:
+            return {"ok": False, "error": "npm haipo — mtaalamu env install node"}
+        d = ROOT / "apps" / "desktop" if app_id == "desktop" else ROOT / "website"
+        return {**_run2ok(f"cd {shlex_q(str(d))} && npm install --no-audit --no-fund", timeout=1800),
+                "note": f"node_modules za {app_id} zimewekwa ✔"}
+    if app_id == "engine-rust":
+        from . import envsetup
+        return envsetup._build_engine()
+    return {"ok": False, "error": f"{app_id}: hakuna installer — tumia launch"}
 
 
 def stop(app_id: str) -> dict:
