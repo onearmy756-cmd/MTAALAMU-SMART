@@ -43,10 +43,14 @@ inagundulika kiotomatiki.
 ### 0) ONE-CLICK — BONYEZA INSTALL (kila kitu)
 ```bash
 cd hermes-agent
-sh ./install.sh            # C (gcc/make) + Rust (rustup) + R + venv+deps + Ollama+qwen2.5vl:3b
-# hiari:  sh ./install.sh --check | --skip-rust | --skip-r | --no-model
+sh ./install.sh            # C (gcc/make) + Rust (rustup) + R + BINARY (Python ndani) + Ollama+qwen2.5vl:3b
+# hiari:  sh ./install.sh --check | --skip-rust | --skip-r | --no-model | --with-agent
 ```
 Au moja kwa moja: `python3 setup_all.py` — muhtasari ✔/✗ mwishoni; endesha tena kurekebisha zilizobaki.
+
+> **PYTHON? CHAGUOMSINGI: HAKUNA kusakinisha.** Binary (onefile) ina Python ndani
+> (PyInstaller) — account/admin/serve zote zinatumia binary. Weka `--with-agent` TU
+> ikiwa unataka MTECH agent ya vision/control + GUI ya desktop (Pillow/pyautogui/PySide6).
 
 ### A) Binafsi (computer yako — OS yoyote)
 ```bash

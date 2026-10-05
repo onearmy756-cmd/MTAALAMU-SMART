@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """MTAALAMU SMART + MTECH OS — ONE-CLICK INSTALL (kila kitu kwa amri moja).
 
-    python3 setup_all.py                 # KILA KITU: C, Rust, R, venv, Ollama+Qwen,
+    python3 setup_all.py                 # BINARY-FIRST: binary (Python NDANI yake),
                                          #   account ya kiotomatiki, ADMIN, server + dashboard
+                                         #   — HAKUNA Python inayosakinishwa (venv ni hiari)
     python3 setup_all.py --check         # angalia tu — usisakinise chochote
+    python3 setup_all.py --with-agent    # PIA: venv ya Python (Pillow/pyautogui/PySide6)
+                                         #   — kwa MTECH agent (vision/control) + GUI ya desktop
     python3 setup_all.py --email me@mail.com   # tumia barua pepe yako (hiari)
     python3 setup_all.py --skip-rust     # ruka Rust
     python3 setup_all.py --skip-r        # ruka R
@@ -16,13 +19,17 @@ INAYOSAKINISHWA (kwa mpangilio, OS zote 3):
   2. Rust:             rustup.rs (rasmi) → cargo + rustc  [--skip-rust kwa kuruka]
   3. R:                R + Rscript (apt/brew/winget)      [--skip-r kwa kuruka]
   4. LibreOffice:      ofisi kamili (apt/brew/winget)     [--skip-office kwa kuruka]
-  5. Python + venv:    venv ndani ya hermes-agent + deps zote (Pillow, pyautogui kwa win/mac)
+  5. BINARY (onefile): dist/mtaalamu-linux | MTAALAMU-Setup.exe — Python NDANI yake
+                       (PyInstaller); kama haipo, inajengwa yenyewe — account/admin/serve
+                       ZOTE zinatumia binary hii, si python -m
   6. Ollama + Qwen:    ollama (rasmi) + ollama pull qwen2.5vl:3b  [--no-model kwa kuruka]
   7. KIOTOMATIKI:      account (auto-register DIAMOND) + ADMIN (zana BURE)
                        + server inaanza + dashboard inafunguka browser — HAKUNA configuration
 
-HUDUMA ZA PYTHON (stdlib tu kwa mtaalamu; venv ina Pillow/pyautogui kwa MTECH agent):
-  mtaalamu inafanya kazi BILA venv — venv ni kwa ajili ya MTECH OS agent + GUI.
+PYTHON? CHAGUOMSINGI: HAKUNA kusakinisha Python.
+  • mtaalamu (CLI/API/brain) = binary yenye Python ndani (PyInstaller onefile)
+  • venv ya Python (Pillow/pyautogui/PySide6) ni kwa MTECH agent (macho/mikono)
+    na GUI ya desktop TU — weka --with-agent ikiwa unataka hiyo
 """
 import os
 import platform
@@ -61,7 +68,7 @@ def _linux_pkg() -> str:
 def step_c(check: bool) -> bool:
     ok = have("gcc") or have("clang")
     mk = have("make")
-    print(f"[1/7] Zana za C: gcc/clang {'✔' if ok else '✗'} · make {'✔' if mk else '✗'}")
+    print(f"[1/8] Zana za C: gcc/clang {'✔' if ok else '✗'} · make {'✔' if mk else '✗'}")
     if (ok and mk) or check:
         return ok and mk
     if FAMILY == "linux":
@@ -82,10 +89,10 @@ def step_c(check: bool) -> bool:
 
 def step_rust(check: bool, skip: bool) -> bool:
     if skip:
-        print("[2/7] Rust: IMERUKIWA (--skip-rust)")
+        print("[2/8] Rust: IMERUKIWA (--skip-rust)")
         return have("cargo")
     ok = have("cargo") and have("rustc")
-    print(f"[2/7] Rust: {'✔ ' + subprocess.getoutput('rustc --version') if ok else '✗'}")
+    print(f"[2/8] Rust: {'✔ ' + subprocess.getoutput('rustc --version') if ok else '✗'}")
     if ok or check:
         return ok
     if FAMILY == "windows":
@@ -101,10 +108,10 @@ def step_rust(check: bool, skip: bool) -> bool:
 
 def step_r(check: bool, skip: bool) -> bool:
     if skip:
-        print("[3/7] R: IMERUKIWA (--skip-r)")
+        print("[3/8] R: IMERUKIWA (--skip-r)")
         return have("Rscript")
     ok = have("Rscript")
-    print(f"[3/7] R: {'✔ ' + subprocess.getoutput('Rscript --version 2>&1').strip() if ok else '✗'}")
+    print(f"[3/8] R: {'✔ ' + subprocess.getoutput('Rscript --version 2>&1').strip() if ok else '✗'}")
     if ok or check:
         return ok
     if FAMILY == "linux":
@@ -121,10 +128,10 @@ def step_r(check: bool, skip: bool) -> bool:
 def step_office(check: bool, skip: bool) -> bool:
     """LibreOffice iliyoreshwa — kazi zote za ofisi ndani ya mfumo (Word/Excel/PPT/PDF)."""
     if skip:
-        print("[4/7] LibreOffice: IMERUKIWA (--skip-office)")
+        print("[4/8] LibreOffice: IMERUKIWA (--skip-office)")
         return have("libreoffice") or have("soffice")
     ok = have("libreoffice") or have("soffice")
-    print(f"[4/7] LibreOffice: {'✔' if ok else '✗'}")
+    print(f"[4/8] LibreOffice: {'✔' if ok else '✗'}")
     if ok or check:
         return ok
     if FAMILY == "linux":
@@ -142,11 +149,39 @@ def step_office(check: bool, skip: bool) -> bool:
     return have("libreoffice") or have("soffice")
 
 
-def step_python_venv(check: bool) -> bool:
+def binary_name() -> str:
+    return {"windows": "MTAALAMU-Setup.exe", "darwin": "MTAALAMU-macos",
+            "linux": "mtaalamu-linux"}.get(FAMILY, "mtaalamu")
+
+
+def binary_path() -> str:
+    p = os.path.join(HERE, "mtaalamu", "dist", binary_name())
+    return p if os.path.exists(p) else ""
+
+
+def step_binary(check: bool) -> bool:
+    """Binary (onefile) — Python NDANI yake. Account/admin/serve zote hii itatumika."""
+    binp = binary_path()
+    ok = bool(binp)
+    print(f"[5/8] Binary (onefile, Python ndani): {'✔ ' + binp if ok else '✗ (itajengwa)'}")
+    if ok or check:
+        return ok
+    # jenga yenyewe (PyInstaller inasakinishwa kiotomatiki ndani ya build_onefile)
+    from mtaalamu.setup_builder import build_onefile
+    rc = build_onefile()
+    return rc == 0 and bool(binary_path())
+
+
+def step_python_venv(check: bool, with_agent: bool) -> bool:
+    """VENV NI HIARI — binary inatosha. --with-agent kwa MTECH agent (vision/control) + GUI."""
     venv = os.path.join(HERE, ".venv")
     pybin = os.path.join(venv, "Scripts", "python.exe") if FAMILY == "windows" else os.path.join(venv, "bin", "python")
     ok = os.path.exists(pybin)
-    print(f"[5/7] Python venv + deps: {'✔ ' + venv if ok else '✗'}")
+    if not with_agent:
+        print(f"[6/8] MTECH Agent venv (Python): {'✔ ' + venv + ' (tayari ipo)' if ok else '– IMERUKIWA (chaguomsingi: binary inatosha)'}")
+        print("      weka --with-agent kama unataka agent ya vision/control + GUI (PySide6)")
+        return True
+    print(f"[6/8] Python venv + deps (agent/GUI): {'✔ ' + venv if ok else '✗'}")
     if ok or check:
         return ok
     run(f"{sys.executable} -m venv {shlex_quote(venv)}")
@@ -165,7 +200,7 @@ def shlex_quote(s: str) -> str:
 
 def step_ollama(check: bool, no_model: bool) -> bool:
     ok = have("ollama")
-    print(f"[6/7] Ollama: {'✔' if ok else '✗'}")
+    print(f"[7/8] Ollama: {'✔' if ok else '✗'}")
     if not ok and not check:
         if FAMILY == "linux":
             run("curl -fsSL https://ollama.com/install.sh | sh", timeout=1800)
@@ -192,14 +227,18 @@ def step_ollama(check: bool, no_model: bool) -> bool:
 
 def step_finish(check: bool, email: str | None, start: bool) -> None:
     py = "python" if FAMILY == "windows" else "python3"
+    binp = binary_path()
+    # BINARY-FIRST: kila kitu (account/admin/serve) kinatumia binary — Python NDANI yake
+    mta = shlex_quote(binp) if binp else f"{py} -m mtaalamu"
     if check:
-        print("[7/7] Mwisho (UKAGUZI TU — hakuna kinachosakinishwa)")
+        print("[8/8] Mwisho (UKAGUZI TU — hakuna kinachosakinishwa)")
         return
     # AUTO-REGISTER: hakuna maswali — email ya default (au --email) + DIAMOND + admin
     mail = (email or "owner@mtaalamu.local").strip()
-    print(f"[7/7] KUANZISHA KIOTOMATIKI (hakuna configuration — account: {mail})")
-    run(f"{py} -m mtaalamu register {mail} INDIVIDUAL DIAMOND")
-    run(f"{py} -m mtaalamu admin unlock")   # owner-mode: zana ZOTE BURE
+    print(f"[8/8] KUANZISHA KIOTOMATIKI (hakuna configuration — account: {mail})")
+    print(f"      kipimo: {'BINARY (' + binary_name() + ') — hakuna Python inayohitajika' if binp else 'python -m mtaalamu'}")
+    run(f"{mta} register {mail} INDIVIDUAL DIAMOND")
+    run(f"{mta} admin unlock")   # owner-mode: zana ZOTE BURE
     if start:
         _start_server(py)
 
@@ -216,8 +255,10 @@ def _start_server(py: str) -> None:
         else:
             kwargs.update(start_new_session=True)
         try:
+            binp = binary_path()
+            serve_cmd = [binp, "serve"] if binp else [py, "-m", "mtaalamu", "serve"]
             with open(log, "ab") as lf:
-                subprocess.Popen([py, "-m", "mtaalamu", "serve"], cwd=HERE,
+                subprocess.Popen(serve_cmd, cwd=HERE,
                                  stdout=lf, stderr=lf, stdin=subprocess.DEVNULL, **kwargs)
         except OSError as e:
             print(f"      ⚠ serve haikuanza ({e}) — endesha wewe: {py} -m mtaalamu serve")
@@ -249,6 +290,7 @@ def _api_up() -> bool:
 def main() -> None:
     args = sys.argv[1:]
     check = "--check" in args
+    with_agent = "--with-agent" in args
     skip_rust = "--skip-rust" in args
     skip_r = "--skip-r" in args
     skip_office = "--skip-office" in args
@@ -264,7 +306,8 @@ def main() -> None:
         "Rust (cargo)": step_rust(check, skip_rust),
         "R (Rscript)": step_r(check, skip_r),
         "LibreOffice": step_office(check, skip_office),
-        "Python venv": step_python_venv(check),
+        "Binary (onefile)": step_binary(check),
+        "MTECH Agent venv": step_python_venv(check, with_agent),
         "Ollama + Qwen": step_ollama(check, no_model),
     }
     step_finish(check, email, start)
