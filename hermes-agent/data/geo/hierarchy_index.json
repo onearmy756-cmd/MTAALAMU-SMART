@@ -52,9 +52,9 @@
     "placed": false,
     "lat": -3.3869,
     "lng": 36.683,
-    "jobs": 69,
-    "techs": 18,
-    "customers": 44
+    "jobs": 40,
+    "techs": 8,
+    "customers": 15
    }
   },
   {
@@ -78,9 +78,9 @@
     "placed": false,
     "lat": -6.7924,
     "lng": 39.2083,
-    "jobs": 142,
-    "techs": 38,
-    "customers": 96
+    "jobs": 57,
+    "techs": 15,
+    "customers": 26
    }
   },
   {
@@ -104,9 +104,9 @@
     "placed": false,
     "lat": -6.163,
     "lng": 35.7516,
-    "jobs": 61,
-    "techs": 16,
-    "customers": 39
+    "jobs": 74,
+    "techs": 22,
+    "customers": 37
    }
   },
   {
@@ -130,9 +130,9 @@
     "placed": false,
     "lat": -2.872,
     "lng": 32.244,
-    "jobs": 30,
-    "techs": 8,
-    "customers": 19
+    "jobs": 91,
+    "techs": 29,
+    "customers": 48
    }
   },
   {
@@ -156,9 +156,9 @@
     "placed": false,
     "lat": -7.77,
     "lng": 35.69,
-    "jobs": 33,
-    "techs": 8,
-    "customers": 21
+    "jobs": 108,
+    "techs": 36,
+    "customers": 59
    }
   },
   {
@@ -182,9 +182,9 @@
     "placed": false,
     "lat": -1.333,
     "lng": 31.8,
-    "jobs": 31,
-    "techs": 8,
-    "customers": 20
+    "jobs": 125,
+    "techs": 43,
+    "customers": 70
    }
   },
   {
@@ -208,9 +208,9 @@
     "placed": false,
     "lat": -6.35,
     "lng": 31.07,
-    "jobs": 14,
-    "techs": 3,
-    "customers": 9
+    "jobs": 142,
+    "techs": 50,
+    "customers": 81
    }
   },
   {
@@ -234,9 +234,9 @@
     "placed": false,
     "lat": -4.88,
     "lng": 29.63,
-    "jobs": 28,
-    "techs": 7,
-    "customers": 17
+    "jobs": 159,
+    "techs": 57,
+    "customers": 92
    }
   },
   {
@@ -260,9 +260,9 @@
     "placed": false,
     "lat": -3.067,
     "lng": 37.3556,
-    "jobs": 47,
-    "techs": 12,
-    "customers": 30
+    "jobs": 176,
+    "techs": 64,
+    "customers": 103
    }
   },
   {
@@ -286,9 +286,9 @@
     "placed": false,
     "lat": -10.0,
     "lng": 39.7,
-    "jobs": 19,
-    "techs": 5,
-    "customers": 12
+    "jobs": 193,
+    "techs": 11,
+    "customers": 114
    }
   },
   {
@@ -312,9 +312,9 @@
     "placed": false,
     "lat": -4.15,
     "lng": 35.8,
-    "jobs": 29,
-    "techs": 7,
-    "customers": 18
+    "jobs": 210,
+    "techs": 18,
+    "customers": 125
    }
   },
   {
@@ -338,9 +338,9 @@
     "placed": false,
     "lat": -1.65,
     "lng": 34.15,
-    "jobs": 32,
-    "techs": 8,
-    "customers": 21
+    "jobs": 227,
+    "techs": 25,
+    "customers": 16
    }
   },
   {
@@ -364,9 +364,9 @@
     "placed": false,
     "lat": -8.9,
     "lng": 33.45,
-    "jobs": 45,
-    "techs": 11,
-    "customers": 29
+    "jobs": 244,
+    "techs": 32,
+    "customers": 27
    }
   },
   {
@@ -390,9 +390,9 @@
     "placed": false,
     "lat": -6.163,
     "lng": 39.19,
-    "jobs": 0,
-    "techs": 0,
-    "customers": 0
+    "jobs": 261,
+    "techs": 39,
+    "customers": 38
    }
   },
   {
@@ -416,9 +416,9 @@
     "placed": false,
     "lat": -6.821,
     "lng": 37.66,
-    "jobs": 48,
-    "techs": 12,
-    "customers": 31
+    "jobs": 278,
+    "techs": 46,
+    "customers": 49
    }
   },
   {
@@ -442,9 +442,9 @@
     "placed": false,
     "lat": -10.3,
     "lng": 40.4,
-    "jobs": 23,
-    "techs": 6,
-    "customers": 15
+    "jobs": 295,
+    "techs": 53,
+    "customers": 60
    }
   },
   {
@@ -468,9 +468,9 @@
     "placed": false,
     "lat": -2.5164,
     "lng": 32.9175,
-    "jobs": 74,
-    "techs": 19,
-    "customers": 48
+    "jobs": 52,
+    "techs": 60,
+    "customers": 71
    }
   },
   {
@@ -494,9 +494,9 @@
     "placed": false,
     "lat": -9.34,
     "lng": 34.77,
-    "jobs": 22,
-    "techs": 5,
-    "customers": 14
+    "jobs": 69,
+    "techs": 67,
+    "customers": 82
    }
   },
   {
@@ -520,9 +520,9 @@
     "placed": false,
     "lat": -5.03,
     "lng": 39.75,
-    "jobs": 0,
-    "techs": 0,
-    "customers": 0
+    "jobs": 86,
+    "techs": 14,
+    "customers": 93
    }
   },
   {
@@ -546,9 +546,9 @@
     "placed": false,
     "lat": -5.32,
     "lng": 39.75,
-    "jobs": 0,
-    "techs": 0,
-    "customers": 0
+    "jobs": 103,
+    "techs": 21,
+    "customers": 104
    }
   },
   {
@@ -572,9 +572,9 @@
     "placed": false,
     "lat": -6.67,
     "lng": 38.2,
-    "jobs": 37,
-    "techs": 9,
-    "customers": 24
+    "jobs": 120,
+    "techs": 28,
+    "customers": 115
    }
   },
   {
@@ -598,9 +598,9 @@
     "placed": false,
     "lat": -7.7,
     "lng": 31.57,
-    "jobs": 17,
-    "techs": 4,
-    "customers": 11
+    "jobs": 137,
+    "techs": 35,
+    "customers": 126
    }
   },
   {
@@ -624,9 +624,9 @@
     "placed": false,
     "lat": -10.68,
     "lng": 35.65,
-    "jobs": 21,
-    "techs": 5,
-    "customers": 13
+    "jobs": 154,
+    "techs": 42,
+    "customers": 17
    }
   },
   {
@@ -650,9 +650,9 @@
     "placed": false,
     "lat": -3.6639,
     "lng": 33.4258,
-    "jobs": 36,
-    "techs": 9,
-    "customers": 23
+    "jobs": 171,
+    "techs": 49,
+    "customers": 28
    }
   },
   {
@@ -676,9 +676,9 @@
     "placed": false,
     "lat": -2.85,
     "lng": 34.0,
-    "jobs": 25,
-    "techs": 6,
-    "customers": 16
+    "jobs": 188,
+    "techs": 56,
+    "customers": 39
    }
   },
   {
@@ -702,9 +702,9 @@
     "placed": false,
     "lat": -4.178,
     "lng": 34.76,
-    "jobs": 27,
-    "techs": 7,
-    "customers": 17
+    "jobs": 205,
+    "techs": 63,
+    "customers": 50
    }
   },
   {
@@ -728,9 +728,9 @@
     "placed": false,
     "lat": -8.28,
     "lng": 33.15,
-    "jobs": 15,
-    "techs": 4,
-    "customers": 9
+    "jobs": 222,
+    "techs": 10,
+    "customers": 61
    }
   },
   {
@@ -754,9 +754,9 @@
     "placed": false,
     "lat": -5.0167,
     "lng": 32.8,
-    "jobs": 34,
-    "techs": 8,
-    "customers": 21
+    "jobs": 239,
+    "techs": 17,
+    "customers": 72
    }
   },
   {
@@ -780,9 +780,9 @@
     "placed": false,
     "lat": -5.0689,
     "lng": 39.1,
-    "jobs": 52,
-    "techs": 13,
-    "customers": 33
+    "jobs": 256,
+    "techs": 24,
+    "customers": 83
    }
   },
   {
@@ -806,9 +806,9 @@
     "placed": false,
     "lat": -5.73,
     "lng": 39.3,
-    "jobs": 0,
-    "techs": 0,
-    "customers": 0
+    "jobs": 273,
+    "techs": 31,
+    "customers": 94
    }
   },
   {
@@ -832,9 +832,9 @@
     "placed": false,
     "lat": -6.25,
     "lng": 39.45,
-    "jobs": 0,
-    "techs": 0,
-    "customers": 0
+    "jobs": 290,
+    "techs": 38,
+    "customers": 105
    }
   },
   {
