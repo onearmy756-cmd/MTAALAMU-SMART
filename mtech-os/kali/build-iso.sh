@@ -64,16 +64,21 @@ esac
 }
 
 # --- ukaguzi wa mapema wa vitega (ujumbe sahihi badala ya kufeli kati ya kazi) ---
-for dep in rsync curl; do
-  command -v "$dep" >/dev/null 2>&1 || { echo "saki: sudo apt install -y $dep" >&2; exit 1; }
-done
-if [ "$USE_CONTAINER" -eq 1 ]; then
-  command -v docker >/dev/null 2>&1 || command -v podman >/dev/null 2>&1 || {
-    echo "saki: docker au podman (kwa --container)" >&2; exit 1
-  }
+# --check inahitaji curl TU (inapakua indexes za kali-rolling) — inafanya kazi popote.
+if [ "$CHECK_ONLY" -eq 1 ]; then
+  command -v curl >/dev/null 2>&1 || { echo "saki: curl (kwa --check)" >&2; exit 1; }
 else
-  [ "$(id -u)" -eq 0 ] || { echo "Endesha kama root (sudo) au tumia --container." >&2; exit 1; }
-  command -v lb >/dev/null 2>&1 || { echo "saki: sudo apt install -y live-build" >&2; exit 1; }
+  for dep in rsync curl; do
+    command -v "$dep" >/dev/null 2>&1 || { echo "saki: sudo apt install -y $dep" >&2; exit 1; }
+  done
+  if [ "$USE_CONTAINER" -eq 1 ]; then
+    command -v docker >/dev/null 2>&1 || command -v podman >/dev/null 2>&1 || {
+      echo "saki: docker au podman (kwa --container)" >&2; exit 1
+    }
+  else
+    [ "$(id -u)" -eq 0 ] || { echo "Endesha kama root (sudo) au tumia --container." >&2; exit 1; }
+    command -v lb >/dev/null 2>&1 || { echo "saki: sudo apt install -y live-build" >&2; exit 1; }
+  fi
 fi
 
 # ------------------------------------------------------------------ prepare

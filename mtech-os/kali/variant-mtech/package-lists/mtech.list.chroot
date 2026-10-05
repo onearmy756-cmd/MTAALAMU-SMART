@@ -84,9 +84,10 @@ libssl-dev
 libxml2-dev
 
 ## LIBREOFFICE ILIYOBORESHWA — kazi zote za ofisi (Word/Excel/PowerPoint/PDF)
+## (kumbuka: libreoffice-l10n-sw haipo kwenye kali-rolling — Kiswahili kinapatikana
+##  kupitia huduma za MTAALAMU; ukisaka: apt search libreoffice-l10n)
 libreoffice
 libreoffice-gtk3
-libreoffice-l10n-sw
 libreoffice-style-breeze
 
 ## Kumbuka:
