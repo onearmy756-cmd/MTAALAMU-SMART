@@ -99,6 +99,21 @@ ENV nzuri: PATH ina `~/.cargo/bin` + `/usr/local/bin`, dirs za `~/.mtaalamu/`,
 API: `GET /api/env`, `POST /api/env/install {"target": "qwen"}` — panel ya
 **MAZINGIRA** iko kwenye tab ya APPS.
 
+### B4) FILESYSTEM — folder/directory, kupata, download, memory, partition, install
+```bash
+mtaalamu fs mkdir ~/MTECH/ripoti       # tengeneza folder (recursive)
+mtaalamu fs find '*.pdf' ~             # kupata files/folders
+mtaalamu fs read /etc/os-release       # somesha file
+mtaalamu fs download https://…         # pakua app/file → ~/Downloads
+mtaalamu fs memory                     # memory access halisi (meminfo)
+mtaalamu fs partitions                 # orodha ya partitions
+mtaalamu fs install htop               # apt/brew/winget/pip:/npm:
+mtaalamu admin unlock                  # kisha partition-create kupitia API (ADMIN + NDIYO)
+```
+API: `/api/fs/mkdir|find|read|download|memory|install|partition` +
+`POST /api/apps/install {"app": "web-r"}` (docker pull/npm install/R packages/engine)
+— panel ya **FILESYSTEM** iko kwenye tab ya KALI.
+
 ### C) Malipo: ClickPesa (pay-before-use — kulinda kutoibiwa)
 
 **Jinsi inavyofanya kazi (HALISI):**
