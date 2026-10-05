@@ -73,7 +73,15 @@
 
   <div class="tab" id="tab-apps">
     <div class="kpi" id="appkpi"></div>
-    <div class="panel"><b>🖥 APPS ZA MFUMO — UI HALISI ZA WAUNDAJI</b> <span class="tag">zilizoundwa na mfumo — zinaonekana pamoja na apps zingine ulizosakinisha</span><div class="ops" id="apps"></div></div></div>
+    <div class="panel"><b>🖥 APPS ZA MFUMO — UI HALISI ZA WAUNDAJI</b> <span class="tag">zilizoundwa na mfumo — zinaonekana pamoja na apps zingine ulizosakinisha</span><div class="ops" id="apps"></div></div>
+    <div class="panel"><b>⚙ MAZINGIRA — SAKINISHA NDANI YA OS (Ollama · Qwen · Rust/Cargo · R)</b>
+      <div class="tag" style="margin:4px 0 8px">Ukishakuwa ndani ya MTECH OS: bofya kitufe → kinasakinishwa yenyewe (env nzuri: PATH ya cargo, dirs, ollama serve kiotomatiki)</div>
+      <div class="qrow">
+        <input id="envtarget" list="envtargets" placeholder="target (mf: qwen, rust, r-packages, all)">
+        <datalist id="envtargets"><option>ollama</option><option>qwen</option><option>rust</option><option>engine</option><option>r</option><option>r-packages</option><option>libreoffice</option><option>node</option><option>all</option></datalist>
+        <button onclick="envInstall()">SAKINISHA ▸</button>
+      </div>
+      <pre id="envbox" style="margin-top:8px">inapakua…</pre></div></div>
 
   <div class="tab" id="tab-kali">
     <div class="kpi" id="kalikpi"></div>
@@ -134,7 +142,7 @@ document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
 function loadTab(t){
   if(t==='boot') loadBoot();
   else if(t==='ops'||t==='chat') loadOps();
-  else if(t==='apps') loadApps();
+  else if(t==='apps'){ loadApps(); loadEnv(); }
   else if(t==='kali') loadKali();
   else if(t==='book') loadBook();
   else if(t==='pay') loadPay();
@@ -222,6 +230,32 @@ async function loadApps(){
       box.appendChild(d);
     });
   }catch(e){}
+}
+
+/* ---------- MAZINGIRA (env setup) ---------- */
+async function loadEnv(){
+  try{
+    const e=await jget('/api/env');
+    const row=(name,info,btn)=>`<tr><td><b>${name}</b></td><td class="${info.ok?'ok':'warn'}">${info.ok?'✔':(btn?'→ '+btn:'✗')}</td><td class="tag">${info.version||info.packages||info.path||(info.models&&info.models.length?info.models.join(', '):'')||''}</td></tr>`;
+    $('envbox').innerHTML=
+`<table>
+${row('cargo (Rust)',e.cargo,'env install rust')}
+${row('engine (Rust)',e.engine,'env install engine')}
+${row('R + packages',e.r,'env install r-packages')}
+${row('Ollama API',e.ollama,'env install ollama')}
+<tr><td class="tag">Qwen 2.5 VL</td><td class="${e.ollama.qwen2_5vl?'ok':'warn'}">${e.ollama.qwen2_5vl?'✔ qwen2.5vl ipo':'→ env install qwen'}</td><td class="tag">${(e.ollama.models||[]).join(', ')}</td></tr>
+${row('Node.js',e.node,'env install node')}
+${row('LibreOffice',e.libreoffice,'env install libreoffice')}
+</table>
+<span class="tag">dirs: ${e.dirs.base} · PATH: …${(e.path_preview||'').slice(-120)}</span>`;
+  }catch(e){ $('envbox').textContent='API imezimwa — endesha: mtaalamu serve'; }
+}
+async function envInstall(){
+  const t=$('envtarget').value.trim()||'all';
+  $('envbox').textContent='⚙ Inasakinisha: '+t+' … (subiri — inaweza kuchukua dakika chache)';
+  try{ const r=await jpost('/api/env/install',{target:t});
+    $('envbox').textContent=JSON.stringify(r,null,1).slice(0,1500); loadEnv();
+  }catch(e){ $('envbox').textContent='✖ '+e; }
 }
 
 /* ---------- KALI LINUX ---------- */

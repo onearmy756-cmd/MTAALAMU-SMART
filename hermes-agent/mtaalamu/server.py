@@ -45,11 +45,15 @@ APPS ZA MFUMO (OpenMRS, Home Assistant, Web R, Desktop, Website, Rust, R):
   GET  /api/apps              hali ya apps zote (installed/running/runtime)
   POST /api/apps/launch       {"app": "web-r"}       → UI HALISI inafunguka
   POST /api/apps/stop         {"app": "openmrs"}     → simamisha app
+
+MAZINGIRA (env setup — Ollama/Qwen/Rust/Cargo ndani ya OS):
+  GET  /api/env               hali: cargo/engine/r/ollama/qwen/node/libreoffice
+  POST /api/env/install       {"target": "qwen"} — ollama|qwen|rust|engine|r|r-packages|libreoffice|node|all
 """
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import admin, billing, clickpesa, ipc, kali, models, scope, system_apps, system_view, unified
+from . import admin, billing, clickpesa, envsetup, ipc, kali, models, scope, system_apps, system_view, unified
 from .catalog import CATALOG, GROUPS
 from .shortcuts import ALL_SHORTCUTS, run_shortcut
 
@@ -124,6 +128,8 @@ class API(BaseHTTPRequestHandler):
             self._send(200, kali.integrate())
         elif p == "/api/apps":
             self._send(200, system_apps.status())
+        elif p == "/api/env":
+            self._send(200, envsetup.status())
         else:
             self._send(404, {"error": "hakuna"})
 
@@ -204,6 +210,8 @@ class API(BaseHTTPRequestHandler):
                 self._send(200, out)
             elif p == "/api/apps/stop":
                 self._send(200, system_apps.stop(body.get("app", "")))
+            elif p == "/api/env/install":
+                self._send(200, envsetup.install(body.get("target", "")))
             elif p == "/api/webhook/clickpesa":
                 sig = self.headers.get("X-ClickPesa-Signature", "")
                 if not clickpesa.verify_webhook(body, sig):

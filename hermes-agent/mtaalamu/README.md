@@ -84,6 +84,21 @@ API: `GET /api/kali`, `GET /api/apps`, `POST /api/kali/terminal`,
 `POST /api/kali/tool`, `POST /api/apps/launch`, `POST /api/apps/stop`
 — tab mpya za **APPS** na **KALI** kwenye dashboard (tabs 11 sasa).
 
+### B3) MAZINGIRA — sakinisha Ollama/Qwen/Rust ndani ya OS (mtaalamu env)
+```bash
+mtaalamu env                                 # hali: cargo/engine/R/Ollama/Qwen/Node/LibreOffice
+mtaalamu env install ollama                  # Ollama rasmi + `ollama serve` detached kiotomatiki
+mtaalamu env install qwen                    # qwen2.5vl:3b (~2.3GB; inaanzisha serve yenyewe)
+mtaalamu env install rust                    # rustup rasmi → cargo; PATH inarekebishwa (cargo HUUFA)
+mtaalamu env install engine                  # cargo build --release → mtaalamu-engine
+mtaalamu env install r-packages              # shiny + jsonlite (user-lib, bila maswali)
+mtaalamu env install all                     # yote kwa mpangilio salama
+```
+ENV nzuri: PATH ina `~/.cargo/bin` + `/usr/local/bin`, dirs za `~/.mtaalamu/`,
+`R_LIBS_USER` — kila process inayoanzishwa na mtaalamu inapokea mazingira hayo.
+API: `GET /api/env`, `POST /api/env/install {"target": "qwen"}` — panel ya
+**MAZINGIRA** iko kwenye tab ya APPS.
+
 ### C) Malipo: ClickPesa (pay-before-use — kulinda kutoibiwa)
 
 **Jinsi inavyofanya kazi (HALISI):**
