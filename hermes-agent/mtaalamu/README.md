@@ -70,6 +70,20 @@ mtaalamu model local tinyllama                # au: api https://... OPENAI_KEY
 mtaalamu lang en                              # sw/en (default sw)
 ```
 
+### B2) Kali Linux HALISI + apps za mfumo (zimeunganiwa na MTECH OS)
+```bash
+mtaalamu kali                                 # ramani KAMILI: zana+terminals+drivers+partitions+services
+mtaalamu kali tool nmap                       # fungua zana ya Kali kwenye terminal HALISI
+mtaalamu term                                 # fungua command prompt mpya
+mtaalamu term "htop"                          # terminal mpya yenye amri
+mtaalamu apps                                 # apps za mfumo zote (hali halisi)
+mtaalamu apps launch web-r                    # zindua UI HALISI: OpenMRS/HA/Web R/Desktop/Website
+mtaalamu apps stop openmrs
+```
+API: `GET /api/kali`, `GET /api/apps`, `POST /api/kali/terminal`,
+`POST /api/kali/tool`, `POST /api/apps/launch`, `POST /api/apps/stop`
+— tab mpya za **APPS** na **KALI** kwenye dashboard (tabs 11 sasa).
+
 ### C) Malipo: ClickPesa (pay-before-use — kulinda kutoibiwa)
 
 **Jinsi inavyofanya kazi (HALISI):**
@@ -126,8 +140,13 @@ mtaalamu admin lock                  # zima admin
 
 ### E) Setup binaries (download & use)
 ```bash
-python3 setup_builder.py            # inajenga binary ya OS hii (PyInstaller onefile)
+python3 setup_builder.py                  # inajenga binary ya OS hii (PyInstaller onefile)
 # dist/mtaalamu-linux | MTAALAMU-Setup.exe | MTAALAMU-macos
+
+python3 setup_builder.py --bundle-runtime # BUNDLE KAMILI: binary (Python NDANI yake)
+                                          # + engine ya Rust + launchers + README
+                                          # → dist/MTAALAMU-bundle-<os>-<arch>.zip
+                                          # Mtumiaji HATAKIWI kusakinisha Python/R/Rust
 ```
 
 ## Usalama na Ukweli

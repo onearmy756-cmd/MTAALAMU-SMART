@@ -7,6 +7,7 @@
     python3 setup_all.py --email me@mail.com   # tumia barua pepe yako (hiari)
     python3 setup_all.py --skip-rust     # ruka Rust
     python3 setup_all.py --skip-r        # ruka R
+    python3 setup_all.py --skip-office   # ruka LibreOffice
     python3 setup_all.py --no-model      # usivute qwen2.5vl:3b (baadaye: ollama pull)
     python3 setup_all.py --no-start      # usianze server/dashboard kiotomatiki
 
@@ -14,9 +15,10 @@ INAYOSAKINISHWA (kwa mpangilio, OS zote 3):
   1. Zana za C:        gcc/clang + make (+ build-essential / xcode CLT / VS Build Tools hint)
   2. Rust:             rustup.rs (rasmi) → cargo + rustc  [--skip-rust kwa kuruka]
   3. R:                R + Rscript (apt/brew/winget)      [--skip-r kwa kuruka]
-  4. Python + venv:    venv ndani ya hermes-agent + deps zote (Pillow, pyautogui kwa win/mac)
-  5. Ollama + Qwen:    ollama (rasmi) + ollama pull qwen2.5vl:3b  [--no-model kwa kuruka]
-  6. KIOTOMATIKI:      account (auto-register DIAMOND) + ADMIN (zana BURE)
+  4. LibreOffice:      ofisi kamili (apt/brew/winget)     [--skip-office kwa kuruka]
+  5. Python + venv:    venv ndani ya hermes-agent + deps zote (Pillow, pyautogui kwa win/mac)
+  6. Ollama + Qwen:    ollama (rasmi) + ollama pull qwen2.5vl:3b  [--no-model kwa kuruka]
+  7. KIOTOMATIKI:      account (auto-register DIAMOND) + ADMIN (zana BURE)
                        + server inaanza + dashboard inafunguka browser — HAKUNA configuration
 
 HUDUMA ZA PYTHON (stdlib tu kwa mtaalamu; venv ina Pillow/pyautogui kwa MTECH agent):
@@ -59,7 +61,7 @@ def _linux_pkg() -> str:
 def step_c(check: bool) -> bool:
     ok = have("gcc") or have("clang")
     mk = have("make")
-    print(f"[1/6] Zana za C: gcc/clang {'✔' if ok else '✗'} · make {'✔' if mk else '✗'}")
+    print(f"[1/7] Zana za C: gcc/clang {'✔' if ok else '✗'} · make {'✔' if mk else '✗'}")
     if (ok and mk) or check:
         return ok and mk
     if FAMILY == "linux":
@@ -80,10 +82,10 @@ def step_c(check: bool) -> bool:
 
 def step_rust(check: bool, skip: bool) -> bool:
     if skip:
-        print("[2/6] Rust: IMERUKIWA (--skip-rust)")
+        print("[2/7] Rust: IMERUKIWA (--skip-rust)")
         return have("cargo")
     ok = have("cargo") and have("rustc")
-    print(f"[2/6] Rust: {'✔ ' + subprocess.getoutput('rustc --version') if ok else '✗'}")
+    print(f"[2/7] Rust: {'✔ ' + subprocess.getoutput('rustc --version') if ok else '✗'}")
     if ok or check:
         return ok
     if FAMILY == "windows":
@@ -99,10 +101,10 @@ def step_rust(check: bool, skip: bool) -> bool:
 
 def step_r(check: bool, skip: bool) -> bool:
     if skip:
-        print("[3/6] R: IMERUKIWA (--skip-r)")
+        print("[3/7] R: IMERUKIWA (--skip-r)")
         return have("Rscript")
     ok = have("Rscript")
-    print(f"[3/6] R: {'✔ ' + subprocess.getoutput('Rscript --version 2>&1').strip() if ok else '✗'}")
+    print(f"[3/7] R: {'✔ ' + subprocess.getoutput('Rscript --version 2>&1').strip() if ok else '✗'}")
     if ok or check:
         return ok
     if FAMILY == "linux":
@@ -116,11 +118,35 @@ def step_r(check: bool, skip: bool) -> bool:
     return have("Rscript")
 
 
+def step_office(check: bool, skip: bool) -> bool:
+    """LibreOffice iliyoreshwa — kazi zote za ofisi ndani ya mfumo (Word/Excel/PPT/PDF)."""
+    if skip:
+        print("[4/7] LibreOffice: IMERUKIWA (--skip-office)")
+        return have("libreoffice") or have("soffice")
+    ok = have("libreoffice") or have("soffice")
+    print(f"[4/7] LibreOffice: {'✔' if ok else '✗'}")
+    if ok or check:
+        return ok
+    if FAMILY == "linux":
+        pm = _linux_pkg()
+        if pm == "apt-get":
+            run(f"{PKG['linux']['apt']} libreoffice libreoffice-gtk3 libreoffice-l10n-sw", timeout=1800)
+        elif pm == "dnf":
+            run("sudo dnf install -y libreoffice", timeout=1800)
+        else:
+            run("sudo pacman -S --noconfirm libreoffice-fresh", timeout=1800)
+    elif FAMILY == "macos":
+        run("brew install --cask libreoffice", timeout=1800)
+    else:
+        run("winget install -e --id TheDocumentFoundation.LibreOffice --accept-source-agreements --accept-package-agreements", timeout=1800)
+    return have("libreoffice") or have("soffice")
+
+
 def step_python_venv(check: bool) -> bool:
     venv = os.path.join(HERE, ".venv")
     pybin = os.path.join(venv, "Scripts", "python.exe") if FAMILY == "windows" else os.path.join(venv, "bin", "python")
     ok = os.path.exists(pybin)
-    print(f"[4/6] Python venv + deps: {'✔ ' + venv if ok else '✗'}")
+    print(f"[5/7] Python venv + deps: {'✔ ' + venv if ok else '✗'}")
     if ok or check:
         return ok
     run(f"{sys.executable} -m venv {shlex_quote(venv)}")
@@ -139,7 +165,7 @@ def shlex_quote(s: str) -> str:
 
 def step_ollama(check: bool, no_model: bool) -> bool:
     ok = have("ollama")
-    print(f"[5/6] Ollama: {'✔' if ok else '✗'}")
+    print(f"[6/7] Ollama: {'✔' if ok else '✗'}")
     if not ok and not check:
         if FAMILY == "linux":
             run("curl -fsSL https://ollama.com/install.sh | sh", timeout=1800)
@@ -167,11 +193,11 @@ def step_ollama(check: bool, no_model: bool) -> bool:
 def step_finish(check: bool, email: str | None, start: bool) -> None:
     py = "python" if FAMILY == "windows" else "python3"
     if check:
-        print("[6/6] Mwisho (UKAGUZI TU — hakuna kinachosakinishwa)")
+        print("[7/7] Mwisho (UKAGUZI TU — hakuna kinachosakinishwa)")
         return
     # AUTO-REGISTER: hakuna maswali — email ya default (au --email) + DIAMOND + admin
     mail = (email or "owner@mtaalamu.local").strip()
-    print(f"[6/6] KUANZISHA KIOTOMATIKI (hakuna configuration — account: {mail})")
+    print(f"[7/7] KUANZISHA KIOTOMATIKI (hakuna configuration — account: {mail})")
     run(f"{py} -m mtaalamu register {mail} INDIVIDUAL DIAMOND")
     run(f"{py} -m mtaalamu admin unlock")   # owner-mode: zana ZOTE BURE
     if start:
@@ -208,7 +234,7 @@ def _start_server(py: str) -> None:
     if os.path.exists(dash):
         import webbrowser
         webbrowser.open("file://" + dash.replace(os.sep, "/"))
-        print("      Dashboard imefunguka kwenye browser ✔ (tabs 9)")
+        print("      Dashboard imefunguka kwenye browser ✔ (tabs 11)")
 
 
 def _api_up() -> bool:
@@ -225,6 +251,7 @@ def main() -> None:
     check = "--check" in args
     skip_rust = "--skip-rust" in args
     skip_r = "--skip-r" in args
+    skip_office = "--skip-office" in args
     no_model = "--no-model" in args
     start = "--no-start" not in args
     email = None
@@ -236,6 +263,7 @@ def main() -> None:
         "C (gcc/make)": step_c(check),
         "Rust (cargo)": step_rust(check, skip_rust),
         "R (Rscript)": step_r(check, skip_r),
+        "LibreOffice": step_office(check, skip_office),
         "Python venv": step_python_venv(check),
         "Ollama + Qwen": step_ollama(check, no_model),
     }
@@ -245,7 +273,7 @@ def main() -> None:
         print(f"  {'✔' if v else '✗'} {k}")
     print("  ✔ Account (auto-register + ADMIN, zana BURE)" if not check else "  – account: (hakuna, ukaguzi tu)")
     if start and not check:
-        print("  ✔ Server http://127.0.0.1:8795 + Dashboard (tabs 9)")
+        print("  ✔ Server http://127.0.0.1:8795 + Dashboard (tabs 11)")
     bad = [k for k, v in results.items() if not v]
     print(f"\n{len(results)-len(bad)}/{len(results)} sawa." + (f" Zilizobaki: {', '.join(bad)} — endesha tena setup_all.py baada ya kuzirekebisha." if bad else " KILA KITU TAYARI — Dashboard iko browser yako!"))
 

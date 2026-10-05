@@ -20,13 +20,20 @@
     mtaalamu boot                                     # mfululizo wa UKIWAKA (checks halisi)
     mtaalamu system                                   # ramani ya OS (cpu/mem/disk/net/services)
     mtaalamu doctor                                   # ukaguzi
+    mtaalamu apps                                     # apps za mfumo (OpenMRS, Home Assistant, Web R…)
+    mtaalamu apps launch web-r                        # zindua UI HALISI ya app ya mfumo
+    mtaalamu apps stop openmrs                        # simamisha app
+    mtaalamu kali                                     # Kali HALISI: zana+terminals+drivers+partitions
+    mtaalamu kali tool nmap                           # fungua zana ya Kali kwenye terminal halisi
+    mtaalamu term                                     # fungua command prompt mpya
+    mtaalamu term "htop"                              # terminal mpya yenye amri
     mtaalamu serve                                    # HTTP API kwa UI ya hermes
 """
 import argparse
 import json
 import sys
 
-from . import admin, billing, clickpesa, ipc, models, scope, system_view, unified
+from . import admin, billing, clickpesa, ipc, kali, models, scope, system_apps, system_view, unified
 from .catalog import CATALOG
 from .shortcuts import ALL_SHORTCUTS, run_shortcut
 
@@ -51,6 +58,9 @@ def main() -> None:
     pay = sub.add_parser("pay"); pay.add_argument("amount", nargs="?", type=int, default=0); pay.add_argument("--op", default=""); pay.add_argument("--phone", required=True); pay.add_argument("--wait", type=int, default=90)
     ad = sub.add_parser("admin"); ad.add_argument("action", choices=("unlock", "lock", "price", "tier", "dashboard")); ad.add_argument("arg1", nargs="?", default=None); ad.add_argument("arg2", nargs="?", default=None); ad.add_argument("--key", default=None)
     sub.add_parser("boot"); sub.add_parser("system")
+    apps = sub.add_parser("apps"); apps.add_argument("action", nargs="?", default=None); apps.add_argument("app_id", nargs="?", default=None)
+    kal = sub.add_parser("kali"); kal.add_argument("action", nargs="?", default=None); kal.add_argument("arg1", nargs="*", default=[])
+    term = sub.add_parser("term"); term.add_argument("cmd", nargs="*", default=[])
     sub.add_parser("wallet")
     sub.add_parser("usage"); sub.add_parser("doctor"); sub.add_parser("serve")
     args = ap.parse_args()
@@ -160,6 +170,52 @@ def main() -> None:
         print(f"— hatua {ok}/{len(stages)} zimewaka —")
     elif args.cmd == "system":
         _p(system_view.system_map())
+    elif args.cmd == "apps":
+        if args.action == "launch" and args.app_id:
+            out = system_apps.launch(args.app_id)
+            if out.get("ok") and str(out.get("ui", "")).startswith("http"):
+                system_apps._open_browser(out["ui"])
+            _p(out)
+        elif args.action == "stop" and args.app_id:
+            _p(system_apps.stop(args.app_id))
+        else:
+            st = system_apps.status()
+            print("══ APPS ZA MFUMO (zimeunganishwa na MTECH OS) ══")
+            for a in st["apps"]:
+                mark = "▶ RUNNING" if a.get("running") else ("✔ ipo     " if a.get("installed") else "✗ haipo  ")
+                print(f"  {mark} {a['id']:<16} {a['name']}")
+                print(f"             UI: {a.get('ui', '—')}")
+            print("  runtimes: " + ", ".join(f"{k}:{'✔' if v else '✗'}" for k, v in st["runtimes"].items()))
+            print("  launch:   mtaalamu apps launch <id>   (UI halisi inafunguka)")
+    elif args.cmd == "kali":
+        if args.action == "tool" and args.arg1:
+            _p(kali.launch_tool(" ".join(args.arg1)))
+        elif args.action == "term":
+            _p(kali.open_terminal(" ".join(args.arg1)))
+        else:
+            info = kali.integrate()
+            k = info["kernel"]
+            print(f"══ KALI/OS BRIDGE — {k['kali'] or info['family']} · kernel {k['release']} ({k['arch']}) ══")
+            print(f" zana: {info['tools_count']} · terminals: {info['terminals_count']} · packages: {info['packages'].get('packages_total', '?')} (kali: {info['packages'].get('kali_security_packages', '?')})")
+            by: dict = {}
+            for t in info["tools"]:
+                by.setdefault(t["category"], []).append(t)
+            for cat, items in by.items():
+                print(f"\n [{cat}]")
+                for t in items[:12]:
+                    print(f"   {'✔' if t['installed'] else '✗'} {t['name']:<32} {t['cmd']}")
+                if len(items) > 12:
+                    print(f"   … +{len(items) - 12} zaidi")
+            print("\n terminals: " + ", ".join(t["id"] for t in info["terminals"]))
+            drv = info["drivers"]
+            print(" drivers: " + " | ".join(f"{kk}: {str(vv)[:80]}" for kk, vv in list(drv.items())[:3]))
+            p = info["partitions"]
+            ptxt = json.dumps(p.get("devices"), ensure_ascii=False)[:280] if p.get("devices") else str(p.get("text", ""))[:280]
+            print(" partitions: " + ptxt)
+            print(" services: " + ", ".join(info["services"].get("running", [])[:12]))
+            print("\n amri: mtaalamu kali tool nmap · mtaalamu term · mtaalamu term 'htop'")
+    elif args.cmd == "term":
+        _p(kali.open_terminal(" ".join(args.cmd)))
     elif args.cmd == "doctor":
         from .doctor_lite import run_checks
         _p(run_checks())

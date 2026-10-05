@@ -1,0 +1,68 @@
+#!/bin/sh
+## MTECH OS — hook ya INTEGRATIONS (chroot, inawakala ndani ya ISO ya Kali halisi)
+##
+## Inaunganisha kwenye OS:
+##   1. Apps za mfumo (UI halisi za waundaji):
+##      OpenMRS · Home Assistant · Web R (Shiny) · Hermes Desktop · Website
+##   2. Rust engine  → cargo build --release  (kasi + usalama wa OS)
+##   3. R analytics  → Rscript analytics.R    (chati/visualizations za OS)
+##   4. Shiny (R)    → CRAN                   (dashboard ya Web R)
+##   5. Heresi za apps → /usr/share/applications (zinaonekana kwenye menyu + /api/apps)
+##
+## Kumbuka: apps kubwa (OpenMRS docker, HA container, Electron) hazijengwi ndani ya
+## ISO — code yao ipo kwenye /opt/mtaalamu/hermes-agent na /api/apps/launch inazindua
+## UI zake halisi zikisakinishiwa runtime zake (docker/npm/Rscript).
+set -e
+echo "[MTECH-integrations] kuanza"
+
+MT=/opt/mtaalamu/hermes-agent
+VENV_PY=/opt/mtech/venv/bin/python
+
+# --- 1) Rust engine: jenga binary ya release (kasi + usalama wa OS) ---
+if [ -d "$MT/engine-rust" ] && command -v cargo >/dev/null 2>&1; then
+    echo "[MTECH-integrations] cargo build --release (engine-rust)…"
+    (cd "$MT/engine-rust" && cargo build --release --offline 2>/dev/null) \
+        || (cd "$MT/engine-rust" && cargo build --release) \
+        || echo "[MTECH-integrations] WARNING: engine haikujengwa — endesha: cd $MT/engine-rust && cargo build --release"
+    # weka binary kwenye PATH ya mfumo
+    if [ -f "$MT/engine-rust/target/release/mtaalamu" ]; then
+        ln -sf "$MT/engine-rust/target/release/mtaalamu" /usr/local/bin/mtaalamu-engine
+        echo "[MTECH-integrations] ✔ engine: /usr/local/bin/mtaalamu-engine"
+    fi
+else
+    echo "[MTECH-integrations] engine-rust: cargo haipo au folda haipo — inarukwa"
+fi
+
+# --- 2) R: shiny kwa dashboard ya Web R (CRAN; ikiwa mtandao hakuna, inarukwa) ---
+if command -v Rscript >/dev/null 2>&1; then
+    echo "[MTECH-integrations] R: kusakinisha shiny (CRAN)…"
+    Rscript -e 'install.packages(c("shiny","jsonlite"), repos="https://cloud.r-project.org", quiet=TRUE)' \
+        || echo "[MTECH-integrations] WARNING: shiny haijasakinishwa — endesha: Rscript -e 'install.packages(\"shiny\")'"
+    # analytics: ripoti ya kwanza ya mfumo (thibitisha inafanya kazi)
+    Rscript "$MT/analytics-r/analytics.R" >/dev/null 2>&1 \
+        && echo "[MTECH-integrations] ✔ analytics.R inafanya kazi" \
+        || echo "[MTECH-integrations] analytics.R: inarukwa (jsonlite fallback ipo ndani ya script)"
+else
+    echo "[MTECH-integrations] Rscript haipo — inarukwa"
+fi
+
+# --- 3) Heresi za apps za mfumo (System Apps + Kali Tools + MTAALAMU) ---
+# (build-iso.sh tayari imeweka desktop entries; hii inahakikisha icons zinaonekana)
+gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
+update-desktop-database /usr/share/applications 2>/dev/null || true
+
+# --- 4) Viashiria vya integrations (vinasomwa na /api/apps + /api/kali) ---
+mkdir -p /var/lib/mtech
+{
+    echo "rust-engine: $([ -f /usr/local/bin/mtaalamu-engine ] && echo ok || echo pending)"
+    echo "r-shiny: $(command -v Rscript >/dev/null 2>&1 && Rscript -e 'cat(requireNamespace(\"shiny\", quietly=TRUE))' 2>/dev/null || echo 0)"
+    echo "libreoffice: $(command -v libreoffice >/dev/null 2>&1 && echo ok || echo missing)"
+    echo "openmrs-src: $([ -d "$MT/openmrs" ] && echo ok || echo missing)"
+    echo "home-assistant-src: $([ -d "$MT/home-assistant" ] && echo ok || echo missing)"
+    echo "web-r: $([ -f "$MT/web-r/app.R" ] && echo ok || echo missing)"
+    echo "desktop-src: $([ -d "$MT/apps/desktop" ] && echo ok || echo missing)"
+    echo "website-src: $([ -d "$MT/website" ] && echo ok || echo missing)"
+} > /var/lib/mtech/integrations.status
+cat /var/lib/mtech/integrations.status || true
+
+echo "[MTECH-integrations] imekamilika"

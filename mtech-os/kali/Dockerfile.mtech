@@ -1,0 +1,70 @@
+# MTECH OS — CONTAINER (Kali Linux HALISI + MTAALAMU SMART + apps za mfumo)
+#
+# Jenga (kutoka root ya repo, OS yoyote yenye Docker — amd64 AU arm64):
+#   docker build -t mtech-os -f mtech-os/kali/Dockerfile.mtech .
+#
+# Endesha:
+#   ./mtech-os/kali/docker-run.sh              # shell ya MTECH OS + API 8795
+#   docker run -it --rm -p 8795:8795 mtech-os  # wewe mwenyewe
+#
+# Ndani:
+#   mtaalamu apps            # apps za mfumo (OpenMRS, Home Assistant, Web R…)
+#   mtaalamu kali            # ramani ya OS (zana, terminals, drivers, partitions)
+#   mtaalamu serve           # API → http://127.0.0.1:8795
+#
+# Multi-arch (amd64 + arm64 kwa pamoja):
+#   docker buildx build --platform linux/amd64,linux/arm64 -t mtech-os --push .
+FROM kalilinux/kali-rolling
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    MTECH_ROOT=/opt/mtech \
+    MTAALAMU_ROOT=/opt/mtaalamu/hermes-agent \
+    PYTHONPATH=/opt/mtech/agent
+
+# --- Packages halisi za Kali (base + Rust + R + LibreOffice + tools) ---
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates curl git wget unzip xz-utils file \
+        python3 python3-pip python3-venv python3-dev \
+        rustc cargo \
+        r-base r-base-dev \
+        libreoffice-gtk3 libreoffice-l10n-sw \
+        xfce4-terminal xterm \
+        nmap netcat-openbsd tcpdump traceroute whois dnsutils \
+        john hashcat sqlmap hydra wireshark-common tshark \
+        procps iproute2 net-tools lsb-release gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- MTECH OS agent + MTAALAMU SMART + apps za mfumo ---
+COPY mtech-os/agent/            /opt/mtech/agent/
+COPY mtech-os/gui/              /opt/mtech/gui/
+COPY mtech-os/services/         /opt/mtech/services/
+COPY mtech-os/desktop/          /opt/mtech/desktop/
+COPY hermes-agent/mtaalamu/     /opt/mtaalamu/hermes-agent/mtaalamu/
+COPY hermes-agent/web-html/     /opt/mtaalamu/hermes-agent/web-html/
+COPY hermes-agent/data/         /opt/mtaalamu/hermes-agent/data/
+COPY hermes-agent/engine-rust/  /opt/mtaalamu/hermes-agent/engine-rust/
+COPY hermes-agent/analytics-r/  /opt/mtaalamu/hermes-agent/analytics-r/
+COPY hermes-agent/web-r/        /opt/mtaalamu/hermes-agent/web-r/
+COPY hermes-agent/website/      /opt/mtaalamu/hermes-agent/website/
+COPY hermes-agent/openmrs/      /opt/mtaalamu/hermes-agent/openmrs/
+COPY hermes-agent/home-assistant/ /opt/mtaalamu/hermes-agent/home-assistant/
+COPY hermes-agent/apps/         /opt/mtaalamu/hermes-agent/apps/
+
+# --- venv ya agent + CLI ya mtaalamu + launchers ---
+RUN python3 -m venv /opt/mtech/venv \
+    && /opt/mtech/venv/bin/pip install --no-cache-dir -r /opt/mtech/agent/requirements.txt || true \
+    && ln -sf /opt/mtaalamu/hermes-agent/mtaalamu /usr/local/lib/python3*/dist-packages/mtaalamu 2>/dev/null || true \
+    && printf '#!/bin/sh\nexec python3 -m mtaalamu "$@"\n' > /usr/local/bin/mtaalamu \
+    && chmod +x /usr/local/bin/mtaalamu \
+    && printf '#!/bin/sh\nexport PYTHONPATH=/opt/mtech/agent\nexec /opt/mtech/venv/bin/python /opt/mtech/gui/mtech_shell.py "$@"\n' > /usr/local/bin/mtaalamu-app \
+    && chmod +x /usr/local/bin/mtaalamu-app \
+    && echo 'PRETTY_NAME="MTECH OS (Kali Rolling, container) — MTAALAMU SMART ndani"' > /etc/mtech-os-release \
+    && mkdir -p /var/lib/mtech
+
+# --- Account + admin (one-click ndani ya container) ---
+RUN mtaalamu register owner@mtaalamu.local INDIVIDUAL DIAMOND || true \
+    && mtaalamu admin unlock || true
+
+EXPOSE 8795
+WORKDIR /opt/mtaalamu/hermes-agent
+CMD ["python3", "-m", "mtaalamu", "serve"]

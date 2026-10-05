@@ -5,7 +5,7 @@
 AGENT := agent
 PY    := python3
 
-.PHONY: skills ask watch serve app module kernel iso iso-everything install smoke clean
+.PHONY: skills ask watch serve app module kernel iso iso-everything iso-arm64 docker-build docker-run install smoke clean
 
 skills:
 	cd $(AGENT) && $(PY) -m mtech_agent skills
@@ -36,12 +36,22 @@ iso:
 iso-everything:
 	sudo bash kali/build-iso.sh --everything
 
+iso-arm64:
+	sudo bash kali/build-iso.sh --arch arm64
+
+docker-build:
+	docker build -t mtech-os -f kali/Dockerfile.mtech ..
+
+docker-run:
+	bash kali/docker-run.sh
+
 install:
 	sudo bash install.sh
 
 smoke:
-	$(PY) -m compileall -q $(AGENT)/mtech_agent gui/mtech_shell.py && echo "[OK] python"
-	for f in install.sh kernel/build-kernel.sh kali/build-iso.sh; do bash -n $$f && echo "[OK] $$f"; done
+	$(PY) -m compileall -q $(AGENT)/mtech_agent gui/mtech_shell.py desktop/system-apps-window.py desktop/kali-tools-window.py && echo "[OK] python"
+	for f in install.sh kernel/build-kernel.sh kali/build-iso.sh kali/docker-run.sh; do bash -n $$f && echo "[OK] $$f"; done
+	$(PY) -m compileall -q ../hermes-agent/mtaalamu && echo "[OK] mtaalamu"
 	cd $(AGENT) && $(PY) -m mtech_agent probe >/dev/null && echo "[OK] probe"
 	cd $(AGENT) && $(PY) -m mtech_agent skills | head -3
 
