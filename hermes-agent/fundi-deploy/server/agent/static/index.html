@@ -248,6 +248,29 @@ details p{font-size:13px;color:#b2ebf2}
     <button onclick="reactSweep()">▶ Anza ReAct (sweep halisi)</button>
   </div>
   <div id="react_result" style="margin-top:10px">—</div>
+
+  <h3 style="margin-top:16px">🧠 NEURALIS BRAIN — kumbukumbu ya pamoja ya agents</h3>
+  <p class="hint">Kila agent anajifunza kutoka kwa wengine: agent aliyeitatua "Wi-Fi" kwenye PC moja — agent mwingine anarecall suluhisho mara moja. Hifadhi: SQLite (LanceDB vector search = H4).</p>
+  <div class="row">
+    <button class="sec" onclick="brainStats()">📊 Hali ya Brain</button>
+    <input id="brain_q" placeholder="Tafuta: wi-fi haifanyi kazi" style="flex:1;min-width:180px"/>
+    <button class="sec" onclick="brainRecall()">🔎 Recall</button>
+  </div>
+  <div id="brain_result" class="meta" style="margin-top:8px">—</div>
+
+  <h3 style="margin-top:16px">⚡ FLEET EXEC — ombi MOJA → OS nyingi (kama RDM)</h3>
+  <p class="hint">Mfano: "Sysinternals kwenye Windows + btop kwenye Ubuntu" — chagua OS kila kundi + apps → lazima idhini yako (bounded autonomy).</p>
+  <div class="row">
+    <input id="fleet_os1" placeholder="OS 1: win11" style="max-width:130px" value="win11"/>
+    <input id="fleet_apps1" placeholder="apps win: anydesk,7zip" style="flex:1;min-width:170px"/>
+    <input id="fleet_os2" placeholder="OS 2: ubuntu" style="max-width:130px" value="ubuntu"/>
+    <input id="fleet_apps2" placeholder="apps linux: python,git" style="flex:1;min-width:170px"/>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <label style="font-size:12px"><input type="checkbox" id="fleet_approved"/> Naidhinisha install (High-risk — bounded autonomy)</label>
+    <button onclick="fleetExec()">🚀 Tekeleza kwenye fleet</button>
+  </div>
+  <div id="fleet_result" class="meta" style="margin-top:8px">—</div>
 </div>
 
 <div class="card" id="card_images" style="display:none"><h3>💾 Images za OS</h3><div id="images">—</div></div>
@@ -510,6 +533,32 @@ async function reactSweep(){
       return `<div style="border-left:3px solid ${color};padding:4px 8px;margin:4px 0;background:#0a1628"><small style="color:${color}">${st.kind.toUpperCase()}${st.action?' · '+st.action+' ('+st.risk+', approved='+st.approved+')':''}</small><br/>${st.thought_sw||st.observation}</div>`;
     }).join('') +
     `<small class="meta">Alive: ${(d.alive||[]).join(', ')||'—'} · ${d.note_sw}</small>`;
+}
+
+// ---------- NEURALIS BRAIN + FLEET EXEC ----------
+async function brainStats(){
+  const d = await (await fetch(API+'/api/brain/stats')).json();
+  document.getElementById('brain_result').innerHTML = `🧠 memories: <b>${d.memories}</b> · agents waloshiriki: <b>${d.agents_sharing}</b><br/><small>${d.note_sw}</small>`;
+}
+async function brainRecall(){
+  const q = v('brain_q'); if(!q){ alert('Andika tatizo la kufuatilia'); return; }
+  const d = await (await fetch(API+'/api/brain/recall?q='+encodeURIComponent(q))).json();
+  document.getElementById('brain_result').innerHTML = !d.ok ? `❌ ${d.error}` :
+    (d.results||[]).length ? d.results.map(r=>
+      `<div style="border-left:3px solid #00e676;padding:4px 8px;margin:4px 0;background:#0a1628">🧠 <b>${r.pc}</b> (${r.agent}) — ${r.problem}<br/>✅ ${r.solution} <span class="badge done" style="font-size:10px">conf ${(r.confidence*100).toFixed(0)}% · match ${(r.match_score*100).toFixed(0)}%</span></div>`
+    ).join('') : '<span class="meta">Hakuna kumbukumbu inayofanana bado.</span>';
+}
+async function fleetExec(){
+  const groups = [
+    { os: v('fleet_os1')||'win11', apps: v('fleet_apps1').split(',').map(s=>s.trim()).filter(Boolean) },
+    { os: v('fleet_os2')||'ubuntu', apps: v('fleet_apps2').split(',').map(s=>s.trim()).filter(Boolean) },
+  ].filter(g => g.apps.length);
+  if(!groups.length){ alert('Weka apps angalau kwa OS moja'); return; }
+  const d = await (await fetch(API+'/api/fleet/exec',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({os_groups:groups, human_approved: document.getElementById('fleet_approved').checked})})).json();
+  document.getElementById('fleet_result').innerHTML = d.ok ?
+    (d.plans||[]).map(p=>`<div>⚡ <b>${p.target}</b> — ${p.apps.join(', ')}<br/><code style="font-size:10px;color:#00e676">${p.install_commands.join('<br/>')}</code></div>`).join('') + `<small>${d.note_sw}</small>` :
+    `⏸ ${d.error}`;
 }
 
 // ---------- REMOTE OS INSTALL ----------

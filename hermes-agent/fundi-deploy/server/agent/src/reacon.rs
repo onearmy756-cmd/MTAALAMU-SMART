@@ -66,6 +66,38 @@ pub fn action_allowed(action: Action, human_approved: bool) -> bool {
     }
 }
 
+// ---------- CONFIDENCE SCORE (kama Tanium) ----------
+
+/// Kihesabu cha uhakika wa uchunguzi/hatua (0.0–1.0):
+/// - Low-risk actions zenye observation wazi = uhakika wa juu
+/// - High-risk bila idhini = 0.0 (hakuna uhakika)
+/// - PC nyingi zilizojibu sweep = uhakika wa juu wa uchunguzi
+pub fn confidence_score(alive: usize, total_targets: usize, risky_without_approval: bool) -> f64 {
+    if risky_without_approval {
+        return 0.0;
+    }
+    if total_targets == 0 {
+        return 0.5;
+    }
+    let ratio = alive as f64 / total_targets as f64;
+    (0.5 + 0.5 * ratio).clamp(0.0, 1.0)
+}
+
+// ---------- MULTI-OS EXECUTION (kama RDM: ombi MOJA → OS nyingi) ----------
+
+/// Ombi moja la apps kwa OS tofauti kwa WAKATI MMOJA:
+/// "Sakinisha Sysinternals kwenye Windows na btop kwenye Ubuntu" → plans per-OS.
+pub fn multi_os_plan(os_groups: Vec<(String, Vec<String>)>) -> Vec<crate::bundles::PcPlan> {
+    os_groups
+        .into_iter()
+        .map(|(os, apps)| crate::bundles::PcPlan {
+            display_name: format!("{}-fleet", os),
+            os,
+            app_ids: apps,
+        })
+        .collect()
+}
+
 // ---------- STEP (ReAct) ----------
 
 #[derive(Debug, Clone, Serialize)]
@@ -201,6 +233,30 @@ impl ReActSession {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn multi_os_plan_ombi_mojwa_os_mbili() {
+        let plans = multi_os_plan(vec![
+            ("win11".into(), vec!["anydesk".into()]),
+            ("ubuntu".into(), vec!["python".into()]),
+        ]);
+        assert_eq!(plans.len(), 2);
+        assert_eq!(plans[0].os, "win11");
+        assert_eq!(plans[1].os, "ubuntu");
+        let cmds = plans[1].install_commands();
+        assert!(cmds[0].contains("apt-get install"));
+    }
+
+    #[test]
+    fn confidence_score_halisi() {
+        // PCs 45/50 zinajibu → uhakika wa juu
+        let c = confidence_score(45, 50, false);
+        assert!((c - 0.95).abs() < 1e-9);
+        // Hakuna aliyejibu → 0.5 (tunajua tunachojua tu)
+        assert!((confidence_score(0, 50, false) - 0.5).abs() < 1e-9);
+        // High-risk bila idhini = hakuna uhakika kabisa
+        assert_eq!(confidence_score(50, 50, true), 0.0);
+    }
 
     #[test]
     fn bounded_autonomy_risk_gate() {
