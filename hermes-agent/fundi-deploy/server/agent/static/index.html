@@ -91,6 +91,7 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#sec_card'">🛡️ CYBER</button>
   <button onclick="location.hash='#tools_card'">🧰 TOOLS</button>
   <button onclick="location.hash='#rip_card'">📄 RIPOTI</button>
+  <button onclick="location.hash='#fleet_card'">👥 AGENTS</button>
 </nav>
 
 <main>
@@ -677,6 +678,20 @@ details p{font-size:13px;color:#b2ebf2}
     <button onclick="ripPdf()" style="background:#34d399">⬇ PDF (TZS 5,000)</button>
   </div>
   <div id="rip_out" class="pre">—</div>
+</div>
+
+<!-- 👥 AGENT LAYER — agents kwenye kompyuta zote (100+) kwa wakati mmoja -->
+<div class="card" id="fleet_card">
+  <h3>👥 AGENT LAYER</h3>
+  <p class="hint">Agents kwenye kompyuta zote wanajiandikisha, wanatuma hali yao (heartbeat), na wanapata kazi zilizoidhinishwa (HITL) — kwa WAKATI MMOJA. Kifaa kisichojibu kwa dakika 3 kinaonekana OFFLINE.</p>
+  <div class="row">
+    <b id="fl_total">0</b>&nbsp;agents ·&nbsp;<b id="fl_online" style="color:#34d399">0</b>&nbsp;online ·&nbsp;<b id="fl_working" style="color:#fbbf24">0</b>&nbsp;wanafanya kazi
+    <input id="fl_device" placeholder="Jina la kifaa (mf. lab_user_101)" style="flex:1;min-width:180px"/>
+    <button onclick="flRegister()">➕ Sajilia agent</button>
+  </div>
+  <div id="fl_token" class="meta" style="margin-top:4px">Token ya agent huonyeshwa MARA MOJA tu baada ya kusajiliwa — ihifadhi kwenye kifaa.</div>
+  <h4 style="margin-top:8px">AGENT WOTE</h4>
+  <div id="fl_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px"></div>
 </div>
 
 </main>
@@ -1595,6 +1610,40 @@ async function ripPdf(){
   } catch(e) { el.innerHTML = '❌ ' + escHtml(String(e)); }
 }
 window.addEventListener('load', ()=>{});
+
+// ---------- AGENT LAYER (H14) ----------
+const FL_TOKENS = {}; // device → token (muda wa kipindi hiki tu; halisi: kifaa kinahifadhi)
+async function flRegister(){
+  const device = (document.getElementById('fl_device').value||'').trim();
+  if (!device) { alert('Weka jina la kifaa'); return; }
+  const d = await (await fetch(API+'/api/fleet/register', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({device:device,os_type:'',health:'nzuri'})})).json();
+  if (d.ok) {
+    FL_TOKENS[device] = d.token;
+    document.getElementById('fl_token').innerHTML = `✅ <b>${escHtml(device)}</b> amesajiliwa · agent_id: <b>${escHtml(d.agent_id.slice(0,8))}…</b> · Token (ihifadhi SASA): <code>${escHtml(d.token)}</code>`;
+    flLoad();
+  } else {
+    document.getElementById('fl_token').innerHTML = '❌ ' + escHtml(d.error||'');
+  }
+}
+async function flLoad(){
+  const d = await (await fetch(API+'/api/fleet/agents')).json().catch(()=>null);
+  if (!d || !d.ok) return;
+  document.getElementById('fl_total').textContent = d.total||0;
+  document.getElementById('fl_online').textContent = d.online||0;
+  document.getElementById('fl_working').textContent = d.working||0;
+  const el = document.getElementById('fl_grid');
+  el.innerHTML = (d.agents||[]).map(a => {
+    const col = a.online? (a.status==='working'? '#fbbf24':'#34d399') : '#f87171';
+    const badge = a.online? (a.status==='working'? '⚙️ INAFANYA KAZI':'🟢 IDLE') : '🔴 OFFLINE';
+    return `<div class="card" style="margin:0;padding:8px">
+      <div class="row" style="gap:6px"><b style="flex:1">${escHtml(a.device)}</b><span class="pill" style="background:${col}22;color:${col}">${badge}</span></div>
+      <div class="meta">${escHtml(a.os||'')} · afya ${escHtml(a.health||'—')}</div>
+      ${a.job? `<div class="meta">kazi: ${escHtml(String(a.job).slice(0,8))}… ${a.progress}%</div><div class="bar"><div style="width:${a.progress}%;height:100%;background:${col}"></div></div>` : ''}
+    </div>`;
+  }).join('') || '<span class="meta">Hakuna agents bado — sajilia kifaa la kwanza.</span>';
+}
+setInterval(flLoad, 5000);
+window.addEventListener('load', ()=>{ flLoad(); });
 </script>
 <script>
 /* MTECH OS — ULINZI WA SOURCE: huduma za ndani zisioneswe kwa mtumiaji wa kawaida */
