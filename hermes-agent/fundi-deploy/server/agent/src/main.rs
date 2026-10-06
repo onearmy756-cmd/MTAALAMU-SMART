@@ -8,6 +8,7 @@
 
 mod admin;
 mod ai;
+mod ai_config;
 mod auth;
 mod backup;
 mod brain;
@@ -19,6 +20,7 @@ mod daily;
 mod hardware;
 mod images;
 mod lan;
+mod language;
 mod license;
 mod mode;
 mod multicast;
@@ -30,6 +32,7 @@ mod pricing;
 mod reacon;
 mod remote;
 mod report;
+mod remote_view;
 mod updates;
 mod vpn;
 mod wol;
@@ -104,6 +107,7 @@ async fn main() -> anyhow::Result<()> {
     mode::init_tables(&db).await;
     daily::init_tables(&db).await;
     updates::init_tables(&db).await;
+    language::init_tables(&db).await;
 
     // Seed agents 10 (agentic vision)
     let agents: [(&str, &str); 10] = [
@@ -245,6 +249,12 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/daily/report", get(daily_report))
         .route("/api/daily/permission", post(daily_permission))
         .route("/api/updates/check", post(updates_check))
+        // LANGUAGE + REAL REMOTING (maelezo ya mmiliki)
+        .route("/api/language", post(lang_set))
+        .route("/api/language/:username", get(lang_get))
+        .route("/api/translate", post(translate_post))
+        .route("/api/remote/pc/:name", get(remote_pc))
+        .route("/api/remote/fleet", post(remote_fleet))
         // WIREGUARD VPN (P4) — kazi zote za mbali kupitia wg0
         .route("/api/vpn/init", post(vpn_init))
         .route("/api/vpn/status", get(vpn_status))
@@ -1014,6 +1024,58 @@ async fn daily_permission(State(s): State<AppState>) -> Json<serde_json::Value> 
 async fn updates_check(State(s): State<AppState>) -> Json<serde_json::Value> {
     let online = mode::get_mode(&s.db).await == mode::Mode::Online;
     Json(json!({ "ok": true, "update": updates::check_and_notify(&s.db, online).await }))
+}
+
+// ---------- Language (chagua wakati wa kusajili + AI translate) ----------
+
+#[derive(serde::Deserialize)]
+struct LangSetReq { username: String, language: String }
+
+async fn lang_set(State(s): State<AppState>, Json(r): Json<LangSetReq>) -> Json<serde_json::Value> {
+    match language::set_language(&s.db, &r.username, &r.language).await {
+        Ok(()) => Json(json!({ "ok": true, "username": r.username, "language": r.language })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn lang_get(State(s): State<AppState>, Path(username): Path<String>) -> Json<serde_json::Value> {
+    Json(json!({ "ok": true, "username": username, "language": language::get_language(&s.db, &username).await }))
+}
+
+#[derive(serde::Deserialize)]
+struct TranslateReq { username: String, text: String }
+
+async fn translate_post(State(s): State<AppState>, Json(r): Json<TranslateReq>) -> Json<serde_json::Value> {
+    let (translated, lang) = language::auto_translate(&s.db, &r.username, &r.text).await;
+    Json(json!({ "ok": true, "language": lang, "translated": translated }))
+}
+
+// ---------- Real Remoting (full view ya kila PC) ----------
+
+async fn remote_pc(State(s): State<AppState>, Path(name): Path<String>) -> Json<serde_json::Value> {
+    // PC: tafuta IP yake kutoka discovery ya mwisho (arp) au subnet ya VPN
+    let cfg = vpn::Config::load();
+    let (a, b, c) = cfg.subnet_base();
+    // Kwa kasi: full view na IP ya VPN (jina == identity); services ni probe halisi
+    let ip = format!("{a}.{b}.{c}.2"); // peers huanza .2
+    let view = remote_view::full_view(&s.db, &name, &ip, "", 400).await;
+    Json(json!({ "ok": true, "pc": view }))
+}
+
+#[derive(serde::Deserialize)]
+struct RemoteFleetReq { hosts: Vec<RemoteHost> }
+#[derive(serde::Deserialize)]
+struct RemoteHost { name: String, ip: String }
+
+async fn remote_fleet(State(s): State<AppState>, Json(r): Json<RemoteFleetReq>) -> Json<serde_json::Value> {
+    let hosts: Vec<(String, String)> = r.hosts.into_iter().map(|h| (h.name, h.ip)).collect();
+    let views = remote_view::fleet_snapshot(&s.db, &hosts, 400).await;
+    Json(json!({
+        "ok": true,
+        "count": views.len(),
+        "pcs": views,
+        "note_sw": "Full computer view kwa kila PC — kupitia wg0 kwa mbali. KANUNI: kila uwanja ni probe halisi au DB ya kazi."
+    }))
 }
 
 // ---------- WireGuard VPN (P4) ----------

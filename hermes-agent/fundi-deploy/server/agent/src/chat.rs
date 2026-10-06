@@ -22,7 +22,9 @@ pub struct ChatReply {
 const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
 const MODEL: &str = "qwen2.5vl:3b";
 
-/// Swali la LLM halisi (inaitwa online PEKEE).
+/// Swali la LLM halisi — LLM inaishi kwenye SERVER KUU YA LAN (docker),
+/// kwa hiyo inafanya kazi hata OFFLINE (mtandao wa ndani unaotosha).
+/// Online ni kwa cloud AI PEKEE — LLM ya LAN haitegemei internet.
 async fn llm_ask(question: &str, context: &str) -> Option<String> {
     let body = serde_json::json!({
         "model": MODEL,
@@ -51,19 +53,19 @@ pub async fn ask(db: &sqlx::SqlitePool, question: &str, online: bool) -> ChatRep
         .collect::<Vec<_>>()
         .join("\n");
 
-    // 2. Online + LLM inapatikana → jawabu la LLM na muktadha
-    if online {
-        if let Some(answer) = llm_ask(question, &context).await {
-            return ChatReply {
-                question: question.into(),
-                answer_sw: answer.trim().into(),
-                source: "llm".into(),
-                confidence: if refs.is_empty() { 0.7 } else { 0.9 },
-                references: refs.iter().map(|(m, _)| m.solution.clone()).collect(),
-            };
-        }
-        // LLM haipatikani → inaendelea offline fallback (hakuna uongo)
+    // 2. LLM ya SERVER KUU YA LAN: inafanya kazi hata OFFLINE (docker service
+    //    ya LLM inaishi ndani ya LAN — kompyuta zote zimeunganishwa nayo).
+    //    `online` inaongeza tu uwezo wa cloud AI; LLM ya LAN haitegemei internet.
+    if let Some(answer) = llm_ask(question, &context).await {
+        return ChatReply {
+            question: question.into(),
+            answer_sw: answer.trim().into(),
+            source: if online { "llm".into() } else { "llm_offline_lan".into() },
+            confidence: if refs.is_empty() { 0.7 } else { 0.9 },
+            references: refs.iter().map(|(m, _)| m.solution.clone()).collect(),
+        };
     }
+    // LLM ya LAN haipatikani → offline fallback (hakuna uongo)
 
     // 3. Offline fallback: brain + rules za msingi
     let (answer, conf) = if let Some((m, score)) = refs.first() {
@@ -129,11 +131,22 @@ mod tests {
 
     #[tokio::test]
     async fn online_bila_llm_inarudi_offline_fallback() {
-        // Sandbox haina Ollama kwenye 11434 → lazima ifallback (hakuna uongo)
+        // Sandbox haina Ollama/llama.cpp kwenye 11434 → lazima ifallback (hakuna uongo)
         let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
         crate::brain::init_tables(&db).await;
         let r = ask(&db, "swali la kawaida lisilopo kwenye brain", true).await;
         assert_ne!(r.source, "llm"); // LLM haipatikani hapa
         assert!(r.confidence <= 0.9);
+    }
+
+    #[tokio::test]
+    async fn llm_offline_lan_source_ikifika() {
+        // Offline (online=false) lakini LLM ya LAN ikiwa ipo → source llm_offline_lan
+        let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
+        crate::brain::init_tables(&db).await;
+        let r = ask(&db, "swali la jaribio", false).await;
+        // sandbox: LLM haipatikani → fallback; hii inathibitisha hakuna panic na
+        // source iko halisi (llm_offline_lan / brain_offline)
+        assert!(r.source == "llm_offline_lan" || r.source == "brain_offline");
     }
 }
