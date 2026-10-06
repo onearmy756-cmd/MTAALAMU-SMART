@@ -90,6 +90,7 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#repo_card'">📦 REPO</button>
   <button onclick="location.hash='#sec_card'">🛡️ CYBER</button>
   <button onclick="location.hash='#tools_card'">🧰 TOOLS</button>
+  <button onclick="location.hash='#rip_card'">📄 RIPOTI</button>
 </nav>
 
 <main>
@@ -657,6 +658,25 @@ details p{font-size:13px;color:#b2ebf2}
   <div id="tl_out" class="pre" style="background:#0b1220;min-height:60px;margin-top:8px">&gt; </div>
   <h4 style="margin-top:8px">KAZI ZILIZOTANGULIA (audit)</h4>
   <div id="tl_runs" class="meta">Hakuna kazi bado.</div>
+</div>
+
+<!-- 📄 RIPOTI — PDF rasmi (brand ya MTECH OS, TZS 5,000) + CSV bure -->
+<div class="card" id="rip_card">
+  <h3>📄 RIPOTI RASMI</h3>
+  <p class="hint">Ripoti za PDF zenye brand ya MTECH OS (Mbilinyi Tech) — tayari kumpa mteja au mahakama. PDF: <b>TZS 5,000</b> · CSV: <b>bure</b>. Account inaona ripoti ZAKE PEKEE.</p>
+  <div class="row">
+    <select id="rip_kind">
+      <option value="security">🛡️ USALAMA — afya ya kompyuta + vitukeo</option>
+      <option value="forensics">🔬 FORENSICS — kesi + hash ya ushahidi</option>
+      <option value="bili">💰 BILI — malipo na matumizi</option>
+      <option value="kazi">🧰 KAZI — kazi zilizotangulia (audit)</option>
+    </select>
+    <input id="rip_account" placeholder="Account" value="mteja1" style="max-width:130px"/>
+    <button onclick="ripPreview()">👁️ Hakiki</button>
+    <button onclick="ripCsv()">⬇ CSV (bure)</button>
+    <button onclick="ripPdf()" style="background:#34d399">⬇ PDF (TZS 5,000)</button>
+  </div>
+  <div id="rip_out" class="pre">—</div>
 </div>
 
 </main>
@@ -1537,6 +1557,44 @@ async function tlRuns(){
     `<div>[${escHtml(String(r.at||'').slice(0,16))}] ${escHtml(r.tool)} → ${escHtml(r.target)} · ${r.ok? '✅':'❌'} · ${r.duration_ms}ms</div>`).join('') || 'Hakuna kazi bado.';
 }
 window.addEventListener('load', ()=>{ tlLoad(); });
+
+// ---------- RIPOTI RASMI (H13) ----------
+function ripKindAcc(){
+  return {
+    kind: document.getElementById('rip_kind').value,
+    acc: document.getElementById('rip_account').value || 'mteja1'
+  };
+}
+async function ripPreview(){
+  const {kind, acc} = ripKindAcc();
+  const d = await (await fetch(API+'/api/reports/preview/'+encodeURIComponent(kind)+'/'+encodeURIComponent(acc))).json();
+  const el = document.getElementById('rip_out');
+  if (!d.ok) { el.innerHTML = '❌ ' + escHtml(d.error||''); return; }
+  const rows = (d.rows||[]).map(r => `<div>&nbsp;&nbsp;· ${r.map(c=>escHtml(String(c).slice(0,28))).join(' | ')}</div>`).join('');
+  el.innerHTML = `<b>${escHtml(d.title)}</b> — ${d.total_rows} mistari ${d.total_rows>5? '(onyesha 5 kwanza)':''}<br/>` +
+    (d.summary||[]).map(([k,v]) => `&nbsp;&nbsp;${escHtml(k)}: <b>${escHtml(v)}</b>`).join('<br/>') +
+    `<br/>PDF: TZS ${Number(d.price_pdf_tzs).toLocaleString()} · CSV: bure${rows? '<br/>'+rows : '<br/><span class="meta">Hakuna data bado.</span>'}`;
+}
+async function ripCsv(){
+  const {kind, acc} = ripKindAcc();
+  window.open(API+'/api/reports/'+encodeURIComponent(kind)+'/csv/'+encodeURIComponent(acc), '_blank');
+}
+async function ripPdf(){
+  const {kind, acc} = ripKindAcc();
+  const el = document.getElementById('rip_out');
+  try {
+    const r = await fetch(API+'/api/reports/'+encodeURIComponent(kind)+'/pdf/'+encodeURIComponent(acc));
+    if (r.status === 402) { el.innerHTML = '❌ PDF inahitaji malipo (TZS 5,000) — ingiza hela au subskribe: tab 💰 BILI'; return; }
+    if (!r.ok) { el.innerHTML = '❌ ' + escHtml(await r.text()); return; }
+    const blob = await r.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'mtech-'+kind+'-'+acc+'.pdf';
+    a.click();
+    el.innerHTML = '✅ PDF imeshuka (brand ya MTECH OS) — salio limeshabadilika (tab 💰 BILI).';
+  } catch(e) { el.innerHTML = '❌ ' + escHtml(String(e)); }
+}
+window.addEventListener('load', ()=>{});
 </script>
 <script>
 /* MTECH OS — ULINZI WA SOURCE: huduma za ndani zisioneswe kwa mtumiaji wa kawaida */

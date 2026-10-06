@@ -46,6 +46,7 @@ mod vpn;
 mod pfsense;
 mod secops;
 mod toolkit;
+mod reports;
 mod wol;
 
 use axum::{
@@ -257,6 +258,9 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/toolkit/run", post(toolkit_run))
         .route("/api/toolkit/batch", post(toolkit_batch))
         .route("/api/toolkit/runs", get(toolkit_runs))
+        .route("/api/reports/:kind/pdf/:account", get(report_kind_pdf))
+        .route("/api/reports/:kind/csv/:account", get(report_kind_csv))
+        .route("/api/reports/preview/:kind/:account", get(report_preview))
         .route("/api/quote", post(quote_post))
         .route("/api/react/start", post(react_start))
         .route("/api/react/sweep", post(react_sweep))
@@ -1894,4 +1898,73 @@ async fn toolkit_catalog(State(s): State<AppState>) -> Json<serde_json::Value> {
 
 async fn toolkit_runs(State(s): State<AppState>) -> Json<serde_json::Value> {
     Json(toolkit::runs_json(&s.db).await)
+}
+
+// ---------- RIPOTI ZA WATEJA (H13): PDF (BILI gate) + CSV ----------
+
+fn report_bill_key(kind: &str) -> &'static str {
+    if kind == "forensics" { "digital_forensic" } else { "malware_scan" }
+}
+
+async fn report_preview(
+    State(s): State<AppState>,
+    Path((kind, account)): Path<(String, String)>,
+) -> Json<serde_json::Value> {
+    match reports::collect(&s.db, &kind, &account).await {
+        Some(rep) => Json(json!({
+            "ok": true, "kind": kind, "account": account,
+            "title": rep.title, "summary": rep.summary,
+            "rows": rep.rows.iter().take(5).collect::<Vec<_>>(),
+            "total_rows": rep.rows.len(),
+            "price_pdf_tzs": reports::PRICE_REPORT_TZS,
+            "price_csv_tzs": 0,
+        })),
+        None => Json(json!({ "ok": false, "error": "aina ya ripoti haipo: security | forensics | bili | kazi" })),
+    }
+}
+
+async fn report_kind_csv(
+    State(s): State<AppState>,
+    Path((kind, account)): Path<(String, String)>,
+) -> axum::response::Response {
+    use axum::response::IntoResponse;
+    let Some(rep) = reports::collect(&s.db, &kind, &account).await else {
+        return ([(axum::http::header::CONTENT_TYPE, "text/plain; charset=utf-8")], "aina ya ripoti haipo".to_string()).into_response();
+    };
+    // CSV ni BURE (PDF ndiyo inayolipiwa — rasmi yenye brand)
+    let csv = reports::to_csv(&rep);
+    let fname = format!("attachment; filename=\"mtech-{kind}-{account}.csv\"");
+    let headers = [
+        (axum::http::header::CONTENT_TYPE, "text/csv; charset=utf-8"),
+        (axum::http::header::CONTENT_DISPOSITION, fname.as_str()),
+    ];
+    (headers, csv).into_response()
+}
+
+async fn report_kind_pdf(
+    State(s): State<AppState>,
+    Path((kind, account)): Path<(String, String)>,
+) -> axum::response::Response {
+    use axum::response::IntoResponse;
+    let ct = [(axum::http::header::CONTENT_TYPE, "text/plain; charset=utf-8")];
+    let Some(rep) = reports::collect(&s.db, &kind, &account).await else {
+        return (axum::http::StatusCode::NOT_FOUND, ct, "aina ya ripoti haipo: security | forensics | bili | kazi").into_response();
+    };
+    if rep.rows.is_empty() {
+        return (axum::http::StatusCode::NOT_FOUND, ct, "Hakuna data bado kwa ripoti hii".to_string()).into_response();
+    }
+    // BILI GATE: PDF rasmi inalipiwa (subscription inatosha; vinginevyo salio TZS 5,000)
+    if let Err(e) = billing::authorize(&s.db, &account, reports::BILL_KEY_REPORT, 1).await {
+        let msg = format!("PDF inahitaji malipo (TZS {}): {e}", reports::PRICE_REPORT_TZS);
+        return (axum::http::StatusCode::PAYMENT_REQUIRED, ct, msg).into_response();
+    }
+    let bytes = reports::branded_pdf(&rep, &account);
+    let refc = format!("report-{kind}-{}", Uuid::new_v4());
+    let _ = billing::charge(&s.db, &account, reports::BILL_KEY_REPORT, 1, &refc).await;
+    let fname = format!("attachment; filename=\"mtech-{kind}-{account}.pdf\"");
+    let headers = [
+        (axum::http::header::CONTENT_TYPE, "application/pdf"),
+        (axum::http::header::CONTENT_DISPOSITION, fname.as_str()),
+    ];
+    (axum::http::StatusCode::OK, headers, bytes).into_response()
 }

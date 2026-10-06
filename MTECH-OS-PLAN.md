@@ -308,3 +308,26 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
   inaendesha kwa sudo tu kwenye server ya mmiliki.
 - **Tests 6 mpya** (registry 34/8, catalog BILA vuja, rate caps, parse, audit
   DB, batch 3 kompyuta) — jumla **118/118**.
+
+## H13 ✅ — RIPOTI RASMI (PDF/CSV) ZENYE BRAND — MALIZIO YA MRADI
+
+- **📄 RIPOTI kwenye /ui**: chagua aina → Hakiki (preview bure) → ⬇ CSV (bure)
+  au ⬇ **PDF (TZS 5,000)** — inashuka mara moja na brand ya **MTECH OS ·
+  Mbilinyi Tech** ("Umiliki ni wako, leseni ni yako, faida ni yako").
+- **Aina 4** (kila account inaona ZAKE PEKEE — access control, test inaithibitisha):
+  🛡️ USALAMA (afya per-PC + Salama/Tahadhari/Hatari) · 🔬 FORENSICS (kesi +
+  hash ya ushahidi IMEFUNGWA) · 💰 BILI (ledger: hela iliyoingizwa vs matumizi)
+  · 🧰 KAZI (audit ya kazi — majina salama tu).
+- **Backend (reports.rs)**: CSV escape sahihi (RFC 4180), **PDF 1.4 halisi
+  bila dependencies** (kichwa brand, muhtasari, jedwali, footer — hakuna
+  "hakuna data" kama rows tupu). BILI gate: PDF → `authorize("report")`
+  (TZS 5,000; subscription inatosha) + `charge()` kwa mafanikio; 402 wakati
+  hakuna salio; CSV bure.
+- **API**: `GET /api/reports/preview/:kind/:account` ·
+  `GET /api/reports/:kind/csv/:account` (Content-Disposition: mtech-<kind>-
+  <account>.csv) · `GET /api/reports/:kind/pdf/:account` (application/pdf).
+- **WHITE-LABEL FIX muhimu**: PDF ya deploy ya kale ilikuwa na brand ya ndani
+  ("FUNDI DEPLOY" kwenye Title/Producer/kichwa) — imebadilishwa kuwa MTECH OS
+  kila mahali; test mpya inazuiwa kurudi kwa brand ya kale.
+- **Tests 4 mpya** (CSV escape, CSV brand, PDF brand bila FUNDI, collect +
+  access control) — jumla **122/122**.

@@ -1,4 +1,4 @@
-//! report.rs — Ripoti ya PDF ya Fundi Deploy (logo ya FUNDI, bila dependencies).
+//! report.rs — Ripoti ya PDF ya MTECH OS (brand ya Mbilinyi Tech, bila dependencies).
 //!
 //! Kanuni kama fundi-mobile/src/pdf.rs: PDF 1.4 halisi, logo vector,
 //! Helvetica. Ripoti ina jobs zote (id, PC, OS, hali, %, ujumbe).
@@ -69,7 +69,7 @@ impl PdfBuilder {
         let info_n = self.objs.len() + 1;
         let info_pos = out.len();
         out.extend_from_slice(
-            format!("{info_n} 0 obj\n<< /Title (Ripoti ya FUNDI DEPLOY) /Producer (FUNDI DEPLOY) >>\nendobj\n")
+            format!("{info_n} 0 obj\n<< /Title (Ripoti ya MTECH OS) /Producer (MTECH OS - Mbilinyi Tech) >>\nendobj\n")
                 .as_bytes(),
         );
         let xref_pos = out.len();
@@ -163,8 +163,8 @@ pub fn jobs_report_pdf(
     let mut d = String::new();
     // kichwa: logo + brand
     d.push_str("q 44 0 0 44 40 762 cm /LOGO Do Q\n");
-    d.push_str(&txt(96.0, 788.0, 20.0, true, 0.0, 0.51, 0.56, "FUNDI"));
-    d.push_str(&txt(96.0, 772.0, 8.5, false, 0.33, 0.43, 0.47, "DEPLOY · LAN imaging + cloud"));
+    d.push_str(&txt(96.0, 788.0, 20.0, true, 0.0, 0.51, 0.56, "MTECH OS"));
+    d.push_str(&txt(96.0, 772.0, 8.5, false, 0.33, 0.43, 0.47, "Mbilinyi Tech · Umiliki ni wako, leseni ni yako, faida ni yako"));
     d.push_str(&txt(400.0, 788.0, 16.0, true, 0.04, 0.13, 0.15, "RIPOTI YA DEPLOY"));
     let stamp = chrono::Local::now().format("%Y-%m-%d %H:%M").to_string();
     d.push_str(&txt(400.0, 772.0, 11.0, false, 0.33, 0.43, 0.47, &format!("FD-{stamp}")));
@@ -237,14 +237,14 @@ pub fn jobs_report_pdf(
         0.42,
         0.47,
         0.5,
-        "Ripoti hii imetengenezwa na FUNDI DEPLOY (Agent inafanya kazi; msimamizi anasimamia).",
+        "Ripoti hii imetengenezwa na MTECH OS (Mbilinyi Tech) — kazi zinafuata idhini ya msimamizi (HITL).",
     ));
     build_pdf(&d)
 }
 
 /// JSON ya health (inatumika kwenye /report/pdf meta)
 pub fn report_meta() -> serde_json::Value {
-    json!({ "kind": "deploy_report", "producer": "FUNDI DEPLOY", "logo": "fundi-vector" })
+    json!({ "kind": "deploy_report", "producer": "MTECH OS", "logo": "mtech-vector" })
 }
 
 #[cfg(test)]
@@ -262,7 +262,8 @@ mod tests {
         assert!(pdf.starts_with(b"%PDF-1.4"));
         assert!(pdf.windows(5).any(|w| w == b"%%EOF"));
         let t = String::from_utf8_lossy(&pdf);
-        assert!(t.contains("FUNDI"));
+        assert!(t.contains("MTECH OS"));
+        assert!(!t.contains("FUNDI"), "brand ya kale haipo");
         assert!(t.contains("PC-01"));
         assert!(t.contains("PC-02"));
     }
