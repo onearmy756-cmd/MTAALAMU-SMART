@@ -334,3 +334,32 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
 
 - **H13b (nondo):** doc-headers za report.rs zilikuwa na marejeo ya ndani ya
   awali ("FUNDI/fundi-mobile") — yamesafishwa; comments ni za white-label pia.
+
+## H14 ✅ — AGENT LAYER (100+): kompyuta zote kwa wakati mmoja
+
+- **👥 AGENTS kwenye /ui**: hesabu (jumla · online · wanafanya kazi), grid ya
+  agent wote (IDLE/INAFANYA KAZI/OFFLINE, afya, progress ya kazi),
+  **Sajilia agent** (token inaonyeshwa mara moja — admin anaihifadhi kwenye
+  kifaa), auto-refresh kila sekunde 5.
+- **Backend mpya (fleet.rs)** — mtiririko wa AGENT LAYER kama mpango:
+  1. **REGISTER** `POST /api/fleet/register` {device} → agent_id + **token**
+     (siri, DB inahifadhi SHA-256 hash tu); jina la kifaa linakaguliwa
+     (valid_target); kikomo **MAX_AGENTS = 500** (100+ inatosha kwa mpango).
+  2. **HEARTBEAT** `POST /api/fleet/heartbeat` {agent_id, token, health} —
+     kifaa kisichojibu kwa **dakika 3** kinaonekana OFFLINE (test inaithibitisha).
+  3. **POLL** `POST /api/fleet/poll` — agent anapata kazi yake
+     **ILIZOIDHINISHWA (HITL)** pekee: `pick_approved_job()` (pure fn) inachagua
+     oldest ya kifaa hiki; agent mwenye kazi haihangi mpya; kazi inakuwa
+     "running" mara agent anaipata.
+  4. **REPORT** `POST /api/fleet/report` {progress, message} — maendeleo hadi
+     100 (kazi → "done", agent → idle); kila kitu kinaonekana kwenye tab Jobs
+     na 👥 AGENTS kwa wakati halisi.
+  5. **LIST** `GET /api/fleet/agents` — data halisi ya DB.
+- **Ushirikiano wa mfumo**: kazi za MATRIX (deploy), SOLUTIONS (secops:*),
+  REPO (bundle:*) zote zinapatikana kwa agents kupitia poll — HITL inabaki
+  (idhini kwanza, tab Jobs); audit ya kazi ipo (tool_runs + jobs DB).
+- **Tests 7 mpya** (agents **120** wakati mmoja, token-hash, HITL haiwape
+  kabla ya idhini, mtiririko kamili register→poll→report→done, offline dakika
+  3, jina mibaya, auth) — jumla **129/129**.
+- **White-label**: API inarudisha majina salama tu; token ni ya agent
+  (hash ndani ya DB); hakuna usanifu wa ndani unaoonekana.

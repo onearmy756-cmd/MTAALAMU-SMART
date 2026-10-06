@@ -18,6 +18,7 @@ mod company;
 mod discover;
 mod chat;
 mod daily;
+mod fleet;
 mod hardware;
 mod images;
 mod lan;
@@ -125,6 +126,7 @@ async fn main() -> anyhow::Result<()> {
     company::init_tables(&db).await;
     secops::init_tables(&db).await;
     toolkit::init_tables(&db).await;
+    fleet::init_tables(&db).await;
 
     // NEURALIS BRAIN (H5b): SQLite + LanceDB-compatible vector store (cosine semantic search)
     let brain = Arc::new(brain::Brain::new(db.clone(), "/data"));
@@ -261,6 +263,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/reports/:kind/pdf/:account", get(report_kind_pdf))
         .route("/api/reports/:kind/csv/:account", get(report_kind_csv))
         .route("/api/reports/preview/:kind/:account", get(report_preview))
+        .route("/api/fleet/register", post(fleet_register))
+        .route("/api/fleet/heartbeat", post(fleet_heartbeat))
+        .route("/api/fleet/poll", post(fleet_poll))
+        .route("/api/fleet/report", post(fleet_report))
+        .route("/api/fleet/agents", get(fleet_agents))
         .route("/api/quote", post(quote_post))
         .route("/api/react/start", post(react_start))
         .route("/api/react/sweep", post(react_sweep))
@@ -1967,4 +1974,76 @@ async fn report_kind_pdf(
         (axum::http::header::CONTENT_DISPOSITION, fname.as_str()),
     ];
     (axum::http::StatusCode::OK, headers, bytes).into_response()
+}
+
+// ---------- AGENT LAYER (H14): register / heartbeat / poll / report ----------
+
+#[derive(serde::Deserialize)]
+struct FleetRegisterReq {
+    device: String,
+    #[serde(default)]
+    os_type: String,
+    #[serde(default)]
+    health: String,
+}
+
+async fn fleet_register(State(s): State<AppState>, Json(r): Json<FleetRegisterReq>) -> Json<serde_json::Value> {
+    match fleet::register(&s.db, &r.device, &r.os_type, &r.health).await {
+        Ok((id, token, now_ms)) => Json(json!({
+            "ok": true, "agent_id": id, "token": token,
+            "heartbeat_after_ms": 20_000,
+            "note_sw": "Hifadhi token mahali salama kwenye kifaa — ndiyo utambulisho wako wa kazi.",
+        })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct FleetPingReq {
+    agent_id: String,
+    token: String,
+    #[serde(default)]
+    health: String,
+}
+
+async fn fleet_heartbeat(State(s): State<AppState>, Json(r): Json<FleetPingReq>) -> Json<serde_json::Value> {
+    match fleet::heartbeat(&s.db, &r.agent_id, &r.token, &r.health).await {
+        Ok((id, device, status, job)) => Json(json!({
+            "ok": true, "agent_id": id, "device": device, "status": status, "current_job": job,
+        })),
+        Err(e) => Json(json!({ "ok": false, "error": e, "reauth": true })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct FleetPollReq {
+    agent_id: String,
+    token: String,
+}
+
+async fn fleet_poll(State(s): State<AppState>, Json(r): Json<FleetPollReq>) -> Json<serde_json::Value> {
+    let Some((_, device)) = fleet::auth(&s.db, &r.agent_id, &r.token).await else {
+        return Json(json!({ "ok": false, "error": "token si sahihi — jisajili upya", "reauth": true }));
+    };
+    Json(fleet::poll(&s.db, &s.jobs, &device).await)
+}
+
+#[derive(serde::Deserialize)]
+struct FleetReportReq {
+    agent_id: String,
+    token: String,
+    progress: u32,
+    #[serde(default)]
+    message: String,
+}
+
+async fn fleet_report(State(s): State<AppState>, Json(r): Json<FleetReportReq>) -> Json<serde_json::Value> {
+    let Some((_, device)) = fleet::auth(&s.db, &r.agent_id, &r.token).await else {
+        return Json(json!({ "ok": false, "error": "token si sahihi — jisajili upya", "reauth": true }));
+    };
+    Json(fleet::report(&s.db, &s.jobs, &device, r.progress, &r.message).await)
+}
+
+async fn fleet_agents(State(s): State<AppState>) -> Json<serde_json::Value> {
+    Json(fleet::list(&s.db).await)
 }
