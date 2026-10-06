@@ -34,6 +34,7 @@ pub const SUB_ENTERPRISE_TZS: u64 = 4_000; // Kifaa 200+ (volume)
 /// PAY-PER-USE (bila subscription) — kila kazi inalipwa mara moja:
 pub const PAYG_SCAN_TZS: u64 = 2_000;      // Uchunguzi wa afya/scan moja
 pub const PAYG_REPAIR_TZS: u64 = 15_000;   // Kurekebisha tatizo (HITL)
+pub const PAYG_REPORT_TZS: u64 = 5_000;     // Ripoti rasmi (PDF) ya kazi/kesi
 pub const PAYG_OS_INSTALL_TZS: u64 = 5_000;// OS install kwa kifaa
 pub const PAYG_APP_INSTALL_TZS: u64 = 1_500; // Bundle ya apps kwa kifaa
 pub const PAYG_FORENSIC_TZS: u64 = 25_000; // Uchunguzi wa kidijitali (kina)
@@ -96,6 +97,7 @@ pub fn payg_price_tzs(job: &str, units: usize) -> Option<u64> {
         "malware_scan" => PAYG_SCAN_TZS,
         "driver_update" => PAYG_SCAN_TZS,
         "repair" => PAYG_REPAIR_TZS,
+        "report" => PAYG_REPORT_TZS,
         _ => return None,
     };
     let d = volume_discount(units);
