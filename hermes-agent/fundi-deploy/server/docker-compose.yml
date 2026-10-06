@@ -54,6 +54,10 @@ services:
       # WIREGUARD (P4): endpoint ya public (IP au domain ya server) — inaonekana kwenye client confs
       - FUNDI_WG_ENDPOINT=${FUNDI_WG_ENDPOINT:-}
       - FUNDI_WG_DIR=/data/wireguard
+      # H5b — LanceDB-compatible vector store (AI memory) + pfSense REST API
+      - FUNDI_LANCEDB_DIR=/data/lancedb
+      - PFSENSE_API_URL=${PFSENSE_API_URL:-}
+      - PFSENSE_API_KEY=${PFSENSE_API_KEY:-}
       - DATABASE_URL=sqlite:///data/fundi.db
       - RUST_LOG=info
     restart: unless-stopped

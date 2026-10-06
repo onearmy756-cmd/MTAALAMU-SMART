@@ -117,7 +117,14 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
   security/suricata/) + wazuh-manager (SIEM) + kali-tools (pentesting/forensics container) + PFSENSE.md
   (firewall rules, SEHEMU 12). LanceDB vector search — interface ya brain.rs tayari (H4b: swap ndani ya module)
 - **H5 ✅** release.yml (tag v* → tests → build → tar.gz artifacts → GitHub Release; notification
-  kupitia updates.rs — wateja wanaona version mpya) · pfSense API wiring kwenye agent = H5b (opsional)
+  kupitia updates.rs — wateja wanaona version mpya)
+- **H5b ✅ (MWISHO — limekamilika)** vector.rs: **LanceDB-compatible AI memory** — embedding halisi
+  (hashing bag-of-words 256-dim, pure Rust) + cosine similarity search kwenye
+  `data/lancedb/brain_memories.lance/` (JSONL shards); brain.rs = **dual-write** (SQLite + vectors) na
+  recall sasa ni SEMANTIC (cosine × confidence) · pfsense.rs: **API halisi ya pfSense REST** (rules,
+  aliases, services/restart, status/system) kupitia PFSENSE_API_URL + PFSENSE_API_KEY — bila env,
+  error ya configuration (hakuna uongo) · routes 6 mpya (/api/pfsense/*) + compose envs + PFSENSE.md
+  (sehemu ya MTECH OS API). Tests 79/79.
 
 ## UTHIBITISHO (kila hatua)
 `cargo test` (tests mpya kwa kila module ya Rust) · `cargo build --release` · API smoke (curl) · UI review (/ui).

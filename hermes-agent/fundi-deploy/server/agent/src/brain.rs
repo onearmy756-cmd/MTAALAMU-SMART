@@ -2,16 +2,21 @@
 //!
 //! Kama Sentinel Desktop: "kila agent inajifunza kutoka kwa wengine." Agent
 //! anayetatua tatizo kwenye PC moja anaandika lesson hapa — agent mwingine
-//! anayekutana na tatizo lifanayo anarecall suluhisho mara moja.
+//! anayekutana na tatizo lifanalo anarecall suluhisho mara moja.
 //!
-//! Hifadhi: SQLite sasa (production), interface ya Rust ile ile itaendelea
-//! na LanceDB (vector search) kwenye H4 — swap ni ndani ya module hii tu.
+//! **H5b KAMILI**: dual-write — SQLite (durability, ripoti) + **vector store
+//! (LanceDB-compatible: `data/lancedb/brain_memories.lance/`, JSONL shards)**.
+//! Recall sasa ni **semantic search (cosine similarity)** juu ya embeddings —
+//! si maneno yanayofanana tu. Interface ya Rust NI ILE ILE; swap ya backend
+//! (JSONL → Lance crate) ni ndani ya vector.rs tu.
 //!
 //! KANUNI: kumbukumbu ZINATOKA na kazi HALISI (finding + solution + confidence
 //! halisi ya ReAct session). Hakuna kujificha kwenye JSON config.
 
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
+use std::sync::Arc;
+use crate::vector::{Embedding, LanceStore};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Memory {
@@ -21,6 +26,21 @@ pub struct Memory {
     pub solution: String,    // nini kilifanya kazi
     pub confidence: f64,     // 0.0–1.0 (kutoka confidence_score ya reacon)
     pub created_at: String,
+}
+
+/// Dual-write store: SQLite + LanceDB-compatible vector store.
+pub struct Brain {
+    pub db: SqlitePool,
+    pub vectors: Arc<LanceStore>,
+}
+
+impl Brain {
+    pub fn new(db: SqlitePool, data_dir: &str) -> Brain {
+        Brain {
+            db,
+            vectors: Arc::new(LanceStore::open(data_dir)),
+        }
+    }
 }
 
 pub async fn init_tables(db: &SqlitePool) {
@@ -39,8 +59,9 @@ pub async fn init_tables(db: &SqlitePool) {
     .await;
 }
 
+/// Remember: dual-write — SQLite row + record yenye embedding kwenye vector store.
 pub async fn remember(
-    db: &SqlitePool,
+    brain: &Brain,
     agent: &str,
     pc: &str,
     problem: &str,
@@ -61,62 +82,66 @@ pub async fn remember(
     .bind(solution.trim())
     .bind(conf)
     .bind(&created)
-    .execute(db)
+    .execute(&brain.db)
     .await
     .map_err(|e| e.to_string())?;
-    Ok(r.last_insert_rowid())
+    let id = r.last_insert_rowid();
+
+    // Vector write (LanceDB-compatible) — embedding ya problem+solution.
+    let rec = crate::vector::VectorRecord {
+        id,
+        agent: agent.to_string(),
+        pc: pc.to_string(),
+        problem: problem.trim().to_string(),
+        solution: solution.trim().to_string(),
+        confidence: conf,
+        created_at: created,
+        embedding: Embedding::embed(&format!("{problem} {solution}")),
+    };
+    brain.vectors.append(rec)?;
+
+    Ok(id)
 }
 
-fn overlap_score(query: &str, problem: &str) -> f64 {
-    let norm = |s: &str| s.to_lowercase()
-        .split(|c: char| c.is_whitespace() || c == ',')
-        .map(|w| w.trim_matches(|c: char| !c.is_alphanumeric()))
-        .filter(|w| w.chars().count() >= 3)
-        .map(String::from)
-        .collect::<std::collections::BTreeSet<_>>();
-    let q = norm(query);
-    if q.is_empty() { return 0.0; }
-    let p = norm(problem);
-    let hits = q.intersection(&p).count();
-    hits as f64 / q.len() as f64
-}
-
-/// Recall: kumbukumbu zinazofanana na tatizo — confidence ya pamoja =
-/// match_ratio × confidence ya kumbukumbu. Iliyoju zaidi juu.
-pub async fn recall(db: &SqlitePool, query: &str, limit: usize) -> Vec<(Memory, f64)> {
-    let rows: Vec<(String, String, String, String, f64, String)> = sqlx::query_as(
-        "SELECT agent, pc, problem, solution, confidence, created_at FROM brain_memories",
-    )
-    .fetch_all(db)
-    .await
-    .unwrap_or_default();
-    let mut scored: Vec<(Memory, f64)> = rows
+/// Recall: SEMANTIC SEARCH (cosine) — problem ya ulizo inalinganishwa na
+/// embeddings za kumbukumbu (problem+solution). Score ya mwisho =
+/// cosine × confidence ya kumbukumbu. Iliyoju zaidi juu.
+pub async fn recall(brain: &Brain, query: &str, limit: usize) -> Vec<(Memory, f64)> {
+    let q = Embedding::embed(query);
+    brain
+        .vectors
+        .search(&q, limit, 0.01)
         .into_iter()
-        .map(|(agent, pc, problem, solution, confidence, created_at)| {
-            let m = Memory { agent, pc, problem, solution, confidence, created_at };
-            let score = overlap_score(query, &m.problem) * m.confidence;
+        .map(|(r, cosine)| {
+            let m = Memory {
+                agent: r.agent,
+                pc: r.pc,
+                problem: r.problem,
+                solution: r.solution,
+                confidence: r.confidence,
+                created_at: r.created_at,
+            };
+            let score = cosine * m.confidence;
             (m, score)
         })
-        .filter(|(_, s)| *s > 0.0)
-        .collect();
-    scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
-    scored.truncate(limit);
-    scored
+        .collect()
 }
 
-pub async fn stats(db: &SqlitePool) -> serde_json::Value {
+pub async fn stats(brain: &Brain) -> serde_json::Value {
     let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM brain_memories")
-        .fetch_one(db)
+        .fetch_one(&brain.db)
         .await
         .unwrap_or(0);
     let agents: Vec<(String,)> = sqlx::query_as(
         "SELECT DISTINCT agent FROM brain_memories",
     )
-    .fetch_all(db)
+    .fetch_all(&brain.db)
     .await
     .unwrap_or_default();
     serde_json::json!({
         "memories": total,
+        "vectors": brain.vectors.len(),
+        "backend": "lancedb-compatible (cosine semantic search)",
         "agents_sharing": agents.len(),
         "note_sw": "Kumbukumbu ya pamoja — kila agent anajifunza kutoka kwa wengine (Neuralis Brain)."
     })
@@ -126,14 +151,20 @@ pub async fn stats(db: &SqlitePool) -> serde_json::Value {
 mod tests {
     use super::*;
 
-    #[tokio::test]
-    async fn remember_na_recall_zinajifunza_kutoka_wengine() {
+    async fn test_brain() -> Brain {
         let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
         init_tables(&db).await;
+        let dir = std::env::temp_dir().join(format!("mtech-btest-{}", uuid::Uuid::new_v4()));
+        Brain::new(db, dir.to_str().unwrap())
+    }
+
+    #[tokio::test]
+    async fn remember_na_recall_zinajifunza_kutoka_wengine() {
+        let b = test_brain().await;
         // Agent A anatatua Wi-Fi kwenye PC ya kwanza
-        remember(&db, "agent-hr", "hr", "Wi-Fi haifanyi kazi", "restart ya wlansvc service", 0.9).await.unwrap();
-        // Agent B (PC nyingine) anakutana na tatizo lifanalo → anarecall
-        let got = recall(&db, "wi-fi haifanyi kazi kwenye laptop", 3).await;
+        remember(&b, "agent-hr", "hr", "Wi-Fi haifanyi kazi", "restart ya wlansvc service", 0.9).await.unwrap();
+        // Agent B (PC nyingine) anakutana na tatizo lifanalo → anarecall (semantic)
+        let got = recall(&b, "wi-fi haifanyi kazi kwenye laptop", 3).await;
         assert!(!got.is_empty(), "brain lazima ikumbuke suluhisho la tatizo linalofanana");
         assert_eq!(got[0].0.solution, "restart ya wlansvc service");
         assert!(got[0].1 > 0.0, "score ya match lazima iwe > 0");
@@ -141,31 +172,35 @@ mod tests {
 
     #[tokio::test]
     async fn recall_haitoi_isiyofanana() {
-        let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
-        init_tables(&db).await;
-        remember(&db, "a", "pc1", "disk full", "kufuta temp files", 1.0).await.unwrap();
-        let got = recall(&db, "printer haichapi", 5).await;
-        assert!(got.is_empty());
+        let b = test_brain().await;
+        remember(&b, "a", "pc1", "disk full", "kufuta temp files", 1.0).await.unwrap();
+        let got = recall(&b, "printer haichapi", 5).await;
+        assert!(got.is_empty(), "cosine ya mada tofauti inabaki chini ya min_score");
     }
 
     #[tokio::test]
     async fn remember_inakataa_mtupu() {
-        let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
-        init_tables(&db).await;
-        assert!(remember(&db, "a", "pc", "", "sol", 1.0).await.is_err());
-        assert!(remember(&db, "a", "pc", "prob", "", 1.0).await.is_err());
+        let b = test_brain().await;
+        assert!(remember(&b, "a", "pc", "", "sol", 1.0).await.is_err());
+        assert!(remember(&b, "a", "pc", "prob", "", 1.0).await.is_err());
     }
 
-    #[test]
-    fn confidence_inapunguzwa_kati_0_na_1() {
-        let db = tokio::runtime::Runtime::new().unwrap();
-        db.block_on(async {
-            let pool = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
-            init_tables(&pool).await;
-            remember(&pool, "a", "p", "printer haichapi kabisa", "washa spooler", 5.0).await.unwrap(); // 5.0 → clamp 1.0
-            let got = recall(&pool, "printer haichapi", 1).await;
-            assert!(!got.is_empty());
-            assert!(got[0].0.confidence <= 1.0);
-        });
+    #[tokio::test]
+    async fn confidence_inapunguzwa_kati_0_na_1() {
+        let b = test_brain().await;
+        remember(&b, "a", "p", "printer haichapi kabisa", "washa spooler", 5.0).await.unwrap(); // 5.0 → clamp 1.0
+        let got = recall(&b, "printer haichapi", 1).await;
+        assert!(!got.is_empty());
+        assert!(got[0].0.confidence <= 1.0);
+    }
+
+    #[tokio::test]
+    async fn dual_write_vector_store_ina_records() {
+        let b = test_brain().await;
+        remember(&b, "a1", "pc1", "ram inakwama", "safisha slots", 0.8).await.unwrap();
+        remember(&b, "a2", "pc2", "ram inakwama tena", "badilisha stick", 0.7).await.unwrap();
+        assert_eq!(b.vectors.len(), 2, "kila remember inaandika vector pia");
+        let got = recall(&b, "ram inakwama kwenye kompyuta", 2).await;
+        assert_eq!(got.len(), 2);
     }
 }

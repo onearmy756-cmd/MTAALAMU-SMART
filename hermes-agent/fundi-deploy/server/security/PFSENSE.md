@@ -32,3 +32,19 @@ kamili ya pfSense API kwenye agent.)
 ## Mfuatano wa usalama
 Suricata (IDS) inagundua → Wazuh (SIEM) inaandika + ina-alert → Admin (MTECH OS UI)
 anaona → agent (kupitia wg0) inatua kwa idhini (HITL).
+
+## MTECH OS API integration (H5b — imekamilika)
+
+MTECH OS (Rust agent) inaongea na pfSense kupitia **REST API** (pfSense REST API package):
+
+| Kigezo | Thamani |
+|---|---|
+| Env ya agent | `PFSENSE_API_URL` (mf. `https://10.66.66.1`) + `PFSENSE_API_KEY` (client-auth key) |
+| Rules | `GET/POST /api/pfsense/rules` (agent) → pfSense `/api/v1/firewall/rule` |
+| Aliases | `GET/POST /api/pfsense/aliases` → pfSense `/api/v1/firewall/alias` |
+| Services | `POST /api/pfsense/services` `{"name":"dnsmasq"}` → pfSense `/api/v1/services/restart` |
+| Status | `GET /api/pfsense/status` → pfSense `/api/v1/status/system` |
+
+Bila env hizo mbili, endpoints za agent zinarudisha `configured: false` na error ya
+configuration — hakuna majibu ya uongo. Thamani hizo zinawekwa kwenye faili ya env ya
+server (haziweki kwenye git).
