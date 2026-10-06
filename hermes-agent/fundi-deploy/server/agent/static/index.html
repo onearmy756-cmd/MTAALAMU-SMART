@@ -986,11 +986,11 @@ async function mxActivate(){
   const os = document.getElementById('mx_os').value;
   const bundle = document.getElementById('mx_bundle').value;
   if (!MX.selected.size) { alert('Chagua kompyuta angalau moja (STEP 1)'); return; }
-  // 1) quote + credits authorize kupitia services/run moja moja ni ghali — tumia /deploy kwa kila host (HITL) kisha spend
+  // /deploy format: {computers:[{mac,name}], os_type} — HOST MOJA kwa wito (HITL kila host)
   let okc = 0, fail = 0;
   for (const name of MX.selected) {
     const r = await (await fetch(API+'/deploy', {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({device_mac:'', device_name:name, os_type:os})})).json().catch(()=>null);
+      body: JSON.stringify({computers:[{mac:'', name:name}], os_type:os})})).json().catch(()=>null);
     if (r && r.id) { okc++; }
     else fail++;
   }
@@ -999,7 +999,7 @@ async function mxActivate(){
 }
 async function mxRefresh(){
   const jobs = await (await fetch(API+'/jobs')).json().catch(()=>[]);
-  const list = (jobs.jobs || jobs || []).slice(-6).reverse();
+  const list = (Array.isArray(jobs) ? jobs : (jobs.jobs || [])).slice(-6).reverse();
   const done = list.filter(j => j.status === 'done').length;
   const pct = list.length ? Math.round(100 * done / list.length) : 0;
   document.getElementById('mx_bar').style.width = pct + '%';
