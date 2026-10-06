@@ -65,3 +65,49 @@ services:
     volumes:
       - ./data/ollama:/root/.ollama
     restart: unless-stopped
+
+  # H4 — LLM ENGINE: llama.cpp na Qwen 2.5 3B VL (GGUF halisi)
+  # Model inapakuliwa mara moja kwenye ./data/models (GGUF ya Qwen2.5-VL-3B)
+  llamacpp:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    container_name: fundi-llamacpp
+    ports: ["8081:8080"]
+    volumes:
+      - ./data/models:/models
+    command: >-
+      -m /models/qwen2.5-vl-3b-instruct-q4_k_m.gguf
+      --host 0.0.0.0 --port 8080 --ctx-size 8192 --n-gpu-layers 0
+    restart: unless-stopped
+
+  # H4 — IDS: Suricata (inaskua traffic, inagundua mashambulizi)
+  suricata:
+    image: jasonish/suricata:latest
+    container_name: fundi-suricata
+    network_mode: host
+    cap_add: [NET_ADMIN, NET_RAW]
+    volumes:
+      - ./security/suricata:/etc/suricata
+      - ./data/security/logs:/var/log/suricata
+    command: -i eth0
+    restart: unless-stopped
+
+  # H4 — SIEM: Wazuh (inakusanya logs + alerts zote)
+  wazuh-manager:
+    image: wazuh/wazuh-manager:4.7.0
+    container_name: fundi-wazuh
+    ports: ["1514:1514", "1515:1515", "514:514/udp"]
+    volumes:
+      - ./data/security/wazuh:/var/ossec/data
+    restart: unless-stopped
+
+  # H4 — CYBERSECURITY: Kali tools (pentesting + digital forensics kwa mbali kupitia wg0)
+  kali-tools:
+    image: kalilinux/kali-rolling:latest
+    container_name: fundi-kali
+    network_mode: host
+    cap_add: [NET_ADMIN]
+    volumes:
+      - ./data/kali-work:/root/work
+    command: >-
+      sh -c "apt-get update -qq && apt-get install -y -qq nmap nikto john wireshark aircrack-ng hydra sqlmap tcpdump binwalk forensics-all >/dev/null 2>&1; tail -f /dev/null"
+    restart: unless-stopped

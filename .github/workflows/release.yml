@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  agent-release:
+    name: Fundi-deploy agent (linux amd64)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hermes-agent/fundi-deploy/server/agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: hermes-agent/fundi-deploy/server/agent
+      - name: Test
+        run: cargo test --release
+      - name: Build
+        run: cargo build --release
+      - name: Package (tar.gz — HAKUNA exe ya wageni)
+        run: |
+          mkdir -p dist/mtech-os-agent
+          cp target/release/fundi-deploy dist/mtech-os-agent/
+          cp -r static dist/mtech-os-agent/static
+          cp ../../../../data/deploy/*.json dist/mtech-os-agent/ 2>/dev/null || true
+          tar -czf "mtech-os-agent-${GITHUB_REF_NAME}-linux-amd64.tar.gz" -C dist mtech-os-agent
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mtech-os-agent-linux
+          path: hermes-agent/fundi-deploy/server/agent/mtech-os-agent-*.tar.gz
+
+  desktop-release:
+    name: Desktop Tauri v2 (deb + AppImage)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mtech-os/desktop/src-tauri
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install tauri deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
+      - name: Build (cargo, hakuna tauri-cli — bundle config tayari)
+        run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mtech-os-desktop-linux
+          path: mtech-os/desktop/src-tauri/target/release/mtech-os-desktop
+
+  publish:
+    name: GitHub Release
+    needs: [agent-release, desktop-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+          body: |
+            MTECH OS — Licensed by Mbilinyi Tech (mbilinyitech.co.tz)
+            
+            Wateja: pakua artifact ya chini, kisha `tar -xzf mtech-os-agent-*.tar.gz && ./fundi-deploy`
+            Version mpya — agents waliopo wataona notification na kuupdate (updates.rs).
