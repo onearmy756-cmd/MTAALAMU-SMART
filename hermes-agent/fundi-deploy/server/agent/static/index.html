@@ -690,6 +690,19 @@ details p{font-size:13px;color:#b2ebf2}
     <button onclick="flRegister()">➕ Sajilia agent</button>
   </div>
   <div id="fl_token" class="meta" style="margin-top:4px">Token ya agent huonyeshwa MARA MOJA tu baada ya kusajiliwa — ihifadhi kwenye kifaa.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px" class="fl-grid">
+    <div>
+      <h4>WINDOWS (PowerShell ya admin)</h4>
+      <div class="pre" style="min-height:56px">Set-ExecutionPolicy -Scope Process Bypass -Force<br/>Invoke-WebRequest <span id="fl_url1">SERVER</span>/agent-mtech.ps1 -OutFile agent-mtech.ps1<br/>.gent-mtech.ps1 -Server "SERVER" -Device "jina-la-kifaa"</div>
+      <div class="row"><button class="sec" onclick="flDownload('agent-mtech.ps1')">⬇ Pakua agent-mtech.ps1</button></div>
+    </div>
+    <div>
+      <h4>LINUX (bash)</h4>
+      <div class="pre" style="min-height:56px">SERVER="http://IP-YA-SERVER:8080" DEVICE="jina-la-kifaa" \<br/>&nbsp;&nbsp;bash agent-mtech.sh</div>
+      <div class="row"><button class="sec" onclick="flDownload('agent-mtech.sh')">⬇ Pakua agent-mtech.sh</button></div>
+    </div>
+  </div>
+  <p class="meta">Agent anajisajili mwenyewe, anapata token (inahifadhiwa kwenye kifaa), anatuma hali kila sekunde 20, na anapata KAZI ZILIZOIDHINISHWA tu (HITL). Zima kwa Ctrl+C.</p>
   <h4 style="margin-top:8px">AGENT WOTE</h4>
   <div id="fl_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px"></div>
 </div>
@@ -1641,6 +1654,10 @@ async function flLoad(){
       ${a.job? `<div class="meta">kazi: ${escHtml(String(a.job).slice(0,8))}… ${a.progress}%</div><div class="bar"><div style="width:${a.progress}%;height:100%;background:${col}"></div></div>` : ''}
     </div>`;
   }).join('') || '<span class="meta">Hakuna agents bado — sajilia kifaa la kwanza.</span>';
+}
+function flDownload(fname){
+  // API ni base URL ya server hii (const API = '') — faili ziko kwenye static/
+  window.open(API + '/' + fname, '_blank');
 }
 setInterval(flLoad, 5000);
 window.addEventListener('load', ()=>{ flLoad(); });

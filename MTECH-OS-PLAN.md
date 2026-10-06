@@ -363,3 +363,20 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
   3, jina mibaya, auth) — jumla **129/129**.
 - **White-label**: API inarudisha majina salama tu; token ni ya agent
   (hash ndani ya DB); hakuna usanifu wa ndani unaoonekana.
+
+## H15 ✅ — AGENT INSTALLER (Windows + Linux) — malizio ya AGENT LAYER
+
+- **static/agent-mtech.ps1 (Windows)**: PowerShell — jisajili kwenye server
+  (token inahifadhiwa `%ProgramData%\MTECH-OS\agent.json`), heartbeat kila
+  sekunde 20 (afya halisi: CPU/RAM/Disk), poll kazi ZILIZOIDHINISHWA (HITL),
+  utekelezaji: ukaguzi wa usalama wa ndani (firewall/antivirus → findings →
+  ripoti ya usalama) na bundle/install (winget silent), report maendeleo 0–100.
+- **static/agent-mtech.sh (Linux)**: bash — kama hiyo (token kwenye
+  `/etc/mtech/agent.json`, chmod 600, root pekee; ukaguzi wa ufw/watumiaji;
+  apt salama kwa bundle), loop moja kwa moja.
+- **Faili zinapatikana kwenye server** kupitia ServeDir:
+  `http://SERVER:8080/agent-mtech.ps1` na `.../agent-mtech.sh` — vitufe vya
+  ⬇ Pakua kwenye kadi 👥 AGENTS (pamoja na amri za usakinishaji).
+- **Siri**: agents wanatumia API ya umma tu (fleet/* + secops/result); hakuna
+  usanifu wa ndani kwenye scripts; HITL inabaki (kazi zilizoidhinishwa pekee).
+- **Uthibitisho**: bash -n OK, node --check 2/2, cargo test 129/129.
