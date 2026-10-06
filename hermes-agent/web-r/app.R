@@ -38,6 +38,7 @@ source(p_app("R", "solve.R"), local = FALSE)
 source(p_app("R", "fundi.R"), local = FALSE)
 source(p_app("R", "mobile.R"), local = FALSE)
 source(p_app("R", "iot.R"), local = FALSE)
+source(p_app("R", "mtech.R"), local = FALSE)
 
 library(jsonlite)
 
@@ -153,6 +154,9 @@ ui <- fluidPage(
             "border-radius:12px;background:#0b1220"), loading = "lazy"))))
     ,
     conditionalPanel(condition = "input.tab == 'fundi'", uiOutput("fundi")),
+    conditionalPanel(condition = "input.tab == 'remote'", uiOutput("remote")),
+    conditionalPanel(condition = "input.tab == 'kali'", uiOutput("kali")),
+    conditionalPanel(condition = "input.tab == 'company'", uiOutput("company")),
     conditionalPanel(condition = "input.tab == 'mobile'", uiOutput("mobile")),
     conditionalPanel(condition = "input.tab == 'iot'", uiOutput("iot")),
     uiOutput("statusbar")
@@ -587,9 +591,13 @@ server <- function(input, output, session) {
   output$mobile <- renderUI(mobile_tab_el(lang()))
   mobile_server(input, output, session)
   output$iot <- renderUI(view_iot(lang()))
+  output$remote <- renderUI(remote_tab_el(lang()))
+  output$kali <- renderUI(kali_tab_el(lang()))
+  output$company <- renderUI(company_tab_el(lang()))
+  mtech_server(input, output, session)
   output$statusbar <- renderUI(status_bar_el(lang(), stats(), uptime()))
 
-  for (nm in c("live", "agentic", "formula", "diagnosis", "viz", "statusbar", "tabs", "fundi", "mobile", "nav", "iot", "map", "map3d")) {
+  for (nm in c("live", "agentic", "formula", "diagnosis", "viz", "statusbar", "tabs", "fundi", "remote", "kali", "company", "mobile", "nav", "iot", "map", "map3d")) {
     outputOptions(output, nm, suspendWhenHidden = FALSE)
   }
 }

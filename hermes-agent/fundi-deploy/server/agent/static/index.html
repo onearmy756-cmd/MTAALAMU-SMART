@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Fundi Deploy — Msimamizi</title>
+<title>OS AND APP INSTALLATION — MTECH OS (Mbilinyi Tech)</title>
 <style>
 :root{--bg:#0a1628;--card:#0d2137;--line:#00e5ff33;--cyan:#00e5ff;--green:#00e676;--amber:#ffc107;--red:#ff5252;--dim:#78909c;--text:#e0f7fa}
 *{box-sizing:border-box}
@@ -61,8 +61,8 @@ details p{font-size:13px;color:#b2ebf2}
 </head>
 <body>
 <header>
-  <h1>🚀 FUNDI DEPLOY</h1>
-  <span class="sub">OS + Apps deployment · agent inafanya kazi, wewe unaidhinisha (HITL)</span>
+  <h1>🚀 OS AND APP INSTALLATION</h1>
+  <span class="sub">MTECH OS · UI 1 — OS + Apps kwa kompyuta zote za mtandao · Licensed by Mbilinyi Tech</span>
   <span class="live">● LIVE</span>
 </header>
 
@@ -78,6 +78,7 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#react_card'">🤖 Agentic AI</button>
   <button onclick="location.hash='#admin_card'">👤 Admin</button>
   <button onclick="location.hash='#daily_card'">📅 Kila Siku</button>
+  <button onclick="location.hash='#company_card'">🏢 Kampuni</button>
 </nav>
 
 <main>
@@ -226,7 +227,7 @@ details p{font-size:13px;color:#b2ebf2}
     <input id="quote_plan" placeholder="plan: pay_per_use | subscription" style="max-width:220px" value="pay_per_use"/>
     <input id="quote_pcs" type="number" min="1" placeholder="PCs" style="max-width:90px" value="1"/>
     <input id="quote_os" placeholder="OS: win11/ubuntu/kali" style="max-width:160px" value="win11"/>
-    <button onclick="getQuote()">💰 Kokotoa bei</button>
+    <button onclick="getQuote()">💰 Kokotoa bei (halisi)</button>
   </div>
   <div id="quote_result" class="meta" style="margin-top:8px">—</div>
   <div id="bundles_cat" style="margin-top:10px"></div>
@@ -345,6 +346,25 @@ details p{font-size:13px;color:#b2ebf2}
     <button onclick="sendChat()">💬 Tuma</button>
   </div>
   <div id="chat_result" class="meta" style="margin-top:8px">—</div>
+</div>
+
+<!-- KAMPUNI: matawi + remote kupitia wg0 -->
+<div class="card" id="company_card">
+  <h3>🏢 KAMPUNI — matawi + remote kupitia WireGuard</h3>
+  <p class="hint">Kampuni ina matawi; kila tawi ni subnet ya wg0 (mf. Dar = 10.66.66.0/24, Mwanza = 10.66.67.0/24). Admin anasimamia ZOTE kutoka hapa — full PC view kwa kila tawi.</p>
+  <div class="row">
+    <input id="br_id" placeholder="id: dar" style="max-width:90px"/>
+    <input id="br_name" placeholder="Jina: Tawi la Dar" style="flex:1;min-width:150px"/>
+    <input id="br_city" placeholder="Mji: Dar es Salaam" style="max-width:140px"/>
+    <input id="br_subnet" placeholder="subnet: 10.66.66.0/24" style="max-width:170px"/>
+    <button onclick="addBranch()">➕ Ongeza tawi</button>
+    <button class="sec" onclick="loadBranches()">🔄 Matawi</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <input id="cs_hosts" placeholder='hosts per tawi: dar=hr@10.66.66.2,hr 1@10.66.66.3' style="flex:1;min-width:240px"/>
+    <button onclick="companySummary()">📊 Muhtasari wa kampuni (full view)</button>
+  </div>
+  <div id="company_result" class="meta" style="margin-top:8px">—</div>
 </div>
 
 <div class="card" id="card_images" style="display:none"><h3>💾 Images za OS</h3><div id="images">—</div></div>
@@ -578,7 +598,7 @@ async function getQuote(){
   const d = await (await fetch(API+'/api/quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
   document.getElementById('quote_result').innerHTML = d.ok ?
     `💰 <b style="color:#00e676;font-size:16px">${d.quote.currency} ${d.quote.total_tzs.toLocaleString()}</b> — ${d.quote.plan} · PCs ${d.quote.pcs} · ${d.quote.os}` +
-    (d.quote.discount_pct?` <span class="ok">(-${d.quote.discount_pct}%)</span>`:'') + `<br/><small>${d.quote.note_sw}</small>` :
+    (d.quote.discount_pct?` <span class="ok">(-${d.quote.discount_pct}%)</span>`:'') + `<br/><small>${d.quote.note_sw}</small><br/><small>Bei za soko halisi: OS kwa ugumu · apps kwa licensing · drivers kwa brand · punguzo la batch (agents 100 = gharama ile ile)</small>` :
     `❌ ${d.error}`;
 }
 async function addCustomBundle(){
@@ -708,6 +728,36 @@ async function sendChat(){
   const d = await (await fetch(API+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})})).json();
   const r = d.reply;
   document.getElementById('chat_result').innerHTML = `💬 <b>Agent (${r.source}, conf ${(r.confidence*100).toFixed(0)}%):</b><br/>${r.answer_sw}` + (r.references.length?`<br/><small>📚 refs: ${r.references.length} kutoka agents wenzake</small>`:'');
+}
+
+// ---------- KAMPUNI (matawi + wg0) ----------
+async function addBranch(){
+  const d = await (await fetch(API+'/api/company/branches',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:v('br_id'),name:v('br_name'),city:v('br_city'),vpn_subnet:v('br_subnet')})})).json();
+  document.getElementById('company_result').innerHTML = d.ok ? `✅ Tawi <b>${d.branch.name}</b> (${d.branch.vpn_subnet}) limeongezwa` : `❌ ${d.error}`;
+  loadBranches();
+}
+async function loadBranches(){
+  const d = await (await fetch(API+'/api/company/branches')).json();
+  document.getElementById('company_result').innerHTML = (d.branches||[]).map(b=>
+    `<div>🏢 <b>${b.name}</b> (${b.id}) · ${b.city} · wg: <code>${b.vpn_subnet}</code></div>`
+  ).join('') || 'Hakuna matawi bado.';
+}
+async function companySummary(){
+  const raw = v('cs_hosts'); if(!raw){ alert('Weka hosts per tawi'); return; }
+  const hosts_by_branch = raw.split(';').map(seg=>{
+    const [branch, hostsRaw] = seg.split('=').map(s=>s.trim());
+    const hosts = (hostsRaw||'').split(',').filter(Boolean).map(h=>{ const [name,ip] = h.split('@').map(s=>s.trim()); return {name, ip}; });
+    return {branch, hosts};
+  }).filter(g=>g.branch);
+  document.getElementById('company_result').innerHTML = '⏳ Inakusanya full view ya kila PC…';
+  const d = await (await fetch(API+'/api/company/summary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hosts_by_branch})})).json();
+  document.getElementById('company_result').innerHTML = (d.branches||[]).map(b=>
+    `<div style="border:1px solid #00e5ff33;border-radius:8px;padding:8px;margin:6px 0;background:#0a1628">` +
+    `<b>🏢 ${b.branch.name}</b> (${b.branch.city}) — wg ${b.branch.vpn_subnet}<br/>` +
+    `PCs: <b>${b.pcs_total}</b> · Online: <b class="ok">${b.pcs_online}</b> · Offline: <b class="warn">${b.pcs_offline}</b> · Matatizo: <b class="err">${b.problems_open}</b><br/>` +
+    (b.pcs||[]).map(p=>`<small>🖥️ ${p.display_name} · ${p.ip} · ${p.online?'●':'○'} · OS: ${p.os_deployed||'—'} · matatizo: ${p.problems.length}</small>`).join('<br/>') +
+    `</div>`
+  ).join('') + `<small>${d.note_sw}</small>`;
 }
 
 // ---------- REMOTE OS INSTALL ----------

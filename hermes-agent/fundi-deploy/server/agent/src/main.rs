@@ -8,17 +8,20 @@
 
 mod admin;
 mod ai;
+mod ai_config;
 mod auth;
 mod backup;
 mod brain;
 mod bundles;
 mod cloud;
+mod company;
 mod discover;
 mod chat;
 mod daily;
 mod hardware;
 mod images;
 mod lan;
+mod language;
 mod license;
 mod mode;
 mod multicast;
@@ -30,6 +33,7 @@ mod pricing;
 mod reacon;
 mod remote;
 mod report;
+mod remote_view;
 mod updates;
 mod vpn;
 mod wol;
@@ -104,6 +108,8 @@ async fn main() -> anyhow::Result<()> {
     mode::init_tables(&db).await;
     daily::init_tables(&db).await;
     updates::init_tables(&db).await;
+    language::init_tables(&db).await;
+    company::init_tables(&db).await;
 
     // Seed agents 10 (agentic vision)
     let agents: [(&str, &str); 10] = [
@@ -245,6 +251,16 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/daily/report", get(daily_report))
         .route("/api/daily/permission", post(daily_permission))
         .route("/api/updates/check", post(updates_check))
+        // LANGUAGE + REAL REMOTING (maelezo ya mmiliki)
+        .route("/api/language", post(lang_set))
+        .route("/api/language/:username", get(lang_get))
+        .route("/api/translate", post(translate_post))
+        .route("/api/remote/pc/:name", get(remote_pc))
+        .route("/api/remote/fleet", post(remote_fleet))
+        // COMPANY (kampuni/matawi kupitia wg0)
+        .route("/api/company/branches", get(company_branches))
+        .route("/api/company/branches", post(company_branch_add))
+        .route("/api/company/summary", post(company_summary))
         // WIREGUARD VPN (P4) — kazi zote za mbali kupitia wg0
         .route("/api/vpn/init", post(vpn_init))
         .route("/api/vpn/status", get(vpn_status))
@@ -277,10 +293,12 @@ async fn main() -> anyhow::Result<()> {
 
 async fn root() -> Json<serde_json::Value> {
     Json(json!({
-        "name": "Fundi Deploy Agent",
-        "version": "2.0.0",
+        "name": "OS AND APP INSTALLATION",
+        "product": "MTECH OS",
+        "licensed_by": "Mbilinyi Tech (mbilinyitech.co.tz)",
+        "version": "3.0.0",
         "role": "Agent inafanya kazi; msimamizi anasimamia (approve/cancel)",
-        "features": ["backup-halisi", "multicast", "ai-os-select", "lan-discovery", "images", "cloud-multi-tenant"],
+        "features": ["os-install", "app-bundles-22", "wireguard-vpn", "real-remoting", "agentic-ai-react", "neuralis-brain", "pricing-tzs", "license-mst", "auto-daily", "language-ai-translate"],
         "ui": "/ui"
     }))
 }
@@ -1014,6 +1032,92 @@ async fn daily_permission(State(s): State<AppState>) -> Json<serde_json::Value> 
 async fn updates_check(State(s): State<AppState>) -> Json<serde_json::Value> {
     let online = mode::get_mode(&s.db).await == mode::Mode::Online;
     Json(json!({ "ok": true, "update": updates::check_and_notify(&s.db, online).await }))
+}
+
+// ---------- Language (chagua wakati wa kusajili + AI translate) ----------
+
+#[derive(serde::Deserialize)]
+struct LangSetReq { username: String, language: String }
+
+async fn lang_set(State(s): State<AppState>, Json(r): Json<LangSetReq>) -> Json<serde_json::Value> {
+    match language::set_language(&s.db, &r.username, &r.language).await {
+        Ok(()) => Json(json!({ "ok": true, "username": r.username, "language": r.language })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn lang_get(State(s): State<AppState>, Path(username): Path<String>) -> Json<serde_json::Value> {
+    Json(json!({ "ok": true, "username": username, "language": language::get_language(&s.db, &username).await }))
+}
+
+#[derive(serde::Deserialize)]
+struct TranslateReq { username: String, text: String }
+
+async fn translate_post(State(s): State<AppState>, Json(r): Json<TranslateReq>) -> Json<serde_json::Value> {
+    let (translated, lang) = language::auto_translate(&s.db, &r.username, &r.text).await;
+    Json(json!({ "ok": true, "language": lang, "translated": translated }))
+}
+
+// ---------- Real Remoting (full view ya kila PC) ----------
+
+async fn remote_pc(State(s): State<AppState>, Path(name): Path<String>) -> Json<serde_json::Value> {
+    // PC: tafuta IP yake kutoka discovery ya mwisho (arp) au subnet ya VPN
+    let cfg = vpn::Config::load();
+    let (a, b, c) = cfg.subnet_base();
+    // Kwa kasi: full view na IP ya VPN (jina == identity); services ni probe halisi
+    let ip = format!("{a}.{b}.{c}.2"); // peers huanza .2
+    let view = remote_view::full_view(&s.db, &name, &ip, "", 400).await;
+    Json(json!({ "ok": true, "pc": view }))
+}
+
+#[derive(serde::Deserialize)]
+struct RemoteFleetReq { hosts: Vec<RemoteHost> }
+#[derive(serde::Deserialize)]
+struct RemoteHost { name: String, ip: String }
+
+async fn remote_fleet(State(s): State<AppState>, Json(r): Json<RemoteFleetReq>) -> Json<serde_json::Value> {
+    let hosts: Vec<(String, String)> = r.hosts.into_iter().map(|h| (h.name, h.ip)).collect();
+    let views = remote_view::fleet_snapshot(&s.db, &hosts, 400).await;
+    Json(json!({
+        "ok": true,
+        "count": views.len(),
+        "pcs": views,
+        "note_sw": "Full computer view kwa kila PC — kupitia wg0 kwa mbali. KANUNI: kila uwanja ni probe halisi au DB ya kazi."
+    }))
+}
+
+// ---------- Company (kampuni/matawi kupitia wg0) ----------
+
+async fn company_branches(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let bs = company::list_branches(&s.db).await;
+    Json(json!({ "ok": true, "count": bs.len(), "branches": bs }))
+}
+
+#[derive(serde::Deserialize)]
+struct BranchAddReq { id: String, name: String, city: String, vpn_subnet: String }
+
+async fn company_branch_add(State(s): State<AppState>, Json(r): Json<BranchAddReq>) -> Json<serde_json::Value> {
+    match company::add_branch(&s.db, &r.id, &r.name, &r.city, &r.vpn_subnet).await {
+        Ok(b) => Json(json!({ "ok": true, "branch": b })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct CompanySummaryReq {
+    /// hosts kwa kila tawi: [{"branch":"dar","hosts":[{"name":"hr","ip":"10.66.66.2"}]}]
+    hosts_by_branch: Vec<BranchHosts>,
+}
+#[derive(serde::Deserialize)]
+struct BranchHosts { branch: String, hosts: Vec<RemoteHost> }
+
+async fn company_summary(State(s): State<AppState>, Json(r): Json<CompanySummaryReq>) -> Json<serde_json::Value> {
+    let hbb: Vec<(String, Vec<(String, String)>)> = r
+        .hosts_by_branch
+        .into_iter()
+        .map(|b| (b.branch, b.hosts.into_iter().map(|h| (h.name, h.ip)).collect()))
+        .collect();
+    Json(company::company_summary(&s.db, &hbb, 400).await)
 }
 
 // ---------- WireGuard VPN (P4) ----------

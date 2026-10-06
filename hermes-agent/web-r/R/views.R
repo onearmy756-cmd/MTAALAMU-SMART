@@ -20,9 +20,10 @@ if (!exists(".MTAALAMU_VIEWS_LOADED", inherits = TRUE)) {
   assign(".MTAALAMU_VIEWS_LOADED", TRUE, envir = globalenv())
 }
 
-# Override tabs_el — ongeza AGENTIC VISION + FUNDI DEPLOY + NAVIGATION
+# Override tabs_el — ongeza AGENTIC VISION + FUNDI DEPLOY + NAVIGATION + REAL REMOTING
+# + KALI TOOLS + COMPANY VIZ (MTECH OS: tabs zote zionekane — SEHEMU 6/9/13)
 tabs_el <- function(lang, n_formula, n_diag, current) {
-  ids <- c("live", "agentic", "formula", "diag", "viz", "map", "map3d", "nav", "fundi", "mobile", "iot")
+  ids <- c("live", "agentic", "formula", "diag", "viz", "map", "map3d", "nav", "fundi", "remote", "kali", "company", "mobile", "iot")
   labels <- c(
     tr("tabs.live", lang),
     if (!is.null(STR[["tabs.agentic"]])) tr("tabs.agentic", lang) else "AGENTIC VISION",
@@ -32,7 +33,10 @@ tabs_el <- function(lang, n_formula, n_diag, current) {
     tr("tabs.map", lang),
     "\U0001f30d 3D",
     "\U0001f9ed NAVIGATION",
-    "FUNDI DEPLOY",
+    "\U0001f680 OS AND APP INSTALLATION",
+    "\U0001f5a5 REAL REMOTING",
+    "\U0001f9ff KALI TOOLS",
+    "\U0001f3e2 COMPANY VIZ",
     "\U0001fa7a FUNDI MOBILE",
     "\U0001f4e1 IOT REGISTRY")
   tab_click <- function(id) {
