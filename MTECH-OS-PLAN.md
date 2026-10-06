@@ -380,3 +380,26 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
 - **Siri**: agents wanatumia API ya umma tu (fleet/* + secops/result); hakuna
   usanifu wa ndani kwenye scripts; HITL inabaki (kazi zilizoidhinishwa pekee).
 - **Uthibitisho**: bash -n OK, node --check 2/2, cargo test 129/129.
+
+## H16 ✅ — MWANZO WA BIASHARA (STARTER PACK) — kwa mmiliki
+
+Folda mpya **BIASHARA/** — hati za kuanza kupata wateja na pesa (bei zote
+zimechukuliwa moja kwa moja kutoka code, zimehakikiwa 11/11 kulingana na
+billing.rs na tools.rs):
+
+- **PRICE-LIST.md** — Subscription (Basic 8,000 / Standard 6,500 / Biashara
+  5,000 / Kubwa 4,000 kwa kifaa/mwezi) + Pay-per-use (scan 2,000 … forensics
+  25,000) + punguzo la volume (10–20%) + mifano ya mapato (PC 20 = 130,000/mwezi)
+  + kanuni za BILI (charge baada ya mafanikio, HITL, ledger).
+- **KANDARASI.md** — kandarasi rahisi ya Kiswahili: HITL (idhini kabla ya kazi
+  hatari), ushahidi wenye hash, usiri (mfumo haufichuliwi), umiliki wa mfumo
+  ni wa Mbilinyi Tech (mteja ananunua HUDUMA), SLA (dharura < saa 4),
+  hakuna malipo ya kazi iliyofeli.
+- **SERVER-SETUP.md** — hatua 8 halisi: clone → `docker compose up -d --build`
+  (api:8080, dnsmasq, nginx, samba, ollama, llamacpp, suricata, wazuh,
+  kali-tools) → /health → Onboarding → VPN → BILI (salio/subscription) →
+  agents (ps1/sh) → kazi ya kwanza (MATRIX → Jobs RUHUSU → RIPOTI PDF) →
+  backup/passwords/bandari + meza ya matatizo ya kawaida.
+- **MUHTASARI.md** — muhtasari wa mradi kwa wateja/wawekezaji: uwezo wote
+  (H6–H15), ubora (tests 129/129, CI 6/6, PRs #6–#23), njia 4 za mapato,
+  gharama (hakuna leseni), ujumbe wa kutangaza.
