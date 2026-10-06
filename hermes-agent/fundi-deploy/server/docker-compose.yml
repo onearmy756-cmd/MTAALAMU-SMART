@@ -35,7 +35,11 @@ services:
   api:
     build: ./agent
     container_name: fundi-api
-    ports: ["8080:8080"]
+    ports: ["8080:8080", "51820:51820/udp"]
+    cap_add: [NET_ADMIN]
+    devices: ["/dev/net/tun"]
+    sysctls:
+      - net.ipv4.ip_forward=1
     volumes:
       - ./data:/data
       - ./tftp:/var/lib/tftpboot
@@ -47,6 +51,9 @@ services:
       - FUNDI_BACKUP_MODE=${FUNDI_BACKUP_MODE:-stub}
       - FUNDI_IMAGES=/images
       - FUNDI_DEMO_HOSTS=${FUNDI_DEMO_HOSTS:-1}
+      # WIREGUARD (P4): endpoint ya public (IP au domain ya server) — inaonekana kwenye client confs
+      - FUNDI_WG_ENDPOINT=${FUNDI_WG_ENDPOINT:-}
+      - FUNDI_WG_DIR=/data/wireguard
       - DATABASE_URL=sqlite:///data/fundi.db
       - RUST_LOG=info
     restart: unless-stopped

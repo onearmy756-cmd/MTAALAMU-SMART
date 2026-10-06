@@ -2,6 +2,7 @@
 
 **P2 IMEKAMILIKA** (backup halisi, multicast, AI OS selection, discovery halisi, images validation)
 **P3 IMEKAMILIKA** (cloud multi-tenant + offline-first outbox)
+**P4 IMEKAMILIKA** (🔒 WireGuard VPN — kazi ZOTE za mbali kupitia wg0 · majina ya kiotomatiki hr, hr 1, hr 2…)
 
 ## Wajibu
 
@@ -37,7 +38,14 @@
 | GET | `/cloud/status` | Hali ya cloud (hub/edge, outbox) |
 | GET/POST | `/cloud/tenants` | Orodha / ongeza tenant |
 | POST | `/cloud/heartbeat` | Heartbeats kutoka edge nodes |
-| GET | `/ui` | Dashboard ya msimamizi |
+| POST | `/api/vpn/init` | 🔒 Keys za server + wg0.conf |
+| GET | `/api/vpn/status` | 🔒 Hali ya tunnel (wg show halisi) |
+| GET/POST | `/api/vpn/peers` | 🔒 Peers: orodha / ongeza |
+| GET | `/api/vpn/peers/:name/conf` | 🔒 Pakua client conf |
+| DELETE | `/api/vpn/peers/:name` | 🔒 Ondoa peer |
+| POST | `/api/vpn/up` `/api/vpn/down` | 🔒 Washa/zima tunnel (wg-quick) |
+| GET | `/api/vpn/scan` | 🔒 Scan subnet ya VPN |
+| GET | `/ui` | Dashboard ya msimamizi (tab 🔒 VPN) |
 
 ## Anzisha
 
@@ -104,6 +112,16 @@ curl -s localhost:8080/os/select -H 'Content-Type: application/json' \
 # Ongeza tenant kwenye hub:
 curl -s localhost:8080/cloud/tenants -H 'Content-Type: application/json' \
   -d '{"id":"fundi-mwanza","name":"Fundi Mwanza","token":"secret123"}'
+```
+
+## WireGuard VPN (P4) — kazi zote za mbali kupitia wg0
+
+```bash
+# Server: endpoint ya public + NET_ADMIN + /dev/net/tun (compose tayari inaweka)
+FUNDI_WG_ENDPOINT=196.x.x.x docker compose up -d --build api
+# UI → tab 🔒 VPN → INIT → ongeza PEER ("hr") → pakua conf → computer ya mbali:
+wg-quick up wg-hr.conf
+# Sasa: discovery, OS install, apps, drivers, ripoti — ZOTE kupitia tunnel
 ```
 
 ## Discovery halisi ya LAN

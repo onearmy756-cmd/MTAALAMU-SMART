@@ -33,7 +33,7 @@ export*
 __pycache__/model_tools.cpython-310.pyc
 __pycache__/web_tools.cpython-310.pyc
 logs/
-data/
+data/*
 # Bundled community plugin index seed (shipped as package data) — the bare
 # `data/` pattern above would otherwise swallow it.
 !hermes_cli/data/
@@ -319,3 +319,9 @@ native/fts5_cjk/*.so
 /pm/.lock.json.lock
 
 apps/desktop/.dist-build*
+
+# exception: data/deploy (fundi-deploy bundles + wireguard config) — lazima iwe kwenye repo
+# (inaweka MWISHO ili data/* ya mwisho isibatilisha negation)
+!data/deploy/
+!data/deploy/app_bundles.json
+!data/deploy/wireguard.json

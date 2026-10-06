@@ -1,0 +1,26 @@
+{
+  "kind": "fundi-wireguard",
+  "version": "1.0.0",
+  "note": "WireGuard VPN (P4) — kazi ZOTE za mbali (discovery, OS install, apps, drivers, ripoti) zinaenda kupitia tunnel hii. Config hii ndiyo kanuni; env (FUNDI_WG_*) inaipa priority ikiwa ipo.",
+  "interface": "wg0",
+  "subnet": "10.66.66.0/24",
+  "server_ip": "10.66.66.1",
+  "port": 51820,
+  "endpoint": "",
+  "dns": "10.66.66.1",
+  "mtu": 1420,
+  "keepalive": 25,
+  "client_allowed_ips": "0.0.0.0/0, ::/0",
+  "policy": {
+    "block_when_vpn_down": true,
+    "kazi_zote_kwa_vpn": true,
+    "note_sw": "Bila VPN: remote work haianzi (policy). Discovery ya LAN ya ndani inaendelea kawaida.",
+    "security": "Keys ni Curve25519 halisi; server.key (0600) inahifadhiwa /data/wireguard; client confs zinapakuliwa kwa peer (hakuna private key kwenye server conf)."
+  },
+  "docker_requirements": {
+    "cap_add": ["NET_ADMIN"],
+    "devices": ["/dev/net/tun"],
+    "sysctls": { "net.ipv4.ip_forward": "1" },
+    "tools": "wireguard-tools (wg + wg-quick) — Dockerfile inaiweka"
+  }
+}
