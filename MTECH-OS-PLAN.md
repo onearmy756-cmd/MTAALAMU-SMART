@@ -193,3 +193,27 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
   engine-rust, Whisper, SearXNG, HERMES Elixir/LangChain, docker compose + paths);
   default integration label → "Utafutaji wa Mfumo"; maneno ya ndani (H7/fiche)
   hayamo kwenye code ya dashboards.
+
+## H9 ✅ — SOLUTIONS DASHBOARD + SUBSCRIPTION & PAY-PER-USE (TZS, credits ZIMEONDOKWA)
+
+- **🖥️ AUTOMATED COMPUTER SOLUTIONS kwenye /ui** (kama dashboard kuu):
+  COMPUTER HEALTH MATRIX (kagua yote kwa wakati mmoja, alerts per-PC),
+  **AI AGENT chat** (andika tatizo → AI inajibu na kupendekeza hatua),
+  Console Streams live. Kwa subscription au pay-per-use.
+- **MFUMO WA KIBIASHARA MPYA (billing.rs) — CREDITS ZIMEONDOKWA KABISA**:
+  - **SUBSCRIPTION** (kwa mwezi, kwa kifaa — TZS za Kitanzania za kibishara):
+    Basic (1–10 kifaa) TZS 8,000 · Standard (11–50) TZS 6,500 ·
+    Biashara (51–200) TZS 5,000 · Kampuni Kubwa (200+) TZS 4,000.
+    Subscription = huduma ZOTE (monitoring, scan ya kila siku, repair,
+    remoting, AI chat, forensics) — bila malipo ya ziada.
+  - **PAY-PER-USE**: scan TZS 2,000 · repair TZS 15,000 · os_install TZS 5,000 ·
+    apps TZS 1,500 · forensics TZS 25,000 · netmgmt TZS 4,000.
+  - **Punguzo la volume**: 10+ kazi = 10% · 50+ = 20% (wateja wana faida).
+  - **WALLET**: topup kupitia ClickPesa/benki (ref halisi LAZIMA) →
+    subscription inaweza kulipiwa kutoka salio; kila kazi inaandika ledger.
+  - `authorize()` inazuia kazi kabla haijaanza (subscription au salio);
+    `charge()` inakata pay-per-use tu baada ya kazi kuva fanikiwa.
+- **CREDITS zimefutwa**: routes /api/credits/* + handlers + ServicePrice.credits
+  (→ price_tzs) + UI ya credits — zote zimeondolewa; services gate sasa = billing.
+- **MATRIX quote sasa ni TZS**: (os 5,000 + apps 1,500) × devices − punguzo la
+  volume (10% / 20%) — hakuna credits.

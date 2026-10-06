@@ -21,7 +21,7 @@ pub struct PublicService {
     pub id: &'static str,
     pub name_sw: &'static str,
     pub desc_sw: &'static str,
-    pub credits: i64,
+    pub price_tzs: u64,
 }
 
 /// Registry ya NDANI (server-side pekee): huduma → zana halisi + invocation.
@@ -59,49 +59,49 @@ pub fn public_service_list() -> Vec<PublicService> {
             id: "network_scanner",
             name_sw: "Kichanganuzi cha Mtandao",
             desc_sw: "Kugundua vifaa vyote kwenye mtandao, port zilizo wazi na hatari.",
-            credits: 2,
+            price_tzs: 2_000,
         },
         PublicService {
             id: "health_check",
             name_sw: "Uchunguzi wa Afya",
             desc_sw: "Afya ya kompyuta: CPU, RAM, disk, na huduma muhimu.",
-            credits: 1,
+            price_tzs: 2_000,
         },
         PublicService {
             id: "digital_forensic",
             name_sw: "Uchunguzi wa Kidijitali",
             desc_sw: "Uchambuzi wa ushahidi kwenye diski na mifumo (forensics).",
-            credits: 8,
+            price_tzs: 25_000,
         },
         PublicService {
             id: "malware_scan",
             name_sw: "Uchanganuzi wa Viviruski",
             desc_sw: "Kutafuta na kuondoa programu hasidi kwenye kifaa.",
-            credits: 5,
+            price_tzs: 2_000,
         },
         PublicService {
             id: "os_install",
             name_sw: "Usakinishaji wa Mfumo",
             desc_sw: "Kusakinisha mfumo wa uendeshaji kwenye kompyuta.",
-            credits: 20,
+            price_tzs: 5_000,
         },
         PublicService {
             id: "app_install",
             name_sw: "Usakinishaji wa Programu",
             desc_sw: "Kusakinisha programu na bundles kwenye kompyuta.",
-            credits: 3,
+            price_tzs: 1_500,
         },
         PublicService {
             id: "driver_update",
             name_sw: "Usasishaji wa Drivers",
             desc_sw: "Kusasisha drivers za vifaa vyote.",
-            credits: 2,
+            price_tzs: 2_000,
         },
         PublicService {
             id: "device_management",
             name_sw: "Usimamizi wa Vifaa",
             desc_sw: "Kusimamia na ku-config vifaa vya mtandao (routers, switches).",
-            credits: 4,
+            price_tzs: 4_000,
         },
     ]
 }
@@ -146,8 +146,8 @@ mod tests {
         for forbidden in ["nmap", "sleuthkit", "fls", "icat", "clamav", "clamscan", "rust", "cargo"] {
             assert!(!dump.to_lowercase().contains(forbidden), "katalogi inaonyesha '{forbidden}' — nzuri iko fiche");
         }
-        // Kila huduma ina credits (bei) — mteja anajua bei tu
-        assert!(svcs.iter().all(|s| s.credits > 0));
+        // Kila huduma ina bei ya TZS — mteja anajua bei tu
+        assert!(svcs.iter().all(|s| s.price_tzs > 0));
     }
 
     #[test]
