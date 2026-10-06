@@ -294,7 +294,8 @@ async fn main() -> anyhow::Result<()> {
 async fn root() -> Json<serde_json::Value> {
     Json(json!({
         "name": "OS AND APP INSTALLATION",
-        "product": "MTECH OS",
+        "product": "MTECHOS",
+        "main_modules": ["COMPUTER SOLUTIONS", "OS AND APP INSTALLATION"],
         "licensed_by": "Mbilinyi Tech (mbilinyitech.co.tz)",
         "version": "3.0.0",
         "role": "Agent inafanya kazi; msimamizi anasimamia (approve/cancel)",

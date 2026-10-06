@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "MTECH OS",
+  "productName": "MTECHOS",
   "version": "2.0.0",
   "identifier": "co.tz.mbilinyitech.mtech-os",
   "build": {
@@ -9,7 +9,7 @@
   "app": {
     "windows": [
       {
-        "title": "MTECH OS — OS AND APP INSTALLATION · COMPUTER SOLUTIONS · Mbilinyi Tech",
+        "title": "MTECHOS — MAIN: COMPUTER SOLUTIONS · OS AND APP INSTALLATION — Mbilinyi Tech",
         "width": 1280,
         "height": 800,
         "minWidth": 900,
