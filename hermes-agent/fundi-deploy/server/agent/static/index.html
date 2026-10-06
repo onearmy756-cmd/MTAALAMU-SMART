@@ -546,6 +546,7 @@ details p{font-size:13px;color:#b2ebf2}
       <div class="row"><input id="bil_amount" type="number" placeholder="Kiasi TZS (mf. 50,000)" style="flex:1;min-width:150px"/></div>
       <div class="row"><input id="bil_top_ref" placeholder="Marejeo ya malipo (TXN ya ClickPesa/benki)" style="flex:1;min-width:170px"/></div>
       <button onclick="biliTopup()">➕ Ingiza</button>
+      <button onclick="biliPesa()">📱 LIPA SIMU (ClickPesa)</button>
     </div>
   </div>
   <div id="bili_out" class="pre" style="margin-top:8px">—</div>
@@ -1359,6 +1360,26 @@ async function biliSubscribe(){
   const d = await (await fetch(API+'/api/billing/subscribe', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({account:acc, devices:dev, ref_code:ref})})).json();
   document.getElementById('bili_out').innerHTML = d.ok
     ? `✅ Subscription: <b>${escHtml(d.tier)}</b> · ${d.devices} vifaa · TZS ${Number(d.total_tzs).toLocaleString()}/mwezi · hadi ${escHtml(d.paid_until).slice(0,10)}`
+    : ('❌ '+(d.error||''));
+}
+async function biliPesa(){
+  const acc = document.getElementById('bil_top_acc').value || 'mteja1';
+  const amt = parseInt(document.getElementById('bil_amount').value||'0');
+  const el = document.getElementById('bili_out');
+  if (amt < 1000) { el.innerHTML = '❌ kiwango cha chini: TZS 1,000'; return; }
+  const d = await (await fetch(API+'/api/clickpesa/checkout', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:acc,amount_tzs:amt})})).json();
+  if (d.ok) {
+    el.innerHTML = `✅ Malipo yameomba: <b>TZS ${amt.toLocaleString()}</b> (account ${escHtml(acc)})<br/>` +
+      `Hali: <b>${escHtml(d.status)}</b> · order: ${escHtml(d.order_reference||'')}` +
+      (d.checkout_link? `<br/>👉 <a href="${escHtml(d.checkout_link)}" target="_blank" rel="noopener">FUNGUA MALIPO (lipa kwenye simu)</a>` : `<br/><span class="meta">${escHtml(d.note_sw||'')}</span>`);
+    window.lastOrder = d.order_reference;
+  } else { el.innerHTML = '❌ ' + escHtml(d.error||''); }
+}
+async function biliOrder(){
+  if (!window.lastOrder) { document.getElementById('bili_out').innerHTML = '❌ hakuna order — bonyeza LIPA SIMU kwanza'; return; }
+  const d = await (await fetch(API+'/api/clickpesa/status/'+encodeURIComponent(window.lastOrder))).json();
+  document.getElementById('bili_out').innerHTML = d.ok
+    ? `Hali ya ${escHtml(d.order_reference)}: <b>${escHtml(d.status)}</b> · TZS ${Number(d.amount_tzs).toLocaleString()}${d.status==='SUCCESS'? ' — salio limeongezeka ✅':''}`
     : ('❌ '+(d.error||''));
 }
 async function biliTopup(){

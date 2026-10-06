@@ -19,6 +19,8 @@ mod discover;
 mod chat;
 mod daily;
 mod fleet;
+mod clickpesa;
+mod portal;
 mod hardware;
 mod images;
 mod lan;
@@ -75,6 +77,7 @@ struct AppState {
     remote: Arc<remote::Store>,
     brain: Arc<brain::Brain>,
     pfsense: Arc<pfsense::PfClient>,
+    clickpesa: Arc<clickpesa::ClikConfig>,
 }
 
 #[tokio::main]
@@ -125,6 +128,8 @@ async fn main() -> anyhow::Result<()> {
     language::init_tables(&db).await;
     company::init_tables(&db).await;
     secops::init_tables(&db).await;
+    clickpesa::init_tables(&db).await;
+    portal::init_tables(&db).await;
     toolkit::init_tables(&db).await;
     fleet::init_tables(&db).await;
 
@@ -133,6 +138,7 @@ async fn main() -> anyhow::Result<()> {
     ai_config::init_tables(&db).await;
     // PFSENSE API (H5b): client halisi — bila env, kazi za firewall zinarudisha error ya configuration
     let pfsense = Arc::new(pfsense::PfClient::from_env());
+    let clickpesa = Arc::new(clickpesa::ClikConfig::from_env());
 
     // Seed agents 10 (agentic vision)
     let agents: [(&str, &str); 10] = [
@@ -169,6 +175,7 @@ async fn main() -> anyhow::Result<()> {
         remote: Arc::new(remote::Store::new()),
             brain,
             pfsense,
+            clickpesa,
     };
 
     // Load jobs za zamani kutoka DB
@@ -268,6 +275,13 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/fleet/poll", post(fleet_poll))
         .route("/api/fleet/report", post(fleet_report))
         .route("/api/fleet/agents", get(fleet_agents))
+        .route("/api/clickpesa/checkout", post(clickpesa_checkout))
+        .route("/api/clickpesa/webhook", post(clickpesa_webhook))
+        .route("/api/clickpesa/status/:order", get(clickpesa_status))
+        .route("/api/portal/login", post(portal_login))
+        .route("/api/portal/overview", post(portal_overview))
+        .route("/api/portal/checkout", post(portal_checkout))
+        .route("/api/admin/portal/set-pin", post(portal_admin_set_pin))
         .route("/api/quote", post(quote_post))
         .route("/api/react/start", post(react_start))
         .route("/api/react/sweep", post(react_sweep))
@@ -2046,4 +2060,82 @@ async fn fleet_report(State(s): State<AppState>, Json(r): Json<FleetReportReq>) 
 
 async fn fleet_agents(State(s): State<AppState>) -> Json<serde_json::Value> {
     Json(fleet::list(&s.db).await)
+}
+
+// ---------- CLICKPESA (H17a): checkout + webhook + status ----------
+
+#[derive(serde::Deserialize)]
+struct ClikCheckoutReq {
+    account: String,
+    amount_tzs: i64,
+}
+
+async fn clickpesa_checkout(State(s): State<AppState>, Json(r): Json<ClikCheckoutReq>) -> Json<serde_json::Value> {
+    Json(clickpesa::create_checkout(&s.db, &s.clickpesa, r.account.trim(), r.amount_tzs).await.unwrap_or_else(|e| {
+        json!({ "ok": false, "error": e })
+    }))
+}
+
+async fn clickpesa_webhook(
+    State(s): State<AppState>,
+    headers: axum::http::HeaderMap,
+    body: String,
+) -> Json<serde_json::Value> {
+    let given = clickpesa::checksum_from_headers(&headers);
+    Json(clickpesa::handle_webhook(&s.db, &s.clickpesa, &body, given.as_deref()).await)
+}
+
+async fn clickpesa_status(State(s): State<AppState>, Path(order): Path<String>) -> Json<serde_json::Value> {
+    Json(clickpesa::order_status(&s.db, &order).await)
+}
+
+// ---------- CUSTOMER PORTAL (H17c) + admin PIN ----------
+
+#[derive(serde::Deserialize)]
+struct PortalLoginReq { account: String, pin: String }
+
+async fn portal_login(State(s): State<AppState>, Json(r): Json<PortalLoginReq>) -> Json<serde_json::Value> {
+    match portal::login(&s.db, &r.account, &r.pin).await {
+        Ok(token) => Json(json!({ "ok": true, "token": token, "account": r.account })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct PortalAuthReq { token: String }
+
+async fn portal_overview(State(s): State<AppState>, Json(r): Json<PortalAuthReq>) -> Json<serde_json::Value> {
+    match portal::auth(&s.db, &r.token).await {
+        Some(account) => Json(portal::overview(&s.db, &account).await),
+        None => Json(json!({ "ok": false, "error": "session imeisha — ingia upya" })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct PortalCheckoutReq { token: String, amount_tzs: i64 }
+
+async fn portal_checkout(State(s): State<AppState>, Json(r): Json<PortalCheckoutReq>) -> Json<serde_json::Value> {
+    let Some(account) = portal::auth(&s.db, &r.token).await else {
+        return Json(json!({ "ok": false, "error": "session imeisha — ingia upya" }));
+    };
+    Json(clickpesa::create_checkout(&s.db, &s.clickpesa, &account, r.amount_tzs).await.unwrap_or_else(|e| json!({ "ok": false, "error": e })))
+}
+
+#[derive(serde::Deserialize)]
+struct PortalPinReq { admin_token: String, account: String, pin: String }
+
+async fn portal_admin_set_pin(State(s): State<AppState>, Json(r): Json<PortalPinReq>) -> Json<serde_json::Value> {
+    // admin pekee (token ya auth.rs) anaweka PIN za wateja
+    let ok = sqlx::query_as::<_, (String,)>("SELECT username FROM sessions WHERE token=?1")
+        .bind(&r.admin_token)
+        .fetch_optional(&s.db)
+        .await
+        .ok()
+        .flatten()
+        .is_some();
+    if !ok { return Json(json!({ "ok": false, "error": "admin token si sahihi" })); }
+    match portal::set_pin(&s.db, &r.account, &r.pin).await {
+        Ok(_) => Json(json!({ "ok": true, "note_sw": "Mpe PIN kwa mteja kwa njia salama (simu). Am badilisha kwa command hii tena." })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
 }

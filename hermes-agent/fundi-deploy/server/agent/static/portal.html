@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MTECH OS — Portal ya Mteja</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#071018;color:#e8f1f5;min-height:100vh}
+header{background:#0a1628;border-bottom:1px solid #00e5ff33;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+header b{color:#00e5ff}
+main{padding:16px;max-width:640px;margin:0 auto}
+.card{background:#0a1628;border:1px solid #1a2a3a;border-radius:12px;padding:14px;margin-bottom:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+input{background:#081420;border:1px solid #1a2a3a;color:#e8f1f5;border-radius:8px;padding:11px 12px;font-size:15px;flex:1;min-width:120px}
+button{background:#00e5ff;color:#04222b;border:none;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer}
+button.sec{background:#12263a;color:#9fd8e8}
+button.pay{background:#34d399}
+h2{font-size:16px;margin-bottom:8px}
+h3{font-size:14px;margin:10px 0 6px;color:#9fd8e8}
+.meta{color:#7a99a8;font-size:12px}
+.pre{background:#0b1220;border-radius:8px;padding:10px;font-size:13px;overflow:auto;white-space:pre-wrap}
+.bar{height:8px;background:#1a2a3a;border-radius:4px;overflow:hidden;flex:1;min-width:80px}
+.ok{color:#34d399}.warn{color:#fbbf24}.bad{color:#f87171}
+a{color:#00e5ff}
+</style>
+</head>
+<body>
+<header><b>🖥️ MTECH OS · Portal</b><span id="p_who" class="meta">—</span></header>
+<main>
+
+<div class="card" id="p_login">
+  <h2>INGIA (Account + PIN)</h2>
+  <div class="row"><input id="p_acc" placeholder="Account (mf. mteja1)"/></div>
+  <div class="row"><input id="p_pin" type="password" inputmode="numeric" maxlength="8" placeholder="PIN (4-8 namba)"/></div>
+  <div class="row"><button onclick="pLogin()">INGIA</button></div>
+  <div id="p_login_out" class="meta">PIN inatolewa na Mbilinyi Tech kwa njia salama (simu).</div>
+</div>
+
+<div id="p_main" style="display:none">
+  <div class="card">
+    <h2>SALIO LA BILI</h2>
+    <div class="row"><b id="p_bal" style="font-size:22px">—</b>
+      <input id="p_amt" type="number" placeholder="TZS (mf. 10000)" style="max-width:150px"/>
+      <button class="pay" onclick="pPay()">📱 LIPA SIMU</button>
+    </div>
+    <div id="p_pay_out" class="meta">Malipo kwa M-Pesa / Tigo / Airtel / halipaid — salio linaongezeka kiotomatiki.</div>
+    <div id="p_sub" class="meta">—</div>
+  </div>
+
+  <div class="card">
+    <h2>🛡️ USALAMA WA KOMPYUTA ZAKO</h2>
+    <div id="p_sec">—</div>
+  </div>
+
+  <div class="card">
+    <h2>🔬 USHAHIDI WA FORENSICS</h2>
+    <div id="p_cases" class="meta">Hakuna kesi bado.</div>
+  </div>
+
+  <div class="card">
+    <div class="row"><button class="sec" onclick="pLogout()">🚪 TOKA</button>
+    <button class="sec" onclick="pLoad()">🔄 Onyesha</button></div>
+  </div>
+</div>
+
+</main>
+<script>
+const API = '';
+let PT = null;
+function esc(x){ return String(x||'').replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+async function pLogin(){
+  const acc = document.getElementById('p_acc').value.trim();
+  const pin = document.getElementById('p_pin').value.trim();
+  const d = await (await fetch(API+'/api/portal/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:acc,pin:pin})})).json();
+  if (d.ok) {
+    PT = d.token; localStorage.setItem('mtech_portal', d.token);
+    document.getElementById('p_who').textContent = acc;
+    document.getElementById('p_login').style.display='none';
+    document.getElementById('p_main').style.display='';
+    pLoad();
+  } else {
+    document.getElementById('p_login_out').innerHTML = '❌ ' + esc(d.error||'');
+  }
+}
+function pLogout(){ localStorage.removeItem('mtech_portal'); location.reload(); }
+async function pLoad(){
+  if (!PT) return;
+  const d = await (await fetch(API+'/api/portal/overview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:PT})})).json();
+  if (!d.ok) { pLogout(); return; }
+  document.getElementById('p_bal').textContent = 'TZS ' + Number(d.balance_tzs||0).toLocaleString();
+  const s = d.subscription;
+  document.getElementById('p_sub').innerHTML = s
+    ? '✅ Subscription: ' + esc(s.tier||'') + ' · ' + (s.devices||0) + ' vifaa · hadi ' + esc(String(s.paid_until||'').slice(0,10))
+    : '❌ Hakuna subscription (pay-per-use) — ingiza salio au wasiliana na Mbilinyi Tech.';
+  const rows = ((d.security||{}).computers||[]).map(c => {
+    const col = c.health>=80? 'ok' : (c.health>=50? 'warn' : 'bad');
+    return `<div class="row"><b style="min-width:110px">${esc(c.target)}</b>
+      <div class="bar"><div style="width:${c.health}%;height:100%;background:${col==='ok'?'#34d399':col==='warn'?'#fbbf24':'#f87171'}"></div></div>
+      <b class="${col}" style="min-width:44px">${c.health}%</b>
+      <span class="meta">${esc(c.severity)}</span></div>`;
+  }).join('');
+  document.getElementById('p_sec').innerHTML = rows || '<span class="meta">Hakuna matokeo bado — Mbilinyi Tech atachunguza kompyuta zako kwa ratiba.</span>';
+  document.getElementById('p_cases').innerHTML = ((d.security||{}).forensics||[]).map(c =>
+    `<div class="meta">[${esc(String(c.at||'').slice(0,10))}] ${esc(c.target)} · ushahidi ${esc(String(c.evidence_hash||'').slice(0,14))}… · ${c.sealed? 'IMEFUNGWA 🔒':''}</div>`
+  ).join('') || 'Hakuna kesi bado.';
+}
+async function pPay(){
+  const amt = parseInt(document.getElementById('p_amt').value||'0');
+  const el = document.getElementById('p_pay_out');
+  if (amt < 1000) { el.innerHTML = '❌ kiwango cha chini: TZS 1,000'; return; }
+  const d = await (await fetch(API+'/api/portal/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:PT,amount_tzs:amt})})).json();
+  if (d.ok) {
+    el.innerHTML = `✅ order ${esc(d.order_reference||'')} — hali: ${esc(d.status)}` +
+      (d.checkout_link? ` · <a href="${esc(d.checkout_link)}" target="_blank" rel="noopener">FUNGUA MALIPO</a>` : ` · <span class="meta">${esc(d.note_sw||'')}</span>`);
+  } else { el.innerHTML = '❌ ' + esc(d.error||''); }
+}
+window.addEventListener('load', ()=>{
+  const t = localStorage.getItem('mtech_portal');
+  if (t) { PT = t; document.getElementById('p_login').style.display='none'; document.getElementById('p_main').style.display=''; pLoad(); }
+  setInterval(()=>{ if (PT) pLoad(); }, 15000);
+});
+</script>
+</body>
+</html>
