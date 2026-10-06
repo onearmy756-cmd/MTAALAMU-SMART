@@ -44,6 +44,7 @@ mod credit;
 mod netmgmt;
 mod vpn;
 mod pfsense;
+mod secops;
 mod wol;
 
 use axum::{
@@ -120,6 +121,7 @@ async fn main() -> anyhow::Result<()> {
     updates::init_tables(&db).await;
     language::init_tables(&db).await;
     company::init_tables(&db).await;
+    secops::init_tables(&db).await;
 
     // NEURALIS BRAIN (H5b): SQLite + LanceDB-compatible vector store (cosine semantic search)
     let brain = Arc::new(brain::Brain::new(db.clone(), "/data"));
@@ -246,6 +248,9 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/bundles/:id", axum::routing::delete(bundles_delete))
         .route("/api/bundles/apps", get(bundles_apps))
         .route("/api/bundles/distribute", post(bundles_distribute))
+        .route("/api/secops/start", post(secops_start))
+        .route("/api/secops/result", post(secops_result))
+        .route("/api/secops/summary/:account", get(secops_summary))
         .route("/api/quote", post(quote_post))
         .route("/api/react/start", post(react_start))
         .route("/api/react/sweep", post(react_sweep))
@@ -1712,4 +1717,108 @@ async fn bundles_distribute(State(s): State<AppState>, Json(r): Json<BundleDistr
         "balance_tzs": bal,
         "note_sw": "Kazi zimesubiri RUHUSU (HITL) kwenye tab Jobs — agent inasakinisha apps kwa wakati mmoja baada ya idhini."
     }))
+}
+
+// ---------- CYBER SECURITY & FORENSICS CENTER (H11) ----------
+
+#[derive(serde::Deserialize)]
+struct SecOpsStartReq {
+    account: String,
+    targets: Vec<String>,
+    mode: String,
+}
+
+async fn secops_start(State(s): State<AppState>, Json(r): Json<SecOpsStartReq>) -> Json<serde_json::Value> {
+    let targets: Vec<String> = r.targets.iter().map(|t| t.trim().to_string()).filter(|t| !t.is_empty()).collect();
+    if targets.is_empty() {
+        return Json(json!({ "ok": false, "error": "chagua kompyuta angalau moja" }));
+    }
+    let mode = match secops::Mode::parse(&r.mode) {
+        Some(m) => m,
+        None => return Json(json!({ "ok": false, "error": "chagua hali: security | forensics | both" })),
+    };
+    // BILI GATE: subscription inatosha; vinginevyo salio (kila op ina bei yake)
+    for op in mode.ops() {
+        if let Err(e) = billing::authorize(&s.db, &r.account, secops::bill_key(op), targets.len()).await {
+            return Json(json!({ "ok": false, "error": e, "needs_billing": true }));
+        }
+    }
+    // Kazi za HITL — kila target × op, zinaendeshwa kwa WAKATI MMOJA baada ya idhini
+    let mut jobs = s.jobs.write().await;
+    let mut ids = Vec::new();
+    for name in &targets {
+        for op in mode.ops() {
+            let id = Uuid::new_v4().to_string();
+            let label = if *op == "forensics" { "Uchunguzi wa kidijitali (ushahidi)" } else { "Uchunguzi wa usalama" };
+            jobs.push(Job {
+                id: id.clone(),
+                device_mac: String::new(),
+                device_name: name.clone(),
+                os_type: String::new(),
+                status: "queued".into(),
+                stage: format!("secops:{}", op),
+                progress: 0,
+                message: format!("{} inasubiri idhini (HITL)", label),
+                needs_approval: true,
+                image: None,
+                multicast: false,
+            });
+            ids.push(id);
+        }
+    }
+    drop(jobs);
+    // Malipo BAADA ya kazi kuundwa (subscription haijachaji)
+    let mut bal = 0i64;
+    for op in mode.ops() {
+        let refc = format!("sec-{}", Uuid::new_v4());
+        bal = billing::charge(&s.db, &r.account, secops::bill_key(op), targets.len(), &refc).await.unwrap_or(0);
+    }
+    Json(json!({
+        "ok": true,
+        "jobs": ids,
+        "count": ids.len(),
+        "mode": mode.as_str(),
+        "prices": { "security_tzs": secops::PRICE_SECURITY_TZS, "forensics_tzs": secops::PRICE_FORENSIC_TZS },
+        "balance_tzs": bal,
+        "note_sw": "Kazi zinaendeshwa kwa WAKATI MMOJA kwenye kompyuta zote baada ya RUHUSU (HITL, tab Jobs)."
+    }))
+}
+
+#[derive(serde::Deserialize)]
+struct SecOpsResultReq {
+    account: String,
+    target: String,
+    mode: String,
+    #[serde(default)]
+    findings: Vec<secops::Finding>,
+    #[serde(default)]
+    sources: String,
+    #[serde(default)]
+    note: String,
+}
+
+async fn secops_result(State(s): State<AppState>, Json(mut r): Json<SecOpsResultReq>) -> Json<serde_json::Value> {
+    if !tools_internal::valid_target(&r.target) {
+        return Json(json!({ "ok": false, "error": "jina la kompyuta si salama" }));
+    }
+    r.findings = r.findings.drain(..).map(|f| f.normalized()).collect();
+    let mode = match secops::Mode::parse(&r.mode) {
+        Some(m) => m,
+        None => return Json(json!({ "ok": false, "error": "hali si sahihi: security | forensics" })),
+    };
+    match mode {
+        secops::Mode::Security => match secops::save_report(&s.db, &r.account, &r.target, "security", &r.findings).await {
+            Ok((id, health, sev)) => Json(json!({ "ok": true, "report_id": id, "health": health, "severity": sev })),
+            Err(e) => Json(json!({ "ok": false, "error": e })),
+        },
+        secops::Mode::Forensics => match secops::save_case(&s.db, &r.account, &r.target, &r.sources, &r.note).await {
+            Ok((id, hash)) => Json(json!({ "ok": true, "case_id": id, "evidence_hash": hash, "sealed": true })),
+            Err(e) => Json(json!({ "ok": false, "error": e })),
+        },
+        secops::Mode::Both => Json(json!({ "ok": false, "error": "tuma matokeo ya kila hali peke yake (security au forensics)" })),
+    }
+}
+
+async fn secops_summary(State(s): State<AppState>, Path(account): Path<String>) -> Json<serde_json::Value> {
+    Json(secops::summary(&s.db, &account).await)
 }

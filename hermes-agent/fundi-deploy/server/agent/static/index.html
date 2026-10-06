@@ -88,6 +88,7 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#solutions_card'">🖥️ SOLUTIONS</button>
   <button onclick="location.hash='#bili_card'">💰 BILI</button>
   <button onclick="location.hash='#repo_card'">📦 REPO</button>
+  <button onclick="location.hash='#sec_card'">🛡️ CYBER</button>
 </nav>
 
 <main>
@@ -582,6 +583,56 @@ details p{font-size:13px;color:#b2ebf2}
   </div>
   <h4 style="margin-top:8px">Terminal</h4>
   <div id="rep_term" class="pre" style="background:#0b1220;min-height:70px">Silent Install Switch: [ -y --silent /q ]<br/>&gt; </div>
+</div>
+
+<!-- 🛡️ CYBER SECURITY & FORENSICS CENTER — usalama + uchanganuzi kwa wakati mmoja -->
+<div class="card" id="sec_card">
+  <h3>🛡️ CYBER SECURITY & FORENSICS CENTER</h3>
+  <p class="hint">Uchunguzi wa usalama na uchanganuzi wa kidijitali kwa kompyuta NYINGI kwa WAKATI MMOJA — kupitia mtandao salama wa mfumo. Kazi kila moja inaomba RUHUSU (HITL) kwanza; ripoti na ushahidi vinahifadhiwa kwa usalama.</p>
+  <div class="row">
+    <input id="sec_targets" placeholder="Kompyuta (mf. lab_user_001,lab_user_002)" style="flex:1;min-width:220px"/>
+    <input id="sec_account" placeholder="Account" value="mteja1" style="max-width:120px"/>
+    <select id="sec_mode">
+      <option value="security">🛡️ USALAMA — TZS 2,000/kifaa</option>
+      <option value="forensics">🔍 FORENSICS — TZS 25,000/kifaa</option>
+      <option value="both">⚡ ZOTE MBILI</option>
+    </select>
+    <button onclick="secStart()">🚀 ANZA</button>
+  </div>
+  <div id="sec_out" class="pre">—</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px" class="sec-grid">
+    <div>
+      <h4>AFYA YA USALAMA (kila kompyuta)</h4>
+      <div id="sec_health" class="pre">Bado hakuna matokeo — anzisha uchunguzi.</div>
+      <h4 style="margin-top:8px">MUHTASARI WA VITUKEO</h4>
+      <div id="sec_totals" class="meta">Salama 0 · Tahadhari 0 · Hatari 0</div>
+      <div id="sec_chart" style="margin-top:6px"></div>
+    </div>
+    <div>
+      <h4>REKODI MATOKEO (kazi ikikamilika)</h4>
+      <div class="row">
+        <input id="sec_res_target" placeholder="Kompyuta" style="max-width:140px"/>
+        <select id="sec_res_mode"><option value="security">USALAMA</option><option value="forensics">FORENSICS</option></select>
+      </div>
+      <textarea id="sec_res_findings" placeholder="Mstari kwa mstari: aina | maelezo | hatari(0-100) — mf. attack_blocked | jaribio la kuingia lilizuiwa | 70" style="width:100%;min-height:70px"></textarea>
+      <div class="row">
+        <input id="sec_res_sources" placeholder="Ushahidi: diski, kumbukumbu, mtandao, logs" style="flex:1"/>
+        <button onclick="secRecord()">💾 Rekodi</button>
+      </div>
+      <div id="sec_res_out" class="meta">—</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px" class="sec-grid">
+    <div>
+      <h4>RIPOTI ZA USALAMA</h4>
+      <div id="sec_reports" class="pre">Hakuna ripoti bado.</div>
+    </div>
+    <div>
+      <h4>USHAHIDI WA FORENSICS (HASH + IMEFUNGWA)</h4>
+      <div id="sec_cases" class="pre">Hakuna kesi bado.</div>
+    </div>
+  </div>
+  <p class="meta" style="margin-top:6px">Maswali ya usalama: tab 🖥️ SOLUTIONS (AI chat) · Kudhibiti kompyuta kwa mbali: tab 🖥️ SOLUTIONS · Malipo: tab 💰 BILI.</p>
 </div>
 
 </main>
@@ -1327,6 +1378,73 @@ osiSessions();
 setInterval(loadJobs, 3000);
 loadJobs();
 discover();
+
+// ---------- CYBER SECURITY & FORENSICS CENTER (H11) ----------
+const SEC_KIND_SW = { attack_blocked:'Mashambulizi yaliyozuiwa', vulnerability:'Udhaifu', malware:'Virusi/Malware', problem:'Matatizo' };
+async function secStart(){
+  const targets = (document.getElementById('sec_targets').value||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const acc = document.getElementById('sec_account').value || 'mteja1';
+  const mode = document.getElementById('sec_mode').value;
+  if (!targets.length) { alert('Weka kompyuta (mf. lab_user_001,lab_user_002)'); return; }
+  const d = await (await fetch(API+'/api/secops/start', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:acc,targets:targets,mode:mode})})).json();
+  const el = document.getElementById('sec_out');
+  if (d.ok) {
+    el.innerHTML = `&gt; [OK] Kazi ${d.count} zimeingizwa (hali: ${escHtml(d.mode||'')}) — zinaendeshwa kwa WAKATI MMOJA baada ya RUHUSU (HITL, tab Jobs)<br/>&gt; Salio: TZS ${Number(d.balance_tzs||0).toLocaleString()}<br/>&gt; `;
+  } else {
+    el.innerHTML = `&gt; [ERROR] ${escHtml(d.error||'')}${d.needs_billing? ' — ona tab 💰 BILI':''}<br/>&gt; `;
+  }
+}
+function secParseFindings(){
+  return (document.getElementById('sec_res_findings').value||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p = l.split('|').map(x=>x.trim());
+    return { kind: p[0]||'problem', detail: p[1]||'', severity: parseInt(p[2]||'0')||0 };
+  });
+}
+async function secRecord(){
+  const acc = document.getElementById('sec_account').value || 'mteja1';
+  const body = {
+    account:acc, target:document.getElementById('sec_res_target').value||'',
+    mode:document.getElementById('sec_res_mode').value,
+    findings:secParseFindings(),
+    sources:document.getElementById('sec_res_sources').value||'',
+    note:'Imerekodiwa na admin (dashboard)'
+  };
+  const d = await (await fetch(API+'/api/secops/result', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+  const el = document.getElementById('sec_res_out');
+  if (d.ok) {
+    el.innerHTML = d.evidence_hash
+      ? `✅ Ushahidi umefungwa (hash ${escHtml(String(d.evidence_hash).slice(0,16))}…) — kesi ${escHtml(d.case_id||'')}`
+      : `✅ Ripoti imehifadhiwa — afya ${d.health}% (${escHtml(d.severity||'')})`;
+    secLoad(acc);
+  } else { el.innerHTML = '❌ ' + escHtml(d.error||''); }
+}
+async function secLoad(acc){
+  const a = acc || document.getElementById('sec_account').value || 'mteja1';
+  const d = await (await fetch(API+'/api/secops/summary/'+encodeURIComponent(a))).json().catch(()=>null);
+  if (!d || !d.ok) return;
+  const rows = (d.computers||[]).map(c => {
+    const col = c.health>=80? '#34d399' : (c.health>=50? '#fbbf24' : '#f87171');
+    return `<div class="row" style="gap:8px;margin:4px 0">
+      <b style="min-width:110px">${escHtml(c.target)}</b>
+      <div class="bar" style="flex:1"><div style="width:${c.health}%;height:100%;background:${col}"></div></div>
+      <b style="color:${col};min-width:44px">${c.health}%</b>
+      <span class="meta">${escHtml(c.severity)} · matatizo ${c.findings_count} · kuzuia ${c.attacks_blocked} · udhaifu ${c.vulnerabilities}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('sec_health').innerHTML = rows || 'Bado hakuna matokeo — anzisha uchunguzi.';
+  const t = d.totals||{};
+  document.getElementById('sec_totals').textContent = `Salama ${t.salama||0} · Tahadhari ${t.tahadhari||0} · Hatari ${t.hatari||0}`;
+  const k = d.kinds||{};
+  const vals = Object.values(k);
+  const max = vals.length ? Math.max(...vals) : 1;
+  document.getElementById('sec_chart').innerHTML = Object.entries(k).map(([kk,v])=>
+    `<div class="row" style="gap:6px;margin:2px 0"><span class="meta" style="min-width:150px">${escHtml(SEC_KIND_SW[kk]||kk)}</span><div class="bar" style="flex:1"><div style="width:${Math.round(100*v/max)}%;height:100%;background:#00e5ff88"></div></div><b>${v}</b></div>`).join('');
+  document.getElementById('sec_reports').innerHTML = (d.reports||[]).map(r=>
+    `<div>[${escHtml(String(r.at||'').slice(0,16))}] ${escHtml(r.target)} · ${escHtml(r.mode)} · afya ${r.health}% (${escHtml(r.severity)}) · matatizo ${r.findings_count}</div>`).join('') || 'Hakuna ripoti bado.';
+  document.getElementById('sec_cases').innerHTML = (d.forensics||[]).map(c=>
+    `<div>[${escHtml(String(c.at||'').slice(0,16))}] ${escHtml(c.target)} · ushahidi ${escHtml(String(c.evidence_hash||'').slice(0,16))}… · ${c.sealed? 'IMEFUNGWA 🔒':'WAZIMA'} · ${escHtml(c.sources||'')}</div>`).join('') || 'Hakuna kesi bado.';
+}
+window.addEventListener('load', ()=>{ secLoad(); });
 </script>
 <script>
 /* MTECH OS — ULINZI WA SOURCE: huduma za ndani zisioneswe kwa mtumiaji wa kawaida */
