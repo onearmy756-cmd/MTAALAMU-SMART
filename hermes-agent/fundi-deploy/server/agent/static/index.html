@@ -80,6 +80,10 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#admin_card'">👤 Admin</button>
   <button onclick="location.hash='#daily_card'">📅 Kila Siku</button>
   <button onclick="location.hash='#company_card'">🏢 Kampuni</button>
+  <button onclick="location.hash='#services_card'">🧰 Huduma</button>
+  <button onclick="location.hash='#credits_card'">💳 Credits</button>
+  <button onclick="location.hash='#onboard_card'">🚀 Onboarding</button>
+  <button onclick="location.hash='#netmgmt_card'">🌐 Network</button>
 </nav>
 
 <main>
@@ -383,6 +387,69 @@ details p{font-size:13px;color:#b2ebf2}
   </div>
   <div id="orch_result" class="meta" style="margin-top:8px">—</div>
   <div id="orch_tasks" style="margin-top:8px"></div>
+</div>
+
+
+<!-- 🧰 HUDUMA — mteja anaona HUDUMA tu; zana ziko fiche server-side -->
+<div class="card" id="services_card">
+  <h3>🧰 HUDUMA ZA MTECH OS</h3>
+  <p class="hint">Chagua huduma — mfumo unachagua vifaa na njia vyake vyenyewe. Hakuna zana wala amri za kuona: kila kitu kinafanyika ndani.</p>
+  <div class="row">
+    <input id="svc_account" placeholder="Account yako (mf. mteja1)" style="max-width:180px"/>
+    <input id="svc_target" placeholder="Kifaa (IP au hostname, mf. 192.168.1.10)" style="flex:1;min-width:180px"/>
+    <button onclick="loadServices()">🔄 Onyesha huduma</button>
+  </div>
+  <div id="services_list" class="pre">Bonyeza "Onyesha huduma"…</div>
+</div>
+
+<!-- 💳 CREDITS — kulipia huduma (per-use + subscription) -->
+<div class="card" id="credits_card">
+  <h3>💳 CREDITS — lipa kwa matumizi</h3>
+  <p class="hint">Kila huduma ina bei yake kwenye credits. Nunua credits (ClickPesa / benki) au subscription ya mwezi.</p>
+  <div class="row">
+    <input id="cr_account" placeholder="Account" style="max-width:140px"/>
+    <button onclick="creditsBalance()">💰 Salio</button>
+    <input id="cr_amount" type="number" placeholder="credits" style="max-width:110px"/>
+    <input id="cr_ref" placeholder="Marejeo ya malipo (TXN)" style="max-width:190px"/>
+    <button onclick="creditsBuy()">➕ Nunua</button>
+  </div>
+  <div class="row">
+    <input id="cr_ledger_acc" placeholder="Account" style="max-width:140px"/>
+    <button onclick="creditsLedger()">📜 Matumizi (ledger)</button>
+  </div>
+  <div id="credits_out" class="pre">—</div>
+</div>
+
+<!-- 🚀 ONBOARDING — server/computer/raspberry + config automatic -->
+<div class="card" id="onboard_card">
+  <h3>🚀 ONBOARDING — sakinisha kwenye server yako</h3>
+  <p class="hint">Chagua aina ya kifaa ulichosakinisha mfumo (server, computer, Raspberry Pi, kingine) — mfumo unafanya configuration ZOTE automatic na kuanza kutumia.</p>
+  <div class="row">
+    <select id="ob_target">
+      <option value="server">🖥️ Server</option>
+      <option value="computer">💻 Computer</option>
+      <option value="raspberry">🍓 Raspberry Pi</option>
+      <option value="other">📦 Kifaa kingine</option>
+    </select>
+    <button onclick="setupOnboard()">⚙️ Configure automatic</button>
+    <button class="sec" onclick="setupStatus()">🔎 Hali ya setup</button>
+  </div>
+  <div id="onboard_out" class="pre">—</div>
+</div>
+
+<!-- 🌐 NETWORK — vifaa vya mtandao + usalama wa kampuni -->
+<div class="card" id="netmgmt_card">
+  <h3>🌐 NETWORK — vifaa vya mtandao + usalama</h3>
+  <p class="hint">Simamia routers/switches/firewall za kampuni: hali, backup ya config, ukaguzi wa firmware, na posture ya usalama.</p>
+  <div class="row">
+    <input id="nm_device" placeholder="Kifaa (mf. 192.168.1.1)" style="max-width:170px"/>
+    <input id="nm_user" placeholder="user (SSH)" style="max-width:120px"/>
+    <button onclick="nmAction('status')">📡 Hali</button>
+    <button onclick="nmAction('config_backup')">💾 Backup config</button>
+    <button onclick="nmAction('firmware_check')">🧬 Firmware</button>
+    <button onclick="nmAction('security_posture')">🛡️ Usalama</button>
+  </div>
+  <div id="netmgmt_out" class="pre">—</div>
 </div>
 
 </main>
@@ -806,6 +873,77 @@ async function osiSessions(){
   const d = await (await fetch(API+'/osinstall/sessions')).json();
   document.getElementById('osi_sessions').innerHTML = (d||[]).slice(-4).reverse().map(s=>osiCard(s)).join('') || '';
 }
+// ---------- HUDUMA + CREDITS + ONBOARDING + NETWORK ----------
+async function loadServices(){
+  const acc = document.getElementById('svc_account').value||'mteja1';
+  const d = await (await fetch(API+'/services')).json();
+  const el = document.getElementById('services_list');
+  el.innerHTML = (d.services||[]).map(s=>
+    `<div class="row" style="align-items:center;gap:8px;margin:6px 0">
+      <b>${s.name_sw}</b> <span class="hint">${s.desc_sw}</span>
+      <span class="pill">${s.credits} credits</span>
+      <button onclick="runService('${s.id}')">▶ Tumia huduma</button>
+    </div>`).join('');
+}
+async function runService(id){
+  const acc = document.getElementById('svc_account').value||'mteja1';
+  const target = document.getElementById('svc_target').value;
+  if(!target){ alert('Weka kifaa (IP au hostname) kwanza'); return; }
+  const d = await (await fetch(API+'/services/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:acc,service:id,target:target})})).json();
+  document.getElementById('services_list').innerHTML =
+    (d.ok? '✅ ' : '❌ ') + (d.summary || d.error || JSON.stringify(d)) +
+    (d.needs_credits? ' — <b>Nunua credits kwenye tab 💳 Credits</b>' : ' — salio linaendelea kwenye tab 💳');
+}
+async function creditsBalance(){
+  const a = document.getElementById('cr_account').value||'mteja1';
+  const d = await (await fetch(API+'/credits/'+encodeURIComponent(a))).json();
+  document.getElementById('credits_out').innerHTML = d.ok? `Salio la <b>${d.account}</b>: <b>${d.balance} credits</b>` : ('❌ '+(d.error||''));
+}
+async function creditsBuy(){
+  const a = document.getElementById('cr_account').value||'mteja1';
+  const c = parseInt(document.getElementById('cr_amount').value||'0');
+  const ref = document.getElementById('cr_ref').value||'';
+  const d = await (await fetch(API+'/credits/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:a,credits:c,ref_code:ref})})).json();
+  document.getElementById('credits_out').innerHTML = d.ok? `✅ <b>${a}</b> sasa ana <b>${d.balance} credits</b>` : ('❌ '+(d.error||''));
+}
+async function creditsLedger(){
+  const a = document.getElementById('cr_ledger_acc').value||'mteja1';
+  const d = await (await fetch(API+'/credits/'+encodeURIComponent(a)+'/ledger')).json();
+  const rows = (d.ledger||[]).map(l=>`<div>[${l.at}] ${l.delta>0?'+':''}${l.delta} (${l.reason}${l.service? ' · '+l.service:''}${l.ref? ' · '+l.ref:''}) → salio ${l.balance_after}</div>`).join('');
+  document.getElementById('credits_out').innerHTML = rows || 'Hakuna matumizi bado.';
+}
+async function setupOnboard(){
+  const t = document.getElementById('ob_target').value;
+  const d = await (await fetch(API+'/setup/onboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({target:t})})).json();
+  if(d.ok){
+    const c = d.config;
+    document.getElementById('onboard_out').innerHTML =
+      `✅ Configuration IMEKAMILIKA automatic:<br/>
+       • Kifaa: <b>${c.label}</b> · API port: ${c.api_port} · UI: ${c.ui_path}<br/>
+       • Data dir: ${c.data_dir} · VPN peer: <b>${c.wg_peer_ip}</b> (${c.wg_subnet})<br/>
+       • Services: ${c.services_required.join(', ')}<br/>
+       ${c.notes_sw.map(n=>'• '+n).join('<br/>')}`;
+  } else { document.getElementById('onboard_out').innerHTML = '❌ '+(d.error||''); }
+}
+async function setupStatus(){
+  const d = await (await fetch(API+'/setup/status')).json();
+  const st = d.status;
+  document.getElementById('onboard_out').innerHTML = st.configured?
+    (`Hali: <b>${st.ready?'TAYARI — mfumo unaendelea kutumika':'inasubiri'}</b> · Kifaa: ${st.target} · Wakati: ${st.configured_at}`) :
+    'Bado — chagua aina ya kifaa kisha bonyeza "Configure automatic".';
+}
+async function nmAction(action){
+  const device = document.getElementById('nm_device').value;
+  const user = document.getElementById('nm_user').value||'admin';
+  if(!device){ alert('Weka kifaa (IP ya router/switch) kwanza'); return; }
+  const d = await (await fetch(API+'/remote/net',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:action,device:device,user:user})})).json();
+  let html = (d.ok? '✅ ' : '❌ ') + (d.summary || d.error || '');
+  if(d.open_management) html += '<br/>Bandari za usimamizi: ' + d.open_management.join(', ');
+  if(d.warnings && d.warnings.length) html += '<br/>⚠️ ' + d.warnings.join(' · ');
+  if(d.recommendation_sw) html += '<br/>💡 ' + d.recommendation_sw;
+  document.getElementById('netmgmt_out').innerHTML = html;
+}
+
 osiLoadBundles();
 vpnStatus();
 loadBundles();

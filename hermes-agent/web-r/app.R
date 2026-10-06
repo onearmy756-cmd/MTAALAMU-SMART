@@ -137,25 +137,12 @@ ui <- fluidPage(
     conditionalPanel(condition = "input.tab == 'formula'", uiOutput("formula")),
     conditionalPanel(condition = "input.tab == 'diag'", uiOutput("diagnosis")),
     conditionalPanel(condition = "input.tab == 'viz'", uiOutput("viz")),
-    conditionalPanel(condition = "input.tab == 'map'", uiOutput("map")),
-    conditionalPanel(condition = "input.tab == 'map3d'", uiOutput("map3d")),
-    conditionalPanel(condition = "input.tab == 'nav'",
-      tags$div(class = "panel",
-        tags$div(class = "panel-head",
-          tags$h2("\U0001f9ed NAVIGATION — Kiswahili + Sauti"),
-          tags$span(class = "meta", "GPS · OSRM · sauti sw-TZ · hatari · live")),
-        tags$div(class = "panel-body",
-          tags$div(style = "display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap",
-            tags$button(class = "btn", onclick = "window.open('ramani-nav.html','_blank')",
-                        "\u25b6 Fungua Navigation kwa skrini kamili"),
-            tags$span(class = "meta",
-              "Turn-by-turn kwa Kiswahili, sauti (sw-TZ), hali ya hewa, hatari, na watu kwenye njia (live).")),
-          tags$iframe(src = "ramani-nav.html", style = paste0("width:100%;height:72vh;border:1px solid #00e5ff33;",
-            "border-radius:12px;background:#0b1220"), loading = "lazy"))))
-    ,
+    # HIDDEN (siri ya biashara): tab 'map' haionekani kwa mteja — admin/API pekee
+    # HIDDEN (siri ya biashara): tab 'map3d' haionekani kwa mteja — admin/API pekee
+    # HIDDEN (siri ya biashara): tab 'nav' haionekani kwa mteja — admin/API pekee
     conditionalPanel(condition = "input.tab == 'fundi'", uiOutput("fundi")),
     conditionalPanel(condition = "input.tab == 'remote'", uiOutput("remote")),
-    conditionalPanel(condition = "input.tab == 'kali'", uiOutput("kali")),
+    # HIDDEN (siri ya biashara): tab 'kali' haionekani kwa mteja — admin/API pekee
     conditionalPanel(condition = "input.tab == 'company'", uiOutput("company")),
     conditionalPanel(condition = "input.tab == 'mobile'", uiOutput("mobile")),
     conditionalPanel(condition = "input.tab == 'iot'", uiOutput("iot")),

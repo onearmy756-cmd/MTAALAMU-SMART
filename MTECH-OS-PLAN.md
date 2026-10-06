@@ -128,3 +128,23 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
 
 ## UTHIBITISHO (kila hatua)
 `cargo test` (tests mpya kwa kila module ya Rust) · `cargo build --release` · API smoke (curl) · UI review (/ui).
+
+## H6 ✅ — WHITE-LABEL + CREDITS + SELF-HOST + NETWORK MGMT (maelezo ya mmiliki ya mwisho)
+
+- **White-label (siri ya biashara)**: mteja anaona **HUDUMA tu** (katalogi ya umma:
+  jina la huduma + maelezo + credits PEKEE) — `TOOL_REGISTRY` ni `pub(crate)`
+  (server-side pekee), `sanitize_output()` inaficha majina ya zana/amri/paths
+  kwenye kila matokeo (chat LLM + rules + scans), UI tabs za KALI TOOLS na
+  RAMANI (map/3D/navigation) zimefichwa kwenye dashboard ya mteja.
+- **Credit billing**: `credit.rs` — accounts + purchase (ref ya malipo:
+  ClickPesa TXN/bank) + `authorize()` gate (kazi inazuia kabla haijaanza) +
+  `spend()` ledger; HUDUMA kila moja na bei yake (network_scanner 2, forensics 8,
+  malware 5, os_install 20…); subscription = credits za mwezi (SUBSCRIPTION_MONTHLY_CREDITS).
+- **Self-host onboarding**: `server_setup.rs` — mteja anasakinisha kwenye
+  **server/computer/Raspberry/kingine chake**, anachagua target kwenye ONBOARDING →
+  config ZOTE automatic (ports, dirs, VPN peer 10.66.66.x, services checklist) →
+  mfumo unaanza kutumia. Mmiliki anapata malipo kupitia credits/ClickPesa.
+- **Network + security mgmt**: `netmgmt.rs` — status/backup/firmware/posture ya
+  vifaa vya mtandao (routers/switches/firewall) + majukwaa ya usalama wa kampuni.
+- UI mpya (/ui): 🧰 Huduma (service catalog + run) · 💳 Credits (salio/nunua/ledger)
+  · 🚀 Onboarding (target select + config automatic) · 🌐 Network (vifaa + usalama).
