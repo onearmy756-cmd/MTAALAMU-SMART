@@ -86,6 +86,8 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#netmgmt_card'">🌐 Network</button>
   <button onclick="location.hash='#matrix_card'">🚀 MATRIX</button>
   <button onclick="location.hash='#ai_card'">🧠 AI</button>
+  <button onclick="location.hash='#solutions_card'">🖥️ SOLUTIONS</button>
+  <button onclick="location.hash='#bili_card'">💰 BILI</button>
 </nav>
 
 <main>
@@ -511,6 +513,56 @@ details p{font-size:13px;color:#b2ebf2}
     <button class="sec" onclick="aiClear()">↩ Rejea ya ndani</button>
   </div>
   <div id="ai_out" class="pre">—</div>
+</div>
+
+
+<!-- 🖥️ AUTOMATED COMPUTER SOLUTIONS — Health Matrix + AI Chat + Console -->
+<div class="card" id="solutions_card">
+  <h3>🖥️ AUTOMATED COMPUTER SOLUTIONS</h3>
+  <p class="hint">Mfumo unakagua afya ya computer zote kwa wakati mmoja, unapata matatizo, unayajibu kwenye chat, na ukiruhusu — yanarekebishwa yenyewe (HITL). Kwa subscription au pay-per-use (ona 💰 BILI).</p>
+  <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:10px" class="sol-grid">
+    <div>
+      <h4>COMPUTER HEALTH MATRIX</h4>
+      <div class="row"><input id="sol_search" placeholder="🔍 Search..." style="flex:1" oninput="solRender()"/><button class="sec" onclick="solScan()">🔄 Kagua yote sasa</button></div>
+      <div id="sol_matrix" class="pre" style="max-height:300px;overflow:auto"></div>
+    </div>
+    <div>
+      <h4>AI AGENT — Chat ya matatizo</h4>
+      <div id="sol_chat" class="pre" style="max-height:200px;overflow:auto;background:#081420">Admin: andika tatizo…</div>
+      <div class="row" style="margin-top:6px">
+        <input id="sol_msg" placeholder="Type a message…" style="flex:1" onkeydown="if(event.key==='Enter')solSend()"/>
+        <button onclick="solSend()">➤</button>
+      </div>
+      <div class="row" style="margin-top:6px"><input id="sol_account" placeholder="Account" value="mteja1" style="flex:1;min-width:120px"/></div>
+      <h4 style="margin-top:8px">Console Streams</h4>
+      <div id="sol_console" class="pre" style="max-height:120px;overflow:auto;background:#0b1220">&gt; [INFO] Mfumo tayari…</div>
+    </div>
+  </div>
+</div>
+
+<!-- 💰 BILI — Subscription + Pay-per-use (TZS) -->
+<div class="card" id="bili_card">
+  <h3>💰 BILI — SUBSCRIPTION NA PAY-PER-USE (TZS)</h3>
+  <p class="hint">Chagua njia yako: <b>Subscription</b> (huduma ZOTE kwa mwezi kwa kila kifaa — nafuu zaidi) au <b>Pay-per-use</b> (ulipa kazi uliyofanyika). Hela ingizwa kupitia ClickPesa au benki.</p>
+  <div class="row"><button onclick="biliPrices()">📑 Onyesha bei zote</button><button class="sec" onclick="biliStatement()">📄 Ripoti ya akaunti</button></div>
+  <div id="bili_prices" class="pre">—</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px" class="bili-grid">
+    <div>
+      <h4>SUBSCRIBE (kwa mwezi)</h4>
+      <div class="row"><input id="bil_account" placeholder="Account" value="mteja1" style="flex:1;min-width:110px"/></div>
+      <div class="row"><input id="bil_devices" type="number" placeholder="Idadi ya vifaa (mf. 25)" style="flex:1;min-width:140px"/></div>
+      <div class="row"><input id="bil_ref" placeholder="Ref ya malipo (au wazi = kutoka salio)" style="flex:1;min-width:170px"/></div>
+      <button onclick="biliSubscribe()">✅ Nunua subscription</button>
+    </div>
+    <div>
+      <h4>INGIZA HELA (topup)</h4>
+      <div class="row"><input id="bil_top_acc" placeholder="Account" value="mteja1" style="flex:1;min-width:110px"/></div>
+      <div class="row"><input id="bil_amount" type="number" placeholder="Kiasi TZS (mf. 50,000)" style="flex:1;min-width:150px"/></div>
+      <div class="row"><input id="bil_top_ref" placeholder="Marejeo ya malipo (TXN ya ClickPesa/benki)" style="flex:1;min-width:170px"/></div>
+      <button onclick="biliTopup()">➕ Ingiza</button>
+    </div>
+  </div>
+  <div id="bili_out" class="pre" style="margin-top:8px">—</div>
 </div>
 
 </main>
@@ -975,10 +1027,11 @@ async function mxLoadCatalog(){
 }
 function mxQuote(){
   const n = MX.selected.size;
-  const osCredits = 10; // os_install
-  const appCredits = 3; // app_install (bundle)
-  const total = n * (osCredits + appCredits);
-  document.getElementById('mx_cost').textContent = 'TZS ' + (total * 500).toLocaleString('en-US');
+  // PAY-PER-USE (TZS): os_install 5,000 + app_install 1,500 kwa kifaa; punguzo la volume
+  const base = n * (5000 + 1500);
+  const disc = n >= 50 ? 0.20 : (n >= 10 ? 0.10 : 0.0);
+  const total = Math.round(base * (1 - disc));
+  document.getElementById('mx_cost').textContent = 'TZS ' + total.toLocaleString('en-US') + (disc ? ` (−${disc*100}%)` : '');
   document.getElementById('mx_devices').textContent = n;
 }
 async function mxActivate(){
@@ -1009,6 +1062,88 @@ async function mxRefresh(){
 }
 mxDiscover && window.addEventListener('load', ()=>{ mxLoadCatalog(); mxRefresh(); setInterval(mxRefresh, 5000); });
 
+// ---------- AUTOMATED COMPUTER SOLUTIONS ----------
+const SOL = { pc: [], alerts: {} };
+async function solScan(){
+  const d = await (await fetch(API+'/computers')).json();
+  const pcs = (d.computers || d.hosts || d || []).map(c => typeof c === 'string' ? {name:c} : (c.display_name || c.name || c.hostname || ''));
+  SOL.pc = pcs.filter(Boolean);
+  // Kagua afya: tumia HUDUMA ya health_check kwa kila kifaa (subscription/payg)
+  const acc = document.getElementById('sol_account').value || 'mteja1';
+  SOL.alerts = {};
+  for (const name of SOL.pc.slice(0, 12)) {
+    const r = await (await fetch(API+'/services/run', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({account:acc, service:'health_check', target: name, ref_code: 'daily-'+Date.now()})})).json().catch(()=>null);
+    SOL.alerts[name] = r && r.ok ? 'nzuri' : '⚠ Haijibu';
+  }
+  solRender();
+}
+function solRender(){
+  const q = (document.getElementById('sol_search').value||'').toLowerCase();
+  const el = document.getElementById('sol_matrix');
+  el.innerHTML = SOL.pc.filter(n => n.toLowerCase().includes(q)).map(n => {
+    const a = SOL.alerts[n] || '—';
+    const bad = String(a).includes('⚠');
+    return `<div style="display:flex;gap:8px;align-items:center;margin:2px 0">
+      <span style="flex:1">${escHtml(n)}</span>
+      <span class="${bad ? 'pill' : 'meta'}">${escHtml(a)}</span>
+      <button class="sec" onclick="solAsk('Kagua tatizo la ${escAttr(n)} na utatue.')">🩺</button>
+    </div>`;
+  }).join('') || '<span class="meta">Bonyeza "Kagua yote sasa".</span>';
+}
+async function solSend(){
+  const msg = document.getElementById('sol_msg').value.trim();
+  if (!msg) return;
+  const acc = document.getElementById('sol_account').value || 'mteja1';
+  const chat = document.getElementById('sol_chat');
+  chat.innerHTML += `<div><b>Admin</b>: ${escHtml(msg)}</div>`;
+  document.getElementById('sol_msg').value = '';
+  const d = await (await fetch(API+'/api/chat', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({question: msg, length: 'medium'})})).json().catch(()=>null);
+  const a = d && d.reply ? (d.reply.answer_sw || d.reply) : 'AI haipatikani kwa sasa.';
+  chat.innerHTML += `<div><b>AI Agent</b>: ${escHtml(typeof a === 'string' ? a : JSON.stringify(a))}</div>`;
+  chat.scrollTop = chat.scrollHeight;
+  document.getElementById('sol_console').innerHTML += `&gt; [INFO] Dhati: ${escHtml(msg.slice(0,40))}…`;
+
+}
+function solAsk(q){ document.getElementById('sol_msg').value = q; solSend(); }
+
+// ---------- BILI ----------
+async function biliPrices(){
+  const d = await (await fetch(API+'/api/billing/prices')).json();
+  const s = d.subscription_monthly_per_device_tzs || {};
+  const p = d.pay_per_use_tzs || {};
+  document.getElementById('bili_prices').innerHTML =
+    `<b>SUBSCRIPTION (kwa mwezi/kifaa):</b><br/>` +
+    Object.entries(s).map(([k,v]) => `• ${escHtml(k)}: TZS ${Number(v).toLocaleString()}`).join('<br/>') +
+    `<br/><b>PAY-PER-USE:</b><br/>` +
+    Object.entries(p).map(([k,v]) => `• ${escHtml(k)}: TZS ${Number(v).toLocaleString()}`).join('<br/>') +
+    `<br/><span class="meta">Punguzo la volume: 10+ kazi = 10% · 50+ = 20%</span>`;
+}
+async function biliStatement(){
+  const acc = document.getElementById('bil_account').value || 'mteja1';
+  const d = await (await fetch(API+'/api/billing/statement/'+encodeURIComponent(acc))).json();
+  const sub = d.subscription ? `✅ Subscription: ${escHtml(d.subscription.tier)} · ${d.subscription.devices} vifaa · hadi ${escHtml(d.subscription.paid_until).slice(0,10)}` : '❌ Hakuna subscription (pay-per-use)';
+  const rows = (d.ledger||[]).map(l => `[${escHtml(l.at).slice(0,10)}] ${l.amount_tzs>0?'+':''}${l.amount_tzs} (${escHtml(l.kind)}${l.job? ' · '+escHtml(l.job):''}) → TZS ${l.balance_after.toLocaleString()}`).join('<br/>');
+  document.getElementById('bili_out').innerHTML = `Salio: <b>TZS ${(d.balance_tzs||0).toLocaleString()}</b><br/>${sub}<br/>${rows || ''}`;
+}
+async function biliSubscribe(){
+  const acc = document.getElementById('bil_account').value || 'mteja1';
+  const dev = parseInt(document.getElementById('bil_devices').value||'0');
+  const ref = document.getElementById('bil_ref').value||'';
+  const d = await (await fetch(API+'/api/billing/subscribe', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({account:acc, devices:dev, ref_code:ref})})).json();
+  document.getElementById('bili_out').innerHTML = d.ok
+    ? `✅ Subscription: <b>${escHtml(d.tier)}</b> · ${d.devices} vifaa · TZS ${Number(d.total_tzs).toLocaleString()}/mwezi · hadi ${escHtml(d.paid_until).slice(0,10)}`
+    : ('❌ '+(d.error||''));
+}
+async function biliTopup(){
+  const acc = document.getElementById('bil_top_acc').value || 'mteja1';
+  const amt = parseInt(document.getElementById('bil_amount').value||'0');
+  const ref = document.getElementById('bil_top_ref').value||'';
+  const d = await (await fetch(API+'/api/billing/topup', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({account:acc, amount_tzs:amt, ref_code:ref})})).json();
+  document.getElementById('bili_out').innerHTML = d.ok ? `✅ Hela imeingizwa — salio: <b>TZS ${Number(d.balance_tzs).toLocaleString()}</b>` : ('❌ '+(d.error||''));
+}
+
 // ---------- AI CUSTOM MODEL / API ----------
 async function aiLoad(){
   const d = await (await fetch(API+'/api/ai/custom')).json();
@@ -1035,7 +1170,7 @@ async function loadServices(){
   el.innerHTML = (d.services||[]).map(s=>
     `<div class="row" style="align-items:center;gap:8px;margin:6px 0">
       <b>${s.name_sw}</b> <span class="hint">${s.desc_sw}</span>
-      <span class="pill">${s.credits} credits</span>
+      <span class="pill">TZS ${Number(s.credits * 500).toLocaleString()}</span>
       <button onclick="runService('${s.id}')">▶ Tumia huduma</button>
     </div>`).join('');
 }
@@ -1046,7 +1181,7 @@ async function runService(id){
   const d = await (await fetch(API+'/services/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:acc,service:id,target:target})})).json();
   document.getElementById('services_list').innerHTML =
     (d.ok? '✅ ' : '❌ ') + (d.summary || d.error || JSON.stringify(d)) +
-    (d.needs_credits? ' — <b>Nunua credits kwenye tab 💳 Credits</b>' : ' — salio linaendelea kwenye tab 💳');
+    (d.needs_billing? ' — <b>Nunua subscription au ingiza hela: tab 💰 BILI</b>' : ' — akaunti: tab 💰 BILI');
 }
 async function creditsBalance(){
   const a = document.getElementById('cr_account').value||'mteja1';

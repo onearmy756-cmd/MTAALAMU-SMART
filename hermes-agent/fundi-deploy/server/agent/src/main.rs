@@ -39,6 +39,7 @@ mod vector;
 mod server_setup;
 mod tools;
 mod tools_internal;
+mod billing;
 mod credit;
 mod netmgmt;
 mod vpn;
@@ -262,10 +263,6 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/setup/onboard", post(setup_onboard))
         .route("/api/setup/status", get(setup_status))
         // CREDITS (billed per huduma + subscription)
-        .route("/api/credits/:account", get(credits_balance))
-        .route("/api/credits/buy", post(credits_buy))
-        .route("/api/credits/spend", post(credits_spend))
-        .route("/api/credits/:account/ledger", get(credits_ledger))
         // NETWORK + SECURITY MANAGEMENT (vifaa vya mtandao + usalama wa kampuni)
         .route("/api/remote/net", post(remote_net))
         .route("/api/brain/recall", get(brain_recall))
@@ -282,6 +279,12 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/license/issue", post(license_issue))
         .route("/api/license/validate", post(license_validate))
         // CUSTOM MODEL / API (mteja anaweka model yake au API yake — inatumika mara moja)
+        // BILI (H9): SUBSCRIPTION + PAY-PER-USE (TZS — hakuna credits)
+        .route("/api/billing/statement/:account", get(billing_statement))
+        .route("/api/billing/topup", post(billing_topup))
+        .route("/api/billing/subscribe", post(billing_subscribe))
+        .route("/api/billing/charge", post(billing_charge))
+        .route("/api/billing/prices", get(billing_prices))
         .route("/api/ai/custom", get(ai_custom_get))
         .route("/api/ai/custom", post(ai_custom_set))
         .route("/api/ai/custom", axum::routing::delete(ai_custom_clear))
@@ -1511,14 +1514,16 @@ async fn pfsense_status(State(s): State<AppState>) -> Json<serde_json::Value> {
         Err(e) => Json(json!({ "ok": false, "configured": true, "error": e })),
     }
 }
-// ---------- HUDUMA ZA AGENT + CREDITS + ONBOARDING + NET MGMT ----------
+// ---------- HUDUMA ZA AGENT + ONBOARDING + NET MGMT ----------
 
 /// Katalogi ya huduma — mteja anaona jina la HUDUMA + credits PEKEE.
+
+/// Katalogi ya huduma — mteja anaona jina la HUDUMA + bei ya TZS PEKEE.
 async fn services_list() -> Json<serde_json::Value> {
     Json(json!({
         "ok": true,
         "services": tools::public_service_list(),
-        "note_sw": "MTECH OS inachagua vifaa vya ndani vyenyewe kwa kila huduma — wewe ukitumia tu."
+        "note_sw": "MTECH OS inachagua vifaa vya ndani vyenyewe kwa kila huduma — wewe ukitumia tu. Subscription au pay-per-use (tab 💰 BILI)."
     }))
 }
 
@@ -1527,22 +1532,22 @@ struct ServiceRunReq {
     account: String,
     service: String,
     target: String,
-    /// ref ya kazi (job id / TXN) kwenye ledger
     #[serde(default)]
     ref_code: String,
 }
 
 async fn service_run(State(s): State<AppState>, Json(r): Json<ServiceRunReq>) -> Json<serde_json::Value> {
-    // 1. CREDIT GATE: hakuna credits → hakuna huduma (authorize inazuia kabla)
-    if let Err(e) = credit::authorize(&s.db, &r.account, &r.service).await {
-        return Json(json!({ "ok": false, "error": e, "needs_credits": true }));
+    // 1. BILI GATE (H9): subscription hai inatosha; vinginevyo pay-per-use kutoka salio
+    match billing::authorize(&s.db, &r.account, &r.service, 1).await {
+        Ok(_) => {}
+        Err(e) => return Json(json!({ "ok": false, "error": e, "needs_billing": true })),
     }
     // 2. Utekelezaji HALISI (backend fiche) — matokeo yanasafishwa kwa sanitize_output
     let result = tools_internal::run_service(&r.service, &r.target).await;
-    // 3. SPEND: ledger inaandikwa tu kama kazi imefanikiwa
+    // 3. CHARGE: ledger inaandikwa tu kama kazi imefanikiwa (subscription haijachaji)
     if result["ok"] == serde_json::Value::Bool(true) {
         let refc = if r.ref_code.is_empty() { format!("svc-{}", uuid::Uuid::new_v4()) } else { r.ref_code.clone() };
-        let _ = credit::spend(&s.db, &r.account, &r.service, &refc).await;
+        let _ = billing::charge(&s.db, &r.account, &r.service, 1, &refc).await;
     }
     Json(result)
 }
@@ -1565,57 +1570,6 @@ async fn setup_onboard(State(s): State<AppState>, Json(r): Json<SetupOnboardReq>
 async fn setup_status(State(s): State<AppState>) -> Json<serde_json::Value> {
     let st = server_setup::status(&s.db).await;
     Json(json!({ "ok": true, "status": st }))
-}
-
-async fn credits_balance(State(s): State<AppState>, Path(account): Path<String>) -> Json<serde_json::Value> {
-    let bal = credit::balance(&s.db, &account).await;
-    Json(json!({ "ok": true, "account": account, "balance": bal, "note_sw": "Credits zinatumika kulipia huduma — kila huduma ina bei yake." }))
-}
-
-#[derive(serde::Deserialize)]
-struct CreditsBuyReq {
-    account: String,
-    credits: i64,
-    /// Marejeo ya malipo (TXN ya ClickPesa / bank ref)
-    ref_code: String,
-}
-
-async fn credits_buy(State(s): State<AppState>, Json(r): Json<CreditsBuyReq>) -> Json<serde_json::Value> {
-    match credit::purchase(&s.db, &r.account, r.credits, &r.ref_code).await {
-        Ok(bal) => Json(json!({ "ok": true, "account": r.account, "balance": bal })),
-        Err(e) => Json(json!({ "ok": false, "error": e })),
-    }
-}
-
-#[derive(serde::Deserialize)]
-struct CreditsSpendReq {
-    account: String,
-    service: String,
-    #[serde(default)]
-    ref_code: String,
-}
-
-async fn credits_spend(State(s): State<AppState>, Json(r): Json<CreditsSpendReq>) -> Json<serde_json::Value> {
-    let refc = if r.ref_code.is_empty() { format!("manual-{}", uuid::Uuid::new_v4()) } else { r.ref_code };
-    match credit::spend(&s.db, &r.account, &r.service, &refc).await {
-        Ok(bal) => Json(json!({ "ok": true, "account": r.account, "balance": bal })),
-        Err(e) => Json(json!({ "ok": false, "error": e })),
-    }
-}
-
-async fn credits_ledger(State(s): State<AppState>, Path(account): Path<String>) -> Json<serde_json::Value> {
-    let rows: Vec<(String, i64, String, Option<String>, Option<String>, i64, String)> = sqlx::query_as(
-        "SELECT account, delta, reason, service, ref_code, balance_after, created_at FROM credit_ledger WHERE account = ? ORDER BY id DESC LIMIT 100",
-    )
-    .bind(&account)
-    .fetch_all(&s.db)
-    .await
-    .unwrap_or_default();
-    let items: Vec<serde_json::Value> = rows.iter().map(|(a, d, r, svc, refc, bal, at)| json!({
-        "account": a, "delta": d, "reason": r, "service": svc,
-        "ref": refc, "balance_after": bal, "at": at,
-    })).collect();
-    Json(json!({ "ok": true, "account": account, "ledger": items }))
 }
 
 async fn remote_net(State(s): State<AppState>, Json(r): Json<serde_json::Value>) -> Json<serde_json::Value> {
@@ -1648,4 +1602,51 @@ async fn ai_custom_clear(State(s): State<AppState>) -> Json<serde_json::Value> {
         Ok(()) => Json(json!({ "ok": true, "note_sw": "Rejea AI ya ndani ya mfumo." })),
         Err(e) => Json(json!({ "ok": false, "error": e })),
     }
+}
+
+// ---------- BILI (H9): Subscription + Pay-per-use (TZS) ----------
+
+async fn billing_statement(State(s): State<AppState>, Path(account): Path<String>) -> Json<serde_json::Value> {
+    Json(billing::statement(&s.db, &account).await)
+}
+
+#[derive(serde::Deserialize)]
+struct BillingTopupReq { account: String, amount_tzs: i64, ref_code: String }
+
+async fn billing_topup(State(s): State<AppState>, Json(r): Json<BillingTopupReq>) -> Json<serde_json::Value> {
+    match billing::topup(&s.db, &r.account, r.amount_tzs, &r.ref_code).await {
+        Ok(bal) => Json(json!({ "ok": true, "account": r.account, "balance_tzs": bal })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct BillingSubReq { account: String, devices: usize, #[serde(default)] ref_code: String }
+
+async fn billing_subscribe(State(s): State<AppState>, Json(r): Json<BillingSubReq>) -> Json<serde_json::Value> {
+    match billing::subscribe(&s.db, &r.account, r.devices, &r.ref_code).await {
+        Ok(v) => Json(v),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct BillingChargeReq { account: String, job: String, #[serde(default)] units: usize, #[serde(default)] ref_code: String }
+
+async fn billing_charge(State(s): State<AppState>, Json(r): Json<BillingChargeReq>) -> Json<serde_json::Value> {
+    let refc = if r.ref_code.is_empty() { format!("job-{}", uuid::Uuid::new_v4()) } else { r.ref_code };
+    match billing::charge(&s.db, &r.account, &r.job, r.units, &refc).await {
+        Ok(bal) => Json(json!({ "ok": true, "account": r.account, "balance_tzs": bal })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn billing_prices() -> Json<serde_json::Value> {
+    Json(json!({
+        "ok": true,
+        "subscription_monthly_per_device_tzs": { "basic(1-10)": billing::SUB_BASIC_TZS, "standard(11-50)": billing::SUB_STANDARD_TZS, "business(51-200)": billing::SUB_BUSINESS_TZS, "enterprise(200+)": billing::SUB_ENTERPRISE_TZS },
+        "pay_per_use_tzs": { "scan": billing::PAYG_SCAN_TZS, "repair": billing::PAYG_REPAIR_TZS, "os_install": billing::PAYG_OS_INSTALL_TZS, "app_install": billing::PAYG_APP_INSTALL_TZS, "forensic": billing::PAYG_FORENSIC_TZS, "netmgmt": billing::PAYG_NETMGMT_TZS },
+        "volume_discount": { "10+": "10%", "50+": "20%" },
+        "note_sw": "Subscription = huduma ZOTE kwa mwezi kwa kila kifaa. Pay-per-use = ulipa kazi uliyofanyika. Zote zinatumia wallet (ClickPesa/benki)."
+    }))
 }
