@@ -69,7 +69,7 @@ web-r/
 │   └── tz_regions.geojson  # mipaka halisi ya mikoa (geoBoundaries TZA ADM1)
 ├── www/
 │   ├── dashboard.css  # mwonekano ule ule wa React (neon cyan kwenye nyeusi)
-│   ├── shiny.css      # marekebisho ya input za Shiny/Bootstrap + styles za ramani
+│   ├── system.css     # mitindo ya mfumo + styles za ramani
 │   ├── map.js         # injini ya ramani (Leaflet): tiles, choropleth, OSRM
 │   └── leaflet/       # Leaflet 1.9.4 iliyohifadhiwa ndani (si CDN — inafanya kazi offline)
 └── tests/

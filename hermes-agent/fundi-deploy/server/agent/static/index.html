@@ -228,7 +228,7 @@ details p{font-size:13px;color:#b2ebf2}
   <h3>📦 BUNDLES ZA APPS (categories 8 · bundles 20+) + BEI PER-PC</h3>
   <p class="hint">Chagua PC → chagua apps (au <b>Install All Apps</b>) → mfumo unakokotoa bei (TZS) → lipa (ClickPesa/Bank/M-Pesa) → activate. Admin: ongeza bundles yako mwenyewe.</p>
   <div class="row">
-    <button class="sec" onclick="loadBundles()">🔄 Pakia catalog (Rust)</button>
+    <button class="sec" onclick="loadBundles()">🔄 Pakia catalog</button>
     <input id="quote_plan" placeholder="plan: pay_per_use | subscription" style="max-width:220px" value="pay_per_use"/>
     <input id="quote_pcs" type="number" min="1" placeholder="PCs" style="max-width:90px" value="1"/>
     <input id="quote_os" placeholder="OS: win11/ubuntu/kali" style="max-width:160px" value="win11"/>
@@ -656,7 +656,7 @@ async function loadBundles(){
       `<div style="margin:4px 0;padding-left:14px">📦 <b>${b.name_sw}</b> <span class="meta">${b.id} — ${b.description}</span>` +
       (b.apps||[]).map(a=>` <span class="badge info" style="font-size:10px">${a.name}${a.critical?' ★':''}</span>`).join('') + `</div>`
     ).join('') + `</div>`
-  ).join('') + `<div class="meta">Jumla: ${d.total_bundles} bundles (Rust catalog)</div>`;
+  ).join('') + `<div class="meta">Jumla: ${d.total_bundles} bundles</div>`;
   document.getElementById('custom_bundles').innerHTML = (d.custom_bundles||[]).length
     ? '<b>Bundles za admin:</b>' + d.custom_bundles.map(b=>`<div>🧩 <b>${b.name_sw}</b> (${b.id}) — ${b.category} · apps: ${b.app_ids.join(', ')} · ${b.created_by} <button class="danger" style="padding:1px 8px;font-size:10px" onclick="delBundle('${b.id}')">✕</button></div>`).join('')
     : '<span class="meta">Hakuna custom bundles bado.</span>';
@@ -954,6 +954,17 @@ osiSessions();
 setInterval(loadJobs, 3000);
 loadJobs();
 discover();
+</script>
+<script>
+/* MTECH OS — ULINZI WA SOURCE (H7): huduma za ndani zisioneswe kwa mtumiaji wa kawaida */
+(function(){
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'F12') { e.preventDefault(); }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I','J','C','K'].includes(e.key.toUpperCase())) { e.preventDefault(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toUpperCase() === 'U') { e.preventDefault(); }
+  });
+})();
 </script>
 </body>
 </html>

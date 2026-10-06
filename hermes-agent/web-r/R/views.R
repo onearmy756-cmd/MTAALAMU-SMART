@@ -27,11 +27,11 @@ if (!exists(".MTAALAMU_VIEWS_LOADED", inherits = TRUE)) {
 # bonus za ndani) ZIMEFICHWA kwenye dashboard. API bado ipo (admin pekee);
 # UI ya mteja inaonyesha HUDUMA za MTECH OS tu.
 tabs_el <- function(lang, n_formula, n_diag, current) {
-  ids <- c("live", "agentic", "formula", "diag", "viz", "fundi", "remote", "company", "mobile", "iot")
+  # tab ya ziada imefichwa (H7)
+  ids <- c("live", "agentic", "diag", "viz", "fundi", "remote", "company", "mobile", "iot")
   labels <- c(
     tr("tabs.live", lang),
     if (!is.null(STR[["tabs.agentic"]])) tr("tabs.agentic", lang) else "AGENTIC VISION",
-    paste0(tr("tabs.formula", lang), " (", n_formula, ")"),
     paste0(tr("tabs.diag", lang), " (", n_diag, ")"),
     paste0(tr("tabs.viz", lang), " (6)"),
     "\U0001f680 OS AND APP INSTALLATION",
@@ -73,7 +73,7 @@ if (!exists("panel_el")) {
       panel_el("DEVICE", NULL, tags$div(paste("CPU", stats$cpu, "RAM", stats$ram))))
   }
   formula_panel_el <- function(lang, n) {
-    panel_el("FORMULA", NULL, tags$div(
+    panel_el("VIFAA VYA HESABU", NULL, tags$div(
       uiOutput("fx_searchbox"), uiOutput("fx_pills"), uiOutput("fx_list"),
       uiOutput("fx_inputs"), uiOutput("fx_results")))
   }

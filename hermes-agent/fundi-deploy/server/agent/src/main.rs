@@ -1033,11 +1033,21 @@ async fn mode_set(State(s): State<AppState>, Json(r): Json<ModeSetReq>) -> Json<
 // ---------- Chat (agent inajibu) ----------
 
 #[derive(serde::Deserialize)]
-struct ChatReq { question: String }
+struct ChatReq {
+    question: String,
+    /// urefu wa jawabu: "short" | "medium" | "long" — default medium
+    #[serde(default)]
+    length: String,
+}
 
 async fn chat_ask(State(s): State<AppState>, Json(r): Json<ChatReq>) -> Json<serde_json::Value> {
     let online = mode::get_mode(&s.db).await == mode::Mode::Online;
-    let reply = chat::ask(&s.brain, &r.question, online).await;
+    let len = match r.length.as_str() {
+        "short" => chat::Length::Short,
+        "long" => chat::Length::Long,
+        _ => chat::Length::Medium,
+    };
+    let reply = chat::ask(&s.brain, &r.question, online, len).await;
     Json(json!({ "ok": true, "reply": reply }))
 }
 

@@ -26,13 +26,31 @@ const MODEL: &str = "qwen2.5vl:3b";
 /// MTECH OS tu. Neno hili huwekwa kwenye kila ombi la LLM.
 const LLM_SECRECY_RULE: &str = "KANUNI ZA JIBU: Usa jina la zana, amri, programu, lugha au injini yoyote inayotumika ndani. Mteja anaona HUDUMA za MTECH OS tu (mf. kichanganuzi cha mtandao, uchunguzi wa kidijitali). Usitaje binaries wala paths.";
 
+/// Urefu wa jawabu (maelezo ya mmiliki: "ai isummarize kwa maelezo marefu na ya kati")
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Length {
+    Short,
+    Medium,
+    Long,
+}
+
+impl Length {
+    pub fn instruction_sw(&self) -> &'static str {
+        match self {
+            Length::Short => "Jibu kwa Kiswahili kwa UFUPI (sentensi 1-2).",
+            Length::Medium => "Jibu kwa Kiswahili kwa MAELEZO YA KATI (aya 1-2, hatua muhimu).",
+            Length::Long => "Jibu kwa Kiswahili kwa MAELEZO MAREFU YAKAMILI: aya kadhaa, sababu, hatua zote, na ushauri wa kina.",
+        }
+    }
+}
+
 /// Swali la LLM halisi — LLM inaishi kwenye SERVER KUU YA LAN (docker),
 /// kwa hiyo inafanya kazi hata OFFLINE (mtandao wa ndani unaotosha).
 /// Online ni kwa cloud AI PEKEE — LLM ya LAN haitegemei internet.
-async fn llm_ask(question: &str, context: &str) -> Option<String> {
+async fn llm_ask(question: &str, context: &str, len: Length) -> Option<String> {
     let body = serde_json::json!({
         "model": MODEL,
-        "prompt": format!("Wewe ni fundi wa kompyuta wa MTECH OS. Jibu kwa Kiswahili kwa ufupi.\n\n{LLM_SECRECY_RULE}\n\nMuktadha (suluhisho za agents wenzake):\n{context}\n\nSwali: {question}\n\nJibu:"),
+        "prompt": format!("Wewe ni fundi wa kompyuta wa MTECH OS. {}\n\n{LLM_SECRECY_RULE}\n\nMuktadha (suluhisho za agents wenzake):\n{context}\n\nSwali: {question}\n\nJibu:", len.instruction_sw()),
         "stream": false,
     });
     let client = reqwest::Client::new();
@@ -48,7 +66,7 @@ async fn llm_ask(question: &str, context: &str) -> Option<String> {
 }
 
 /// Chat: andika tatizo/swali → jawabu (offline = brain + rules; online = LLM + brain).
-pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool) -> ChatReply {
+pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool, len: Length) -> ChatReply {
     // 1. Neuralis Brain daima (offline + online context)
     let refs = crate::brain::recall(brain, question, 3).await;
     let context: String = refs
@@ -60,7 +78,7 @@ pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool) -> C
     // 2. LLM ya SERVER KUU YA LAN: inafanya kazi hata OFFLINE (docker service
     //    ya LLM inaishi ndani ya LAN — kompyuta zote zimeunganishwa nayo).
     //    `online` inaongeza tu uwezo wa cloud AI; LLM ya LAN haitegemei internet.
-    if let Some(answer) = llm_ask(question, &context).await {
+    if let Some(answer) = llm_ask(question, &context, len).await {
         return ChatReply {
             question: question.into(),
             answer_sw: crate::tools::sanitize_output(answer.trim()),
@@ -72,6 +90,11 @@ pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool) -> C
     // LLM ya LAN haipatikani → offline fallback (hakuna uongo)
 
     // 3. Offline fallback: brain + rules za msingi
+    let detail = match len {
+        Length::Short => String::new(),
+        Length::Medium => "\n\nMaelezo: Hii ni hatua iliyothibitika kwenye kifaa kinachofanana. Ikiwa imefeli: hakikisha kifaa kiko hai kwenye mtandao, kisha anzisha upya huduma husika. Mfumo unaandika kila hatua kwenye ripoti.".to_string(),
+        Length::Long => "\n\nMaelezo kamili: (1) Dalili ulizoziona zinalingana na tatizo lililopatikana awali kwenye mtandao wa kampuni — hii ni kawaida na inatibika. (2) Sababu kuu hutokea wakati huduma ya mtandao/vifaa inapokwama au vifaa vina hitilafu ya ndani. (3) Hatua za kurekebisha: a) hakikisha kifaa kimeungwa na chanzo cha nguvu na mtandao; b) anzisha upya huduma husika kwenye kifaa; c) endesha uchunguzi wa afya (tab 🧰 HUDUMA); d) kama tatizo linaendelea, agent inaweza kufanya kazi kwa kina zaidi kwa ruhusa yako (HITL). (4) Baada ya kurekebisha, mfumo unaandika ripoti kamili kwa admin na kuhifadhi suluhisho kwenye kumbukumbu ya pamoja ili agents wengine wajifunze.".to_string(),
+    };
     let (answer, conf) = if let Some((m, score)) = refs.first() {
         (
             format!(
@@ -94,13 +117,13 @@ pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool) -> C
         )
     } else {
         (
-            "Swali limepokelewa. Kwa sasa hakuna suluhisho lililohifadhiwa kwenye Brain kwa tatizo hili — weka kwa maelezo zaidi, au online + Ollama ili LLM (Qwen 2.5 3B VL) ajibu.".into(),
+            "Swali limepokelewa. Kwa sasa hakuna suluhisho lililohifadhiwa kwenye kumbukumbu ya pamoja kwa tatizo hili — weka maelezo zaidi, au washa mfumo mtandaoni ili AI ya ndani ijibu.".into(),
             0.2,
         )
     };
 
     // KANUNI: kila jawabu (LLM au rules) lasafishwa — majina ya zana hayatokei
-    let answer_sw = crate::tools::sanitize_output(&answer);
+    let answer_sw = crate::tools::sanitize_output(&format!("{answer}{detail}"));
     let references = refs
         .iter()
         .map(|(m, _)| crate::tools::sanitize_output(&m.solution))
@@ -119,13 +142,26 @@ mod tests {
     use super::*;
 
     #[tokio::test]
+    async fn length_long_ina_maelezo_marefu_na_short_haina() {
+        let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
+        crate::brain::init_tables(&db).await;
+        let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
+        let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
+        let r_short = ask(&brain, "swali lisilopo kwenye brain kabisa", false, Length::Short).await;
+        let r_long = ask(&brain, "swali lisilopo kwenye brain kabisa", false, Length::Long).await;
+        assert!(r_long.answer_sw.chars().count() > r_short.answer_sw.chars().count(),
+            "jawabu la long lazima liwe refu kuliko short ({} vs {})", r_long.answer_sw.chars().count(), r_short.answer_sw.chars().count());
+        assert!(r_long.answer_sw.contains("Maelezo kamili"), "long ina maelezo kamili");
+    }
+
+    #[tokio::test]
     async fn offline_chat_inatumia_brain() {
         let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
         crate::brain::init_tables(&db).await;
         let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
         let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
         crate::brain::remember(&brain, "agent-hr", "hr", "Wi-Fi haifanyi kazi", "restart ya wlansvc service", 0.9).await.unwrap();
-        let r = ask(&brain, "wi-fi haifanyi kazi kwenye pc mpya", false).await;
+        let r = ask(&brain, "wi-fi haifanyi kazi kwenye pc mpya", false, Length::Medium).await;
         assert_eq!(r.source, "brain_offline");
         assert!(r.answer_sw.contains("wlansvc"), "{}", r.answer_sw);
         assert!(r.confidence > 0.5);
@@ -138,7 +174,7 @@ mod tests {
         crate::brain::init_tables(&db).await;
         let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
         let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
-        let r = ask(&brain, "kompyuta inaenda polepole sana", false).await;
+        let r = ask(&brain, "kompyuta inaenda polepole sana", false, Length::Short).await;
         assert!(r.answer_sw.contains("polepole") || r.answer_sw.contains("RAM"));
         assert!(r.confidence < 0.9); // rules = uhakika wa chini kuliko brain/LLM
     }
@@ -150,7 +186,7 @@ mod tests {
         crate::brain::init_tables(&db).await;
         let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
         let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
-        let r = ask(&brain, "swali la kawaida lisilopo kwenye brain", true).await;
+        let r = ask(&brain, "swali la kawaida lisilopo kwenye brain", true, Length::Long).await;
         assert_ne!(r.source, "llm"); // LLM haipatikani hapa
         assert!(r.confidence <= 0.9);
     }
@@ -162,7 +198,7 @@ mod tests {
         crate::brain::init_tables(&db).await;
         let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
         let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
-        let r = ask(&brain, "swali la jaribio", false).await;
+        let r = ask(&brain, "swali la jaribio", false, Length::Medium).await;
         // sandbox: LLM haipatikani → fallback; hii inathibitisha hakuna panic na
         // source iko halisi (llm_offline_lan / brain_offline)
         assert!(r.source == "llm_offline_lan" || r.source == "brain_offline");

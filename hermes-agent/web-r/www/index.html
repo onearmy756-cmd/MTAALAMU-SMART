@@ -3,18 +3,16 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MTAALAMU SMART — Dashboard</title>
+<title>MTECH OS — Dashboard</title>
 <!--
-  MTAALAMU SMART — BROWSER DASHBOARD (standalone, bila R/Shiny)
-  Tabs zote za desktop (Shiny) zimekuja hapa: LIVE · AGENTIC VISION · FORMULA ·
+  MTECH OS — BROWSER DASHBOARD (standalone)
+  Tabs za mfumo: LIVE · AGENTIC VISION ·
   UTAMBUZI (BAYES) · VIZ · RAMANI (LIVE MAP kamili + map.js) · 3D · NAVIGATION ·
   FUNDI DEPLOY · FUNDI MOBILE · IOT + HERMES.
-  KANUNI: data-driven JSON pekee — content yote inatoka data/ (token-savings).
-  Formula engine: evaluator salama ya expression (kama eval.R — LLM haihesabu kamwe).
   Bayes: posterior = prior × ∏ L(si) (kama bayes_causes kwenye eval.R).
 -->
 <link rel="stylesheet" href="dashboard.css"/>
-<link rel="stylesheet" href="shiny.css"/>
+<link rel="stylesheet" href="system.css"/>
 <link rel="stylesheet" href="leaflet/leaflet.css"/>
 <script src="leaflet/leaflet.js"></script>
 <script src="map.js"></script>
@@ -81,7 +79,7 @@ nav.tabs button.on{background:rgba(0,229,255,.16);color:var(--green);border-colo
 .flow .arr{color:var(--dim)}
 .flow .step.done{border-color:var(--green);color:var(--green)}
 .flow .step.run{border-color:var(--orange);box-shadow:0 0 10px rgba(255,179,0,.3)}
-/* FORMULA */
+/* HESABU */
 .trade-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .trade-pills button{padding:.3rem .6rem;border-radius:999px;border:1px solid var(--line);background:var(--card2);color:var(--text);cursor:pointer;font-size:.68rem;font-family:var(--mono)}
 .trade-pills button.on{background:rgba(0,255,136,.14);color:var(--green);border-color:var(--green)}
@@ -202,8 +200,8 @@ textarea.av-msg{width:100%;min-height:64px;background:#0a1628;color:#e0f7fa;bord
   <header class="hud-header">
     <div class="hud-shield">🔐</div>
     <div>
-      <div class="hud-title" id="hudTitle">MTAALAMU SMART</div>
-      <div class="hud-sub" id="hudSub">Mfumo Mahiri — Rust + JSON — data-driven</div>
+      <div class="hud-title" id="hudTitle">MTECH OS</div>
+      <div class="hud-sub" id="hudSub">Mfumo Mahiri wa MTECH OS</div>
     </div>
     <div class="hud-right">
       <span class="pill green"><span class="dot"></span><span id="pillOnline">MTANDO: HAI</span></span>
@@ -221,7 +219,7 @@ textarea.av-msg{width:100%;min-height:64px;background:#0a1628;color:#e0f7fa;bord
   <main id="main"></main>
 
   <footer class="statusbar">
-    <span>⚙️ engine: <b id="sbEngine">browser (JSON)</b></span>
+    <span>⚙️ <b id="sbEngine">MTECH OS</b></span>
     <span>📅 <span id="sbDate">—</span></span>
     <span>🕐 <span id="sbClock">—</span></span>
     <span>📊 formulas: <b id="sbFormulas">—</b></span>
@@ -239,7 +237,7 @@ textarea.av-msg{width:100%;min-height:64px;background:#0a1628;color:#e0f7fa;bord
 "use strict";
 /* ============================================================
  * MTAALAMU SMART — DASHBOARD ENGINE (browser, offline-first)
- * JSON = chanzo pekee. Hakuna content hard-coded ya biashara.
+ * MTECH OS — huduma za ndani pekee.
  * ============================================================ */
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -330,19 +328,19 @@ async function loadAll() {
 /* ---------- i18n ndogo (labels za UI tu) ---------- */
 const T = {
   tabs: { studio: {sw:"🎨 STUDIO",en:"🎨 STUDIO"}, live: {sw:"◉ LIVE MONITOR",en:"◉ LIVE MONITOR"}, agentic: {sw:"◉ AGENTIC VISION",en:"◉ AGENTIC VISION"},
-          formula: {sw:"🧮 FORMULA",en:"🧮 FORMULA"}, diag: {sw:"🧠 UTAMBUZI (BAYES)",en:"🧠 BAYES DIAGNOSIS"},
+          formula: {sw:"🧮 VIFAA VYA HESABU",en:"🧮 CALC TOOLS"}, diag: {sw:"🧠 UTAMBUZI (BAYES)",en:"🧠 BAYES DIAGNOSIS"},
           viz: {sw:"📊 VIZ",en:"📊 VIZ"}, map: {sw:"🗺️ RAMANI",en:"🗺️ MAP"},
           map3d: {sw:"🌍 3D",en:"🌍 3D"}, nav: {sw:"🧭 NAVIGATION",en:"🧭 NAVIGATION"},
           fundi: {sw:"💻 FUNDI DEPLOY",en:"💻 FUNDI DEPLOY"},
           mobile: {sw:"🩺 FUNDI MOBILE",en:"🩺 FUNDI MOBILE"}, iot: {sw:"📡 IOT REGISTRY",en:"📡 IOT REGISTRY"} },
-  hudSub: {sw:"Mfumo Mahiri — Rust + JSON — data-driven",en:"Intelligent System — Rust + JSON — data-driven"},
+  hudSub: {sw:"Mfumo Mahiri wa MTECH OS",en:"MTECH OS Intelligent System"},
   online: {sw:"MTANDO: HAI",en:"ONLINE"}
 };
 const tr = (k) => { const v = String(k).split(".").reduce((o, p) => (o && o[p] !== undefined ? o[p] : undefined), T); return (v && typeof v === "object" ? (v[LANG] || v.sw) : v) || k; };
 const bi = (o) => esc((o && (o[LANG] || o.sw)) || "");
 
 /* ============================================================
- * FORMULA ENGINE — evaluator salama (kama eval.R)
+ * Kikokotoo cha ndani — evaluator salama
  * func: sqrt pow ceil floor abs log exp min max if ; pi
  * ============================================================ */
 function evalExpr(expr, vars) {
@@ -688,7 +686,7 @@ function studioTop() {
     <div class="st-brand">◉ ${esc((cfg.name_sw || "HERMES").split("—")[0].trim())} <span class="meta">${esc(LANG === "sw" ? "msimamizi wa kazi zote" : "supervises all work")}</span></div>
     <div class="st-pills">
       ${integrations().filter((i) => i.required).map((i) => `<span class="pill ${S.studio.probes[i.id] === "up" ? "green" : ""}">${dotOf(i.id)} ${esc(i.name.split(" ")[0])} :${i.port}</span>`).join("")}
-      <span class="pill ${S.studio.ollamaModels ? "green" : ""}">🧠 ${esc(((D.config || {}).ai || {}).model || "qwen2.5:3b")}</span>
+      <span class="pill ${S.studio.ollamaModels ? "green" : ""}">🧠 AI imefanya kazi</span>
     </div>
   </div>` + (gate ? `<div class="status-banner WARNING" style="margin:8px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">⚖ HITL GATE — ${esc(gate.action || "")} <button class="btn" data-hermes="approve">RUHUSU</button> <button class="btn" data-hermes="deny">GHAIRI</button></div>` : "");
 }
@@ -760,9 +758,9 @@ function vStudioModels() {
   return `
   <div class="grid g2">
     <div class="card"><h3>🧠 OLLAMA LLM — ${esc(ai.model || "qwen2.5:3b")}</h3>
-      <div style="display:flex;gap:8px;align-items:center">${dotOf("ollama")} <code>${esc(byId("ollama").host || "127.0.0.1")}:${byId("ollama").port || 11434}</code></div>
+      <div style="display:flex;gap:8px;align-items:center">${dotOf("ollama")} <span class="meta">AI ya ndani ya mfumo</span></div>
       ${models ? `<div class="up-tree">${esc(sw ? "MODELI ZILIZOSAKINISHWA (halisi — /api/tags):\n" : "INSTALLED MODELS (real — /api/tags):\n")}${esc(models.join("\n"))}</div>`
-        : `<div class="status-banner INFO" style="margin-top:6px">${esc(sw ? "Ollama haipatikani — mfumo unaendelea kwa rules + knowledge (offline-first, kanuni ya HERMES)." : "Ollama not reachable — system continues on rules + knowledge (offline-first, HERMES principle).")}</div>`}
+        : `<div class="status-banner INFO" style="margin-top:6px">${esc(sw ? "AI ya ndani haipatikani kwa sasa — mfumo unaendelea kwa maarifa ya ndani (offline-first)." : "Local AI not reachable — system continues with built-in knowledge (offline-first).")}</div>`}
     </div>
     <div class="card"><h3>⚙️ ${esc(sw ? "MODELILIO + HUDUMA ZA AI" : "CONFIGURED MODELS + AI SERVICES")}</h3>
       <table><thead><tr><th></th><th>${esc(sw ? "Modeli" : "Model")}</th><th>${esc(sw ? "Kazi" : "Job")}</th><th>endpoint</th></tr></thead><tbody>
@@ -934,7 +932,8 @@ function vStudio() {
 /* ============================================================
  * TABS — RENDER KILA MOJA (STUDIO + zote 11 za desktop)
  * ============================================================ */
-const TABS = ["studio", "live", "agentic", "formula", "diag", "viz", "map", "map3d", "nav", "fundi", "mobile", "iot"];
+// Tabs za mfumo tu (H7)
+const TABS = ["studio", "live", "agentic", "diag", "viz", "fundi", "mobile", "iot"];
 
 function renderTabs() {
   const nf = (((D.formulas || {}).formulas) || []).length;
@@ -1373,7 +1372,7 @@ function vAgentic() {
   `;
 }
 
-/* ---------- TAB: FORMULA ---------- */
+/* ---------- TAB: HESABU ---------- */
 function vFormula() {
   const fs = (D.formulas && D.formulas.formulas) || [];
   const trades = ["all"].concat(Array.from(new Set(fs.map((f) => f.trade))));
@@ -1412,7 +1411,7 @@ function vFormula() {
     </div>`;
   }
   return `
-  <div class="panel"><div class="panel-head"><h2>🧮 ${esc(LANG === "sw" ? "INJINI YA FORMULA" : "FORMULA ENGINE")}</h2>
+  <div class="panel"><div class="panel-head"><h2>🧮 ${esc(LANG === "sw" ? "VIFAA VYA HESABU" : "CALC TOOLS")}</h2>
     <span class="meta">${fmt(fs.length)} ${esc(LANG === "sw" ? "formulas — hesabu halisi kwenye browser" : "formulas — real calculation in browser")}</span></div>
   <div class="panel-body">
     <div class="trade-pills">${trades.map(pill).join("")}</div>
@@ -2494,6 +2493,17 @@ function renderAll() {
     if (c) D.mobConsentsArr = Array.isArray(c) ? c : [];
     renderAll();
   }, 15000);
+})();
+</script>
+<script>
+/* MTECH OS — ULINZI WA SOURCE (H7): huduma za ndani zisioneswe kwa mtumiaji wa kawaida */
+(function(){
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'F12') { e.preventDefault(); }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I','J','C','K'].includes(e.key.toUpperCase())) { e.preventDefault(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toUpperCase() === 'U') { e.preventDefault(); }
+  });
 })();
 </script>
 </body>

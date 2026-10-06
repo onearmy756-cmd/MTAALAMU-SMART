@@ -148,3 +148,29 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
   vifaa vya mtandao (routers/switches/firewall) + majukwaa ya usalama wa kampuni.
 - UI mpya (/ui): 🧰 Huduma (service catalog + run) · 💳 Credits (salio/nunua/ledger)
   · 🚀 Onboarding (target select + config automatic) · 🌐 Network (vifaa + usalama).
+
+## H7 ✅ — DASHBOARD HALISI + SIRI KAMILI + KUJIFUNZA KILA SIKU
+
+- **Demo data imeondolewa**: dashboards (browser www/index.html + /ui) zinaonyesha
+  **data halisi tu** kutoka API ya Rust — hakuna Math.random/mock; panel zisizo na
+  data zinaonyesha "offline/hakuna data" kama ilivyo (hakuna uongo).
+- **Navigation + UI zilizopo**: tabs za mfumo — MWANZO, Computers, OS Chagua, Jobs,
+  OS INSTALL (Remote), Agent, VPN, Bundles, Agentic AI, Admin, Kila Siku, Kampuni,
+  Huduma, Credits, Onboarding, Network — zimepangwa upya kwenye nav moja.
+- **Siri kamili ya usanifu (white-label total)**:
+  - FORMULA ENGINE imefichwa kabisa kwenye dashboards zote (browser + Shiny views.R
+    + i18n) — hakuna neno "formula engine" kwa mteja.
+  - Majina ya engines/usanifu yamefichwa: "Rust + JSON data-driven" → "Mfumo Mahiri
+    wa MTECH OS"; engine label → "MTECH OS"; shiny.css → system.css; Ollama/Qwen/
+    llama/R-Engine/Docker hayatajiki kwenye UI yoyote ya mteja (AI = "AI ya ndani").
+  - Wataalamu wa makampuni wanaodeploy wao wenyewe hawaoni architecture yoyote —
+    wanaona HUDUMA za MTECH OS tu (ENDA: /api/services).
+- **AI summarize (Length)**: chat ina short (ufupi) / **medium (maelezo ya kati)** /
+  **long (maelezo marefu yakamil)** — LLM prompt inabadilika kwa Length; jawabu za
+  rules zina detail blocks za kati/marefu. Test ya tofauti ya refu ipo.
+- **Kujifunza kila siku**: kila scan ya kila siku inaandika lessons kwenye Neuralis
+  Brain (kumbukumbu ya pamoja) — finding → solution hint + confidence; agents wa
+  kesho wanajifunza kutoka scan ya leo (daily.rs → brain.rs).
+- **HTML source guard**: contextmenu/F12/Ctrl+Shift+I/J/C/K/Ctrl+U zimezuiwa kwenye
+  dashboards zote mbili; source comments za architecture zimefutwa; CSS/API paths
+  hazionyeshi framework (system.css).
