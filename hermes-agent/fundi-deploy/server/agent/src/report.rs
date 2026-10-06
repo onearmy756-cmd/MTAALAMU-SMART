@@ -60,7 +60,7 @@ impl PdfBuilder {
     }
     fn finish(self) -> Vec<u8> {
         let mut out = Vec::new();
-        out.extend_from_slice(b"%PDF-1.4\n%\xc7\xec\x8f\xa2\n");
+        out.extend_from_slice(b"%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
         let mut positions: Vec<usize> = Vec::with_capacity(self.objs.len());
         for o in &self.objs {
             positions.push(out.len());
@@ -164,7 +164,7 @@ pub fn jobs_report_pdf(
     // kichwa: logo + brand
     d.push_str("q 44 0 0 44 40 762 cm /LOGO Do Q\n");
     d.push_str(&txt(96.0, 788.0, 20.0, true, 0.0, 0.51, 0.56, "FUNDI"));
-    d.push_str(&txt(96.0, 772.0, 8.5, false, 0.33, 0.43, 0.47, "DEPLOY \xc2\xb7 LAN imaging + cloud"));
+    d.push_str(&txt(96.0, 772.0, 8.5, false, 0.33, 0.43, 0.47, "DEPLOY · LAN imaging + cloud"));
     d.push_str(&txt(400.0, 788.0, 16.0, true, 0.04, 0.13, 0.15, "RIPOTI YA DEPLOY"));
     let stamp = chrono::Local::now().format("%Y-%m-%d %H:%M").to_string();
     d.push_str(&txt(400.0, 772.0, 11.0, false, 0.33, 0.43, 0.47, &format!("FD-{stamp}")));
@@ -182,7 +182,7 @@ pub fn jobs_report_pdf(
         0.16,
         0.2,
         &format!(
-            "jumla {} \xc2\xb7 zinasubiri idhini {} \xc2\xb7 zinaendesha {} \xc2\xb7 kamili {} \xc2\xb7 zimeshindwa {}",
+            "jumla {} · zinasubiri idhini {} · zinaendesha {} · kamili {} · zimeshindwa {}",
             getn(summary, "total"),
             getn(summary, "awaiting_your_approval"),
             getn(summary, "running"),

@@ -1,8 +1,10 @@
-//! Fundi Deploy Agent v2 — P2 kamili + P3 cloud
+//! Fundi Deploy Agent v3 — P2 kamili + P3 cloud + P4 WIREGUARD VPN + MAJINA KIOTOMATIKI
 //!
 //! Pipeline: plan (AI+rules) → HITL → backup (halisi) → WOL → PXE → [multicast] → install → report
 //! Msimamizi: approve/cancel + dashboard /ui
 //! Cloud: tenants + heartbeats + outbox offline-first
+//! VPN (P4): kazi ZOTE za mbali zinaenda kupitia WireGuard (wg0) — /api/vpn/*
+//! Majina: duplicates (hr, hr 1, hr 2…) kulingana na mpangilio wa IP — /computers
 
 mod ai;
 mod backup;
@@ -12,11 +14,13 @@ mod hardware;
 mod images;
 mod lan;
 mod multicast;
+mod namer;
 mod orchestrator;
 mod osselect;
 mod pipeline;
 mod remote;
 mod report;
+mod vpn;
 mod wol;
 
 use axum::{
@@ -25,6 +29,7 @@ use axum::{
     Json, Router,
 };
 use multicast::SharedAcks;
+use namer::{assign_names, NamedHost};
 use pipeline::{DeployRequest, Job};
 use serde_json::json;
 use sqlx::SqlitePool;
@@ -48,6 +53,7 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
     std::fs::create_dir_all("/data").ok();
     std::fs::create_dir_all("/var/lib/tftpboot/pxelinux.cfg").ok();
+    std::fs::create_dir_all(vpn::dir()).ok();
 
     let db = SqlitePool::connect("sqlite:///data/fundi.db?mode=rwc").await?;
     for ddl in [
@@ -78,6 +84,7 @@ async fn main() -> anyhow::Result<()> {
         let _ = sqlx::query(&format!("ALTER TABLE jobs ADD COLUMN {col}")).execute(&db).await;
     }
     cloud::init_tables(&db).await;
+    vpn::init_tables(&db).await;
 
     // Seed agents 10 (agentic vision)
     let agents: [(&str, &str); 10] = [
@@ -139,6 +146,12 @@ async fn main() -> anyhow::Result<()> {
 
     cloud::start_sync_loop().await;
 
+    // WG0.CONF: regen kila boot (peers DB → conf halisi); tunnel haianzi yenyewe (HITL: /api/vpn/up)
+    match vpn::write_server_conf(&db).await {
+        Ok(p) => tracing::info!("vpn: wg conf tayari: {} (up: /api/vpn/up)", p.display()),
+        Err(e) => tracing::warn!("vpn: server conf imeshindikana: {e}"),
+    }
+
     let ui = ServeDir::new("static").append_index_html_on_directories(true);
 
     let app = Router::new()
@@ -184,6 +197,17 @@ async fn main() -> anyhow::Result<()> {
         // Multicast ACK board
         .route("/api/mc/ack", post(mc_ack))
         .route("/api/mc/status", get(mc_status))
+        // WIREGUARD VPN (P4) — kazi zote za mbali kupitia wg0
+        .route("/api/vpn/init", post(vpn_init))
+        .route("/api/vpn/status", get(vpn_status))
+        .route("/api/vpn/peers", get(vpn_peers))
+        .route("/api/vpn/peers", post(vpn_peer_add))
+        .route("/api/vpn/peers/:name/conf", get(vpn_peer_conf))
+        .route("/api/vpn/peers/:name", axum::routing::delete(vpn_peer_delete))
+        .route("/api/vpn/up", post(vpn_up))
+        .route("/api/vpn/down", post(vpn_down))
+        .route("/api/vpn/scan", get(vpn_scan))
+        .route("/api/vpn/server-conf", get(vpn_server_conf))
         // Agents
         .route("/agents", get(list_agents))
         // Supervisor
@@ -330,7 +354,9 @@ async fn start_deploy(s: AppState, req: DeployRequest, force_auto: bool) -> Json
 
 async fn computers() -> Json<serde_json::Value> {
     let hosts = discover::discover_hosts();
-    Json(json!({ "computers": hosts, "count": hosts.len() }))
+    // MAJINA YA KIOTOMATIKI: duplicates (hr, hr 1, hr 2…) kwa mpangilio wa IP
+    let named: Vec<NamedHost> = assign_names(&hosts);
+    Json(json!({ "computers": named, "count": named.len(), "naming": "auto-dedupe (base, 1, 2, 3… kwa mpangilio wa IP)" }))
 }
 
 // ---------- images ----------
@@ -364,7 +390,7 @@ async fn os_select(Json(req): Json<OsSelectReq>) -> Json<serde_json::Value> {
 
 async fn os_profiles() -> Json<serde_json::Value> {
     let cat = osselect::catalog();
-    Json(json!({ "profiles": cat.profiles.len(), "skip_rules": cat.skip_rules, "catalog": cat }))
+    Json(json!({ "profiles": cat.profiles.len(), "skip_rules": cat.skip_rules }))
 }
 
 // ---------- backups ----------
@@ -424,7 +450,7 @@ async fn report_pdf(State(s): State<AppState>) -> impl axum::response::IntoRespo
             (axum::http::header::CONTENT_TYPE, "application/pdf"),
             (
                 axum::http::header::CONTENT_DISPOSITION,
-                format!("inline; filename=\"fundi-deploy-report.pdf\""),
+                "inline; filename=\"fundi-deploy-report.pdf\"",
             ),
         ],
         pdf,
@@ -591,6 +617,148 @@ async fn osi_bundles() -> Json<serde_json::Value> {
 
 async fn report_meta() -> Json<serde_json::Value> {
     Json(report::report_meta())
+}
+
+// ---------- WireGuard VPN (P4) ----------
+
+async fn vpn_init(State(s): State<AppState>) -> Json<serde_json::Value> {
+    match vpn::write_server_conf(&s.db).await {
+        Ok(path) => Json(json!({
+            "ok": true,
+            "conf": path.to_string_lossy(),
+            "endpoint_hint": "Weka FUNDI_WG_ENDPOINT (public IP au domain ya server) kwenye docker-compose ili client confs ziwe na Endpoint halisi.",
+            "up": "POST /api/vpn/up (inahitaji NET_ADMIN + /dev/net/tun + wireguard-tools kwenye container)"
+        })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn vpn_status(State(s): State<AppState>) -> Json<serde_json::Value> {
+    Json(vpn::status(&s.db).await)
+}
+
+async fn vpn_peers(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let peers = vpn::list_peers(&s.db).await;
+    Json(json!({ "count": peers.len(), "peers": peers.iter().map(|p| json!({
+        "name": p.name, "ip": p.ip, "created_at": p.created_at, "enabled": p.enabled,
+    })).collect::<Vec<_>>() }))
+}
+
+#[derive(serde::Deserialize)]
+struct VpnPeerAdd {
+    name: String,
+    #[serde(default)]
+    note: Option<String>,
+}
+
+async fn vpn_peer_add(State(s): State<AppState>, Json(r): Json<VpnPeerAdd>) -> Json<serde_json::Value> {
+    match vpn::add_peer(&s.db, &r.name, r.note.as_deref().unwrap_or("")).await {
+        Ok(p) => Json(json!({
+            "ok": true,
+            "peer": { "name": p.name, "ip": p.ip },
+            "conf_url": format!("/api/vpn/peers/{}/conf", p.name),
+            "next": "Pakua conf hii kwenye computer ya mbali → wg-quick up <faili> — kisha kazi zote za mbali zinaenda kupitia VPN"
+        })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn vpn_peer_conf(State(s): State<AppState>, Path(name): Path<String>) -> impl axum::response::IntoResponse {
+    let peers = vpn::list_peers(&s.db).await;
+    let Some(peer) = peers.iter().find(|p| p.name == name) else {
+        return ([
+            (axum::http::header::CONTENT_TYPE, "text/plain".to_string()),
+            (axum::http::header::CONTENT_DISPOSITION, "inline".to_string()),
+        ], format!("Peer '{name}' haipo"));
+    };
+    let cfg = vpn::Config::load();
+    let (_, server_pub) = match vpn::server_keys() {
+        Ok(k) => k,
+        Err(e) => return ([
+            (axum::http::header::CONTENT_TYPE, "text/plain".to_string()),
+            (axum::http::header::CONTENT_DISPOSITION, "inline".to_string()),
+        ], format!("Server keys: {e}")),
+    };
+    let conf = vpn::client_conf(&cfg, peer, &server_pub);
+    ([
+        (axum::http::header::CONTENT_TYPE, "text/plain".to_string()),
+        (
+            axum::http::header::CONTENT_DISPOSITION,
+            format!("attachment; filename=\"wg-{name}.conf\""),
+        ),
+    ], conf)
+}
+
+async fn vpn_peer_delete(State(s): State<AppState>, Path(name): Path<String>) -> Json<serde_json::Value> {
+    let ok = vpn::remove_peer(&s.db, &name).await;
+    if ok {
+        let _ = vpn::write_server_conf(&s.db).await; // regen conf bila peer
+    }
+    Json(json!({ "ok": ok, "name": name }))
+}
+
+async fn vpn_up(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let _ = vpn::write_server_conf(&s.db).await; // conf ya sasa (peers zote) kabla ya up
+    match vpn::up(None).await {
+        Ok(msg) => Json(json!({ "ok": true, "message": msg })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn vpn_down(State(_s): State<AppState>) -> Json<serde_json::Value> {
+    match vpn::down().await {
+        Ok(msg) => Json(json!({ "ok": true, "message": msg })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn vpn_scan(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let cfg = vpn::Config::load();
+    let active = tokio::process::Command::new("wg")
+        .args(["show", &cfg.interface])
+        .output()
+        .await
+        .map(|o| o.status.success())
+        .unwrap_or(false);
+    let hosts = vpn::scan_vpn_subnet(&cfg, 400).await;
+    let rows: Vec<serde_json::Value> = hosts
+        .iter()
+        .map(|(ip, ports)| {
+            let names: Vec<String> = ports.iter().map(|p| match p {
+                22 => "SSH".to_string(),
+                445 => "SMB".to_string(),
+                135 => "RPC".to_string(),
+                3389 => "RDP".to_string(),
+                other => format!("port-{other}"),
+            }).collect();
+            json!({ "ip": ip, "services": names })
+        })
+        .collect();
+    Json(json!({
+        "subnet": cfg.subnet,
+        "vpn_active": active,
+        "hosts_alive": rows.len(),
+        "hosts": rows,
+        "note_sw": if active { "Scan hii ilifanyika JUU YA TUNNEL ya WireGuard (wg0) — hosts ni za site ya mbali." } else { "Tunnel haipo — hosts hizi ni za LAN/ndani tu. Washa VPN: POST /api/vpn/up" }
+    }))
+}
+
+async fn vpn_server_conf(State(s): State<AppState>) -> impl axum::response::IntoResponse {
+    let peers = vpn::list_peers(&s.db).await;
+    let cfg = vpn::Config::load();
+    match vpn::server_keys() {
+        Ok((priv_key, _)) => {
+            let conf = vpn::server_conf(&cfg, &priv_key, &peers);
+            ([
+                (axum::http::header::CONTENT_TYPE, "text/plain"),
+                (axum::http::header::CONTENT_DISPOSITION, "attachment; filename=\"wg0.conf\""),
+            ], conf)
+        }
+        Err(e) => ([
+            (axum::http::header::CONTENT_TYPE, "text/plain"),
+            (axum::http::header::CONTENT_DISPOSITION, "inline"),
+        ], format!("Server keys: {e}")),
+    }
 }
 
 // ---------- multicast ----------

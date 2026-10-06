@@ -7,6 +7,7 @@
 
 use serde::Serialize;
 use sha2::{Digest, Sha256};
+use std::io::Read;
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, Serialize)]

@@ -73,7 +73,7 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#jobs_card'">📋 Jobs</button>
   <button onclick="location.hash='#osi_card'">💿 OS INSTALL (Remote)</button>
   <button onclick="location.hash='#agent_card'">🧠 Agent</button>
-  <button onclick="location.hash='#tools'">🧰 Zana</button>
+  <button onclick="location.hash='#vpn_card'">🔒 VPN</button>
 </nav>
 
 <main>
@@ -192,6 +192,25 @@ details p{font-size:13px;color:#b2ebf2}
     <button class="sec" onclick="lanGuide()">📖 Mwongozo remote</button>
   </div>
   <div id="lan_result" class="meta" style="margin-top:8px">—</div>
+</div>
+
+<!-- WIREGUARD VPN -->
+<div class="card" id="vpn_card">
+  <h3>🔒 WIREGUARD VPN — kazi ZOTE za mbali kupitia wg0</h3>
+  <p class="hint">Kanuni: <b>discovery, OS install, apps, drivers na ripoti za mbali ZINAENDA kupitia WireGuard</b>. Bila VPN, remote work haianzi. Anza hapa: <b>INIT</b> → ongeza PEER kwa kila computer ya mbali → pakua conf → <b>UP</b>.</p>
+  <div class="row">
+    <button onclick="vpnInit()">⚙️ INIT (keys + wg0.conf)</button>
+    <button onclick="vpnUp()">▲ UP (washa tunnel)</button>
+    <button class="danger" onclick="vpnDown()">▼ DOWN</button>
+    <button class="sec" onclick="vpnStatus()">🔄 Hali</button>
+    <button class="sec" onclick="vpnScan()">🌐 Scan subnet ya VPN</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <input id="vpn_peer_name" placeholder="Jina la peer: hr / account / PC-LAB02" style="flex:1;min-width:200px"/>
+    <button onclick="vpnAddPeer()">➕ Ongeza PEER (client)</button>
+  </div>
+  <div id="vpn_result" class="meta" style="margin-top:8px">—</div>
+  <div id="vpn_peers" style="margin-top:6px"></div>
 </div>
 
 <div class="card" id="card_images" style="display:none"><h3>💾 Images za OS</h3><div id="images">—</div></div>
@@ -360,6 +379,52 @@ async function lanGuide(){
   const d = await (await fetch(API+'/api/lan/guide')).json();
   document.getElementById('lan_result').innerHTML = `<pre style="white-space:pre-wrap;margin:0">${d.guide||''}</pre>`;
 }
+// ---------- WIREGUARD VPN ----------
+async function vpnInit(){
+  const d = await (await fetch(API+'/api/vpn/init',{method:'POST'})).json();
+  document.getElementById('vpn_result').innerHTML = d.ok ? `✅ Keys + wg0.conf tayari: <code>${d.conf}</code><br/><small>${d.endpoint_hint} ${d.up}</small>` : `❌ ${d.error}`;
+  vpnPeers();
+}
+async function vpnUp(){
+  const d = await (await fetch(API+'/api/vpn/up',{method:'POST'})).json();
+  document.getElementById('vpn_result').innerHTML = d.ok ? `<span class="ok"><b>${d.message}</b></span>` : `<span class="err">${d.error}</span>`;
+  vpnStatus();
+}
+async function vpnDown(){
+  const d = await (await fetch(API+'/api/vpn/down',{method:'POST'})).json();
+  document.getElementById('vpn_result').innerHTML = d.ok ? `<b>${d.message}</b>` : `<span class="err">${d.error}</span>`;
+  vpnStatus();
+}
+async function vpnStatus(){
+  const d = await (await fetch(API+'/api/vpn/status')).json();
+  const state = d.active ? '<span class="ok">● TUNNEL IPO (wg show inajibu)</span>' : '<span class="warn">○ TUNNEL HAIRUSHIWI</span>';
+  document.getElementById('vpn_result').innerHTML =
+    `${state} · subnet <b>${d.subnet}</b> · server ${d.server_ip} · port ${d.port} · endpoint ${d.endpoint}${d.endpoint_configured?'':' <span class="warn">(weka FUNDI_WG_ENDPOINT)</span>'}<br/>` +
+    `<small>peers DB: ${d.peers_db} · wg.conf: ${d.conf_exists?'ipo':'hakuna'} · server keys: ${d.server_keys?'ipo':'hakuna'} · policy: kazi zote kwa VPN = ${d.policy.kazi_zote_kwa_vpn}</small>` +
+    (d.wg_error?`<br/><span class="err"><small>${(d.wg_error||'').slice(0,160)}</small></span>`:'');
+  vpnPeers();
+}
+async function vpnAddPeer(){
+  const name = v('vpn_peer_name'); if(!name){ alert('Andika jina la peer'); return; }
+  const d = await (await fetch(API+'/api/vpn/peers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})})).json();
+  document.getElementById('vpn_result').innerHTML = d.ok ?
+    `✅ Peer <b>${d.peer.name}</b> (${d.peer.ip}) — <a href="${d.conf_url}" style="color:#00e5ff">pakua conf</a> → wg-quick up kwenye computer ya mbali<br/><small>${d.next}</small>` :
+    `❌ ${d.error}`;
+  vpnPeers();
+}
+async function vpnPeers(){
+  const d = await (await fetch(API+'/api/vpn/peers')).json();
+  document.getElementById('vpn_peers').innerHTML = (d.peers||[]).map(p=>
+    `<div style="margin:4px 0">🔐 <b>${p.name}</b> · ${p.ip} · <a href="/api/vpn/peers/${encodeURIComponent(p.name)}/conf" style="color:#00e5ff">conf</a> ${p.enabled?'':'<span class="warn">(zima)</span>'}</div>`
+  ).join('') || '<small class="meta">Hakuna peers bado — ongeza moja kwa kila computer/site ya mbali.</small>';
+}
+async function vpnScan(){
+  document.getElementById('vpn_result').innerHTML = '⏳ Inascan subnet ya VPN…';
+  const d = await (await fetch(API+'/api/vpn/scan')).json();
+  const rows = (d.hosts||[]).map(h=>`<div>🖥️ <b>${h.ip}</b> — ${(h.services||[]).join(', ')}</div>`).join('');
+  document.getElementById('vpn_result').innerHTML = `<b>Alive juu ya VPN: ${d.hosts_alive}</b><br/><small>${d.note_sw}</small><br/>${rows}`;
+}
+
 // ---------- REMOTE OS INSTALL ----------
 async function osiLoadBundles(){
   const d = await (await fetch(API+'/osinstall/bundles')).json();
@@ -406,6 +471,7 @@ async function osiSessions(){
   document.getElementById('osi_sessions').innerHTML = (d||[]).slice(-4).reverse().map(s=>osiCard(s)).join('') || '';
 }
 osiLoadBundles();
+vpnStatus();
 setInterval(()=>{ if(document.getElementById('osi_sessions')) osiSessions(); }, 4000);
 osiSessions();
 setInterval(loadJobs, 3000);

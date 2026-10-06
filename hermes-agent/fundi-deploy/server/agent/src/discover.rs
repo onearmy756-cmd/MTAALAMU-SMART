@@ -124,8 +124,8 @@ fn tcp_sweep() -> Vec<Host> {
     live.into_iter()
         .map(|(ip, ports)| Host {
             mac: String::new(),
-            ip,
             name: format!("PC-{}", ip.rsplit('.').next().unwrap_or("?")),
+            ip,
             source: Some("tcp-sweep".into()),
             open_ports: Some(ports),
         })

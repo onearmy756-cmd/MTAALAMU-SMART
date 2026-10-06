@@ -37,7 +37,12 @@ fn dest_dir(mac: &str) -> PathBuf {
 }
 
 /// Ingizo kuu la pipeline
-pub async fn run_backup(mac: &str, mode: &str, source: &str, log: &dyn Fn(String)) -> BackupReport {
+pub async fn run_backup(
+    mac: &str,
+    mode: &str,
+    source: &str,
+    log: &(dyn Fn(String) + Send + Sync),
+) -> BackupReport {
     match mode {
         "files" => backup_files(mac, source, log).await,
         "image" => backup_image(mac, source, log).await,
@@ -65,7 +70,7 @@ pub async fn run_backup(mac: &str, mode: &str, source: &str, log: &dyn Fn(String
 }
 
 /// Nakili saraka (share/mount) → dest, incremental dhidi ya manifest ya mwisho
-pub async fn backup_files(mac: &str, source: &str, log: &dyn Fn(String)) -> BackupReport {
+pub async fn backup_files(mac: &str, source: &str, log: &(dyn Fn(String) + Send + Sync)) -> BackupReport {
     let src = PathBuf::from(source);
     if !src.is_dir() {
         log(format!("backup: chanzo '{source}' hakipatikani → stub"));
@@ -96,9 +101,9 @@ pub async fn backup_files(mac: &str, source: &str, log: &dyn Fn(String)) -> Back
 
     // Manifest ya nakala iliyopita (incremental baseline)
     let prev = latest_manifest(&backup_root().join(mac.replace(':', "-")));
-    let prev_files: std::collections::HashMap<String, (u64, String)> = prev
+    let prev_files: std::collections::BTreeMap<String, (u64, String)> = prev
         .as_ref()
-        .map(|(_, m)| m.files.clone())
+        .map(|(_, m)| m.file_index.clone())
         .unwrap_or_default();
 
     let mut files_done = 0u64;
@@ -109,8 +114,15 @@ pub async fn backup_files(mac: &str, source: &str, log: &dyn Fn(String)) -> Back
     let mut stack = vec![src.clone()];
     while let Some(dir) = stack.pop() {
         let Ok(rd) = tokio::fs::read_dir(&dir).await else { continue };
-        let mut entries: Vec<_> = rd.flatten().collect();
-        entries.sort_by_key(|e| e.file_name());
+    let mut entries: Vec<_> = {
+        let mut out = Vec::new();
+        let mut rd = rd;
+        while let Ok(Some(e)) = rd.next_entry().await {
+            out.push(e);
+        }
+        out
+    };
+    entries.sort_by_key(|e| e.file_name());
         for e in entries {
             let p = e.path();
             if p.is_dir() {
@@ -173,7 +185,7 @@ pub async fn backup_files(mac: &str, source: &str, log: &dyn Fn(String)) -> Back
 }
 
 /// Disk image halisi kwa dd (block device, mfano /dev/sda — production)
-pub async fn backup_image(mac: &str, device: &str, log: &dyn Fn(String)) -> BackupReport {
+pub async fn backup_image(mac: &str, device: &str, log: &(dyn Fn(String) + Send + Sync)) -> BackupReport {
     let dest = dest_dir(mac);
     let _ = tokio::fs::create_dir_all(&dest).await;
     let img = dest.join("disk.img");
@@ -234,6 +246,7 @@ pub async fn backup_image(mac: &str, device: &str, log: &dyn Fn(String)) -> Back
 // ---------- manifest helpers ----------
 
 #[derive(Serialize, Clone)]
+#[derive(serde::Deserialize)]
 struct Manifest {
     mode: String,
     dest: String,
