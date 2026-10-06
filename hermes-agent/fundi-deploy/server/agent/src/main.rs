@@ -8,6 +8,7 @@
 
 mod ai;
 mod backup;
+mod brain;
 mod bundles;
 mod cloud;
 mod discover;
@@ -89,6 +90,7 @@ async fn main() -> anyhow::Result<()> {
     cloud::init_tables(&db).await;
     vpn::init_tables(&db).await;
     bundles::init_tables(&db).await;
+    brain::init_tables(&db).await;
 
     // Seed agents 10 (agentic vision)
     let agents: [(&str, &str); 10] = [
@@ -209,6 +211,10 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/quote", post(quote_post))
         .route("/api/react/start", post(react_start))
         .route("/api/react/sweep", post(react_sweep))
+        .route("/api/brain/remember", post(brain_remember))
+        .route("/api/brain/recall", get(brain_recall))
+        .route("/api/brain/stats", get(brain_stats))
+        .route("/api/fleet/exec", post(fleet_exec))
         // WIREGUARD VPN (P4) — kazi zote za mbali kupitia wg0
         .route("/api/vpn/init", post(vpn_init))
         .route("/api/vpn/status", get(vpn_status))
@@ -733,6 +739,83 @@ async fn react_sweep(Json(r): Json<ReactSweepReq>) -> Json<serde_json::Value> {
         "session": sess,
         "alive": alive,
         "note_sw": "ReAct THINK→ACT→OBSERVE: sweep ni low-risk (automatic). Install/reboot zinahitaji RUHUSU (bounded autonomy)."
+    }))
+}
+
+// ---------- Neuralis Brain (kumbukumbu ya pamoja ya agents) ----------
+
+#[derive(serde::Deserialize)]
+struct BrainRememberReq {
+    agent: String,
+    pc: String,
+    problem: String,
+    solution: String,
+    confidence: f64,
+}
+
+async fn brain_remember(State(s): State<AppState>, Json(r): Json<BrainRememberReq>) -> Json<serde_json::Value> {
+    match brain::remember(&s.db, &r.agent, &r.pc, &r.problem, &r.solution, r.confidence).await {
+        Ok(id) => Json(json!({ "ok": true, "id": id })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn brain_recall(State(s): State<AppState>, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Json<serde_json::Value> {
+    let Some(query) = q.get("q") else {
+        return Json(json!({ "ok": false, "error": "q ni lazima (?q=wi-fi haifanyi kazi)" }));
+    };
+    let limit: usize = q.get("limit").and_then(|l| l.parse().ok()).unwrap_or(5);
+    let got = brain::recall(&s.db, query, limit).await;
+    Json(json!({
+        "ok": true,
+        "query": query,
+        "results": got.iter().map(|(m, score)| json!({
+            "agent": m.agent, "pc": m.pc, "problem": m.problem,
+            "solution": m.solution, "confidence": m.confidence,
+            "match_score": (score * 1000.0).round() / 1000.0,
+        })).collect::<Vec<_>>(),
+        "note_sw": "Kumbukumbu za agents wenzako — kila agent anajifunza kutoka kwa wengine (Neuralis Brain)."
+    }))
+}
+
+async fn brain_stats(State(s): State<AppState>) -> Json<serde_json::Value> {
+    Json(brain::stats(&s.db).await)
+}
+
+// ---------- Fleet exec (ombi moja → OS nyingi, kama RDM) ----------
+
+#[derive(serde::Deserialize)]
+struct FleetExecReq {
+    /// mfano: [{"os":"win11","apps":["util-anydesk"]},{"os":"ubuntu","apps":["dev-python"]}]
+    os_groups: Vec<OsGroup>,
+    #[serde(default)]
+    human_approved: bool,
+}
+#[derive(serde::Deserialize)]
+struct OsGroup {
+    os: String,
+    apps: Vec<String>,
+}
+
+async fn fleet_exec(Json(r): Json<FleetExecReq>) -> Json<serde_json::Value> {
+    // Bounded autonomy: install = High risk → lazima idhini ya binadamu
+    if !reacon::action_allowed(reacon::Action::InstallApp, r.human_approved) {
+        return Json(json!({
+            "ok": false,
+            "error": "InstallApp ni High-risk — lazima idhini ya binadamu (human_approved: true). Hii ni bounded autonomy.",
+            "status": "awaiting_approval"
+        }));
+    }
+    let groups: Vec<(String, Vec<String>)> = r.os_groups.into_iter().map(|g| (g.os, g.apps)).collect();
+    let plans = reacon::multi_os_plan(groups);
+    Json(json!({
+        "ok": true,
+        "plans": plans.iter().map(|p| json!({
+            "target": p.display_name, "os": p.os,
+            "apps": p.app_ids,
+            "install_commands": p.install_commands(),
+        })).collect::<Vec<_>>(),
+        "note_sw": "Ombi moja → OS nyingi kwa wakati mmoja (kama RDM AI assistant)."
     }))
 }
 
