@@ -76,6 +76,8 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#vpn_card'">🔒 VPN</button>
   <button onclick="location.hash='#bundles_card'">📦 Bundles</button>
   <button onclick="location.hash='#react_card'">🤖 Agentic AI</button>
+  <button onclick="location.hash='#admin_card'">👤 Admin</button>
+  <button onclick="location.hash='#daily_card'">📅 Kila Siku</button>
 </nav>
 
 <main>
@@ -271,6 +273,78 @@ details p{font-size:13px;color:#b2ebf2}
     <button onclick="fleetExec()">🚀 Tekeleza kwenye fleet</button>
   </div>
   <div id="fleet_result" class="meta" style="margin-top:8px">—</div>
+</div>
+
+<!-- ADMIN: LOGIN + ROLES + TASKS + LICENSE + MODE + UPDATES -->
+<div class="card" id="admin_card">
+  <h3>🔐 LOGIN (credentials za default) + ROLES</h3>
+  <p class="hint">admin / mtech2026 = Admin Mkuu (anagawa kazi, anaidhinisha High-risk) · fundi / fundi2026 = Msaidizi (anafanya kazi zilizopewa). Badilisha password mara moja!</p>
+  <div class="row">
+    <input id="login_user" placeholder="username (admin)" style="max-width:140px"/>
+    <input id="login_pass" type="password" placeholder="password" style="max-width:150px"/>
+    <button onclick="doLogin()">🔑 Ingia</button>
+    <button class="sec" onclick="doLogout()">Toka</button>
+    <input id="new_pass" type="password" placeholder="password mpya (6+)" style="max-width:170px"/>
+    <button class="sec" onclick="changePass()">Badilisha</button>
+  </div>
+  <div id="auth_result" class="meta" style="margin-top:8px">Haujaingia.</div>
+
+  <h3 style="margin-top:16px">📋 KAZI — Admin Mkuu anagawa kwa wasaidizi</h3>
+  <div class="row">
+    <input id="task_pc" placeholder="PC: hr" style="max-width:110px"/>
+    <input id="task_work" placeholder="kazi: install/scan/repair" style="max-width:160px"/>
+    <input id="task_details" placeholder="maelekezo (sw)" style="flex:1;min-width:160px"/>
+    <input id="task_to" placeholder="kwa: fundi" style="max-width:110px"/>
+    <button onclick="assignTask()">➕ Gawa kazi</button>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <input id="task_done_id" placeholder="TASK-…" style="max-width:170px"/>
+    <input id="task_done_rep" placeholder="ripoti yako" style="flex:1;min-width:150px"/>
+    <button class="sec" onclick="completeTask('done')">✔ Ripoti done</button>
+    <button class="danger" onclick="completeTask('failed')">✗ failed</button>
+    <button class="sec" onclick="loadMyTasks()">🔄 Kazi zangu</button>
+  </div>
+  <div id="tasks_result" class="meta" style="margin-top:8px">—</div>
+
+  <h3 style="margin-top:16px">🔓 LESENI — Licensed by Mbilinyi Tech</h3>
+  <div class="row">
+    <select id="lic_tier"><option value="personal">Personal (PC 5)</option><option value="business">Business (PC 50)</option><option value="enterprise">Enterprise (∞)</option></select>
+    <input id="lic_owner" placeholder="owner: Mbilinyi Tech" style="flex:1;min-width:150px"/>
+    <button onclick="issueLicense()">➕ Tengeneza key</button>
+    <input id="lic_key" placeholder="MST-XXXX-XXXX-XXXX-XXXX" style="flex:1;min-width:180px"/>
+    <button class="sec" onclick="validateLicense()">🔎 Validate</button>
+  </div>
+  <div id="lic_result" class="meta" style="margin-top:8px">—</div>
+
+  <h3 style="margin-top:16px">🔌 MODE — offline/online (mtu anaamua)</h3>
+  <div class="row">
+    <button class="sec" onclick="setMode('offline')">🔌 Offline</button>
+    <button class="sec" onclick="setMode('online')">🌐 Online</button>
+    <button class="sec" onclick="getMode()">🔄 Hali</button>
+  </div>
+  <div id="mode_result" class="meta" style="margin-top:8px">—</div>
+
+  <h3 style="margin-top:16px">🔄 UPDATES — notification ya version mpya</h3>
+  <div class="row"><button class="sec" onclick="checkUpdates()">🔄 Check updates</button></div>
+  <div id="update_result" class="meta" style="margin-top:8px">—</div>
+</div>
+
+<!-- KILA SIKU + CHAT -->
+<div class="card" id="daily_card">
+  <h3>📅 KAZI ZA KILA SIKU — scan → ripoti → RUHUSA → solve</h3>
+  <p class="hint">Kila siku: scan ya matatizo (low-risk, automatic) → ripoti kwa admin (jina la PC + tatizo) → <b>subiri RUHUSA yako</b> → agents zinaanza kutatua kwa wakati mmoja → ripoti ya mwisho.</p>
+  <div class="row">
+    <button class="sec" onclick="loadDaily()">📅 Ripoti ya leo</button>
+    <button onclick="grantDaily()">✅ NAIRUHUSU (anza kutatua)</button>
+  </div>
+  <div id="daily_result" class="meta" style="margin-top:8px">—</div>
+
+  <h3 style="margin-top:16px">💬 CHAT YA AGENT — uliza tatizo, agent anajibu</h3>
+  <div class="row">
+    <input id="chat_q" placeholder="Swali/tatizo: wi-fi haifanyi kazi" style="flex:1;min-width:200px"/>
+    <button onclick="sendChat()">💬 Tuma</button>
+  </div>
+  <div id="chat_result" class="meta" style="margin-top:8px">—</div>
 </div>
 
 <div class="card" id="card_images" style="display:none"><h3>💾 Images za OS</h3><div id="images">—</div></div>
@@ -561,6 +635,81 @@ async function fleetExec(){
     `⏸ ${d.error}`;
 }
 
+// ---------- AUTH + ADMIN TASKS + LICENSE + MODE + UPDATES ----------
+let TOKEN = localStorage.getItem('mtech_token') || '';
+async function doLogin(){
+  const d = await (await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:v('login_user'),password:v('login_pass')})})).json();
+  if(d.ok){ TOKEN = d.session.token; localStorage.setItem('mtech_token', TOKEN);
+    document.getElementById('auth_result').innerHTML = `✅ <b>${d.session.role_name}</b> (${d.session.username}) — anagawa kazi: ${d.session.can_assign?'NDIYO':'hapana'} · High-risk approval: ${d.session.can_approve_high_risk?'NDIYO':'hapana'}`;
+  } else document.getElementById('auth_result').innerHTML = `❌ ${d.error}`;
+}
+async function doLogout(){
+  if(!TOKEN) return;
+  await fetch(API+'/api/auth/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:TOKEN})});
+  TOKEN=''; localStorage.removeItem('mtech_token');
+  document.getElementById('auth_result').innerHTML = 'Umetoka.';
+}
+async function changePass(){
+  const d = await (await fetch(API+'/api/auth/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:TOKEN,new_password:v('new_pass')})})).json();
+  document.getElementById('auth_result').innerHTML = d.ok ? '✅ Password imebadilishwa' : `❌ ${d.error}`;
+}
+async function assignTask(){
+  const d = await (await fetch(API+'/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:TOKEN,pc:v('task_pc'),work:v('task_work'),details_sw:v('task_details'),assigned_to:v('task_to')})})).json();
+  document.getElementById('tasks_result').innerHTML = d.ok ? `✅ ${d.task.id}: ${d.task.pc} → ${d.task.assigned_to} (${d.task.work})` : `❌ ${d.error}`;
+}
+async function completeTask(status){
+  const d = await (await fetch(API+'/api/tasks/'+encodeURIComponent(v('task_done_id'))+'/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:v('task_done_id'),status,report:v('task_done_rep')})})).json();
+  document.getElementById('tasks_result').innerHTML = d.ok ? `✅ Ripoti imehifadhiwa (${status})` : `❌ ${d.error}`;
+}
+async function loadMyTasks(){
+  const u = v('task_to') || 'fundi';
+  const d = await (await fetch(API+'/api/tasks/mine?username='+encodeURIComponent(u))).json();
+  document.getElementById('tasks_result').innerHTML = (d.tasks||[]).map(t=>
+    `<div>📋 <b>${t.id}</b> · ${t.pc} · ${t.work} — <span class="badge ${t.status==='done'?'done':'info'}" style="font-size:10px">${t.status}</span> ${t.report?`<br/><small>📝 ${t.report}</small>`:''}</div>`
+  ).join('') || 'Hakuna kazi.';
+}
+async function issueLicense(){
+  const d = await (await fetch(API+'/api/license/issue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tier:v('lic_tier'),owner:v('lic_owner')||'Mbilinyi Tech'})})).json();
+  document.getElementById('lic_result').innerHTML = d.ok ? `✅ <b style="color:#00e676;font-size:15px">${d.license.key}</b> — ${d.license.tier} (PC ${d.license.max_pcs===4294967295?'∞':d.license.max_pcs}) · ${d.branding}` : `❌ ${d.error}`;
+}
+async function validateLicense(){
+  const d = await (await fetch(API+'/api/license/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:v('lic_key')})})).json();
+  document.getElementById('lic_result').innerHTML = d.ok ? `✅ Halali — ${d.license.tier} · ${d.license.owner} · expires ${d.license.expires.slice(0,10)}` : `❌ ${d.error}`;
+}
+async function getMode(){
+  const d = await (await fetch(API+'/api/mode')).json();
+  document.getElementById('mode_result').innerHTML = `🔌 MODE: <b>${d.mode}</b> · VPN remote: ${d.allows_vpn_remote?'✓':'✗'} · AI: ${d.allows_ai_cloud?'✓':'✗'} · updates: ${d.allows_update_check?'✓':'✗'}<br/><small>${d.note_sw}</small>`;
+}
+async function setMode(m){
+  const d = await (await fetch(API+'/api/mode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:m})})).json();
+  document.getElementById('mode_result').innerHTML = d.ok ? `✅ MODE: <b>${d.mode}</b>` : `❌ ${d.error}`;
+}
+async function checkUpdates(){
+  const d = await (await fetch(API+'/api/updates/check',{method:'POST'})).json();
+  const u = d.update;
+  document.getElementById('update_result').innerHTML = u.update_available ?
+    `🔔 <b>Version mpya ${u.latest_version} ipo!</b> (current ${u.current_version}) — ${u.note_sw}` :
+    `✓ current ${u.current_version} — ${u.note_sw}`;
+}
+// ---------- KILA SIKU + CHAT ----------
+async function loadDaily(){
+  const d = await (await fetch(API+'/api/daily/report')).json();
+  document.getElementById('daily_result').innerHTML = (d.findings||[]).length ?
+    `<b>${d.date}</b> — matatizo ${d.count}<br/>` + d.findings.map(f=>
+      `<div style="border-left:3px solid ${f.severity==='critical'?'#ff5252':f.severity==='warning'?'#ffc107':'#00e676'};padding:4px 8px;margin:4px 0;background:#0a1628">🖥️ <b>${f.pc}</b> — ${f.problem} <span class="meta">(${f.severity})</span></div>`
+    ).join('') + `<small>${d.summary_sw}</small>` : '✅ Hakuna matatizo ya leo.';
+}
+async function grantDaily(){
+  const d = await (await fetch(API+'/api/daily/permission',{method:'POST'})).json();
+  document.getElementById('daily_result').innerHTML = `✅ ${d.message_sw}`;
+}
+async function sendChat(){
+  const q = v('chat_q'); if(!q){ alert('Andika swali/tatizo'); return; }
+  const d = await (await fetch(API+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})})).json();
+  const r = d.reply;
+  document.getElementById('chat_result').innerHTML = `💬 <b>Agent (${r.source}, conf ${(r.confidence*100).toFixed(0)}%):</b><br/>${r.answer_sw}` + (r.references.length?`<br/><small>📚 refs: ${r.references.length} kutoka agents wenzake</small>`:'');
+}
+
 // ---------- REMOTE OS INSTALL ----------
 async function osiLoadBundles(){
   const d = await (await fetch(API+'/osinstall/bundles')).json();
@@ -609,6 +758,8 @@ async function osiSessions(){
 osiLoadBundles();
 vpnStatus();
 loadBundles();
+getMode();
+loadDaily();
 setInterval(()=>{ if(document.getElementById('osi_sessions')) osiSessions(); }, 4000);
 osiSessions();
 setInterval(loadJobs, 3000);

@@ -6,15 +6,21 @@
 //! VPN (P4): kazi ZOTE za mbali zinaenda kupitia WireGuard (wg0) — /api/vpn/*
 //! Majina: duplicates (hr, hr 1, hr 2…) kulingana na mpangilio wa IP — /computers
 
+mod admin;
 mod ai;
+mod auth;
 mod backup;
 mod brain;
 mod bundles;
 mod cloud;
 mod discover;
+mod chat;
+mod daily;
 mod hardware;
 mod images;
 mod lan;
+mod license;
+mod mode;
 mod multicast;
 mod namer;
 mod orchestrator;
@@ -24,6 +30,7 @@ mod pricing;
 mod reacon;
 mod remote;
 mod report;
+mod updates;
 mod vpn;
 mod wol;
 
@@ -91,6 +98,12 @@ async fn main() -> anyhow::Result<()> {
     vpn::init_tables(&db).await;
     bundles::init_tables(&db).await;
     brain::init_tables(&db).await;
+    auth::init_tables(&db).await;
+    admin::init_tables(&db).await;
+    license::init_tables(&db).await;
+    mode::init_tables(&db).await;
+    daily::init_tables(&db).await;
+    updates::init_tables(&db).await;
 
     // Seed agents 10 (agentic vision)
     let agents: [(&str, &str); 10] = [
@@ -215,6 +228,23 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/brain/recall", get(brain_recall))
         .route("/api/brain/stats", get(brain_stats))
         .route("/api/fleet/exec", post(fleet_exec))
+        // AUTH + ADMIN ROLES + LICENSE + MODE (H3)
+        .route("/api/auth/login", post(auth_login))
+        .route("/api/auth/logout", post(auth_logout))
+        .route("/api/auth/password", post(auth_password))
+        .route("/api/tasks", get(tasks_list_all))
+        .route("/api/tasks", post(task_assign))
+        .route("/api/tasks/mine", get(tasks_mine))
+        .route("/api/tasks/:id/complete", post(task_complete))
+        .route("/api/license/issue", post(license_issue))
+        .route("/api/license/validate", post(license_validate))
+        .route("/api/mode", get(mode_get))
+        .route("/api/mode", post(mode_set))
+        // CHAT + AUTO-DAILY + UPDATES (H3)
+        .route("/api/chat", post(chat_ask))
+        .route("/api/daily/report", get(daily_report))
+        .route("/api/daily/permission", post(daily_permission))
+        .route("/api/updates/check", post(updates_check))
         // WIREGUARD VPN (P4) — kazi zote za mbali kupitia wg0
         .route("/api/vpn/init", post(vpn_init))
         .route("/api/vpn/status", get(vpn_status))
@@ -817,6 +847,173 @@ async fn fleet_exec(Json(r): Json<FleetExecReq>) -> Json<serde_json::Value> {
         })).collect::<Vec<_>>(),
         "note_sw": "Ombi moja → OS nyingi kwa wakati mmoja (kama RDM AI assistant)."
     }))
+}
+
+// ---------- Auth (login/roles) ----------
+
+#[derive(serde::Deserialize)]
+struct LoginReq { username: String, password: String }
+
+async fn auth_login(State(s): State<AppState>, Json(r): Json<LoginReq>) -> Json<serde_json::Value> {
+    match auth::login(&s.db, &r.username, &r.password).await {
+        Ok(sess) => Json(json!({ "ok": true, "session": {
+            "token": sess.token, "username": sess.username, "role": sess.role,
+            "role_name": if sess.role == "admin_mkuu" { "Admin Mkuu" } else { "Msaidizi" },
+            "can_assign": sess.role == "admin_mkuu", "can_approve_high_risk": sess.role == "admin_mkuu",
+        } })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct TokenReq { token: String }
+
+async fn auth_logout(State(s): State<AppState>, Json(r): Json<TokenReq>) -> Json<serde_json::Value> {
+    Json(json!({ "ok": auth::logout(&s.db, &r.token).await }))
+}
+
+#[derive(serde::Deserialize)]
+struct PasswordReq { token: String, new_password: String }
+
+async fn auth_password(State(s): State<AppState>, Json(r): Json<PasswordReq>) -> Json<serde_json::Value> {
+    match auth::change_password(&s.db, &r.token, &r.new_password).await {
+        Ok(()) => Json(json!({ "ok": true, "message": "Password imebadilishwa" })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+// ---------- Admin tasks (admin mkuu → wasaidizi) ----------
+
+#[derive(serde::Deserialize)]
+struct TaskAssignReq { token: String, pc: String, work: String, details_sw: String, assigned_to: String }
+
+async fn task_assign(State(s): State<AppState>, Json(r): Json<TaskAssignReq>) -> Json<serde_json::Value> {
+    // Role gate: token lazima iwe ya admin_mkuu
+    let Some(sess) = auth::verify_token(&s.db, &r.token).await else {
+        return Json(json!({ "ok": false, "error": "Login kwanza" }));
+    };
+    match admin::assign(&s.db, &r.pc, &r.work, &r.details_sw, &r.assigned_to, &sess.role).await {
+        Ok(t) => Json(json!({ "ok": true, "task": t })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn tasks_mine(State(s): State<AppState>, axum::extract::Query(q): axum::extract::Query<std::collections::HashMap<String, String>>) -> Json<serde_json::Value> {
+    let Some(username) = q.get("username") else {
+        return Json(json!({ "ok": false, "error": "username ni lazima" }));
+    };
+    let tasks = admin::list_for(&s.db, username).await;
+    Json(json!({ "ok": true, "count": tasks.len(), "tasks": tasks }))
+}
+
+async fn tasks_list_all(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let tasks = admin::list_all(&s.db).await;
+    Json(json!({ "ok": true, "count": tasks.len(), "tasks": tasks }))
+}
+
+#[derive(serde::Deserialize)]
+struct TaskCompleteReq { id: String, status: String, report: String }
+
+async fn task_complete(State(s): State<AppState>, Json(r): Json<TaskCompleteReq>) -> Json<serde_json::Value> {
+    match admin::complete(&s.db, &r.id, &r.status, &r.report).await {
+        Ok(()) => Json(json!({ "ok": true })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+// ---------- License (MST- keys) ----------
+
+#[derive(serde::Deserialize)]
+struct LicenseIssueReq { tier: String, owner: String }
+
+async fn license_issue(State(s): State<AppState>, Json(r): Json<LicenseIssueReq>) -> Json<serde_json::Value> {
+    let tier = match r.tier.as_str() {
+        "personal" => license::Tier::Personal,
+        "business" => license::Tier::Business,
+        "enterprise" => license::Tier::Enterprise,
+        other => return Json(json!({ "ok": false, "error": format!("tier '{other}' si sahihi") })),
+    };
+    match license::issue(&s.db, tier, &r.owner).await {
+        Ok(l) => Json(json!({ "ok": true, "license": l, "branding": "Licensed by Mbilinyi Tech · mbilinyitech.co.tz" })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct LicenseValidateReq { key: String }
+
+async fn license_validate(State(s): State<AppState>, Json(r): Json<LicenseValidateReq>) -> Json<serde_json::Value> {
+    match license::validate(&s.db, &r.key).await {
+        Ok(l) => Json(json!({ "ok": true, "license": l })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+// ---------- Mode (offline/online — mtu anaamua) ----------
+
+async fn mode_get(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let m = mode::get_mode(&s.db).await;
+    Json(json!({
+        "mode": m.id(),
+        "allows_vpn_remote": m.allows_vpn_remote(),
+        "allows_ai_cloud": m.allows_ai_cloud(),
+        "allows_update_check": m.allows_update_check(),
+        "note_sw": "Mtu anaamua yeye: offline = kazi za ndani; online = VPN/AI/updates."
+    }))
+}
+
+#[derive(serde::Deserialize)]
+struct ModeSetReq { mode: String }
+
+async fn mode_set(State(s): State<AppState>, Json(r): Json<ModeSetReq>) -> Json<serde_json::Value> {
+    let m = match r.mode.as_str() {
+        "offline" => mode::Mode::Offline,
+        "online" => mode::Mode::Online,
+        other => return Json(json!({ "ok": false, "error": format!("mode '{other}' si sahihi (offline|online)") })),
+    };
+    let m = mode::set_mode(&s.db, m).await;
+    Json(json!({ "ok": true, "mode": m.id() }))
+}
+
+// ---------- Chat (agent inajibu) ----------
+
+#[derive(serde::Deserialize)]
+struct ChatReq { question: String }
+
+async fn chat_ask(State(s): State<AppState>, Json(r): Json<ChatReq>) -> Json<serde_json::Value> {
+    let online = mode::get_mode(&s.db).await == mode::Mode::Online;
+    let reply = chat::ask(&s.db, &r.question, online).await;
+    Json(json!({ "ok": true, "reply": reply }))
+}
+
+// ---------- Auto-daily (scan → ripoti → ruhusa → solve) ----------
+
+async fn daily_report(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let findings = daily::today_report(&s.db).await;
+    let awaiting = findings.iter().filter(|f| f.severity != "info").count();
+    Json(json!({
+        "ok": true,
+        "date": chrono::Local::now().format("%Y-%m-%d").to_string(),
+        "count": findings.len(),
+        "findings": findings,
+        "summary_sw": format!("Scan ya leo: matatizo {awaiting} — admin anaruhusu, agents zinaanza kutatua kwa wakati mmoja."),
+    }))
+}
+
+async fn daily_permission(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let n = daily::grant_permission(&s.db).await;
+    Json(json!({
+        "ok": true,
+        "granted": n,
+        "message_sw": if n > 0 { format!("Ruhusa imepewa — matatizo {n} yameanza kutatuliwa kwa wakati mmoja.") } else { "Hakuna mapya yanayosubiri ruhusa.".into() },
+    }))
+}
+
+// ---------- Updates (notification ya version mpya) ----------
+
+async fn updates_check(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let online = mode::get_mode(&s.db).await == mode::Mode::Online;
+    Json(json!({ "ok": true, "update": updates::check_and_notify(&s.db, online).await }))
 }
 
 // ---------- WireGuard VPN (P4) ----------

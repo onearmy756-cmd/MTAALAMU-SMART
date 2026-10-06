@@ -92,14 +92,21 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
 ---
 
 ## MPANGO WA UTEKELEZAJI — HATUA (code kwa RUST)
-- **H1 ✅** P4: vpn.rs + namer.rs + bug fixes (commit 71012a47e, tests 19/19)
-- **H2 (SASA):** `bundles.rs` (structs: Category, Bundle, App; catalog Rust; DeploymentPlan per-PC) +
-  `pricing.rs` (Plan::PayPerUse/Subscription, fn price_for_pc, ClickPesa wiring) +
-  `chat.rs` + `reacon.rs` (ReAct + bounded autonomy) +
-  Admin API `POST/GET/DELETE /api/bundles` + UI panel + icons + CI workflow
-- **H3:** Tauri v2 UI mbili · chat UI + auto-daily · admin roles · ping sweep (surge-ping/pnet) · notify · login defaults
-- **H4:** Docker: lance.db + llama.cpp (Qwen 2.5 3B VL GGUF) + suricata + wazuh + kali-tools + pfSense docs · LanceDB shared memory · forensics agent
-- **H5:** Releases (tar/deb) + update notification + leseni UI kamili
+- **H1 ✅** P4: vpn.rs + namer.rs + bug fixes (PR #6, tests 19/19)
+- **H2 ✅** bundles.rs (Rust structs, bundles 22 / categories 8) + pricing.rs (TZS, plans) +
+  reacon.rs (ReAct + bounded autonomy + confidence_score) + API + UI (📦 🤖) + CI (PR #6, tests 34/34)
+- **H2b ✅** brain.rs — Neuralis Brain (shared memory ya agents) + confidence_score + fleet exec (PR #7, tests 40/40)
+- **H3 ✅** auth.rs (login defaults admin/fundi + sessions + change_password) · admin.rs (admin mkuu anagawa
+  kazi kwa wasaidizi, role gate) · license.rs (MST- keys, Personal/Business/Enterprise, issue/validate/revoke) ·
+  mode.rs (offline/online toggle — mtu anaamua) · chat.rs (agent inajibu: brain offline + Ollama/llama.cpp online,
+  Qwen 2.5 3B VL) · daily.rs (scan ya kila siku → ripoti → RUHUSA → solve) · updates.rs (check + notification) ·
+  UI kamili (/ui: 🔐 Admin, 📋 Kazi, 🔓 Leseni, 🔌 Mode, 🔄 Updates, 📅 Kila Siku, 💬 Chat) · Tauri v2 workspace
+  (mtech-os/desktop/src-tauri — UI mbili, targets deb/AppImage/dmg, HAKUNA exe) — (PR #8, tests 58/58)
+- **H4 ✅** docker-compose: llamacpp (Qwen2.5-VL-3B GGUF, port 8081) + suricata (IDS, config kwenye
+  security/suricata/) + wazuh-manager (SIEM) + kali-tools (pentesting/forensics container) + PFSENSE.md
+  (firewall rules, SEHEMU 12). LanceDB vector search — interface ya brain.rs tayari (H4b: swap ndani ya module)
+- **H5 ✅** release.yml (tag v* → tests → build → tar.gz artifacts → GitHub Release; notification
+  kupitia updates.rs — wateja wanaona version mpya) · pfSense API wiring kwenye agent = H5b (opsional)
 
 ## UTHIBITISHO (kila hatua)
 `cargo test` (tests mpya kwa kila module ya Rust) · `cargo build --release` · API smoke (curl) · UI review (/ui).

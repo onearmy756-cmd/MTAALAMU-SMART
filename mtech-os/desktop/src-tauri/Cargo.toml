@@ -1,0 +1,18 @@
+[package]
+name = "mtech-os-desktop"
+version = "2.0.0"
+description = "MTECH OS — UI mbili: OS AND APP INSTALLATION + COMPUTER SOLUTIONS (Licensed by Mbilinyi Tech)"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[[bin]]
+name = "mtech-os-desktop"
+path = "src/main.rs"
