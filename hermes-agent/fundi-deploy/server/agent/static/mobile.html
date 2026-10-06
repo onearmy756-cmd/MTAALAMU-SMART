@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>MTECH OS — Fundi Mobile</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#071018;color:#e8f1f5;min-height:100vh}
+header{background:#0a1628;border-bottom:1px solid #00e5ff33;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0}
+header b{color:#00e5ff}
+main{padding:14px;max-width:520px;margin:0 auto}
+.card{background:#0a1628;border:1px solid #1a2a3a;border-radius:12px;padding:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
+input,select{background:#081420;border:1px solid #1a2a3a;color:#e8f1f5;border-radius:8px;padding:10px 12px;font-size:15px;flex:1;min-width:0}
+button{background:#00e5ff;color:#04222b;border:none;border-radius:8px;padding:12px 16px;font-weight:700;font-size:15px;width:100%}
+button.sec{background:#12263a;color:#9fd8e8}
+.job{border-left:3px solid #fbbf24;padding:8px 10px;background:#081420;border-radius:0 8px 8px 0;margin:8px 0}
+.job b{display:block}
+.meta{color:#7a99a8;font-size:12px}
+.pre{background:#0b1220;border-radius:8px;padding:10px;font-family:monospace;font-size:12px;overflow:auto;white-space:pre-wrap}
+.pill{background:#34d39922;color:#34d399;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700}
+.ok{border-left-color:#34d399}
+h2{font-size:16px;margin:4px 0 8px}
+</style>
+</head>
+<body>
+<header><b>📱 MTECH OS · Fundi</b><span id="who" class="meta">—</span></header>
+<main>
+
+<div class="card" id="login_card">
+  <h2>INGIA (Fundi / Admin)</h2>
+  <div class="row"><input id="m_user" placeholder="Username" value="fundi"/></div>
+  <div class="row"><input id="m_pass" type="password" placeholder="Password"/></div>
+  <div class="row"><button onclick="mLogin()">INGIA</button></div>
+  <div id="m_login_out" class="meta">Kazi za kuidhinisha na agents — kwa mbali.</div>
+</div>
+
+<div id="m_main" style="display:none">
+  <div class="card">
+    <h2>KAZI ZINAZOSUBIRI IDHINI (HITL)</h2>
+    <div class="row"><button class="sec" onclick="mRefresh()">🔄 Onyesha</button></div>
+    <div id="m_jobs">—</div>
+  </div>
+  <div class="card">
+    <h2>AGENTS (kompyuta zote)</h2>
+    <div id="m_agents" class="meta">—</div>
+  </div>
+  <div class="card">
+    <div class="row"><button class="sec" onclick="mLogout()">🚪 TOKA</button></div>
+  </div>
+</div>
+
+</main>
+<script>
+const API = '';
+let SESS = null;
+async function mLogin(){
+  const u = document.getElementById('m_user').value.trim();
+  const p = document.getElementById('m_pass').value;
+  const d = await (await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})})).json();
+  if (d.ok) {
+    SESS = d.session;
+    localStorage.setItem('mtech_sess', JSON.stringify(SESS));
+    document.getElementById('who').textContent = SESS.role_name + ' · ' + SESS.username;
+    document.getElementById('login_card').style.display = 'none';
+    document.getElementById('m_main').style.display = '';
+    mRefresh();
+  } else {
+    document.getElementById('m_login_out').innerHTML = '❌ ' + (d.error||'');
+  }
+}
+function mLogout(){ localStorage.removeItem('mtech_sess'); location.reload(); }
+async function mRefresh(){
+  if (!SESS) return;
+  // kazi zote (HITL zinazosubiri)
+  const jobs = await (await fetch(API+'/jobs')).json().catch(()=>[]);
+  const list = (Array.isArray(jobs)? jobs : (jobs.jobs||[])).filter(j => j.status==='awaiting_approval' || (j.needs_approval && j.status==='queued'));
+  const canHigh = SESS.can_approve_high_risk;
+  document.getElementById('m_jobs').innerHTML = list.map(j =>
+    `<div class="job"><b>${(j.device_name||'').replace(/[<>&]/g,'')} <span class="pill">${(j.stage||'').replace(/[<>&]/g,'')}</span></b>
+     <div class="meta">${(j.message||'').replace(/[<>&]/g,'')}</div>
+     <div class="row"><button class="sec" onclick="mApprove('${j.id}')">✅ IDHINISHA</button></div></div>`).join('')
+    || 'Hakuna kazi zinazosubiri.';
+  // agents
+  const a = await (await fetch(API+'/api/fleet/agents')).json().catch(()=>null);
+  document.getElementById('m_agents').innerHTML = a && a.ok
+    ? `<b>${a.online}</b>/${a.total} online · <b>${a.working}</b> wanafanya kazi` +
+      (a.agents||[]).slice(0,12).map(x => `<div class="meta">${x.device.replace(/[<>&]/g,'')} · ${x.online? '🟢':'🔴'} ${x.status}${x.progress? ' · '+x.progress+'%':''}</div>`).join('')
+    : '—';
+}
+async function mApprove(id){
+  await fetch(API+'/jobs/'+encodeURIComponent(id)+'/approve',{method:'POST'});
+  mRefresh();
+}
+window.addEventListener('load', ()=>{
+  const s = localStorage.getItem('mtech_sess');
+  if (s) { SESS = JSON.parse(s); document.getElementById('who').textContent = SESS.role_name + ' · ' + SESS.username; document.getElementById('login_card').style.display='none'; document.getElementById('m_main').style.display=''; mRefresh(); }
+  setInterval(()=>{ if (SESS) mRefresh(); }, 8000);
+});
+</script>
+</body>
+</html>

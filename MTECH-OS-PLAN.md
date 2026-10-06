@@ -403,3 +403,31 @@ billing.rs na tools.rs):
 - **MUHTASARI.md** — muhtasari wa mradi kwa wateja/wawekezaji: uwezo wote
   (H6–H15), ubora (tests 129/129, CI 6/6, PRs #6–#23), njia 4 za mapato,
   gharama (hakuna leseni), ujumbe wa kutangaza.
+
+## H17 ✅ — CLICKPESA + APP YA SIMU + CUSTOMER PORTAL
+
+- **H17a — ClickPesa (malipo ya kiotomatiki, clickpesa.rs)**:
+  - `POST /api/clickpesa/checkout` {account, amount_tzs} → Hosted Checkout link
+    (token → `checkout-link/generate-checkout-url`, Bearer JWT); order
+    reference alphanumeric ya kipekee (CP+ms+random); chini ya TZS 1,000 inakataliwa.
+  - `POST /api/clickpesa/webhook` — **PAYMENT RECEIVED**: checksum
+    (HMAC-SHA256 ya body na secret, header x-clickpesa-signature/checksum)
+    → topup kwenye BILI kiotomatiki; **idempotent** (SUCCESS mara moja tu —
+    test inathibitisha salio linaongezeka MARA MOJA); checksum mbaya/kosa → kataa.
+  - `GET /api/clickpesa/status/:order` — hali ya checkout (dashboard + portal).
+  - Bila keys (CLICKPESA_CLIENT_ID/SECRET) mfumo unaendelea: order PENDING +
+    ujumbe wa configuration (kama pfsense.rs). UI: kitufe **📱 LIPA SIMU** kwenye BILI.
+- **H17b — App ya simu ya fundi (static/mobile.html)**: login (auth.rs tokens),
+  kazi zinazosubiri IDHINI (HITL) na kitufe cha **IDHINISHA kwa mbali**,
+  hali ya agents (online/working), auto-refresh sekunde 8; session kwenye
+  localStorage; "Add to Home Screen" inafanya kama app.
+- **H17c — Customer Portal (static/portal.html + portal.rs)**: mteja anaingia
+  kwa **Account + PIN** (SHA-256 hash + salt; sessions DB):
+  salio la BILI + **📱 LIPA SIMU** (ClickPesa kwa mteja mwenyewe),
+  subscription yake, usalama wa kompyuta ZAKE (afya bars), ushahidi wake
+  (hash + IMEFUNGWA). Admin anaweka PIN: `POST /api/admin/portal/set-pin`
+  (token ya admin pekee).
+- **Access control kila mahali**: portal inatumia ile ile ya secops
+  (account anaona ZAKE pekee — test inaithibitisha mteja9 haoni za mteja1).
+- **Tests 5 mpya** (checksum, order ref, checkout bila env, webhook
+  idempotent+topup, PIN login+access control) — jumla **134/134**.
