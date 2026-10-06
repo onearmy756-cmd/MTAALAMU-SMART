@@ -1,6 +1,6 @@
-# MTECH OS — Desktop (Tauri v2)
+# MTECHOS — Desktop (Tauri v2)
 
-Shell ya desktop yenye **UI mbili** (SEHEMU 2 + 3):
+**MTECHOS** — MAIN zake mbili (SEHEMU 2 + 3):
 
 1. **OS AND APP INSTALLATION** — discovery, majina ya kiotomatiki, ISO catalog,
    bundles (categories 8), bei per-PC + malipo, VPN, Agentic AI

@@ -1,9 +1,9 @@
-//! MTECH OS — Tauri v2 desktop shell (SEHEMU 1.1 UI + SEHEMU 9).
+//! MTECHOS — Tauri v2 desktop shell (SEHEMU 1.1 UI + SEHEMU 9).
 //!
-//! UI mbili (mahitaji ya mmiliki):
-//!   - UI 1: OS AND APP INSTALLATION (Fundi Deploy: /ui → Computers, OS, Bundles,
+//! MAIN zake MBILI (mahitaji ya mmiliki):
+//!   - MAIN 1: OS AND APP INSTALLATION (/ui → Computers, OS, Bundles,
 //!     VPN, Agentic AI, Admin)
-//!   - UI 2: COMPUTER SOLUTIONS (scan matatizo, chat, kila siku, dashboards)
+//!   - MAIN 2: COMPUTER SOLUTIONS (scan matatizo, chat, kila siku, dashboards)
 //!
 //! Shell hii inafungua webview inayoelekeza API ya agent (Rust, :8080) — mfumo
 //! mzima unaendeshwa na Rust; Tauri ni dirisha tu (bila EXE ya wageni).
@@ -41,5 +41,5 @@ fn main() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("MTECH OS desktop imekufa");
+        .expect("MTECHOS desktop imekufa");
 }
