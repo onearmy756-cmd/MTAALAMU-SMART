@@ -8,7 +8,6 @@
 //! LLM HAIHESABU kamwe — inaeleza/onasih; solutions zinatoka brain/knowledge.
 
 use serde::Serialize;
-use sqlx::SqlitePool;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ChatReply {
@@ -44,9 +43,9 @@ async fn llm_ask(question: &str, context: &str) -> Option<String> {
 }
 
 /// Chat: andika tatizo/swali → jawabu (offline = brain + rules; online = LLM + brain).
-pub async fn ask(db: &sqlx::SqlitePool, question: &str, online: bool) -> ChatReply {
+pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool) -> ChatReply {
     // 1. Neuralis Brain daima (offline + online context)
-    let refs = crate::brain::recall(db, question, 3).await;
+    let refs = crate::brain::recall(brain, question, 3).await;
     let context: String = refs
         .iter()
         .map(|(m, _)| format!("- {} (PC {}): {}", m.problem, m.pc, m.solution))
@@ -112,8 +111,10 @@ mod tests {
     async fn offline_chat_inatumia_brain() {
         let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
         crate::brain::init_tables(&db).await;
-        crate::brain::remember(&db, "agent-hr", "hr", "Wi-Fi haifanyi kazi", "restart ya wlansvc service", 0.9).await.unwrap();
-        let r = ask(&db, "wi-fi haifanyi kazi kwenye pc mpya", false).await;
+        let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
+        let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
+        crate::brain::remember(&brain, "agent-hr", "hr", "Wi-Fi haifanyi kazi", "restart ya wlansvc service", 0.9).await.unwrap();
+        let r = ask(&brain, "wi-fi haifanyi kazi kwenye pc mpya", false).await;
         assert_eq!(r.source, "brain_offline");
         assert!(r.answer_sw.contains("wlansvc"), "{}", r.answer_sw);
         assert!(r.confidence > 0.5);
@@ -124,7 +125,9 @@ mod tests {
     async fn offline_rules_kwa_maswali_yasiyofanana() {
         let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
         crate::brain::init_tables(&db).await;
-        let r = ask(&db, "kompyuta inaenda polepole sana", false).await;
+        let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
+        let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
+        let r = ask(&brain, "kompyuta inaenda polepole sana", false).await;
         assert!(r.answer_sw.contains("polepole") || r.answer_sw.contains("RAM"));
         assert!(r.confidence < 0.9); // rules = uhakika wa chini kuliko brain/LLM
     }
@@ -134,7 +137,9 @@ mod tests {
         // Sandbox haina Ollama/llama.cpp kwenye 11434 → lazima ifallback (hakuna uongo)
         let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
         crate::brain::init_tables(&db).await;
-        let r = ask(&db, "swali la kawaida lisilopo kwenye brain", true).await;
+        let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
+        let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
+        let r = ask(&brain, "swali la kawaida lisilopo kwenye brain", true).await;
         assert_ne!(r.source, "llm"); // LLM haipatikani hapa
         assert!(r.confidence <= 0.9);
     }
@@ -144,7 +149,9 @@ mod tests {
         // Offline (online=false) lakini LLM ya LAN ikiwa ipo → source llm_offline_lan
         let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
         crate::brain::init_tables(&db).await;
-        let r = ask(&db, "swali la jaribio", false).await;
+        let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
+        let brain = crate::brain::Brain::new(db, dir.to_str().unwrap());
+        let r = ask(&brain, "swali la jaribio", false).await;
         // sandbox: LLM haipatikani → fallback; hii inathibitisha hakuna panic na
         // source iko halisi (llm_offline_lan / brain_offline)
         assert!(r.source == "llm_offline_lan" || r.source == "brain_offline");

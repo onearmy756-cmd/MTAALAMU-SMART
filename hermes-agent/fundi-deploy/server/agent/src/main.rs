@@ -35,7 +35,9 @@ mod remote;
 mod report;
 mod remote_view;
 mod updates;
+mod vector;
 mod vpn;
+mod pfsense;
 mod wol;
 
 use axum::{
@@ -61,6 +63,8 @@ struct AppState {
     acks: SharedAcks,
     orch: Arc<orchestrator::Orchestrator>,
     remote: Arc<remote::Store>,
+    brain: Arc<brain::Brain>,
+    pfsense: Arc<pfsense::PfClient>,
 }
 
 #[tokio::main]
@@ -111,6 +115,11 @@ async fn main() -> anyhow::Result<()> {
     language::init_tables(&db).await;
     company::init_tables(&db).await;
 
+    // NEURALIS BRAIN (H5b): SQLite + LanceDB-compatible vector store (cosine semantic search)
+    let brain = Arc::new(brain::Brain::new(db.clone(), "/data"));
+    // PFSENSE API (H5b): client halisi — bila env, kazi za firewall zinarudisha error ya configuration
+    let pfsense = Arc::new(pfsense::PfClient::from_env());
+
     // Seed agents 10 (agentic vision)
     let agents: [(&str, &str); 10] = [
         ("receptionist", "Mpokeaji"),
@@ -144,6 +153,8 @@ async fn main() -> anyhow::Result<()> {
         acks: acks.clone(),
         orch: Arc::new(orchestrator::Orchestrator::new(100)),
         remote: Arc::new(remote::Store::new()),
+            brain,
+            pfsense,
     };
 
     // Load jobs za zamani kutoka DB
@@ -231,6 +242,13 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/react/start", post(react_start))
         .route("/api/react/sweep", post(react_sweep))
         .route("/api/brain/remember", post(brain_remember))
+        // PFSENSE (H5b): firewall kwenye mtandao mmoja — rules/aliases/services/status kupitia API halisi
+        .route("/api/pfsense/rules", get(pfsense_rules))
+        .route("/api/pfsense/rules", post(pfsense_rule_add))
+        .route("/api/pfsense/aliases", get(pfsense_aliases))
+        .route("/api/pfsense/aliases", post(pfsense_alias_add))
+        .route("/api/pfsense/services", post(pfsense_service_restart))
+        .route("/api/pfsense/status", get(pfsense_status))
         .route("/api/brain/recall", get(brain_recall))
         .route("/api/brain/stats", get(brain_stats))
         .route("/api/fleet/exec", post(fleet_exec))
@@ -803,7 +821,7 @@ struct BrainRememberReq {
 }
 
 async fn brain_remember(State(s): State<AppState>, Json(r): Json<BrainRememberReq>) -> Json<serde_json::Value> {
-    match brain::remember(&s.db, &r.agent, &r.pc, &r.problem, &r.solution, r.confidence).await {
+    match brain::remember(&s.brain, &r.agent, &r.pc, &r.problem, &r.solution, r.confidence).await {
         Ok(id) => Json(json!({ "ok": true, "id": id })),
         Err(e) => Json(json!({ "ok": false, "error": e })),
     }
@@ -814,7 +832,7 @@ async fn brain_recall(State(s): State<AppState>, axum::extract::Query(q): axum::
         return Json(json!({ "ok": false, "error": "q ni lazima (?q=wi-fi haifanyi kazi)" }));
     };
     let limit: usize = q.get("limit").and_then(|l| l.parse().ok()).unwrap_or(5);
-    let got = brain::recall(&s.db, query, limit).await;
+    let got = brain::recall(&s.brain, query, limit).await;
     Json(json!({
         "ok": true,
         "query": query,
@@ -828,7 +846,7 @@ async fn brain_recall(State(s): State<AppState>, axum::extract::Query(q): axum::
 }
 
 async fn brain_stats(State(s): State<AppState>) -> Json<serde_json::Value> {
-    Json(brain::stats(&s.db).await)
+    Json(brain::stats(&s.brain).await)
 }
 
 // ---------- Fleet exec (ombi moja → OS nyingi, kama RDM) ----------
@@ -1001,7 +1019,7 @@ struct ChatReq { question: String }
 
 async fn chat_ask(State(s): State<AppState>, Json(r): Json<ChatReq>) -> Json<serde_json::Value> {
     let online = mode::get_mode(&s.db).await == mode::Mode::Online;
-    let reply = chat::ask(&s.db, &r.question, online).await;
+    let reply = chat::ask(&s.brain, &r.question, online).await;
     Json(json!({ "ok": true, "reply": reply }))
 }
 
@@ -1385,4 +1403,78 @@ async fn cloud_status(State(s): State<AppState>) -> Json<serde_json::Value> {
         "outbox_pending": cloud::outbox_len(),
         "events_received": events
     }))
+}
+
+// ---------- PFSENSE (H5b): firewall ya mtandao mmoja — API halisi ----------
+
+#[derive(serde::Deserialize)]
+struct PfRuleReq {
+    /// mf. {"action":"pass","interface":"lan","protocol":"tcp","source":"lan","destination":"any","destination_port":"80"}
+    #[serde(flatten)]
+    rule: serde_json::Value,
+}
+
+async fn pfsense_rules(State(s): State<AppState>) -> Json<serde_json::Value> {
+    if !s.pfsense.is_configured() {
+        return Json(json!({ "ok": false, "error": "pfSense API haijawekwa: PFSENSE_API_URL + PFSENSE_API_KEY (env)", "configured": false }));
+    }
+    match s.pfsense.list_rules().await {
+        Ok(v) => Json(json!({ "ok": true, "configured": true, "data": v })),
+        Err(e) => Json(json!({ "ok": false, "configured": true, "error": e })),
+    }
+}
+
+async fn pfsense_rule_add(State(s): State<AppState>, Json(r): Json<PfRuleReq>) -> Json<serde_json::Value> {
+    if !s.pfsense.is_configured() {
+        return Json(json!({ "ok": false, "error": "pfSense API haijawekwa: PFSENSE_API_URL + PFSENSE_API_KEY (env)", "configured": false }));
+    }
+    match s.pfsense.add_rule(r.rule).await {
+        Ok(v) => Json(json!({ "ok": true, "configured": true, "data": v })),
+        Err(e) => Json(json!({ "ok": false, "configured": true, "error": e })),
+    }
+}
+
+async fn pfsense_aliases(State(s): State<AppState>) -> Json<serde_json::Value> {
+    if !s.pfsense.is_configured() {
+        return Json(json!({ "ok": false, "error": "pfSense API haijawekwa: PFSENSE_API_URL + PFSENSE_API_KEY (env)", "configured": false }));
+    }
+    match s.pfsense.list_aliases().await {
+        Ok(v) => Json(json!({ "ok": true, "configured": true, "data": v })),
+        Err(e) => Json(json!({ "ok": false, "configured": true, "error": e })),
+    }
+}
+
+async fn pfsense_alias_add(State(s): State<AppState>, Json(r): Json<PfRuleReq>) -> Json<serde_json::Value> {
+    if !s.pfsense.is_configured() {
+        return Json(json!({ "ok": false, "error": "pfSense API haijawekwa: PFSENSE_API_URL + PFSENSE_API_KEY (env)", "configured": false }));
+    }
+    match s.pfsense.add_alias(r.rule).await {
+        Ok(v) => Json(json!({ "ok": true, "configured": true, "data": v })),
+        Err(e) => Json(json!({ "ok": false, "configured": true, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct PfServiceReq {
+    name: String,
+}
+
+async fn pfsense_service_restart(State(s): State<AppState>, Json(r): Json<PfServiceReq>) -> Json<serde_json::Value> {
+    if !s.pfsense.is_configured() {
+        return Json(json!({ "ok": false, "error": "pfSense API haijawekwa: PFSENSE_API_URL + PFSENSE_API_KEY (env)", "configured": false }));
+    }
+    match s.pfsense.restart_service(&r.name).await {
+        Ok(v) => Json(json!({ "ok": true, "configured": true, "service": r.name, "data": v })),
+        Err(e) => Json(json!({ "ok": false, "configured": true, "service": r.name, "error": e })),
+    }
+}
+
+async fn pfsense_status(State(s): State<AppState>) -> Json<serde_json::Value> {
+    if !s.pfsense.is_configured() {
+        return Json(json!({ "ok": false, "configured": false, "error": "pfSense API haijawekwa: PFSENSE_API_URL + PFSENSE_API_KEY (env)" }));
+    }
+    match s.pfsense.system_status().await {
+        Ok(v) => Json(json!({ "ok": true, "configured": true, "data": v })),
+        Err(e) => Json(json!({ "ok": false, "configured": true, "error": e })),
+    }
 }
