@@ -62,7 +62,7 @@ pub async fn get_language(db: &SqlitePool, username: &str) -> String {
 /// inafanya kazi offline pia). Inarudisha (translated, lang).
 pub async fn auto_translate(db: &SqlitePool, username: &str, text: &str) -> (String, String) {
     let lang = get_language(db, username).await;
-    match crate::ai_config::translate(text, &lang).await {
+    match crate::ai_config::translate_db(db, text, &lang).await {
         Some(t) if !t.is_empty() => (t, lang),
         _ => (text.to_string(), lang), // LLM haipatikani → text ya asili (hakuna uongo)
     }

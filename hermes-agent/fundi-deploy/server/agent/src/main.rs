@@ -122,6 +122,7 @@ async fn main() -> anyhow::Result<()> {
 
     // NEURALIS BRAIN (H5b): SQLite + LanceDB-compatible vector store (cosine semantic search)
     let brain = Arc::new(brain::Brain::new(db.clone(), "/data"));
+    ai_config::init_tables(&db).await;
     // PFSENSE API (H5b): client halisi — bila env, kazi za firewall zinarudisha error ya configuration
     let pfsense = Arc::new(pfsense::PfClient::from_env());
 
@@ -280,6 +281,10 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/tasks/:id/complete", post(task_complete))
         .route("/api/license/issue", post(license_issue))
         .route("/api/license/validate", post(license_validate))
+        // CUSTOM MODEL / API (mteja anaweka model yake au API yake — inatumika mara moja)
+        .route("/api/ai/custom", get(ai_custom_get))
+        .route("/api/ai/custom", post(ai_custom_set))
+        .route("/api/ai/custom", axum::routing::delete(ai_custom_clear))
         .route("/api/mode", get(mode_get))
         .route("/api/mode", post(mode_set))
         // CHAT + AUTO-DAILY + UPDATES (H3)
@@ -1618,3 +1623,29 @@ async fn remote_net(State(s): State<AppState>, Json(r): Json<serde_json::Value>)
     Json(result)
 }
 
+// ---------- CUSTOM MODEL / API (AI ya mteja yenyewe) ----------
+
+async fn ai_custom_get(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let cfg = ai_config::load_with_db(&s.db).await;
+    Json(json!({
+        "ok": true,
+        "url": cfg.url,
+        "model": cfg.model,
+        "offline_capable": cfg.offline_capable,
+        "note_sw": "Weka endpoint ya model yako (Ollama / llama.cpp / vLLM / OpenAI-compatible) — inatumika mara moja."
+    }))
+}
+
+async fn ai_custom_set(State(s): State<AppState>, Json(r): Json<ai_config::CustomAi>) -> Json<serde_json::Value> {
+    match ai_config::set_custom(&s.db, &r).await {
+        Ok(()) => Json(json!({ "ok": true, "url": r.url.trim().trim_end_matches('/'), "model": r.model.trim() })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn ai_custom_clear(State(s): State<AppState>) -> Json<serde_json::Value> {
+    match ai_config::clear_custom(&s.db).await {
+        Ok(()) => Json(json!({ "ok": true, "note_sw": "Rejea AI ya ndani ya mfumo." })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}

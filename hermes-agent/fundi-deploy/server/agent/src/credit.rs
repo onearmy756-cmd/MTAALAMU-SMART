@@ -15,7 +15,7 @@
 
 use sqlx::SqlitePool;
 
-/// Bei ya huduma kwenye credits — mteja anajua jina la huduma tu.
+/// Bei za huduma kwenye credits — za kibishara (credit 1 = TZS 500). Mteja anajua jina la huduma tu.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ServicePrice {
     pub service: &'static str,
@@ -23,15 +23,18 @@ pub struct ServicePrice {
 }
 
 pub const SERVICE_PRICES: &[ServicePrice] = &[
-    ServicePrice { service: "network_scanner", credits: 2 },
-    ServicePrice { service: "health_check", credits: 1 },
-    ServicePrice { service: "digital_forensic", credits: 8 },
-    ServicePrice { service: "malware_scan", credits: 5 },
-    ServicePrice { service: "os_install", credits: 20 },
-    ServicePrice { service: "app_install", credits: 3 },
-    ServicePrice { service: "driver_update", credits: 2 },
-    ServicePrice { service: "device_management", credits: 4 },
+    ServicePrice { service: "network_scanner", credits: 1 },   // TZS 500
+    ServicePrice { service: "health_check", credits: 1 },      // TZS 500
+    ServicePrice { service: "malware_scan", credits: 2 },      // TZS 1,000
+    ServicePrice { service: "device_management", credits: 2 }, // TZS 1,000
+    ServicePrice { service: "driver_update", credits: 2 },     // TZS 1,000
+    ServicePrice { service: "app_install", credits: 3 },       // TZS 1,500
+    ServicePrice { service: "digital_forensic", credits: 6 },  // TZS 3,000
+    ServicePrice { service: "os_install", credits: 10 },       // TZS 5,000
 ];
+
+/// Thamani ya credit kwa sarafu (kwa kuonyesha kwenye dashboard).
+pub const CREDIT_TZS: i64 = 500;
 
 /// Credits za kila mwezi kwenye subscription (pricing.rs inauza packages).
 pub const SUBSCRIPTION_MONTHLY_CREDITS: i64 = 500;
@@ -185,11 +188,11 @@ mod tests {
         init_tables(&db).await;
         let bal = purchase(&db, "mteja1", 100, "TXN-001").await.unwrap();
         assert_eq!(bal, 100);
-        authorize(&db, "mteja1", "network_scanner").await.unwrap(); // 2 credits
+        authorize(&db, "mteja1", "network_scanner").await.unwrap(); // 1 credit (TZS 500)
         let bal = spend(&db, "mteja1", "network_scanner", "job-1").await.unwrap();
-        assert_eq!(bal, 98);
+        assert_eq!(bal, 99);
         let bal = spend(&db, "mteja1", "digital_forensic", "job-2").await.unwrap();
-        assert_eq!(bal, 90);
+        assert_eq!(bal, 93);
     }
 
     #[tokio::test]
@@ -202,12 +205,21 @@ mod tests {
     }
 
     #[test]
-    fn bei_za_huduma_ziko() {
-        assert_eq!(price_of("network_scanner"), Some(2));
-        assert_eq!(price_of("digital_forensic"), Some(8));
+    fn bei_za_huduma_ziko_na_ni_za_kibishara() {
+        assert_eq!(price_of("network_scanner"), Some(1));
+        assert_eq!(price_of("digital_forensic"), Some(6));
+        assert_eq!(price_of("os_install"), Some(10));
+        // Bei za kibishara: huduma zote kati ya 1-10 credits
+        for p in SERVICE_PRICES {
+            assert!(p.credits >= 1 && p.credits <= 10, "{}: {} credits", p.service, p.credits);
+        }
         assert_eq!(price_of("zana_hisi"), None);
         assert!(service_exists("health_check"));
         assert!(!service_exists("nmap"));
+        // Bei za kibishara: huduma zote chini ya credits 12 (os_install = TZS 5,000 pekee)
+        for p in SERVICE_PRICES {
+            assert!(p.credits >= 1 && p.credits <= 10, "{}: {} credits — nje ya kikundi cha kibishara", p.service, p.credits);
+        }
     }
 
     #[tokio::test]

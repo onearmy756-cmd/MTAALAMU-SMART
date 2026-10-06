@@ -174,3 +174,22 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
 - **HTML source guard**: contextmenu/F12/Ctrl+Shift+I/J/C/K/Ctrl+U zimezuiwa kwenye
   dashboards zote mbili; source comments za architecture zimefutwa; CSS/API paths
   hazionyeshi framework (system.css).
+
+## H8 ✅ — MATRIX KWA MTEJA + BEI ZA KIBISHARA + CUSTOM MODEL/API
+
+- **FUNDI DEPLOY MATRIX kwenye /ui (dashboard ya mteja)**: STEP 1 hosts
+  (search, select-all, auto-naming pattern), STEP 2 OS + Bundle,
+  STEP 3 bei (devices × credits → TZS) + **ACTIVATE PARALLEL AGENT SYSTEM**,
+  progress bar + log live (kama dashboard kuu). Kila kitu kinafanya kazi
+  **OFFLINE kwenye server ya mteja**; kutumia huduma kunalipwa credits.
+- **Bei za kibishara** (credit 1 = TZS 500): network_scanner/health_check 1,
+  malware/device/driver 2, app_install 3, forensics 6, os_install 10 (TZS 5,000) —
+  hakuna kunyonya; test inazuia credits > 10 kwa huduma yoyote.
+- **Custom/Local Model au API**: `/api/ai/custom` (GET/POST/DELETE) — mteja
+  anaweka endpoint ya model yake (Ollama/llama.cpp/vLLM/OpenAI-compatible) +
+  jina la model; **inatumika mara moja** kwenye chat + tafsiri (chat.rs/
+  language.rs zinasoma config ya DB). Bila custom: AI ya ndani (offline) inatumika.
+- **Usafi kamili wa UI**: mvujaji wote wa usanifu wamefichwa (OLLAMA LLM/qwen,
+  engine-rust, Whisper, SearXNG, HERMES Elixir/LangChain, docker compose + paths);
+  default integration label → "Utafutaji wa Mfumo"; maneno ya ndani (H7/fiche)
+  hayamo kwenye code ya dashboards.
