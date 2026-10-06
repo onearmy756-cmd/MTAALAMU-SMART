@@ -84,6 +84,8 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#credits_card'">💳 Credits</button>
   <button onclick="location.hash='#onboard_card'">🚀 Onboarding</button>
   <button onclick="location.hash='#netmgmt_card'">🌐 Network</button>
+  <button onclick="location.hash='#matrix_card'">🚀 MATRIX</button>
+  <button onclick="location.hash='#ai_card'">🧠 AI</button>
 </nav>
 
 <main>
@@ -450,6 +452,65 @@ details p{font-size:13px;color:#b2ebf2}
     <button onclick="nmAction('security_posture')">🛡️ Usalama</button>
   </div>
   <div id="netmgmt_out" class="pre">—</div>
+</div>
+
+
+<!-- 🚀 FUNDI DEPLOY MATRIX — batch OS + apps deployment (kama dashboard kuu) -->
+<div class="card" id="matrix_card">
+  <h3>🚀 FUNDI DEPLOY MATRIX — BATCH OS & SOFTWARE DEPLOYMENT</h3>
+  <p class="hint">Chagua kompyuta zote → chagua OS + Bundle → ona bei → ACTIVATE. Kila kitu kinafanya kazi OFFLINE kwenye server yako; kutumika kunalipwa kwa credits.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px" class="matrix-grid">
+    <div>
+      <h4>STEP 1: TARGET HOST SELECTION</h4>
+      <div class="row"><input id="mx_search" placeholder="🔍 Search..." style="flex:1" oninput="mxRenderHosts()"/><button class="sec" onclick="mxDiscover()">🔄 Gundua</button></div>
+      <div id="mx_hosts" class="pre" style="max-height:260px;overflow:auto"></div>
+      <div class="row" style="margin-top:6px">
+        <button class="sec" onclick="mxSelectAll(true)">☑ Zote</button>
+        <button class="sec" onclick="mxSelectAll(false)">☐ Hakuna</button>
+      </div>
+      <div style="margin-top:6px">
+        <label class="meta">Auto-Naming Pattern (mf. lab_user_###)</label>
+        <input id="mx_pattern" value="lab_user_###" style="width:100%"/>
+      </div>
+    </div>
+    <div>
+      <h4>STEP 2: OS & BUNDLE CONFIGURATION</h4>
+      <div class="row"><select id="mx_os" style="flex:1"></select></div>
+      <div class="row"><select id="mx_bundle" style="flex:1"></select></div>
+      <div id="mx_cfg_info" class="meta" style="margin-top:6px">Chagua OS + Bundle.</div>
+    </div>
+    <div>
+      <h4>STEP 3: PRICING & DEPLOYMENT ACTIVATION</h4>
+      <div class="row"><span class="meta">Total Devices:</span><b id="mx_devices">0</b></div>
+      <div class="row"><span class="meta">Total Cost:</span><b id="mx_cost">TZS 0</b></div>
+      <div class="row"><span class="meta">Salio la credits:</span><b id="mx_balance">—</b></div>
+      <div class="row"><input id="mx_account" placeholder="Account yako" style="flex:1;min-width:120px" value="mteja1"/></div>
+      <button onclick="mxActivate()" style="width:100%;margin-top:6px">⚡ ACTIVATE PARALLEL AGENT SYSTEM</button>
+    </div>
+  </div>
+  <h4 style="margin-top:10px">PROGRESS BAR</h4>
+  <div style="background:#0a1628;border:1px solid #00e5ff33;border-radius:10px;padding:10px">
+    <div style="background:#081420;border-radius:8px;height:26px;position:relative;overflow:hidden">
+      <div id="mx_bar" style="background:linear-gradient(90deg,#00e5ff33,#34d39955);height:100%;width:0%"></div>
+      <div id="mx_pct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700">0% Completed</div>
+    </div>
+    <div id="mx_jobs" class="meta" style="margin-top:6px">Bado hakuna kazi.</div>
+  </div>
+  <div class="row" style="margin-top:8px"><button class="sec" onclick="mxRefresh()">🔄 Onyesha hali</button></div>
+</div>
+
+<!-- 🧠 AI — custom model / local model / API ya mteja -->
+<div class="card" id="ai_card">
+  <h3>🧠 AI — MODEL YAKO AU API YAKO</h3>
+  <p class="hint">Weka endpoint ya model yako (local au API) — inatumika mara moja kwenye chat, tafsiri na masuluhisho. Bila kuweka: AI ya ndani ya mfumo inatumika (inafanya kazi offline).</p>
+  <div class="row">
+    <input id="ai_url" placeholder="Endpoint (mf. http://192.168.1.50:1234/v1)" style="flex:1;min-width:220px"/>
+    <input id="ai_model" placeholder="Jina la model (mf. my-model-7b)" style="max-width:200px"/>
+    <button onclick="aiSave()">💾 Hifadhi</button>
+    <button class="sec" onclick="aiLoad()">🔎 Onyesha</button>
+    <button class="sec" onclick="aiClear()">↩ Rejea ya ndani</button>
+  </div>
+  <div id="ai_out" class="pre">—</div>
 </div>
 
 </main>
@@ -873,6 +934,99 @@ async function osiSessions(){
   const d = await (await fetch(API+'/osinstall/sessions')).json();
   document.getElementById('osi_sessions').innerHTML = (d||[]).slice(-4).reverse().map(s=>osiCard(s)).join('') || '';
 }
+// ---------- FUNDI DEPLOY MATRIX ----------
+const MX = { hosts: [], selected: new Set(), os: [], bundles: [] };
+async function mxDiscover(){
+  const d = await (await fetch(API+'/computers')).json();
+  MX.hosts = (d.computers || d.hosts || d || []).map(c => typeof c === 'string' ? {name:c, ip:c} : {name: c.display_name || c.name || c.hostname || c.ip, ip: c.ip || c.addr || ''});
+  mxRenderHosts();
+}
+function mxRenderHosts(){
+  const q = (document.getElementById('mx_search').value||'').toLowerCase();
+  const el = document.getElementById('mx_hosts');
+  el.innerHTML = MX.hosts.filter(h => (h.name||'').toLowerCase().includes(q)).map(h =>
+    `<label style="display:flex;gap:6px;align-items:center;margin:2px 0">
+      <input type="checkbox" ${MX.selected.has(h.name)?'checked':''} onchange="mxToggle('${escAttr(h.name)}', this.checked)"/>
+      <span>${escHtml(h.name)} <span class="meta">${escHtml(h.ip||'')}</span></span>
+    </label>`).join('') || '<span class="meta">Hakuna hosts — bonyeza Gundua.</span>';
+  document.getElementById('mx_devices').textContent = MX.selected.size;
+  mxQuote();
+}
+function escHtml(x){ return String(x||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function escAttr(x){ return escHtml(x); }
+function mxToggle(name, on){ on ? MX.selected.add(name) : MX.selected.delete(name); mxRenderHosts(); }
+function mxSelectAll(on){
+  const q = (document.getElementById('mx_search').value||'').toLowerCase();
+  MX.hosts.filter(h => (h.name||'').toLowerCase().includes(q)).forEach(h => on ? MX.selected.add(h.name) : MX.selected.delete(h.name));
+  mxRenderHosts();
+}
+async function mxLoadCatalog(){
+  const [osD, bD] = await Promise.all([
+    (await fetch(API+'/os/profiles')).json().catch(()=>({})),
+    (await fetch(API+'/api/bundles')).json().catch(()=>({}))
+  ]);
+  MX.os = (osD.profiles || osD.os || []).map(o => typeof o === 'string' ? {id:o, name:o} : {id: o.id || o.name, name: o.name || o.label || o.id, price: o.price_tzs || 0});
+  MX.bundles = (bD.bundles || []).map(b => ({id: b.id || b.name, name: b.name || b.id, credits: b.credits || 0}));
+  const osSel = document.getElementById('mx_os'), bSel = document.getElementById('mx_bundle');
+  osSel.innerHTML = MX.os.map(o => `<option value="${escAttr(o.id)}">${escHtml(o.name)}</option>`).join('');
+  bSel.innerHTML = MX.bundles.map(b => `<option value="${escAttr(b.id)}">${escHtml(b.name)}</option>`).join('');
+  osSel.onchange = mxQuote; bSel.onchange = mxQuote;
+  mxQuote();
+}
+function mxQuote(){
+  const n = MX.selected.size;
+  const osCredits = 10; // os_install
+  const appCredits = 3; // app_install (bundle)
+  const total = n * (osCredits + appCredits);
+  document.getElementById('mx_cost').textContent = 'TZS ' + (total * 500).toLocaleString('en-US');
+  document.getElementById('mx_devices').textContent = n;
+}
+async function mxActivate(){
+  const acc = document.getElementById('mx_account').value || 'mteja1';
+  const os = document.getElementById('mx_os').value;
+  const bundle = document.getElementById('mx_bundle').value;
+  if (!MX.selected.size) { alert('Chagua kompyuta angalau moja (STEP 1)'); return; }
+  // 1) quote + credits authorize kupitia services/run moja moja ni ghali — tumia /deploy kwa kila host (HITL) kisha spend
+  let okc = 0, fail = 0;
+  for (const name of MX.selected) {
+    const r = await (await fetch(API+'/deploy', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({device_mac:'', device_name:name, os_type:os})})).json().catch(()=>null);
+    if (r && r.id) { okc++; }
+    else fail++;
+  }
+  document.getElementById('mx_jobs').innerHTML = `Kazi ${okc} zimeingizwa${fail ? ' · ' + fail + ' zilifeli' : ''} — angalia tab Jobs kwa RUHUSU (HITL) na progress.`;
+  mxRefresh();
+}
+async function mxRefresh(){
+  const jobs = await (await fetch(API+'/jobs')).json().catch(()=>[]);
+  const list = (jobs.jobs || jobs || []).slice(-6).reverse();
+  const done = list.filter(j => j.status === 'done').length;
+  const pct = list.length ? Math.round(100 * done / list.length) : 0;
+  document.getElementById('mx_bar').style.width = pct + '%';
+  document.getElementById('mx_pct').textContent = pct + '% Completed';
+  document.getElementById('mx_jobs').innerHTML = list.map(j =>
+    `<div>&gt; ${escHtml(j.device_name||j.id)} → ${escHtml(j.stage||j.status)}… [${(j.status||'').toUpperCase()}]</div>`).join('') || 'Bado hakuna kazi.';
+}
+mxDiscover && window.addEventListener('load', ()=>{ mxLoadCatalog(); mxRefresh(); setInterval(mxRefresh, 5000); });
+
+// ---------- AI CUSTOM MODEL / API ----------
+async function aiLoad(){
+  const d = await (await fetch(API+'/api/ai/custom')).json();
+  document.getElementById('ai_url').value = d.url || '';
+  document.getElementById('ai_model').value = d.model || '';
+  document.getElementById('ai_out').innerHTML = `Endpoint: <b>${escHtml(d.url)}</b> · Model: <b>${escHtml(d.model)}</b> · Offline: ${d.offline_capable?'Ndiyo':'Hapana'}`;
+}
+async function aiSave(){
+  const url = document.getElementById('ai_url').value;
+  const model = document.getElementById('ai_model').value;
+  const d = await (await fetch(API+'/api/ai/custom', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({url, model})})).json();
+  document.getElementById('ai_out').innerHTML = d.ok ? `✅ Imehifadhiwa — model yako inatumika sasa: <b>${escHtml(d.model)}</b>` : ('❌ '+(d.error||''));
+}
+async function aiClear(){
+  const d = await (await fetch(API+'/api/ai/custom', {method:'DELETE'})).json();
+  document.getElementById('ai_out').innerHTML = d.ok ? '↩ Rejea AI ya ndani ya mfumo.' : ('❌ '+(d.error||''));
+}
+
 // ---------- HUDUMA + CREDITS + ONBOARDING + NETWORK ----------
 async function loadServices(){
   const acc = document.getElementById('svc_account').value||'mteja1';

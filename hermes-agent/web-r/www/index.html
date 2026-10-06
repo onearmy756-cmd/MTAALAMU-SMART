@@ -8,7 +8,7 @@
   MTECH OS — BROWSER DASHBOARD (standalone)
   Tabs za mfumo: LIVE · AGENTIC VISION ·
   UTAMBUZI (BAYES) · VIZ · RAMANI (LIVE MAP kamili + map.js) · 3D · NAVIGATION ·
-  FUNDI DEPLOY · FUNDI MOBILE · IOT + HERMES.
+  FUNDI DEPLOY · FUNDI MOBILE · IOT + Mfumo.
   Bayes: posterior = prior × ∏ L(si) (kama bayes_causes kwenye eval.R).
 -->
 <link rel="stylesheet" href="dashboard.css"/>
@@ -591,7 +591,7 @@ function compsSvg(components) {
  * ============================================================ */
 function integrations() {
   const ints = ((D.iotIntegrations || {}).integrations) || [];
-  if (!ints.find((i) => i.id === "searxng")) ints.push({ id: "searxng", name: "SearXNG", kind: "search", host: "127.0.0.1", port: 8888, required: false, note_sw: "Meta-search (SEARXNG_URL)." });
+  if (!ints.find((i) => i.id === "searxng")) ints.push({ id: "searxng", name: "Utafutaji wa Mfumo", kind: "search", host: "127.0.0.1", port: 8888, required: false, note_sw: "Utafutaji wa ndani wa mfumo." });
   return ints;
 }
 async function fetchLiveness(url, ms) {
@@ -640,7 +640,7 @@ function hermesPipe() { return hermesPipes().find((p) => p.id === S.studio.pipe)
 function hermesNarrate(agent, action) {
   const sw = LANG === "sw";
   const vk = { receptionist: "agent.receptionist.greet", vision: "agent.vision.scanning", diagnoser: "agent.diagnoser.found", planner: "agent.planner.ready", solver: "agent.solver.working", tester: "agent.tester.running", verifier: "agent.verifier.confirm", scribe: "agent.scribe.narrate", learner: "agent.learner.saved", hitl: "hitl.ask_fix", crawl4ai: "agent.vision.scanning", ollama: "agent.planner.ready" }[agent];
-  return vk ? avVoice(vk) : (sw ? "HERMES inaamsha " : "HERMES wakes ") + agent + ": " + action;
+  return vk ? avVoice(vk) : (sw ? "Mfumo unaamsha " : "System wakes ") + agent + ": " + action;
 }
 function hermesStop() { if (S.studio.timer) { clearInterval(S.studio.timer); S.studio.timer = null; } S.studio.running = false; }
 function hermesTick() {
@@ -757,18 +757,18 @@ function vStudioModels() {
   const models = S.studio.ollamaModels;
   return `
   <div class="grid g2">
-    <div class="card"><h3>🧠 OLLAMA LLM — ${esc(ai.model || "qwen2.5:3b")}</h3>
+    <div class="card"><h3>🧠 AI YA NDANI YA MTECH OS</h3>
       <div style="display:flex;gap:8px;align-items:center">${dotOf("ollama")} <span class="meta">AI ya ndani ya mfumo</span></div>
-      ${models ? `<div class="up-tree">${esc(sw ? "MODELI ZILIZOSAKINISHWA (halisi — /api/tags):\n" : "INSTALLED MODELS (real — /api/tags):\n")}${esc(models.join("\n"))}</div>`
+      ${models ? `<div class="up-tree">${esc(sw ? "AI YA NDANI: IKO TAYARI" : "LOCAL AI: READY")}</div>`
         : `<div class="status-banner INFO" style="margin-top:6px">${esc(sw ? "AI ya ndani haipatikani kwa sasa — mfumo unaendelea kwa maarifa ya ndani (offline-first)." : "Local AI not reachable — system continues with built-in knowledge (offline-first).")}</div>`}
     </div>
     <div class="card"><h3>⚙️ ${esc(sw ? "MODELILIO + HUDUMA ZA AI" : "CONFIGURED MODELS + AI SERVICES")}</h3>
       <table><thead><tr><th></th><th>${esc(sw ? "Modeli" : "Model")}</th><th>${esc(sw ? "Kazi" : "Job")}</th><th>endpoint</th></tr></thead><tbody>
-        <tr><td>${dotOf("mtaalamu_engine")}</td><td><b>engine-rust</b></td><td style="font-size:.64rem">${esc(sw ? "hesabu zote (R-1: LLM haihesabu kamwe)" : "all math (R-1: LLM never calculates)")}</td><td><code>:${byId("mtaalamu_engine").port || 8080}</code></td></tr>
-        <tr><td>${dotOf("whisper")}</td><td><b>Whisper</b> (small)</td><td style="font-size:.64rem">STT ${esc(sw ? "Kiswahili" : "Swahili")}</td><td><code>:${byId("whisper").port || 8090}</code></td></tr>
-        <tr><td>${dotOf("searxng")}</td><td><b>SearXNG</b></td><td style="font-size:.64rem">meta-search</td><td><code>:${byId("searxng").port || 8888}</code></td></tr>
-        <tr><td>${dotOf("hermes_gateway")}</td><td><b>HERMES Gateway</b> (Elixir)</td><td style="font-size:.64rem">${esc(sw ? "anasimamia + FST + missions + HITL store" : "supervises + FST + missions + HITL store")}</td><td><code>:${byId("hermes_gateway").port || 8088}</code></td></tr>
-        <tr><td>${dotOf("hermes_agents")}</td><td><b>HERMES Workers</b> (LangChain)</td><td style="font-size:.64rem">/stt /voice /agent/run /crawl /health</td><td><code>:${byId("hermes_agents").port || 8090}</code></td></tr>
+        <tr><td>${dotOf("mtaalamu_engine")}</td><td><b>${esc(sw ? "Injini ya Hesabu" : "Calc Engine")}</b></td><td style="font-size:.64rem">${esc(sw ? "hesabu zote (AI haihesabu kamwe)" : "all math (AI never calculates)")}</td><td><span class="meta">${esc(sw ? "ya ndani" : "internal")}</span></td></tr>
+        <tr><td>${dotOf("whisper")}</td><td><b>${esc(sw ? "Utambuzi wa Sauti" : "Speech Service")}</b></td><td style="font-size:.64rem">STT ${esc(sw ? "Kiswahili" : "Swahili")}</td><td><span class="meta">${esc(sw ? "ya ndani" : "internal")}</span></td></tr>
+        <tr><td>${dotOf("searxng")}</td><td><b>${esc(sw ? "Utafutaji wa Mfumo" : "System Search")}</b></td><td style="font-size:.64rem">${esc(sw ? "utafutaji wa ndani" : "local search")}</td><td><span class="meta">${esc(sw ? "ya ndani" : "internal")}</span></td></tr>
+        <tr><td>${dotOf("hermes_gateway")}</td><td><b>${esc(sw ? "Msimamizi wa Huduma" : "Service Supervisor")}</b></td><td style="font-size:.64rem">${esc(sw ? "anasimamia + kumbukumbu + HITL" : "supervises + memory + HITL")}</td><td><span class="meta">${esc(sw ? "ya ndani" : "internal")}</span></td></tr>
+        <tr><td>${dotOf("hermes_agents")}</td><td><b>${esc(sw ? "Wakaguzi wa Huduma" : "Service Workers")}</b></td><td style="font-size:.64rem">${esc(sw ? "sauti · sauti · huduma · afya" : "voice · speech · services · health")}</td><td><span class="meta">${esc(sw ? "ya ndani" : "internal")}</span></td></tr>
       </tbody></table>
       <div class="kv" style="margin-top:6px">bayesian: ${ai.bayesian_enabled ? "ON" : "off"} · fuzzy: ${ai.fuzzy_enabled ? "ON" : "off"} · learning_rate: ${esc(String(ai.learning_rate || ""))}</div>
     </div>
@@ -932,7 +932,6 @@ function vStudio() {
 /* ============================================================
  * TABS — RENDER KILA MOJA (STUDIO + zote 11 za desktop)
  * ============================================================ */
-// Tabs za mfumo tu (H7)
 const TABS = ["studio", "live", "agentic", "diag", "viz", "fundi", "mobile", "iot"];
 
 function renderTabs() {
@@ -1690,7 +1689,7 @@ function vFundi() {
   const sum = f.summary;
   const jobs = f.jobs;
   const ex = f.extra || {};
-  const offlineMsg = sw ? "API offline — anzisha: cd fundi-deploy/server && docker compose up -d" : "API offline — start: cd fundi-deploy/server && docker compose up -d";
+  const offlineMsg = sw ? "API offline — fungua mfumo wa MTECH OS (huduma ya mfumo) ili dashboard ipate data." : "API offline — open the MTECH OS system service so the dashboard can get data.";
   const bundles = ((D.deployBundles || {}).bundles) || [];
   const prods = (((D.pricing || {}).products) || []);
   return `
@@ -1860,7 +1859,7 @@ function mGov() {
     <div style="font-size:.68rem;color:var(--dim);margin-top:6px">${esc(sw ? "Chagua mfumo kisha 'Fungua fields' — agent itauliza yale yanayokosekana pekee." : "Pick a system then 'Open fields' — the agent only asks for what's missing.")}</div>
     <div id="govFields">${govFieldsHtml()}</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
-      ${mobInp("gov_q", sw ? "Tafuta: BRELA fees 2026 (SearXNG)" : "Search: BRELA fees 2026 (SearXNG)", 2)}
+      ${mobInp("gov_q", sw ? "Tafuta: BRELA fees 2026" : "Search: BRELA fees 2026", 2)}
       <button class="btn" data-mob="gov-search">🔍 ${esc(sw ? "Tafuta" : "Search")}</button>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
@@ -2365,7 +2364,7 @@ function mobAction(name) {
     speakSw(t || (sw ? "Fundi agent hapa, nikusaidie nini?" : "Fundi agent here, how can I help?"));
     return;
   }
-  if (name === "gov-search") { mobSet("govOut", sw ? "SearXNG: browser haipatikani — tumia desktop (SEARXNG_URL kwenye env)." : "SearXNG: not available in browser — use desktop (SEARXNG_URL env).", "WARNING"); return; }
+  if (name === "gov-search") { mobSet("govOut", sw ? "Utafutaji wa ndani haupatikani kwenye browser — tumia desktop ya mfumo." : "Local search not available in browser — use the desktop app.", "WARNING"); return; }
   if (name === "jamii-show") {
     const catEl = $("jamii_cat"), nEl = $("jamii_n");
     const n = Math.max(1, Math.min(3, parseInt(nEl ? nEl.value : "1", 10) || 1));
@@ -2496,7 +2495,7 @@ function renderAll() {
 })();
 </script>
 <script>
-/* MTECH OS — ULINZI WA SOURCE (H7): huduma za ndani zisioneswe kwa mtumiaji wa kawaida */
+/* MTECH OS */
 (function(){
   document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
   document.addEventListener('keydown', function(e){

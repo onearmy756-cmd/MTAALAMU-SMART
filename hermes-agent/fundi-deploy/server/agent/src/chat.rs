@@ -18,8 +18,6 @@ pub struct ChatReply {
     pub references: Vec<String>, // solutions za agents wenzake
 }
 
-const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
-const MODEL: &str = "qwen2.5vl:3b";
 
 /// KANUNI YA SIRI YA BIASHARA: LLM au jawabu lolote la mfumo HAITAJI kamwe
 /// jina la zana, amri, lugha ya programu wala injini — mteja anaona HUDUMA za
@@ -47,15 +45,18 @@ impl Length {
 /// Swali la LLM halisi — LLM inaishi kwenye SERVER KUU YA LAN (docker),
 /// kwa hiyo inafanya kazi hata OFFLINE (mtandao wa ndani unaotosha).
 /// Online ni kwa cloud AI PEKEE — LLM ya LAN haitegemei internet.
-async fn llm_ask(question: &str, context: &str, len: Length) -> Option<String> {
+async fn llm_ask(db: &sqlx::SqlitePool, question: &str, context: &str, len: Length) -> Option<String> {
+    // CUSTOM MODEL/API: config kutoka DB (mteja ameweka yake) au default ya server kuu
+    let cfg = crate::ai_config::load_with_db(db).await;
+    let url = format!("{}/api/generate", cfg.url.trim_end_matches('/'));
     let body = serde_json::json!({
-        "model": MODEL,
+        "model": cfg.model,
         "prompt": format!("Wewe ni fundi wa kompyuta wa MTECH OS. {}\n\n{LLM_SECRECY_RULE}\n\nMuktadha (suluhisho za agents wenzake):\n{context}\n\nSwali: {question}\n\nJibu:", len.instruction_sw()),
         "stream": false,
     });
     let client = reqwest::Client::new();
     let resp = client
-        .post(OLLAMA_URL)
+        .post(url)
         .json(&body)
         .timeout(std::time::Duration::from_secs(60))
         .send()
@@ -78,7 +79,7 @@ pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool, len:
     // 2. LLM ya SERVER KUU YA LAN: inafanya kazi hata OFFLINE (docker service
     //    ya LLM inaishi ndani ya LAN — kompyuta zote zimeunganishwa nayo).
     //    `online` inaongeza tu uwezo wa cloud AI; LLM ya LAN haitegemei internet.
-    if let Some(answer) = llm_ask(question, &context, len).await {
+    if let Some(answer) = llm_ask(&brain.db, question, &context, len).await {
         return ChatReply {
             question: question.into(),
             answer_sw: crate::tools::sanitize_output(answer.trim()),
