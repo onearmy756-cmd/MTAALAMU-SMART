@@ -81,13 +81,13 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#daily_card'">📅 Kila Siku</button>
   <button onclick="location.hash='#company_card'">🏢 Kampuni</button>
   <button onclick="location.hash='#services_card'">🧰 Huduma</button>
-  <button onclick="location.hash='#credits_card'">💳 Credits</button>
   <button onclick="location.hash='#onboard_card'">🚀 Onboarding</button>
   <button onclick="location.hash='#netmgmt_card'">🌐 Network</button>
   <button onclick="location.hash='#matrix_card'">🚀 MATRIX</button>
   <button onclick="location.hash='#ai_card'">🧠 AI</button>
   <button onclick="location.hash='#solutions_card'">🖥️ SOLUTIONS</button>
   <button onclick="location.hash='#bili_card'">💰 BILI</button>
+  <button onclick="location.hash='#repo_card'">📦 REPO</button>
 </nav>
 
 <main>
@@ -394,7 +394,7 @@ details p{font-size:13px;color:#b2ebf2}
 </div>
 
 
-<!-- 🧰 HUDUMA — mteja anaona HUDUMA tu; zana ziko fiche server-side -->
+<!-- 🧰 HUDUMA -->
 <div class="card" id="services_card">
   <h3>🧰 HUDUMA ZA MTECH OS</h3>
   <p class="hint">Chagua huduma — mfumo unachagua vifaa na njia vyake vyenyewe. Hakuna zana wala amri za kuona: kila kitu kinafanyika ndani.</p>
@@ -404,24 +404,6 @@ details p{font-size:13px;color:#b2ebf2}
     <button onclick="loadServices()">🔄 Onyesha huduma</button>
   </div>
   <div id="services_list" class="pre">Bonyeza "Onyesha huduma"…</div>
-</div>
-
-<!-- 💳 CREDITS — kulipia huduma (per-use + subscription) -->
-<div class="card" id="credits_card">
-  <h3>💳 CREDITS — lipa kwa matumizi</h3>
-  <p class="hint">Kila huduma ina bei yake kwenye credits. Nunua credits (ClickPesa / benki) au subscription ya mwezi.</p>
-  <div class="row">
-    <input id="cr_account" placeholder="Account" style="max-width:140px"/>
-    <button onclick="creditsBalance()">💰 Salio</button>
-    <input id="cr_amount" type="number" placeholder="credits" style="max-width:110px"/>
-    <input id="cr_ref" placeholder="Marejeo ya malipo (TXN)" style="max-width:190px"/>
-    <button onclick="creditsBuy()">➕ Nunua</button>
-  </div>
-  <div class="row">
-    <input id="cr_ledger_acc" placeholder="Account" style="max-width:140px"/>
-    <button onclick="creditsLedger()">📜 Matumizi (ledger)</button>
-  </div>
-  <div id="credits_out" class="pre">—</div>
 </div>
 
 <!-- 🚀 ONBOARDING — server/computer/raspberry + config automatic -->
@@ -460,7 +442,7 @@ details p{font-size:13px;color:#b2ebf2}
 <!-- 🚀 FUNDI DEPLOY MATRIX — batch OS + apps deployment (kama dashboard kuu) -->
 <div class="card" id="matrix_card">
   <h3>🚀 FUNDI DEPLOY MATRIX — BATCH OS & SOFTWARE DEPLOYMENT</h3>
-  <p class="hint">Chagua kompyuta zote → chagua OS + Bundle → ona bei → ACTIVATE. Kila kitu kinafanya kazi OFFLINE kwenye server yako; kutumika kunalipwa kwa credits.</p>
+  <p class="hint">Chagua kompyuta zote → chagua OS + Bundle → ona bei → ACTIVATE. Kila kitu kinafanya kazi OFFLINE kwenye server yako; kutumika kunalipwa kwa BILI (TZS).</p>
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px" class="matrix-grid">
     <div>
       <h4>STEP 1: TARGET HOST SELECTION</h4>
@@ -485,8 +467,8 @@ details p{font-size:13px;color:#b2ebf2}
       <h4>STEP 3: PRICING & DEPLOYMENT ACTIVATION</h4>
       <div class="row"><span class="meta">Total Devices:</span><b id="mx_devices">0</b></div>
       <div class="row"><span class="meta">Total Cost:</span><b id="mx_cost">TZS 0</b></div>
-      <div class="row"><span class="meta">Salio la credits:</span><b id="mx_balance">—</b></div>
-      <div class="row"><input id="mx_account" placeholder="Account yako" style="flex:1;min-width:120px" value="mteja1"/></div>
+      <div class="row"><span class="meta">Salio la BILI:</span><b id="mx_balance">—</b></div>
+      <div class="row"><input id="mx_account" placeholder="Account yako" style="flex:1;min-width:120px" value="mteja1" onchange="mxBalance()"/></div>
       <button onclick="mxActivate()" style="width:100%;margin-top:6px">⚡ ACTIVATE PARALLEL AGENT SYSTEM</button>
     </div>
   </div>
@@ -563,6 +545,43 @@ details p{font-size:13px;color:#b2ebf2}
     </div>
   </div>
   <div id="bili_out" class="pre" style="margin-top:8px">—</div>
+</div>
+
+
+<!-- 📦 BUNDLE & ASSET REPOSITORY — manager (H10) -->
+<div class="card" id="repo_card">
+  <h3>📦 BUNDLE & ASSET REPOSITORY MANAGER</h3>
+  <p class="hint">Katalogi ya programu zote (categories), tafuta, kabisha faili yako ya setup (custom), na DISTRIBUTE kwa kompyuta ulizochagua. Kila kitu kinafanya kazi OFFLINE kwenye server yako.</p>
+  <div class="row">
+    <label class="meta">Category:</label>
+    <select id="rep_cat" onchange="repRender()"><option value="">ZOTE</option></select>
+    <input id="rep_search" placeholder="🔍 Search..." style="flex:1;min-width:140px" oninput="repRender()"/>
+  </div>
+  <div id="rep_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px"></div>
+  <div class="row" style="margin-top:8px">
+    <input id="rep_target" placeholder="Kompyuta (mf. lab_user_001,lab_user_002)" style="flex:1;min-width:220px"/>
+    <input id="rep_account" placeholder="Account" value="mteja1" style="max-width:120px"/>
+  </div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:8px" class="repo-grid">
+    <div>
+      <h4>DRAG & DROP CUSTOM SETUP</h4>
+      <div id="rep_drop" style="border:2px dashed #00e5ff55;border-radius:12px;padding:26px;text-align:center;color:var(--dim)"
+        ondragover="event.preventDefault();this.style.background='#00e5ff11'"
+        ondragleave="this.style.background=''"
+        ondrop="event.preventDefault();this.style.background='';repDrop(event)">
+        DRAG & DROP<br/>CUSTOM SETUP
+        <div class="meta" style="margin-top:6px">(au bonyeza kuchagua faili)</div>
+        <input type="file" id="rep_file" style="display:none" onchange="repFile(this.files)"/>
+      </div>
+      <div id="rep_drop_out" class="meta" style="margin-top:4px">—</div>
+    </div>
+    <div>
+      <h4>Repository Integrity</h4>
+      <div id="rep_integrity" class="pre">—</div>
+    </div>
+  </div>
+  <h4 style="margin-top:8px">Terminal</h4>
+  <div id="rep_term" class="pre" style="background:#0b1220;min-height:70px">Silent Install Switch: [ -y --silent /q ]<br/>&gt; </div>
 </div>
 
 </main>
@@ -1018,7 +1037,7 @@ async function mxLoadCatalog(){
     (await fetch(API+'/api/bundles')).json().catch(()=>({}))
   ]);
   MX.os = (osD.profiles || osD.os || []).map(o => typeof o === 'string' ? {id:o, name:o} : {id: o.id || o.name, name: o.name || o.label || o.id, price: o.price_tzs || 0});
-  MX.bundles = (bD.bundles || []).map(b => ({id: b.id || b.name, name: b.name || b.id, credits: b.credits || 0}));
+  MX.bundles = (bD.categories || []).flatMap(c => (c.bundles || []).map(b => ({ id: b.id, name: b.name_sw || b.id, category: c.id }))).concat((bD.custom_bundles || []).map(b => ({ id: b.id, name: b.name_sw || b.id, category: 'custom' })));
   const osSel = document.getElementById('mx_os'), bSel = document.getElementById('mx_bundle');
   osSel.innerHTML = MX.os.map(o => `<option value="${escAttr(o.id)}">${escHtml(o.name)}</option>`).join('');
   bSel.innerHTML = MX.bundles.map(b => `<option value="${escAttr(b.id)}">${escHtml(b.name)}</option>`).join('');
@@ -1048,7 +1067,7 @@ async function mxActivate(){
     else fail++;
   }
   document.getElementById('mx_jobs').innerHTML = `Kazi ${okc} zimeingizwa${fail ? ' · ' + fail + ' zilifeli' : ''} — angalia tab Jobs kwa RUHUSU (HITL) na progress.`;
-  mxRefresh();
+  mxRefresh(); mxBalance();
 }
 async function mxRefresh(){
   const jobs = await (await fetch(API+'/jobs')).json().catch(()=>[]);
@@ -1060,7 +1079,90 @@ async function mxRefresh(){
   document.getElementById('mx_jobs').innerHTML = list.map(j =>
     `<div>&gt; ${escHtml(j.device_name||j.id)} → ${escHtml(j.stage||j.status)}… [${(j.status||'').toUpperCase()}]</div>`).join('') || 'Bado hakuna kazi.';
 }
-mxDiscover && window.addEventListener('load', ()=>{ mxLoadCatalog(); mxRefresh(); setInterval(mxRefresh, 5000); });
+mxDiscover && window.addEventListener('load', ()=>{ mxLoadCatalog(); mxRefresh(); mxBalance(); setInterval(mxRefresh, 5000); });
+async function mxBalance(){
+  const acc = document.getElementById('mx_account').value || 'mteja1';
+  const d = await (await fetch(API+'/api/billing/statement/'+encodeURIComponent(acc))).json().catch(()=>null);
+  document.getElementById('mx_balance').textContent = d ? ('TZS ' + Number(d.balance_tzs||0).toLocaleString()) : '—';
+}
+
+// ---------- BUNDLE & ASSET REPOSITORY ----------
+const REP = { bundles: [], cats: [] };
+const REP_ICONS = { office:"📄", browsers:"🌐", development:"💻", communication:"💬", utilities:"🧰", security:"🛡️", graphics:"🎨", drivers:"🖨️", custom:"📁" };
+const REP_EMOJI = { "vscode":"🧩", "chrome":"🌍", "firefox":"🦊", "gimp":"🎨", "vlc":"🎬", "7zip":"🗜️", "libreoffice":"📄", "python":"🐍", "git":"🌿", "notepad++":"📝", "zoom":"📹", "teams":"👥", "anydesk":"🖥️" };
+async function repLoad(){
+  const d = await (await fetch(API+'/api/bundles')).json();
+  REP.bundles = (d.categories || []).flatMap(c => (c.bundles || []).map(b => Object.assign({}, b, { category: c.id }))).concat(d.custom_bundles || []);
+  REP.cats = [...new Set(REP.bundles.map(b => b.category))];
+  const sel = document.getElementById('rep_cat');
+  sel.innerHTML = '<option value="">ZOTE</option>' + REP.cats.map(c => `<option value="${escAttr(c)}">${escHtml(c.toUpperCase())}</option>`).join('');
+  repRender(); repIntegrity();
+}
+function repBundleEmoji(b){
+  const key = (b.id||'').toLowerCase();
+  for (const k in REP_EMOJI) { if (key.includes(k)) return REP_EMOJI[k]; }
+  return REP_ICONS[b.category] || '📦';
+}
+function repRender(){
+  const cat = document.getElementById('rep_cat').value;
+  const q = (document.getElementById('rep_search').value||'').toLowerCase();
+  const el = document.getElementById('rep_grid');
+  el.innerHTML = REP.bundles.filter(b =>
+    (!cat || b.category === cat) &&
+    ((b.name_sw||'').toLowerCase().includes(q) || (b.id||'').toLowerCase().includes(q))
+  ).map(b => `
+    <div class="card" style="margin:0;text-align:center;padding:10px">
+      <div style="font-size:42px">${repBundleEmoji(b)}</div>
+      <div style="font-weight:700">${escHtml(b.name_sw)}</div>
+      <div class="meta">Package Name</div>
+      <div class="meta">${escHtml(b.category)} · apps ${((b.apps||[]).length)}</div>
+      <button style="width:100%;margin-top:6px;background:#34d399;border:none" onclick="repDistribute('${escAttr(b.id)}')">DISTRIBUTE</button>
+    </div>`).join('') || '<span class="meta">Hakuna bundles.</span>';
+}
+async function repDistribute(id){
+  const targets = (document.getElementById('rep_target').value||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const acc = document.getElementById('rep_account').value || 'mteja1';
+  if (!targets.length) { alert('Weka kompyuta (rejea tab 🚀 MATRIX au Computers)'); return; }
+  const d = await (await fetch(API+'/api/bundles/distribute', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({bundle:id, targets:targets, account:acc})})).json();
+  const term = document.getElementById('rep_term');
+  if (d.ok) {
+    term.innerHTML += `&gt; [OK] ${escHtml(d.bundle)} → ${d.count} kompyuta · kazi ${d.jobs.length} zimesubiri RUHUSU (HITL)<br/>&gt; Salio: TZS ${Number(d.balance_tzs).toLocaleString()}<br/>&gt; `;
+    term.scrollTop = term.scrollHeight;
+  } else {
+    term.innerHTML += `&gt; [ERROR] ${escHtml(d.error||'')}${d.needs_billing? ' — ona tab 💰 BILI':''}<br/>&gt; `;
+  }
+}
+function repDrop(ev){
+  const files = [...(ev.dataTransfer.files||[])];
+  repFiles(files);
+}
+function repFile(files){ repFiles([...(files||[])]); }
+async function repFiles(files){
+  const out = document.getElementById('rep_drop_out');
+  for (const f of files) {
+    const name = f.name.replace(/\.(exe|msi|zip|deb|tar\.gz)$/i, '');
+    const d = await (await fetch(API+'/api/bundles', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({id: 'custom-'+Date.now(), name_sw: name, description: 'Custom setup: '+f.name+' ('+Math.round(f.size/1024)+' KB) — weka faili kwenye install share', category: 'custom', app_ids: [], created_by: 'admin (dashboard)'})})).json();
+    out.innerHTML = d.ok ? `✅ ${escHtml(name)} imeandikishwa kwenye repository (custom).` : ('❌ '+(d.error||''));
+    if (d.ok) { document.getElementById('rep_term').innerHTML += `&gt; [OK] Custom setup: ${escHtml(f.name)} imeandikishwa (weka faili kwenye install share)<br/>&gt; `; }
+  }
+  repLoad();
+}
+async function repIntegrity(){
+  const [bD, hD] = await Promise.all([
+    (await fetch(API+'/api/bundles')).json().catch(()=>({})),
+    (await fetch(API+'/health')).json().catch(()=>null)
+  ]);
+  const bs = (bD.categories || []).flatMap(c => c.bundles || []).concat(bD.custom_bundles || []);
+  const cats = new Set(bs.map(b => b.category)).size;
+  const withApps = bs.filter(b => (b.apps||[]).length > 0).length;
+  const okPct = bs.length ? Math.round(100 * withApps / bs.length) : 100;
+  document.getElementById('rep_integrity').innerHTML =
+    `<div>Huduma za Mfumo: <b style="color:#34d399">${hD ? 'HAI' : 'NJE YA MTANDAO'}</b></div>
+     <div>Usawazishaji wa Repository: <b style="color:#34d399">${okPct}%</b></div>
+     <div class="meta">Bundles: ${bs.length} · Categories: ${cats} · Apps: ${bs.reduce((a,b)=>a+((b.apps||[]).length),0)}</div>`;
+}
 
 // ---------- AUTOMATED COMPUTER SOLUTIONS ----------
 const SOL = { pc: [], alerts: {} };
@@ -1162,7 +1264,7 @@ async function aiClear(){
   document.getElementById('ai_out').innerHTML = d.ok ? '↩ Rejea AI ya ndani ya mfumo.' : ('❌ '+(d.error||''));
 }
 
-// ---------- HUDUMA + CREDITS + ONBOARDING + NETWORK ----------
+// ---------- HUDUMA + ONBOARDING + NETWORK ----------
 async function loadServices(){
   const acc = document.getElementById('svc_account').value||'mteja1';
   const d = await (await fetch(API+'/services')).json();
@@ -1170,7 +1272,7 @@ async function loadServices(){
   el.innerHTML = (d.services||[]).map(s=>
     `<div class="row" style="align-items:center;gap:8px;margin:6px 0">
       <b>${s.name_sw}</b> <span class="hint">${s.desc_sw}</span>
-      <span class="pill">TZS ${Number(s.credits * 500).toLocaleString()}</span>
+      <span class="pill">TZS ${Number(s.price_tzs || 0).toLocaleString()}</span>
       <button onclick="runService('${s.id}')">▶ Tumia huduma</button>
     </div>`).join('');
 }
@@ -1182,24 +1284,6 @@ async function runService(id){
   document.getElementById('services_list').innerHTML =
     (d.ok? '✅ ' : '❌ ') + (d.summary || d.error || JSON.stringify(d)) +
     (d.needs_billing? ' — <b>Nunua subscription au ingiza hela: tab 💰 BILI</b>' : ' — akaunti: tab 💰 BILI');
-}
-async function creditsBalance(){
-  const a = document.getElementById('cr_account').value||'mteja1';
-  const d = await (await fetch(API+'/credits/'+encodeURIComponent(a))).json();
-  document.getElementById('credits_out').innerHTML = d.ok? `Salio la <b>${d.account}</b>: <b>${d.balance} credits</b>` : ('❌ '+(d.error||''));
-}
-async function creditsBuy(){
-  const a = document.getElementById('cr_account').value||'mteja1';
-  const c = parseInt(document.getElementById('cr_amount').value||'0');
-  const ref = document.getElementById('cr_ref').value||'';
-  const d = await (await fetch(API+'/credits/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:a,credits:c,ref_code:ref})})).json();
-  document.getElementById('credits_out').innerHTML = d.ok? `✅ <b>${a}</b> sasa ana <b>${d.balance} credits</b>` : ('❌ '+(d.error||''));
-}
-async function creditsLedger(){
-  const a = document.getElementById('cr_ledger_acc').value||'mteja1';
-  const d = await (await fetch(API+'/credits/'+encodeURIComponent(a)+'/ledger')).json();
-  const rows = (d.ledger||[]).map(l=>`<div>[${l.at}] ${l.delta>0?'+':''}${l.delta} (${l.reason}${l.service? ' · '+l.service:''}${l.ref? ' · '+l.ref:''}) → salio ${l.balance_after}</div>`).join('');
-  document.getElementById('credits_out').innerHTML = rows || 'Hakuna matumizi bado.';
 }
 async function setupOnboard(){
   const t = document.getElementById('ob_target').value;
@@ -1245,7 +1329,7 @@ loadJobs();
 discover();
 </script>
 <script>
-/* MTECH OS — ULINZI WA SOURCE (H7): huduma za ndani zisioneswe kwa mtumiaji wa kawaida */
+/* MTECH OS — ULINZI WA SOURCE: huduma za ndani zisioneswe kwa mtumiaji wa kawaida */
 (function(){
   document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
   document.addEventListener('keydown', function(e){
