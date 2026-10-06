@@ -89,6 +89,7 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#bili_card'">💰 BILI</button>
   <button onclick="location.hash='#repo_card'">📦 REPO</button>
   <button onclick="location.hash='#sec_card'">🛡️ CYBER</button>
+  <button onclick="location.hash='#tools_card'">🧰 TOOLS</button>
 </nav>
 
 <main>
@@ -633,6 +634,29 @@ details p{font-size:13px;color:#b2ebf2}
     </div>
   </div>
   <p class="meta" style="margin-top:6px">Maswali ya usalama: tab 🖥️ SOLUTIONS (AI chat) · Kudhibiti kompyuta kwa mbali: tab 🖥️ SOLUTIONS · Malipo: tab 💰 BILI.</p>
+</div>
+
+<!-- 🧰 TOOLS DASHBOARD — katalogi salama + RUN moja moja au BATCH (wakati mmoja) -->
+<div class="card" id="tools_card">
+  <h3>🧰 TOOLS DASHBOARD</h3>
+  <p class="hint">Zana zote za MTECH OS kwenye makundi 8. Chagua kazi → chagua kompyuta → RUN moja moja au kwa WAKATI MMOJA. Mteja haoni majina ya ndani ya zana — mfumo unachagua vyenyewe.</p>
+  <div class="row">
+    <select id="tl_cat" onchange="tlRender()" style="max-width:220px"><option value="">Makundi YOTE</option></select>
+    <input id="tl_search" placeholder="🔍 Tafuta kazi..." style="flex:1;min-width:140px" oninput="tlRender()"/>
+    <input id="tl_account" placeholder="Account" value="mteja1" style="max-width:120px"/>
+  </div>
+  <div id="tl_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px"></div>
+  <div class="row" style="margin-top:8px">
+    <input id="tl_target" placeholder="Kompyuta moja (mf. pc-01)" style="flex:1;min-width:180px"/>
+    <button onclick="tlRun()">▶ RUN (kompyuta 1)</button>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <input id="tl_targets" placeholder="Kompyuta nyingi (mf. pc-01,pc-02,pc-03) — WAKATI MMOJA" style="flex:1;min-width:220px"/>
+    <button onclick="tlBatch()" style="background:#34d399">🚀 RUN BATCH</button>
+  </div>
+  <div id="tl_out" class="pre" style="background:#0b1220;min-height:60px;margin-top:8px">&gt; </div>
+  <h4 style="margin-top:8px">KAZI ZILIZOTANGULIA (audit)</h4>
+  <div id="tl_runs" class="meta">Hakuna kazi bado.</div>
 </div>
 
 </main>
@@ -1445,6 +1469,74 @@ async function secLoad(acc){
     `<div>[${escHtml(String(c.at||'').slice(0,16))}] ${escHtml(c.target)} · ushahidi ${escHtml(String(c.evidence_hash||'').slice(0,16))}… · ${c.sealed? 'IMEFUNGWA 🔒':'WAZIMA'} · ${escHtml(c.sources||'')}</div>`).join('') || 'Hakuna kesi bado.';
 }
 window.addEventListener('load', ()=>{ secLoad(); });
+
+// ---------- TOOLS DASHBOARD (H12) ----------
+const TL = { cats: [], tools: [] };
+const TL_ICONS = { recon:'🔍', vuln:'🧪', exploit:'🛡️', wireless:'📶', password:'🔑', sniff:'📡', forensics:'🔬', system:'🖥️' };
+async function tlLoad(){
+  const d = await (await fetch(API+'/api/toolkit/catalog')).json();
+  TL.cats = d.categories || [];
+  TL.tools = TL.cats.flatMap(c => (c.tools||[]).map(t => Object.assign({}, t, { category: c.id, cat_name: c.name_sw })));
+  const sel = document.getElementById('tl_cat');
+  sel.innerHTML = '<option value="">Makundi YOTE</option>' + TL.cats.map(c => `<option value="${escAttr(c.id)}">${TL_ICONS[c.id]||'🧰'} ${escHtml(c.name_sw)} (${c.count})</option>`).join('');
+  tlRender(); tlRuns();
+}
+function tlRender(){
+  const cat = document.getElementById('tl_cat').value;
+  const q = (document.getElementById('tl_search').value||'').toLowerCase();
+  const el = document.getElementById('tl_grid');
+  el.innerHTML = TL.tools.filter(t =>
+    (!cat || t.category === cat) && (t.name_sw||'').toLowerCase().includes(q)
+  ).map(t => `
+    <div class="card" style="margin:0;text-align:center;padding:8px">
+      <div style="font-size:26px">${TL_ICONS[t.category]||'🧰'}</div>
+      <div style="font-weight:700;font-size:13px">${escHtml(t.name_sw)}</div>
+      <div class="meta" style="font-size:11px">${escHtml(t.cat_name||'')}</div>
+      <button class="sec" style="width:100%;margin-top:6px" onclick="tlPick('${escAttr(t.id)}')">CHAGUA</button>
+    </div>`).join('') || '<span class="meta">Hakuna kazi inayopatana na utafutaji.</span>';
+}
+let TL_SELECTED = '';
+function tlPick(id){
+  TL_SELECTED = id;
+  const t = TL.tools.find(x => x.id === id);
+  document.getElementById('tl_out').innerHTML += `&gt; [CHAGUA] ${escHtml(t? t.name_sw : id)} — sasa RUN au RUN BATCH<br/>&gt; `;
+}
+async function tlRun(){
+  if (!TL_SELECTED) { alert('Chagua kazi kwanza (CHAGUA)'); return; }
+  const target = document.getElementById('tl_target').value.trim();
+  const acc = document.getElementById('tl_account').value || 'mteja1';
+  if (!target) { alert('Weka kompyuta moja'); return; }
+  const d = await (await fetch(API+'/api/toolkit/run', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:acc,tool:TL_SELECTED,target:target})})).json();
+  const el = document.getElementById('tl_out');
+  el.innerHTML += d.ok
+    ? `&gt; [OK] ${escHtml(d.name_sw||'')} → ${escHtml(d.target||'')} (${d.lines||0} mstari, ${d.duration_ms||0}ms)<br/>${escHtml(String(d.summary||'')).slice(0,400)}<br/>&gt; `
+    : `&gt; [ERROR] ${escHtml(d.error||'')}${d.needs_billing? ' — ona tab 💰 BILI':''}<br/>&gt; `;
+  el.scrollTop = el.scrollHeight;
+  tlRuns();
+}
+async function tlBatch(){
+  if (!TL_SELECTED) { alert('Chagua kazi kwanza (CHAGUA)'); return; }
+  const targets = (document.getElementById('tl_targets').value||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const acc = document.getElementById('tl_account').value || 'mteja1';
+  if (!targets.length) { alert('Weka kompyuta nyingi (mf. pc-01,pc-02)'); return; }
+  const d = await (await fetch(API+'/api/toolkit/batch', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({account:acc,tool:TL_SELECTED,targets:targets})})).json();
+  const el = document.getElementById('tl_out');
+  if (d.ok) {
+    el.innerHTML += `&gt; [BATCH] ${escHtml(d.tool||'')} — kompyuta ${d.count}, mafanikio ${d.success} (WAKATI MMOJA)<br/>` +
+      (d.results||[]).map(r => `&nbsp;&nbsp;· ${escHtml(r.target||'')}: ${r.ok? '✅':'❌'} ${escHtml(String(r.summary||r.error||'')).slice(0,120)}`).join('<br/>') + '<br/>&gt; ';
+  } else {
+    el.innerHTML += `&gt; [ERROR] ${escHtml(d.error||'')}${d.needs_billing? ' — ona tab 💰 BILI':''}<br/>&gt; `;
+  }
+  el.scrollTop = el.scrollHeight;
+  tlRuns();
+}
+async function tlRuns(){
+  const d = await (await fetch(API+'/api/toolkit/runs')).json().catch(()=>null);
+  if (!d || !d.ok) return;
+  document.getElementById('tl_runs').innerHTML = (d.runs||[]).map(r =>
+    `<div>[${escHtml(String(r.at||'').slice(0,16))}] ${escHtml(r.tool)} → ${escHtml(r.target)} · ${r.ok? '✅':'❌'} · ${r.duration_ms}ms</div>`).join('') || 'Hakuna kazi bado.';
+}
+window.addEventListener('load', ()=>{ tlLoad(); });
 </script>
 <script>
 /* MTECH OS — ULINZI WA SOURCE: huduma za ndani zisioneswe kwa mtumiaji wa kawaida */

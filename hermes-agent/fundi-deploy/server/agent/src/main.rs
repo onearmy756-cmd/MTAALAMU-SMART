@@ -45,6 +45,7 @@ mod netmgmt;
 mod vpn;
 mod pfsense;
 mod secops;
+mod toolkit;
 mod wol;
 
 use axum::{
@@ -122,6 +123,7 @@ async fn main() -> anyhow::Result<()> {
     language::init_tables(&db).await;
     company::init_tables(&db).await;
     secops::init_tables(&db).await;
+    toolkit::init_tables(&db).await;
 
     // NEURALIS BRAIN (H5b): SQLite + LanceDB-compatible vector store (cosine semantic search)
     let brain = Arc::new(brain::Brain::new(db.clone(), "/data"));
@@ -251,6 +253,10 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/secops/start", post(secops_start))
         .route("/api/secops/result", post(secops_result))
         .route("/api/secops/summary/:account", get(secops_summary))
+        .route("/api/toolkit/catalog", get(toolkit_catalog))
+        .route("/api/toolkit/run", post(toolkit_run))
+        .route("/api/toolkit/batch", post(toolkit_batch))
+        .route("/api/toolkit/runs", get(toolkit_runs))
         .route("/api/quote", post(quote_post))
         .route("/api/react/start", post(react_start))
         .route("/api/react/sweep", post(react_sweep))
@@ -1821,4 +1827,71 @@ async fn secops_result(State(s): State<AppState>, Json(mut r): Json<SecOpsResult
 
 async fn secops_summary(State(s): State<AppState>, Path(account): Path<String>) -> Json<serde_json::Value> {
     Json(secops::summary(&s.db, &account).await)
+}
+
+// ---------- TOOLKIT LAYER (H12) — registry + executor + batch wakati mmoja ----------
+
+#[derive(serde::Deserialize)]
+struct ToolkitRunReq {
+    account: String,
+    tool: String,
+    target: String,
+}
+
+async fn toolkit_run(State(s): State<AppState>, Json(r): Json<ToolkitRunReq>) -> Json<serde_json::Value> {
+    // BILI GATE: zana za mfumo (system/*) ni bure kwa wateja wa subscription;
+    // nyingine = scan (malware_scan TZS 2,000) au forensic (digital_forensic TZS 25,000)
+    let bill_key = if r.tool.starts_with("system") { "health_check" } else if r.tool.starts_with("forensic") { "digital_forensic" } else { "malware_scan" };
+    match billing::authorize(&s.db, &r.account, bill_key, 1).await {
+        Ok(_) => {}
+        Err(e) => return Json(json!({ "ok": false, "error": e, "needs_billing": true })),
+    }
+    let out = toolkit::run_single(&s.db, toolkit::BatchJob {
+        tool: r.tool, targets: vec![r.target], account: r.account.clone(),
+    }).await;
+    if out["ok"] == serde_json::Value::Bool(true) {
+        let bk = if out["tool"].as_str().unwrap_or("").starts_with("forensic") { "digital_forensic" } else { "malware_scan" };
+        let refc = format!("tool-{}", Uuid::new_v4());
+        let _ = billing::charge(&s.db, &r.account, bk, 1, &refc).await;
+    }
+    Json(out)
+}
+
+#[derive(serde::Deserialize)]
+struct ToolkitBatchReq {
+    account: String,
+    tool: String,
+    targets: Vec<String>,
+}
+
+async fn toolkit_batch(State(s): State<AppState>, Json(r): Json<ToolkitBatchReq>) -> Json<serde_json::Value> {
+    let targets: Vec<String> = r.targets.iter().map(|t| t.trim().to_string()).filter(|t| !t.is_empty()).collect();
+    if targets.is_empty() {
+        return Json(json!({ "ok": false, "error": "chagua kompyuta angalau moja" }));
+    }
+    let bill_key = if r.tool.starts_with("system") { "health_check" } else if r.tool.starts_with("forensic") { "digital_forensic" } else { "malware_scan" };
+    match billing::authorize(&s.db, &r.account, bill_key, targets.len()).await {
+        Ok(_) => {}
+        Err(e) => return Json(json!({ "ok": false, "error": e, "needs_billing": true })),
+    }
+    let tool_id = r.tool.clone();
+    let out = toolkit::run_batch(&s.db, toolkit::BatchJob { tool: r.tool, targets, account: r.account.clone() }).await;    let okc = out.iter().filter(|o| o["ok"] == serde_json::Value::Bool(true)).count();
+    if okc > 0 {
+        let bk = if tool_id.starts_with("forensic") { "digital_forensic" } else { "malware_scan" };
+        let refc = format!("toolb-{}", Uuid::new_v4());
+        let _ = billing::charge(&s.db, &r.account, bk, okc, &refc).await;
+    }
+    Json(json!({
+        "ok": true, "tool": tool_id, "results": out, "count": out.len(), "success": okc,
+        "note_sw": "Kazi zinaendeshwa kwa WAKATI MMOJA kwenye kompyuta zote.",
+    }))
+}
+
+async fn toolkit_catalog(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let _ = &s.db;
+    Json(toolkit::catalog_json(None))
+}
+
+async fn toolkit_runs(State(s): State<AppState>) -> Json<serde_json::Value> {
+    Json(toolkit::runs_json(&s.db).await)
 }

@@ -279,3 +279,32 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
 - **White-label**: dashboard haina majina ya zana wala bandari — majina salama
   ya Kiswahili tu ("Uchunguzi wa usalama", "Uchunguzi wa kidijitali",
   "Mashambulizi yaliyozuiwa").
+
+## H12 ✅ — TOOLKIT LAYER (registry + executor + batch wakati mmoja + API + dashboard)
+
+- **Architecture kama mpango (SEHEMU 1–8)**: Rust CORE inabeba kila kitu —
+  toolkit.rs mpya ina REGISTRY (zana 34 katika makundi 8), EXECUTOR (arg-array
+  salama, HAKUNA shell, timeout 60s, matokeo yanapita sanitize_output), BATCH
+  (tokio::spawn kwa kila kompyuta — WAKATI MMOJA halisi), na AUDIT (tool_runs
+  DB — kila utekelezaji unaandikwa).
+- **Makundi 8 (majina SALAMA ya Kiswahili)**: Uchunguzi wa Mtandao (5) ·
+  Udhaifu (3) · Upimaji wa Usalama (3) · Wi-Fi (2) · Nywila (3) · Trafiki (3) ·
+  Uchanganuzi wa Kidijitali (10) · Huduma za Mfumo (5) = **zana 34**
+  (SEHEMU 8.2 kamili: recon/vuln/exploit/wireless/password/sniff/forensics).
+- **KANUNI YA SIRI (mmiliki)**: katalogi ya umma (`/api/toolkit/catalog`)
+  inarudisha id + jina la Kiswahili + kundi PEKEE. **Test inathibitisha:
+  binaries 33+ na args za siri (nmap, msfconsole, hashcat, ...) HAZIPATIKANI
+  kwenye katalogi wala matokeo.** Binaries/args ni `&'static` ndani ya Rust.
+- **API**: `GET /api/toolkit/catalog` · `POST /api/toolkit/run` (kompyuta 1) ·
+  `POST /api/toolkit/batch` (kompyuta NYYINGI kwa wakati mmoja) ·
+  `GET /api/toolkit/runs` (audit 30 za mwisho). BILI gate: system/* =
+  health_check, forensic/* = digital_forensic TZS 25,000, nyingine =
+  malware_scan TZS 2,000; charge kwa mafanikio tu (batch: idadi ya mafanikio).
+- **UI (🧰 TOOLS)**: makundi + grid ya kazi (CHAGUA) + RUN (1) + RUN BATCH
+  (wakati mmoja, matokeo kila kompyuta) + terminal + audit ya kazi
+  zilizotangulia.
+- **Usalama wa utekelezaji**: kikomo cha kasi (`--max-rate=1000`) kwa zana za
+  kasi kubwa; valid_target kwenye kila target (hakuna injection); root
+  inaendesha kwa sudo tu kwenye server ya mmiliki.
+- **Tests 6 mpya** (registry 34/8, catalog BILA vuja, rate caps, parse, audit
+  DB, batch 3 kompyuta) — jumla **118/118**.
