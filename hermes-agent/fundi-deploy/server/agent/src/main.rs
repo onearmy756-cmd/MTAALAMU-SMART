@@ -245,6 +245,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/bundles", post(bundles_add))
         .route("/api/bundles/:id", axum::routing::delete(bundles_delete))
         .route("/api/bundles/apps", get(bundles_apps))
+        .route("/api/bundles/distribute", post(bundles_distribute))
         .route("/api/quote", post(quote_post))
         .route("/api/react/start", post(react_start))
         .route("/api/react/sweep", post(react_sweep))
@@ -1648,5 +1649,67 @@ async fn billing_prices() -> Json<serde_json::Value> {
         "pay_per_use_tzs": { "scan": billing::PAYG_SCAN_TZS, "repair": billing::PAYG_REPAIR_TZS, "os_install": billing::PAYG_OS_INSTALL_TZS, "app_install": billing::PAYG_APP_INSTALL_TZS, "forensic": billing::PAYG_FORENSIC_TZS, "netmgmt": billing::PAYG_NETMGMT_TZS },
         "volume_discount": { "10+": "10%", "50+": "20%" },
         "note_sw": "Subscription = huduma ZOTE kwa mwezi kwa kila kifaa. Pay-per-use = ulipa kazi uliyofanyika. Zote zinatumia wallet (ClickPesa/benki)."
+    }))
+}
+
+// ---------- BUNDLE REPOSITORY: DISTRIBUTE (H10) ----------
+
+#[derive(serde::Deserialize)]
+struct BundleDistributeReq {
+    bundle: String,
+    targets: Vec<String>,
+    account: String,
+    /// os ya kifaa (win11/ubuntu/kali…) — inatumika kwenye install commands
+    #[serde(default = "default_os")]
+    os: String,
+}
+
+fn default_os() -> String { "win11".into() }
+
+async fn bundles_distribute(State(s): State<AppState>, Json(r): Json<BundleDistributeReq>) -> Json<serde_json::Value> {
+    if r.targets.is_empty() {
+        return Json(json!({ "ok": false, "error": "chagua kompyuta angalau moja" }));
+    }
+    // BILI GATE: subscription inatosha; vinginevyo app_install × targets kutoka salio
+    match billing::authorize(&s.db, &r.account, "app_install", r.targets.len()).await {
+        Ok(_) => {}
+        Err(e) => return Json(json!({ "ok": false, "error": e, "needs_billing": true })),
+    }
+    // Thibitisha bundle ipo (katalogi halisi ya Rust)
+    let bundle = match bundles::find_bundle(&r.bundle) {
+        Some(b) => b,
+        None => return Json(json!({ "ok": false, "error": format!("bundle '{}' haipo kwenye repository", r.bundle) })),
+    };
+    // Unda kazi za distribusheni (HITL — needs_approval) kwa kila target
+    let mut jobs = s.jobs.write().await;
+    let mut ids = Vec::new();
+    for name in &r.targets {
+        let id = Uuid::new_v4().to_string();
+        jobs.push(Job {
+            id: id.clone(),
+            device_mac: String::new(),
+            device_name: name.clone(),
+            os_type: r.os.clone(),
+            status: "queued".into(),
+            stage: format!("bundle:{}", bundle.id),
+            progress: 0,
+            message: format!("Distribution ya '{}' inasubiri idhini (HITL)", bundle.name_sw),
+            needs_approval: true,
+            image: None,
+            multicast: false,
+        });
+        ids.push(id);
+    }
+    drop(jobs);
+    // Chaji pay-per-use BAADA ya kazi kuundwa (subscription haijachaji)
+    let refc = format!("dist-{}", uuid::Uuid::new_v4());
+    let bal = billing::charge(&s.db, &r.account, "app_install", r.targets.len(), &refc).await.unwrap_or(0);
+    Json(json!({
+        "ok": true,
+        "jobs": ids,
+        "count": ids.len(),
+        "bundle": bundle.name_sw,
+        "balance_tzs": bal,
+        "note_sw": "Kazi zimesubiri RUHUSU (HITL) kwenye tab Jobs — agent inasakinisha apps kwa wakati mmoja baada ya idhini."
     }))
 }

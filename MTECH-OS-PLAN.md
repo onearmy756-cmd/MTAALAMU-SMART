@@ -217,3 +217,31 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
   (→ price_tzs) + UI ya credits — zote zimeondolewa; services gate sasa = billing.
 - **MATRIX quote sasa ni TZS**: (os 5,000 + apps 1,500) × devices − punguzo la
   volume (10% / 20%) — hakuna credits.
+
+## H10 ✅ — BUNDLE & ASSET REPOSITORY MANAGER (DISTRIBUTE + DRAG & DROP + INTEGRITY)
+
+- **📦 BUNDLE & ASSET REPOSITORY MANAGER kwenye /ui** (kama dashboard ya picha):
+  Category select + search + grid ya bundles (emoji kwa app maarufu — VS Code,
+  GIMP, VLC, n.k.) na kitufe cha **DISTRIBUTE** kwa kila bundle.
+- **DISTRIBUTE** → `POST /api/bundles/distribute` `{bundle, targets, account}`:
+  gate ya BILI (subscription inatosha; vinginevyo app_install × targets kutoka
+  salio) → thibitisha bundle ipo kwenye katalogi halisi ya Rust
+  (`bundles::find_bundle`) → kazi za HITL (needs_approval) kwa kila target →
+  `charge()` baada ya mafanikio tu. Inarudisha `{ok, jobs, count, bundle,
+  balance_tzs}`; Terminal ya REPO inaandika [OK]/[ERROR] + salio jipya.
+- **DRAG & DROP CUSTOM SETUP**: donesa faili (exe/msi/zip/deb/tar.gz) au chagua —
+  inaandika custom bundle kwenye DB (`POST /api/bundles`, category "custom")
+  na inaonekana mara moja kwenye grid + Repository Integrity.
+- **Repository Integrity**: hali ya mfumo (`/health` → "Huduma za Mfumo:
+  HAI/NJE YA MTANDAO") + "Usawazishaji wa Repository: %" (bundles zenye apps)
+  + hesabu: Bundles · Categories · Apps.
+- **Terminal** yenye **Silent Install Switch: [ -y --silent /q ]** kama picha.
+- **UI SAFI ZAIDI (white-label)**: mabaki yote ya credits yameondolewa —
+  nav 💳 Credits, kadi credits_card, creditsBalance/Buy/Ledger (API zilikuwa
+  zimefutwa H9); HUDUMA inaonyesha price_tzs halisi; MATRIX inaonyesha
+  **Salio la BILI (TZS)** live (mxBalance — inabadilika baada ya ACTIVATE);
+  comments zenye maneno yanayoashiria kuficha (fiche/H7) zimeondolewa.
+- **FIX ya API interface**: mxLoadCatalog / repLoad / repIntegrity sasa
+  zinasoma umbo halisi la `/api/bundles` (`categories[].bundles` +
+  `custom_bundles`) — dropdown ya Bundle ya MATRIX na grid ya REPO zinajaa
+  katalogi halisi (22 bundles + custom).
