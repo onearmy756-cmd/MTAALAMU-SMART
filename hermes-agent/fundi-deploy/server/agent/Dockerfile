@@ -3,7 +3,8 @@ WORKDIR /app
 COPY Cargo.toml ./
 RUN mkdir src && echo 'fn main(){}' > src/main.rs && cargo build --release || true
 COPY src ./src
-RUN touch src/main.rs && cargo build --release
+RUN touch src/main.rs && cargo build --release || true
+RUN cargo build --release
 
 FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates wakeonlan arp-scan python3 wireguard-tools iproute2 iptables \

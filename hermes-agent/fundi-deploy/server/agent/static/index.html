@@ -74,6 +74,8 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#osi_card'">💿 OS INSTALL (Remote)</button>
   <button onclick="location.hash='#agent_card'">🧠 Agent</button>
   <button onclick="location.hash='#vpn_card'">🔒 VPN</button>
+  <button onclick="location.hash='#bundles_card'">📦 Bundles</button>
+  <button onclick="location.hash='#react_card'">🤖 Agentic AI</button>
 </nav>
 
 <main>
@@ -211,6 +213,41 @@ details p{font-size:13px;color:#b2ebf2}
   </div>
   <div id="vpn_result" class="meta" style="margin-top:8px">—</div>
   <div id="vpn_peers" style="margin-top:6px"></div>
+</div>
+
+<!-- BUNDLES + PRICING (admin) -->
+<div class="card" id="bundles_card">
+  <h3>📦 BUNDLES ZA APPS (categories 8 · bundles 20+) + BEI PER-PC</h3>
+  <p class="hint">Chagua PC → chagua apps (au <b>Install All Apps</b>) → mfumo unakokotoa bei (TZS) → lipa (ClickPesa/Bank/M-Pesa) → activate. Admin: ongeza bundles yako mwenyewe.</p>
+  <div class="row">
+    <button class="sec" onclick="loadBundles()">🔄 Pakia catalog (Rust)</button>
+    <input id="quote_plan" placeholder="plan: pay_per_use | subscription" style="max-width:220px" value="pay_per_use"/>
+    <input id="quote_pcs" type="number" min="1" placeholder="PCs" style="max-width:90px" value="1"/>
+    <input id="quote_os" placeholder="OS: win11/ubuntu/kali" style="max-width:160px" value="win11"/>
+    <button onclick="getQuote()">💰 Kokotoa bei</button>
+  </div>
+  <div id="quote_result" class="meta" style="margin-top:8px">—</div>
+  <div id="bundles_cat" style="margin-top:10px"></div>
+  <div class="row" style="margin-top:12px">
+    <input id="cb_id" placeholder="id: my-bundle" style="max-width:150px"/>
+    <input id="cb_name" placeholder="Jina (sw): Bundle ya Ofisi" style="flex:1;min-width:170px"/>
+    <input id="cb_cat" placeholder="category: office" style="max-width:140px"/>
+    <input id="cb_apps" placeholder="app ids: chrome,vscode,7zip" style="flex:1;min-width:180px"/>
+    <button onclick="addCustomBundle()">➕ Ongeza bundle (admin)</button>
+  </div>
+  <div id="cb_result" class="meta" style="margin-top:6px"></div>
+  <div id="custom_bundles" style="margin-top:6px"></div>
+</div>
+
+<!-- AGENTIC AI (ReAct) -->
+<div class="card" id="react_card">
+  <h3>🤖 AGENTIC AI — ReAct (THINK → ACT → OBSERVE) + bounded autonomy</h3>
+  <p class="hint">Andika tatizo (mfano "Wi-Fi haifanyi kazi") → agent ina-fanya ping sweep halisi (low-risk, automatic) → inaamua PCs zenye tatizo. Install/Reboot = lazima RUHUSU yako.</p>
+  <div class="row">
+    <input id="react_problem" placeholder="Tatizo: Wi-Fi haifanyi kazi" style="flex:1;min-width:200px"/>
+    <button onclick="reactSweep()">▶ Anza ReAct (sweep halisi)</button>
+  </div>
+  <div id="react_result" style="margin-top:10px">—</div>
 </div>
 
 <div class="card" id="card_images" style="display:none"><h3>💾 Images za OS</h3><div id="images">—</div></div>
@@ -425,6 +462,56 @@ async function vpnScan(){
   document.getElementById('vpn_result').innerHTML = `<b>Alive juu ya VPN: ${d.hosts_alive}</b><br/><small>${d.note_sw}</small><br/>${rows}`;
 }
 
+// ---------- BUNDLES + QUOTE + CUSTOM (admin) ----------
+async function loadBundles(){
+  const d = await (await fetch(API+'/api/bundles')).json();
+  document.getElementById('bundles_cat').innerHTML = (d.categories||[]).map(c=>
+    `<div style="margin:8px 0"><b>${c.icon} ${c.name_sw}</b> <span class="meta">(${c.id})</span>` +
+    (c.bundles||[]).map(b=>
+      `<div style="margin:4px 0;padding-left:14px">📦 <b>${b.name_sw}</b> <span class="meta">${b.id} — ${b.description}</span>` +
+      (b.apps||[]).map(a=>` <span class="badge info" style="font-size:10px">${a.name}${a.critical?' ★':''}</span>`).join('') + `</div>`
+    ).join('') + `</div>`
+  ).join('') + `<div class="meta">Jumla: ${d.total_bundles} bundles (Rust catalog)</div>`;
+  document.getElementById('custom_bundles').innerHTML = (d.custom_bundles||[]).length
+    ? '<b>Bundles za admin:</b>' + d.custom_bundles.map(b=>`<div>🧩 <b>${b.name_sw}</b> (${b.id}) — ${b.category} · apps: ${b.app_ids.join(', ')} · ${b.created_by} <button class="danger" style="padding:1px 8px;font-size:10px" onclick="delBundle('${b.id}')">✕</button></div>`).join('')
+    : '<span class="meta">Hakuna custom bundles bado.</span>';
+}
+async function getQuote(){
+  const body = { plan: v('quote_plan')||'pay_per_use', pcs: parseInt(v('quote_pcs'))||1, os: v('quote_os')||'win11', critical_apps: 2, apps_count: 4 };
+  const d = await (await fetch(API+'/api/quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+  document.getElementById('quote_result').innerHTML = d.ok ?
+    `💰 <b style="color:#00e676;font-size:16px">${d.quote.currency} ${d.quote.total_tzs.toLocaleString()}</b> — ${d.quote.plan} · PCs ${d.quote.pcs} · ${d.quote.os}` +
+    (d.quote.discount_pct?` <span class="ok">(-${d.quote.discount_pct}%)</span>`:'') + `<br/><small>${d.quote.note_sw}</small>` :
+    `❌ ${d.error}`;
+}
+async function addCustomBundle(){
+  const app_ids = v('cb_apps').split(',').map(s=>s.trim()).filter(Boolean);
+  const d = await (await fetch(API+'/api/bundles',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:v('cb_id'),name_sw:v('cb_name'),description:'Bundle ya admin',category:v('cb_cat'),app_ids,created_by:'admin (dashboard)'})})).json();
+  document.getElementById('cb_result').innerHTML = d.ok ? `✅ Bundle <b>${d.bundle.id}</b> imeongezwa (apps ${d.bundle.app_ids.length})` : `❌ ${d.error}`;
+  loadBundles();
+}
+async function delBundle(id){
+  await fetch(API+'/api/bundles/'+encodeURIComponent(id),{method:'DELETE'});
+  loadBundles();
+}
+
+// ---------- AGENTIC AI (ReAct) ----------
+async function reactSweep(){
+  const problem = v('react_problem')||'Tatizo la mtandao';
+  document.getElementById('react_result').innerHTML = '⏳ THINK → ACT (ping sweep halisi /24)…';
+  const d = await (await fetch(API+'/api/react/sweep',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({problem,targets:[]})})).json();
+  if(!d.ok){ document.getElementById('react_result').innerHTML = `❌ ${d.error||'imeshindikana'}`; return; }
+  const s = d.session;
+  document.getElementById('react_result').innerHTML =
+    `<b>${s.id}</b> — status: ${s.status}<br/>` +
+    (s.steps||[]).map(st=>{
+      const color = st.kind==='think'?'#00e5ff':st.kind==='act'?'#ffc107':'#00e676';
+      return `<div style="border-left:3px solid ${color};padding:4px 8px;margin:4px 0;background:#0a1628"><small style="color:${color}">${st.kind.toUpperCase()}${st.action?' · '+st.action+' ('+st.risk+', approved='+st.approved+')':''}</small><br/>${st.thought_sw||st.observation}</div>`;
+    }).join('') +
+    `<small class="meta">Alive: ${(d.alive||[]).join(', ')||'—'} · ${d.note_sw}</small>`;
+}
+
 // ---------- REMOTE OS INSTALL ----------
 async function osiLoadBundles(){
   const d = await (await fetch(API+'/osinstall/bundles')).json();
@@ -472,6 +559,7 @@ async function osiSessions(){
 }
 osiLoadBundles();
 vpnStatus();
+loadBundles();
 setInterval(()=>{ if(document.getElementById('osi_sessions')) osiSessions(); }, 4000);
 osiSessions();
 setInterval(loadJobs, 3000);

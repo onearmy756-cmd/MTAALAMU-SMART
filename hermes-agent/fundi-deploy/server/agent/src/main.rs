@@ -8,6 +8,7 @@
 
 mod ai;
 mod backup;
+mod bundles;
 mod cloud;
 mod discover;
 mod hardware;
@@ -18,6 +19,8 @@ mod namer;
 mod orchestrator;
 mod osselect;
 mod pipeline;
+mod pricing;
+mod reacon;
 mod remote;
 mod report;
 mod vpn;
@@ -85,6 +88,7 @@ async fn main() -> anyhow::Result<()> {
     }
     cloud::init_tables(&db).await;
     vpn::init_tables(&db).await;
+    bundles::init_tables(&db).await;
 
     // Seed agents 10 (agentic vision)
     let agents: [(&str, &str); 10] = [
@@ -197,6 +201,14 @@ async fn main() -> anyhow::Result<()> {
         // Multicast ACK board
         .route("/api/mc/ack", post(mc_ack))
         .route("/api/mc/status", get(mc_status))
+        // BUNDLES + PRICING + REACT (SEHEMU 2/3/13 — code kwa Rust)
+        .route("/api/bundles", get(bundles_list))
+        .route("/api/bundles", post(bundles_add))
+        .route("/api/bundles/:id", axum::routing::delete(bundles_delete))
+        .route("/api/bundles/apps", get(bundles_apps))
+        .route("/api/quote", post(quote_post))
+        .route("/api/react/start", post(react_start))
+        .route("/api/react/sweep", post(react_sweep))
         // WIREGUARD VPN (P4) — kazi zote za mbali kupitia wg0
         .route("/api/vpn/init", post(vpn_init))
         .route("/api/vpn/status", get(vpn_status))
@@ -617,6 +629,111 @@ async fn osi_bundles() -> Json<serde_json::Value> {
 
 async fn report_meta() -> Json<serde_json::Value> {
     Json(report::report_meta())
+}
+
+// ---------- Bundles + Pricing + ReAct (Rust logic) ----------
+
+async fn bundles_list(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let cat = bundles::catalog();
+    let custom = bundles::list_custom_bundles(&s.db).await;
+    Json(json!({
+        "categories": bundles::Category::all().iter().map(|c| json!({
+            "id": c.id(), "name_sw": c.name_sw(), "icon": c.icon(),
+            "bundles": cat.iter().filter(|b| b.category == *c).map(|b| json!({
+                "id": b.id, "name_sw": b.name_sw, "description": b.description,
+                "apps": b.apps.iter().map(|ap| json!({ "id": ap.id, "name": ap.name, "critical": ap.critical }))
+                    .collect::<Vec<_>>(),
+            })).collect::<Vec<_>>(),
+        })).collect::<Vec<_>>(),
+        "total_bundles": cat.len(),
+        "custom_bundles": custom,
+    }))
+}
+
+async fn bundles_apps() -> Json<serde_json::Value> {
+    Json(json!({ "apps": bundles::catalog().into_iter().flat_map(|b| b.apps)
+        .map(|ap| json!({ "id": ap.id, "name": ap.name, "critical": ap.critical }))
+        .collect::<Vec<_>>() }))
+}
+
+#[derive(serde::Deserialize)]
+struct BundleAddReq {
+    id: String,
+    name_sw: String,
+    #[serde(default)]
+    description: String,
+    category: String,
+    app_ids: Vec<String>,
+    #[serde(default = "default_creator")]
+    created_by: String,
+}
+fn default_creator() -> String {
+    "admin (dashboard)".into()
+}
+
+async fn bundles_add(State(s): State<AppState>, Json(r): Json<BundleAddReq>) -> Json<serde_json::Value> {
+    match bundles::add_custom_bundle(&s.db, &r.id, &r.name_sw, &r.description, &r.category, r.app_ids, &r.created_by).await {
+        Ok(b) => Json(json!({ "ok": true, "bundle": b })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn bundles_delete(State(s): State<AppState>, Path(id): Path<String>) -> Json<serde_json::Value> {
+    let ok = bundles::remove_custom_bundle(&s.db, &id).await;
+    Json(json!({ "ok": ok, "id": id }))
+}
+
+#[derive(serde::Deserialize)]
+struct QuoteReq {
+    plan: String,
+    pcs: usize,
+    os: String,
+    #[serde(default)]
+    critical_apps: usize,
+    #[serde(default)]
+    apps_count: usize,
+}
+
+async fn quote_post(Json(r): Json<QuoteReq>) -> Json<serde_json::Value> {
+    let Some(plan) = pricing::Plan::from_id(&r.plan) else {
+        return Json(json!({ "ok": false, "error": "plan ni pay_per_use au subscription" }));
+    };
+    Json(json!({ "ok": true, "quote": pricing::quote(plan, r.pcs, &r.os, r.critical_apps, r.apps_count) }))
+}
+
+#[derive(serde::Deserialize)]
+struct ReactStartReq {
+    problem: String,
+    #[serde(default)]
+    targets: Vec<String>,
+}
+
+async fn react_start(Json(r): Json<ReactStartReq>) -> Json<serde_json::Value> {
+    let mut sess = reacon::ReActSession::new(&r.problem, r.targets);
+    sess.think_plan();
+    Json(json!({ "ok": true, "session": sess }))
+}
+
+#[derive(serde::Deserialize)]
+struct ReactSweepReq {
+    problem: String,
+    targets: Vec<String>,
+}
+
+async fn react_sweep(Json(r): Json<ReactSweepReq>) -> Json<serde_json::Value> {
+    // THINK → ACT (ping sweep halisi /24, low-risk) → OBSERVE
+    let cfg = vpn::Config::load();
+    let (a, b, c) = cfg.subnet_base();
+    let alive = reacon::ping_sweep((a, b, c), 400).await;
+    let mut sess = reacon::ReActSession::new(&r.problem, r.targets);
+    sess.think_plan();
+    sess.observe_sweep(&alive);
+    Json(json!({
+        "ok": true,
+        "session": sess,
+        "alive": alive,
+        "note_sw": "ReAct THINK→ACT→OBSERVE: sweep ni low-risk (automatic). Install/reboot zinahitaji RUHUSU (bounded autonomy)."
+    }))
 }
 
 // ---------- WireGuard VPN (P4) ----------

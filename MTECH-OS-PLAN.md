@@ -2,99 +2,104 @@
 ### Bila EXE · Rust inabeba kila kitu · Docker kwenye server · Kazi za mbali = WireGuard
 ### Mbilinyi Tech — Umiliki ni wako, leseni ni yako, faida ni yako
 
-> Iliyosasishwa: 2026-10-06. Inafuata maelezo yote ya mmiliki (SEHEMU 1–13) + Agentic AI
-> (ReAct loop + bounded autonomy/HITL). Kila HATUA ina deliverables halisi + file paths.
+> Iliyosasishwa: 2026-10-06.
+> **KANUNI MPYA YA MMILIKI:** Logic iko kwenye **RUST** (structs, enums, functions, match arms) —
+> SI kila kitu data-driven. JSON inabaki tu kwa config nyepesi (subnet VPN, endpoint, mtu wa malipo).
+> Kila SEHEMU ya maelezo ya mmiliki ina HATUA zake, kila HATUA ina msimbo wa Rust + files halisi.
 
 ---
 
-## JUKWAA LA ARCHITECTURE (SEHEMU 1) — kanuni zisizokiukwa
-
-| Sehemu | Engine | Hali |
+## SEHEMU 1 — ARCHITECTURE (Kanuni + Engines)
+Kanuni: HAKUNA EXE · Rust core inabeba kila kitu · Docker deployment · offline+online ·
+custom AI API inaruhusiwa · leseni ya Mbilinyi Tech.
+| Engine | Lugha | Hali |
 |---|---|---|
-| Core Engine | **Rust** (inabeba mfumo mzima) | ✅ engine-rust + fundi-deploy agent |
-| Engine ya R | R (uchanganuzi, ripoti, statistics) | ✅ web-r + analytics-r |
-| LLM Engine | llama.cpp → **Qwen 2.5 3B VL** | ✅ Ollama (Qwen 2.5 VL) · llama.cpp server = HATUA 4 |
-| UI | **Tauri v2** | HATUA 3 (mtech-os/desktop) |
-| Server | Rust + **Docker** | ✅ fundi-deploy/server compose |
-| VPN | **WireGuard** | ✅ P4 (vpn.rs) |
-| AI Memory | **LanceDB** (vector search) | HATUA 4 (docker service + Rust client) |
-| Database | **SQLite** (agents, payments, transactions) | ✅ sqlx |
-| Firewall | pfSense | HATUA 4 (config + docs) |
-| IDS | Suricata | HATUA 4 (docker + config) |
-| SIEM | Wazuh | HATUA 4 (docker + config) |
-| Cybersecurity | Kali Linux tools (digital forensics, pentesting) | ✅ mtech-os/kali (ISO) |
+| Core Engine | Rust | ✅ fundi-deploy agent (axum, tokio, sqlx) |
+| Engine ya R | R | ✅ web-r (dashboard), analytics-r |
+| LLM Engine | llama.cpp → Qwen 2.5 3B VL | ✅ Ollama sasa · llama.cpp service = H4 |
+| UI | Tauri v2 | H3 (desktop shell, webview) |
+| VPN | WireGuard | ✅ vpn.rs (P4) |
+| AI Memory | LanceDB | H4 (Rust `lancedb` crate) |
+| Database | SQLite | ✅ sqlx |
+| Firewall/IDS/SIEM | pfSense / Suricata / Wazuh | H4 (containers + Rust wiring) |
+| Cybersecurity | Kali tools | ✅ mtech-os/kali ISO · forensics agent = H4 |
 
-**Kanuni za msingi:** HAKUNA EXE · Docker deployment · offline + online (mtu anaamua) ·
-API yako ya AI / custom model inaruhusiwa · leseni ya Mbilinyi Tech.
+## SEHEMU 2 — UI 1: OS AND APP INSTALLATION (Rust modules za kila hatua)
+| # | Mahitaji ya mmiliki | Rust module (SI JSON) | Hali |
+|---|---|---|---|
+| 2.1 | Discovery: IP + username + hostname (surge-ping/pnet/nmap) | `discover.rs` (TCP+ARP halisi) | ✅ · ping sweep = H3 |
+| 2.2 | Majina yanayofanana: user 1,2,3… kwa mpangilio wa PC | `namer.rs` (assign_names) | ✅ |
+| 2.3 | OS catalog: Kali, Windows 10/11/Server, Ubuntu + zingine; All Windows/All Ubuntu/All Kali | `catalog.rs` (enum Os::…) | H2 |
+| 2.4 | Bundles 20+ katika CATEGORIES (office, browsers, dev, comms, utilities, security, graphics, drivers) | `bundles.rs` (structs + `fn catalog()` — Rust structs, si JSON) | **H2 — INAFANYIKA SASA** |
+| 2.5 | Install All Apps / per-app / per-PC (PC mbali + apps zinazofanana) | `bundles.rs::DeploymentPlan` | **H2** |
+| 2.6 | Bei per-PC + ClickPesa/Bank/M-Pesa → activate kabla ya kazi | `pricing.rs` (fn price_for_pc) + clickpesa ✅ | **H2** |
+| 2.7 | Agents 100+; jina la user = kitambulisho cha agent per-PC | `orchestrator.rs` (100) + naming | ✅/H3 |
+| 2.8 | IP addressing automatic (dnsmasq) au manual per-PC | dhcp config + API field | ✅/H3 |
+| 2.9 | Recovery, Deepscan, Backup + zote za Fundi Deploy | backup.rs ✅ · deepscan.rs | ✅/H3 |
+
+## SEHEMU 3 — UI 2: COMPUTER SOLUTIONS (Rust)
+| # | Mahitaji | Rust module | Hali |
+|---|---|---|---|
+| 3.1 | Scan matatizo ya PC ZOTE kwa wakati mmoja (jina+tatizo → server kuu, ripoti per-PC) | orchestrator parallel + report.rs | ✅ |
+| 3.2 | Ruhusa (HITL) → solve kwa wakati mmoja → ripoti kwa admin | pipeline.rs HITL ✅ | ✅ |
+| 3.3 | Chat: andika tatizo/swali → agent inatua + inajibu | `chat.rs` (ReAct + LLM) | **H2 — INAFANYIKA SASA** |
+| 3.4 | Auto-daily scan offline → ripoti kwa admin → subiri ruhusa → solve | `auto_daily.rs` (tokio cron) | H3 |
+
+## SEHEMU 4 — DASHBOARD YA ADMIN (Rust API + UI)
+| # | Mahitaji | Rust module | Hali |
+|---|---|---|---|
+| 4.1 | Health ya kila PC, maendeleo ya OS, matatizo, predictive maintenance, brands, system info, disk | hardware.rs ✅ + `admin.rs` | H3 |
+| 4.2 | Remote PC zote (kupitia wg0) + chat + **kuongeza bundles kwa admin (hata wa mbali, notify)** | `bundles.rs` admin API | **H2** |
+| 4.3 | Admin mkuu anagawa kazi kwa wasaidizi | `admin.rs` (roles enum: Mkuu/Msaidizi) | H3 |
+| 4.4 | Dashboard ya kuongeza bundles za setup mbambali | UI + `POST /api/bundles` | **H2** |
+
+## SEHEMU 5 — REMOTE + WIREGUARD VPN
+| # | Mahitaji | Hali |
+|---|---|---|
+| 5.1 | Install OS/apps/drivers kwa wakati mmoja kwa mbali, nchi kwa nchi | ✅ vpn.rs + pipeline |
+| 5.2 | Notify wateja wa mbali; kazi zote kupitia wg0 | ✅ · notify = H3 |
+| 5.3 | Kali tools kwa cybersecurity/forensics kwa mbali kupitia agent+VPN | H4 (forensics agent) |
+
+## SEHEMU 6 — BONUS SERVICES
+3D Map ✅ (ramani-3d.html) · Navigation ✅ · Maps ✅ · Visualization ✅ · Real Monitoring ✅ (sysprobe). Icons halisi za bundles = H2 (UI).
+
+## SEHEMU 7 — OFFLINE NA ONLINE
+Offline: scan/solve/ripoti za ndani (✅) · Online kwa ruhusa ya mtu: VPN/AI/updates (✅ policy kwenye vpn.rs). Toggle ya mtumiaji = H3.
+
+## SEHEMU 8 — LESENI, MALIPO, BIASHARA
+8.1 Leseni ya Mbilinyi Tech (MST-XXXX tiers ✅, leseni nzuri = H3 UI) · 8.2 Malipo: ClickPesa ✅ + Bank + M-Pesa (H2 pricing) · 8.3 Packages: pay-per-use + subscription kila moja na bei yake → **H2 `pricing.rs` (enum Plan)** · 8.4 Support: 079675645, WhatsApp, IG @mbilinyitech, mbilinyitech@gmail.com, mbilinyitech.co.tz → kwenye UI zote (H2 footer).
+
+## SEHEMU 9 — UI, DASHBOARD, VISUALIZATION
+UI nzuri + visualization + icons halisi + charts + 3D + real monitoring ✅ msingi · Login kwa default credentials + manage section = H3 · Admin dashboard (PC zote + maendeleo + matatizo) = H3 · Dashboard ya kuongeza bundles = **H2**.
+
+## SEHEMU 10 — UPDATES NA GITHUB
+CI (cargo test/build) kwenye kila push = **H2 (workflow)** · Release artifacts (tar/deb, HAKUNA exe) = H5 · Update notification kwa wateja (version check kwenye agent) = H5.
+
+## SEHEMU 11 — STORAGE NA DATABASES
+ISOs/Apps/Drivers/Models → disk ✅ · Deployments/Problems/Computers → LanceDB AI memory (H4) · Agents/Payments/Transactions → SQLite ✅ · Logs → disk ✅.
+
+## SEHEMU 12 — SERVER (DOCKER) — compose kamili
+api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4) · SQLite ✅ · WireGuard ✅ · Suricata (H4) · Wazuh (H4) · pfSense (VM, H4 docs) · Kali tools (H4) · nginx/dnsmasq/samba ✅.
+
+## SEHEMU 13 — AGENTIC AI (ReAct + Bounded Autonomy) — Rust loop
+| # | Mahitaji | Rust module | Hali |
+|---|---|---|---|
+| 13.1 | ReAct: THINK → ACT (ping/cmd kwenye PC nyingi) → OBSERVE → THINK… | `agent/reacon.rs` (enum Step::Think/Act/Observe) | **H2 — INAFANYIKA SASA** |
+| 13.2 | Bounded autonomy: low-risk auto (scan/cache) · high-risk HITL (reboot/wipe/install) | risk enum + HITL ✅ | **H2** |
+| 13.3 | Shared memory: kila agent inajifunza kutoka wengine (LanceDB) | H4 | ⏳ |
+| 13.4 | Vision-driven (screenshots → Qwen VL → action) kwa remote GUI | H3 | ⏳ |
 
 ---
 
-## HATUA 1 — UI YA 1: OS AND APP INSTALLATION (Fundi Deploy)
-| # | Kazi | Files | Hali |
-|---|---|---|---|
-| 1.1 | Discovery halisi (IP, username, hostname) | discover.rs | ✅ |
-| 1.2 | Majina ya kiotomatiki (hr, hr 1, hr 2… kwa mpangilio wa IP) | namer.rs | ✅ |
-| 1.3 | ISO catalog: Kali, Windows 10/11/Server, Ubuntu + zingine | images.rs | ✅ (+magic bytes) |
-| 1.4 | Chagua "All Windows / All Ubuntu / All Kali" au per-PC | main.rs deploy | ✅ (os_type) |
-| 1.5 | **Bundles 20+ katika CATEGORIES** (office/browsers/dev/comms/utilities/security/graphics/drivers) | data/deploy/app_bundles.json + bundles.rs | 🔄 HATUA 2 ya sasa |
-| 1.6 | "Install All Apps" au per-app per-PC | main.rs deploy + UI | 🔄 HATUA 2 |
-| 1.7 | Bei kwa kompyuta + ClickPesa/bank/M-Pesa → activate | pricing + clickpesa | ✅ (ClickPesa halisi) · pricing per-PC = HATUA 2 |
-| 1.8 | Agents 100+ (jina la user = kitambulisho) | orchestrator.rs | ✅ (concurrency 100) · agent-per-PC naming = HATUA 3 |
-| 1.9 | IP addressing: automatic (dnsmasq) au manual per-PC | dhcp/dnsmasq.conf | ✅ (+UI hint) |
-| 1.10 | Recovery, Deepscan, Backup | backup.rs + deep | ✅ |
+## MPANGO WA UTEKELEZAJI — HATUA (code kwa RUST)
+- **H1 ✅** P4: vpn.rs + namer.rs + bug fixes (commit 71012a47e, tests 19/19)
+- **H2 (SASA):** `bundles.rs` (structs: Category, Bundle, App; catalog Rust; DeploymentPlan per-PC) +
+  `pricing.rs` (Plan::PayPerUse/Subscription, fn price_for_pc, ClickPesa wiring) +
+  `chat.rs` + `reacon.rs` (ReAct + bounded autonomy) +
+  Admin API `POST/GET/DELETE /api/bundles` + UI panel + icons + CI workflow
+- **H3:** Tauri v2 UI mbili · chat UI + auto-daily · admin roles · ping sweep (surge-ping/pnet) · notify · login defaults
+- **H4:** Docker: lance.db + llama.cpp (Qwen 2.5 3B VL GGUF) + suricata + wazuh + kali-tools + pfSense docs · LanceDB shared memory · forensics agent
+- **H5:** Releases (tar/deb) + update notification + leseni UI kamili
 
-## HATUA 2 — UI YA 2: COMPUTER SOLUTIONS
-| # | Kazi | Files | Hali |
-|---|---|---|---|
-| 2.1 | Scan matatizo kwa kompyuta ZOTE kwa wakati mmoja (jina + tatizo → server kuu) | orchestrator + report.rs | ✅ (parallel safe-steps) |
-| 2.2 | HITL: ruhusa → solve kwa wakati mmoja → ripoti per-PC | pipeline.rs HITL | ✅ |
-| 2.3 | Chat ya maswali/matatizo → agent inajibu (Qwen 2.5 3B VL) | chat endpoint + ui | HATUA 3 |
-| 2.4 | Auto-daily scan (offline) + ripoti kwa admin + subiri ruhusa | cron + report | HATUA 3 |
-
-## HATUA 3 — TAURI v2 UI (desktop bila EXE ya wageni)
-| # | Kazi | Files |
-|---|---|---|
-| 3.1 | Tauri v2 workspace (cargo tauri) kwenye mtech-os/desktop | src-tauri/ |
-| 3.2 | UI 1: OS AND APP INSTALLATION · UI 2: COMPUTER SOLUTIONS (webviews) | src/ |
-| 3.3 | Icons halisi za bundles, charts, 3D map (MapLibre) | www/ |
-| 3.4 | Admin: ku-remote PC zote, chat, kuongeza bundles (hata wa mbali — notify) | src/ + api |
-
-## HATUA 4 — SERVER KAMILI (Docker)
-| Service | Kazi | Hali |
-|---|---|---|
-| api (Rust) | Core engine | ✅ |
-| ollama / llama.cpp | Qwen 2.5 3B VL (GGUF) | ✅ Ollama · llama.cpp = nchi hii |
-| lancedb | AI Memory (vector search) | HATUA 4 |
-| sqlite | Agents, payments, transactions | ✅ |
-| wireguard | VPN (wg0, port 51820/udp) | ✅ |
-| suricata | IDS (docker + config) | HATUA 4 |
-| wazuh | SIEM (docker + config) | HATUA 4 |
-| pfSense | Firewall (VM/nje ya docker — config + docs) | HATUA 4 |
-| kali-tools | Cybersecurity/forensics container | HATUA 4 |
-| nginx/dnsmasq/samba | HTTP / DHCP-PXE-TFTP / images | ✅ |
-
-## HATUA 5 — GITHUB + UPDATES + LESENI
-| # | Kazi | Hali |
-|---|---|---|
-| 5.1 | CI: cargo test + build kwenye kila push | 🔄 .github/workflows |
-| 5.2 | Release artifacts (tar/deb — HAKUNA exe ya wageni) | HATUA 5 |
-| 5.3 | Update notification kwa wateja (version check) | HATUA 5 |
-| 5.4 | Leseni MST-XXXX-XXXX tiers + branding Mbilinyi Tech | ✅ data + docs |
-
-## AGENTIC AI (ReAct + Bounded Autonomy) — inavuka UI zote
-| # | Kazi | Hali |
-|---|---|---|
-| A.1 | ReAct loop: THINK → ACT (ping/cmd) → OBSERVE → THINK… | engine-rust agentic ✅ (msingi) · per-PC loop = HATUA 3 |
-| A.2 | Bounded autonomy: low-risk auto (cache, scan) · high-risk HITL (reboot, wipe, install) | ✅ HITL pipeline |
-| A.3 | Shared memory ya agents (LanceDB): kila agent inajifunza kutoka wengine | HATUA 4 |
-| A.4 | Vision-driven (screenshots → LLM → action) kwa remote GUI | HATUA 3 (Qwen VL) |
-
-## CUSTOMER SUPPORT (SEHEMU 8.4) — kwenye UI zote
-Simu **079675645** · Calls · SMS · WhatsApp · IG **@mbilinyitech** · **mbilinyitech@gmail.com** · **mbilinyitech.co.tz**
-
-## OFFLINE/ONLINE (SEHEMU 7) + PAYMENTS (8.2–8.3)
-- Offline: scan/solve/ripoti za ndani · Online (mtu anaruhusu): VPN work, AI, updates
-- Malipo: ClickPesa ✅ · Bank · M-Pesa — per-PC pricing + packages (pay-per-use / subscription) = HATUA 2
-
-## HALI YA KUZUIA (uwazi)
-WinPE halisi (license ya Microsoft) · pfSense = VM nje ya docker · LanceDB+llama.cpp containers = HATUA 4.
+## UTHIBITISHO (kila hatua)
+`cargo test` (tests mpya kwa kila module ya Rust) · `cargo build --release` · API smoke (curl) · UI review (/ui).

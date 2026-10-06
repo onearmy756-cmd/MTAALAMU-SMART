@@ -33,3 +33,20 @@ jobs:
           node-version: 20
       - name: Lint hermes-agent/web-r/www/index.html
         run: node hermes-agent/scripts/mtaalamu/lint_dashboard.mjs hermes-agent/web-r/www/index.html
+
+  fundi-deploy:
+    name: Build + test fundi-deploy agent (Rust)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: hermes-agent/fundi-deploy/server/agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: hermes-agent/fundi-deploy/server/agent
+      - name: Build (release)
+        run: cargo build --release
+      - name: Unit tests (VPN, bundles, pricing, ReAct, namer, backup, images…)
+        run: cargo test --release
