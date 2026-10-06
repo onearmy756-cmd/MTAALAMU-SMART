@@ -245,3 +245,37 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
   zinasoma umbo halisi la `/api/bundles` (`categories[].bundles` +
   `custom_bundles`) — dropdown ya Bundle ya MATRIX na grid ya REPO zinajaa
   katalogi halisi (22 bundles + custom).
+
+## H11 ✅ — CYBER SECURITY & FORENSICS CENTER (usalama + uchanganuzi, kompyuta nyingi kwa wakati mmoja)
+
+- **🛡️ CYBER & FORENSICS kwenye /ui** (SEHEMU 6–7 ya mpango): chagua kompyuta →
+  chagua hali (**USALAMA TZS 2,000/kifaa · FORENSICS TZS 25,000/kifaa · ZOTE
+  MBILI**) → ANZA: kazi za HITL kwa kila kompyuta, zinaendeshwa kwa WAKATI
+  MMOJA baada ya RUHUSU (tab Jobs).
+- **Backend mpya (secops.rs)**:
+  - `POST /api/secops/start` `{account, targets, mode}` — gate ya BILI kwa kila
+    op (security → `malware_scan` TZS 2,000; forensics → `digital_forensic`
+    TZS 25,000; volume discount ya BILI inatumika), kazi HITL
+    (stage `secops:security|forensics`), malipo baada ya kazi kuundwa;
+    inarudisha `{ok, jobs, count, mode, prices, balance_tzs}`.
+  - `POST /api/secops/result` `{account, target, mode, findings[], sources, note}`
+    — ripoti ya usalama: afya inapunguzwa na severity ya kila tulipatalo
+    (clamp 0–100); daraja: salama ≥80 · tahadhari ≥50 · hatari; AU kesi ya
+    forensics: ushahidi UNAFUNGWA na **SHA-256 hash**
+    (account|target|vyanzo|wakati) — chain-of-custody rahisi.
+  - `GET /api/secops/summary/:account` — data HALISI: kila kompyuta (afya %,
+    daraja, matatizo, **mashambulizi yaliyozuiwa**, **udhaifu**, virusi),
+    muhtasari (Salama/Tahadhari/Hatari), aina za vitukeo (kwa chart), ripoti
+    20 za mwisho, kesi 10 za forensics. **Access control**: account anaona
+    ZAKE PEKEE (SEHEMU 8.3).
+- **Dashboard (SEHEMU 7.1/7.2)**: Afya ya Usalama kwa kila kompyuta (bars za
+  rangi kulingana na hatari), muhtasari, chart ya vitukeo, Ripoti za Usalama,
+  Ushahidi wa Forensics (hash + IMEFUNGWA 🔒), na viungo: AI chat + remote
+  (tab 🖥️ SOLUTIONS), malipo (tab 💰 BILI). Audit: kila kazi na matokeo
+  yanarekodiwa DB (SEHEMU 8.4).
+- **Tests 7 mpya** (mode + bei, afya/clamp, vizingiti vya daraja, normalizing
+  ya kinds, hash thabiti + 64-hex, DB roundtrip + access control) — jumla
+  **112/112**.
+- **White-label**: dashboard haina majina ya zana wala bandari — majina salama
+  ya Kiswahili tu ("Uchunguzi wa usalama", "Uchunguzi wa kidijitali",
+  "Mashambulizi yaliyozuiwa").
