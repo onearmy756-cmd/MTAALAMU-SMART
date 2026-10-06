@@ -1,8 +1,7 @@
 //! report.rs — Ripoti ya PDF ya MTECH OS (brand ya Mbilinyi Tech, bila dependencies).
 //!
-//! Kanuni kama fundi-mobile/src/pdf.rs: PDF 1.4 halisi, logo vector,
+//! PDF 1.4 halisi (bila dependencies), logo vector,
 //! Helvetica. Ripoti ina jobs zote (id, PC, OS, hali, %, ujumbe).
-//! Hii ndiyo "kitu kama ulichoweka kwenye fundi mobile" — export ya PDF.
 
 use serde_json::json;
 
@@ -115,7 +114,7 @@ fn hline(x1: f64, y: f64, x2: f64, w: f64, r: f64, g: f64, bl: f64) -> String {
     format!("{} {} {} RG {w} w {x1} {y} m {x2} {y} l S\n", r, g, bl)
 }
 
-/// Logo ya FUNDI (vector, kama fundi-mobile/src/logo.rs::vector_logo_ops)
+/// Logo ya mfumo (vector) — ripoti ina brand ya MTECH OS tu
 fn vector_logo_ops() -> String {
     let mut s = String::new();
     s.push_str("0 0.898 1 rg 50 4 m 50 96 l 4 50 l h f\n");
@@ -155,7 +154,7 @@ fn short(s: &str, n: usize) -> String {
     }
 }
 
-/// PDF kamili: kichwa (logo FUNDI) + muhtasari + jedwali la jobs.
+/// PDF kamili: kichwa (logo MTECH OS) + muhtasari + jedwali la jobs.
 pub fn jobs_report_pdf(
     summary: &serde_json::Value,
     jobs: &[serde_json::Value],

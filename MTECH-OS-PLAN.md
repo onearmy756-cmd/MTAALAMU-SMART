@@ -331,3 +331,6 @@ api (Rust ✅) · R engine (H4) · llama.cpp+Qwen 2.5 3B VL (H4) · LanceDB (H4)
   kila mahali; test mpya inazuiwa kurudi kwa brand ya kale.
 - **Tests 4 mpya** (CSV escape, CSV brand, PDF brand bila FUNDI, collect +
   access control) — jumla **122/122**.
+
+- **H13b (nondo):** doc-headers za report.rs zilikuwa na marejeo ya ndani ya
+  awali ("FUNDI/fundi-mobile") — yamesafishwa; comments ni za white-label pia.
