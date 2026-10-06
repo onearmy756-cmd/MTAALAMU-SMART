@@ -20,22 +20,22 @@ if (!exists(".MTAALAMU_VIEWS_LOADED", inherits = TRUE)) {
   assign(".MTAALAMU_VIEWS_LOADED", TRUE, envir = globalenv())
 }
 
-# Override tabs_el — ongeza AGENTIC VISION + FUNDI DEPLOY + NAVIGATION + REAL REMOTING
-# + KALI TOOLS + COMPANY VIZ (MTECH OS: tabs zote zionekane — SEHEMU 6/9/13)
+# Override tabs_el — ongeza AGENTIC VISION + FUNDI DEPLOY + REAL REMOTING
+# + COMPANY VIZ (MTECH OS: tabs za mfumo tu).
+# KANUNI YA SIRI YA BIASHARA (maelezo ya mmiliki): mteja HASIONI zana wala
+# injini — tabs za KALI TOOLS (zana halisi) na za RAMANI (map/3D/navigation,
+# bonus za ndani) ZIMEFICHWA kwenye dashboard. API bado ipo (admin pekee);
+# UI ya mteja inaonyesha HUDUMA za MTECH OS tu.
 tabs_el <- function(lang, n_formula, n_diag, current) {
-  ids <- c("live", "agentic", "formula", "diag", "viz", "map", "map3d", "nav", "fundi", "remote", "kali", "company", "mobile", "iot")
+  ids <- c("live", "agentic", "formula", "diag", "viz", "fundi", "remote", "company", "mobile", "iot")
   labels <- c(
     tr("tabs.live", lang),
     if (!is.null(STR[["tabs.agentic"]])) tr("tabs.agentic", lang) else "AGENTIC VISION",
     paste0(tr("tabs.formula", lang), " (", n_formula, ")"),
     paste0(tr("tabs.diag", lang), " (", n_diag, ")"),
     paste0(tr("tabs.viz", lang), " (6)"),
-    tr("tabs.map", lang),
-    "\U0001f30d 3D",
-    "\U0001f9ed NAVIGATION",
     "\U0001f680 OS AND APP INSTALLATION",
     "\U0001f5a5 REAL REMOTING",
-    "\U0001f9ff KALI TOOLS",
     "\U0001f3e2 COMPANY VIZ",
     "\U0001fa7a FUNDI MOBILE",
     "\U0001f4e1 IOT REGISTRY")

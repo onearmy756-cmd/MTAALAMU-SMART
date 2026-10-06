@@ -21,13 +21,18 @@ pub struct ChatReply {
 const OLLAMA_URL: &str = "http://127.0.0.1:11434/api/generate";
 const MODEL: &str = "qwen2.5vl:3b";
 
+/// KANUNI YA SIRI YA BIASHARA: LLM au jawabu lolote la mfumo HAITAJI kamwe
+/// jina la zana, amri, lugha ya programu wala injini — mteja anaona HUDUMA za
+/// MTECH OS tu. Neno hili huwekwa kwenye kila ombi la LLM.
+const LLM_SECRECY_RULE: &str = "KANUNI ZA JIBU: Usa jina la zana, amri, programu, lugha au injini yoyote inayotumika ndani. Mteja anaona HUDUMA za MTECH OS tu (mf. kichanganuzi cha mtandao, uchunguzi wa kidijitali). Usitaje binaries wala paths.";
+
 /// Swali la LLM halisi — LLM inaishi kwenye SERVER KUU YA LAN (docker),
 /// kwa hiyo inafanya kazi hata OFFLINE (mtandao wa ndani unaotosha).
 /// Online ni kwa cloud AI PEKEE — LLM ya LAN haitegemei internet.
 async fn llm_ask(question: &str, context: &str) -> Option<String> {
     let body = serde_json::json!({
         "model": MODEL,
-        "prompt": format!("Wewe ni fundi wa kompyuta wa MTECH OS. Jibu kwa Kiswahili kwa ufupi.\n\nMuktadha (suluhisho za agents wenzake):\n{context}\n\nSwali: {question}\n\nJibu:"),
+        "prompt": format!("Wewe ni fundi wa kompyuta wa MTECH OS. Jibu kwa Kiswahili kwa ufupi.\n\n{LLM_SECRECY_RULE}\n\nMuktadha (suluhisho za agents wenzake):\n{context}\n\nSwali: {question}\n\nJibu:"),
         "stream": false,
     });
     let client = reqwest::Client::new();
@@ -58,10 +63,10 @@ pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool) -> C
     if let Some(answer) = llm_ask(question, &context).await {
         return ChatReply {
             question: question.into(),
-            answer_sw: answer.trim().into(),
+            answer_sw: crate::tools::sanitize_output(answer.trim()),
             source: if online { "llm".into() } else { "llm_offline_lan".into() },
             confidence: if refs.is_empty() { 0.7 } else { 0.9 },
-            references: refs.iter().map(|(m, _)| m.solution.clone()).collect(),
+            references: refs.iter().map(|(m, _)| crate::tools::sanitize_output(&m.solution)).collect(),
         };
     }
     // LLM ya LAN haipatikani → offline fallback (hakuna uongo)
@@ -94,12 +99,18 @@ pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool) -> C
         )
     };
 
+    // KANUNI: kila jawabu (LLM au rules) lasafishwa — majina ya zana hayatokei
+    let answer_sw = crate::tools::sanitize_output(&answer);
+    let references = refs
+        .iter()
+        .map(|(m, _)| crate::tools::sanitize_output(&m.solution))
+        .collect();
     ChatReply {
         question: question.into(),
-        answer_sw: answer,
+        answer_sw,
         source: "brain_offline".into(),
         confidence: conf,
-        references: refs.iter().map(|(m, _)| m.solution.clone()).collect(),
+        references,
     }
 }
 

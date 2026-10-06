@@ -36,6 +36,11 @@ mod report;
 mod remote_view;
 mod updates;
 mod vector;
+mod server_setup;
+mod tools;
+mod tools_internal;
+mod credit;
+mod netmgmt;
 mod vpn;
 mod pfsense;
 mod wol;
@@ -249,6 +254,19 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/pfsense/aliases", post(pfsense_alias_add))
         .route("/api/pfsense/services", post(pfsense_service_restart))
         .route("/api/pfsense/status", get(pfsense_status))
+        // HUDUMA ZA AGENT (mteja anaona HUDUMA tu — zana ziko fiche server-side)
+        .route("/api/services", get(services_list))
+        .route("/api/services/run", post(service_run))
+        // ONBOARDING (server/computer/raspberry) — config automatic
+        .route("/api/setup/onboard", post(setup_onboard))
+        .route("/api/setup/status", get(setup_status))
+        // CREDITS (billed per huduma + subscription)
+        .route("/api/credits/:account", get(credits_balance))
+        .route("/api/credits/buy", post(credits_buy))
+        .route("/api/credits/spend", post(credits_spend))
+        .route("/api/credits/:account/ledger", get(credits_ledger))
+        // NETWORK + SECURITY MANAGEMENT (vifaa vya mtandao + usalama wa kampuni)
+        .route("/api/remote/net", post(remote_net))
         .route("/api/brain/recall", get(brain_recall))
         .route("/api/brain/stats", get(brain_stats))
         .route("/api/fleet/exec", post(fleet_exec))
@@ -317,7 +335,7 @@ async fn root() -> Json<serde_json::Value> {
         "licensed_by": "Mbilinyi Tech (mbilinyitech.co.tz)",
         "version": "3.0.0",
         "role": "Agent inafanya kazi; msimamizi anasimamia (approve/cancel)",
-        "features": ["os-install", "app-bundles-22", "wireguard-vpn", "real-remoting", "agentic-ai-react", "neuralis-brain", "pricing-tzs", "license-mst", "auto-daily", "language-ai-translate"],
+        "features": ["os-install", "app-bundles-22", "wireguard-vpn", "real-remoting", "agentic-ai-react", "neuralis-brain-vector", "pricing-tzs", "license-mst", "auto-daily", "language-ai-translate", "white-label-services", "credit-billing", "self-host-onboarding", "network-device-mgmt"],
         "ui": "/ui"
     }))
 }
@@ -1478,3 +1496,115 @@ async fn pfsense_status(State(s): State<AppState>) -> Json<serde_json::Value> {
         Err(e) => Json(json!({ "ok": false, "configured": true, "error": e })),
     }
 }
+// ---------- HUDUMA ZA AGENT + CREDITS + ONBOARDING + NET MGMT ----------
+
+/// Katalogi ya huduma — mteja anaona jina la HUDUMA + credits PEKEE.
+async fn services_list() -> Json<serde_json::Value> {
+    Json(json!({
+        "ok": true,
+        "services": tools::public_service_list(),
+        "note_sw": "MTECH OS inachagua vifaa vya ndani vyenyewe kwa kila huduma — wewe ukitumia tu."
+    }))
+}
+
+#[derive(serde::Deserialize)]
+struct ServiceRunReq {
+    account: String,
+    service: String,
+    target: String,
+    /// ref ya kazi (job id / TXN) kwenye ledger
+    #[serde(default)]
+    ref_code: String,
+}
+
+async fn service_run(State(s): State<AppState>, Json(r): Json<ServiceRunReq>) -> Json<serde_json::Value> {
+    // 1. CREDIT GATE: hakuna credits → hakuna huduma (authorize inazuia kabla)
+    if let Err(e) = credit::authorize(&s.db, &r.account, &r.service).await {
+        return Json(json!({ "ok": false, "error": e, "needs_credits": true }));
+    }
+    // 2. Utekelezaji HALISI (backend fiche) — matokeo yanasafishwa kwa sanitize_output
+    let result = tools_internal::run_service(&r.service, &r.target).await;
+    // 3. SPEND: ledger inaandikwa tu kama kazi imefanikiwa
+    if result["ok"] == serde_json::Value::Bool(true) {
+        let refc = if r.ref_code.is_empty() { format!("svc-{}", uuid::Uuid::new_v4()) } else { r.ref_code.clone() };
+        let _ = credit::spend(&s.db, &r.account, &r.service, &refc).await;
+    }
+    Json(result)
+}
+
+#[derive(serde::Deserialize)]
+struct SetupOnboardReq {
+    target: String,
+}
+
+async fn setup_onboard(State(s): State<AppState>, Json(r): Json<SetupOnboardReq>) -> Json<serde_json::Value> {
+    let Some(t) = server_setup::Target::parse(&r.target) else {
+        return Json(json!({ "ok": false, "error": "target si sahihi: server | computer | raspberry | other" }));
+    };
+    match server_setup::onboard(&s.db, t).await {
+        Ok(cfg) => Json(json!({ "ok": true, "config": cfg })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn setup_status(State(s): State<AppState>) -> Json<serde_json::Value> {
+    let st = server_setup::status(&s.db).await;
+    Json(json!({ "ok": true, "status": st }))
+}
+
+async fn credits_balance(State(s): State<AppState>, Path(account): Path<String>) -> Json<serde_json::Value> {
+    let bal = credit::balance(&s.db, &account).await;
+    Json(json!({ "ok": true, "account": account, "balance": bal, "note_sw": "Credits zinatumika kulipia huduma — kila huduma ina bei yake." }))
+}
+
+#[derive(serde::Deserialize)]
+struct CreditsBuyReq {
+    account: String,
+    credits: i64,
+    /// Marejeo ya malipo (TXN ya ClickPesa / bank ref)
+    ref_code: String,
+}
+
+async fn credits_buy(State(s): State<AppState>, Json(r): Json<CreditsBuyReq>) -> Json<serde_json::Value> {
+    match credit::purchase(&s.db, &r.account, r.credits, &r.ref_code).await {
+        Ok(bal) => Json(json!({ "ok": true, "account": r.account, "balance": bal })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct CreditsSpendReq {
+    account: String,
+    service: String,
+    #[serde(default)]
+    ref_code: String,
+}
+
+async fn credits_spend(State(s): State<AppState>, Json(r): Json<CreditsSpendReq>) -> Json<serde_json::Value> {
+    let refc = if r.ref_code.is_empty() { format!("manual-{}", uuid::Uuid::new_v4()) } else { r.ref_code };
+    match credit::spend(&s.db, &r.account, &r.service, &refc).await {
+        Ok(bal) => Json(json!({ "ok": true, "account": r.account, "balance": bal })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
+}
+
+async fn credits_ledger(State(s): State<AppState>, Path(account): Path<String>) -> Json<serde_json::Value> {
+    let rows: Vec<(String, i64, String, Option<String>, Option<String>, i64, String)> = sqlx::query_as(
+        "SELECT account, delta, reason, service, ref_code, balance_after, created_at FROM credit_ledger WHERE account = ? ORDER BY id DESC LIMIT 100",
+    )
+    .bind(&account)
+    .fetch_all(&s.db)
+    .await
+    .unwrap_or_default();
+    let items: Vec<serde_json::Value> = rows.iter().map(|(a, d, r, svc, refc, bal, at)| json!({
+        "account": a, "delta": d, "reason": r, "service": svc,
+        "ref": refc, "balance_after": bal, "at": at,
+    })).collect();
+    Json(json!({ "ok": true, "account": account, "ledger": items }))
+}
+
+async fn remote_net(State(s): State<AppState>, Json(r): Json<serde_json::Value>) -> Json<serde_json::Value> {
+    let result = netmgmt::handle(r).await;
+    Json(result)
+}
+
