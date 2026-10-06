@@ -26,7 +26,7 @@ STR <- list(
 
   # --- tabs ---
   "tabs.live"         = list(sw = "\u25c9 MFUATILIO HALISI", en = "\u25c9 LIVE MONITOR"),
-  "tabs.formula"      = list(sw = "\u25e6 INJINI YA FORMULA", en = "\u25e6 FORMULA ENGINE"),
+  "tabs.formula"      = list(sw = "\u25e6 HUDUMA ZAIDI", en = "\u25e6 MORE SERVICES"), # hidden tab
   "tabs.diag"         = list(sw = "\u25cf UTAMBUZI", en = "\u25cf DIAGNOSIS"),
   "tabs.viz"          = list(sw = "\u25a0 UONESHAJI", en = "\u25a0 VISUALIZATION"),
 
@@ -70,7 +70,7 @@ STR <- list(
   "live.iss.i4d"      = list(sw = "Ongezeko la ucheleweshaji kwenye kipengele cha PC ({v}ms)", en = "Latency spike on PC node ({v}ms)"),
 
   # --- FORMULA ---
-  "f.title"           = list(sw = "\u25e6 INJINI YA FORMULA", en = "\u25e6 FORMULA ENGINE"),
+  "f.title"           = list(sw = "\u25e6 HUDUMA ZAIDI", en = "\u25e6 MORE SERVICES"), # hidden tab
   "f.meta"            = list(sw = "Inasomwa kutoka JSON \u2022 {n} formulas \u2022 viwanda 7", en = "Data-driven \u2022 {n} formulas \u2022 7 trades"),
   "f.search"          = list(sw = "\u1f50d Tafuta formula...", en = "\u1f50d Search formula..."),
   "f.all"             = list(sw = "ZOTE", en = "ALL"),

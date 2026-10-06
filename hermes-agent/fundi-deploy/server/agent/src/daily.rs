@@ -47,10 +47,36 @@ pub async fn init_tables(db: &SqlitePool) {
     .await;
 }
 
+/// KUJIFUNZA KILA SIKU: kila finding mpya inaandikwa kwenye Neuralis Brain
+/// (kumbukumbu ya pamoja) — kesho agents wanajua tatizo hili na suluhisho lake.
+async fn learn_from_finding(
+    brain: &crate::brain::Brain,
+    pc: &str,
+    problem: &str,
+    severity: &str,
+) {
+    let solution = match severity {
+        "critical" => "Tatizo la kasi: endesha uchunguzi wa afya (HUDUMA: Uchunguzi wa Afya), safisha disk na anzisha upya huduma husika kwa ruhusa ya admin (HITL).",
+        "warning" => "Kifaa hakijibu: hakikisha nguvu/mtandao, kisha endesha HUDUMA ya Uchunguzi wa Afya; kama kiko hai, firewall inaweza kuziba huduma za kawaida.",
+        _ => "Fuata hali ya kifaa kwenye REAL REMOTING.",
+    };
+    let _ = crate::brain::remember(
+        brain,
+        "daily-scanner",
+        pc,
+        problem,
+        solution,
+        match severity { "critical" => 0.8, "warning" => 0.7, _ => 0.5 },
+    )
+    .await;
+}
+
 /// Andika findings za scan ya leo (jina la PC + tatizo) — ripoti kwa admin.
-pub async fn record_findings(db: &SqlitePool, findings: &[DailyFinding]) -> usize {
+pub async fn record_findings(db: &SqlitePool, brain: &crate::brain::Brain, findings: &[DailyFinding]) -> usize {
     let mut n = 0;
     for f in findings {
+        // KUJIFUNZA KILA SIKU — finding yote inaandikwa kwenye kumbukumbu ya pamoja
+        learn_from_finding(brain, &f.pc, &f.problem, &f.severity).await;
         let _ = sqlx::query(
             "INSERT INTO daily_reports (date, pc, problem, severity, status, created_at) VALUES (?,?,?,?,?,?)",
         )
@@ -146,7 +172,9 @@ mod tests {
         let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
         init_tables(&db).await;
         // Scan inagundua matatizo → ripoti kwa admin
-        record_findings(&db, &[f("hr", "Disk 96% imejaa", "critical"), f("hr 1", "Wi-Fi haifanyi kazi", "warning")]).await;
+        let dir = std::env::temp_dir().join(format!("mtech-dtest-{}", uuid::Uuid::new_v4()));
+        let brain = crate::brain::Brain::new(db.clone(), dir.to_str().unwrap());
+        record_findings(&db, &brain, &[f("hr", "Disk 96% imejaa", "critical"), f("hr 1", "Wi-Fi haifanyi kazi", "warning")]).await;
         let rep = today_report(&db).await;
         assert_eq!(rep.len(), 2);
         // DESC — ripoti mbili zote zipo (mpangilio: ya mwisho juu)

@@ -290,7 +290,7 @@ append_learning_log <- function(session_id, msg, issues, status) {
     user_message = msg,
     issues = issues,
     status = status,
-    source = "r-shiny"
+    source = "system-probe"
   )
   if (length(arr) > 200) arr <- arr[(length(arr) - 199):length(arr)]
   tryCatch({
