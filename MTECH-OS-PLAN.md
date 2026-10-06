@@ -75,6 +75,17 @@ UI nzuri + visualization + icons halisi + charts + 3D + real monitoring ✅ msin
 ## SEHEMU 10 — UPDATES NA GITHUB
 CI (cargo test/build) kwenye kila push = **H2 (workflow)** · Release artifacts (tar/deb, HAKUNA exe) = H5 · Update notification kwa wateja (version check kwenye agent) = H5.
 
+## JINA RASMI + BEI HALISI (maelezo ya mwisho ya mmiliki)
+- **FUNDI DEPLOY → "OS AND APP INSTALLATION"** — jina rasmi kwenye API root, /ui header, web-r tab, docs
+- **Bei halisi za soko (TZS)** — `pricing.rs`: kwa **ugumu wa kazi** (Server 90k > Win11 35k > Ubuntu 20k;
+  apps za Windows licensing 8k > Linux 5k; drivers Dell/HP/Lenovo 25k > Acer/Asus 18k; repair 30k > scan 5k)
+  + **utumiaji wa computer** (subscription per-PC: 15k/PC ≤10, 12k/PC ≤50, 10k/PC 50+ = monitoring/scan/ripoti kila siku)
+  + **faida halisi**: `revenue_split()` — fundi 60% / mmiliki 30% / reserve 10%
+  + punguzo la batch halisi (agents 100 = gharama ile ile → 10%/20% kwa wateja wa batch)
+- **Kampuni/matawi** — `company.rs`: matawi ni subnets za wg0; admin anasimamia ZOTE kupitia WireGuard;
+  muhtasari wa kila tawi (PCs, online/offline, matatizo) kutoka remote_view (probe halisi)
+CI (cargo test/build) kwenye kila push = **H2 (workflow)** · Release artifacts (tar/deb, HAKUNA exe) = H5 · Update notification kwa wateja (version check kwenye agent) = H5.
+
 ## SEHEMU 11 — STORAGE NA DATABASES
 ISOs/Apps/Drivers/Models → disk ✅ · Deployments/Problems/Computers → LanceDB AI memory (H4) · Agents/Payments/Transactions → SQLite ✅ · Logs → disk ✅.
 
