@@ -639,3 +639,49 @@ JIBU (ukweli kwenye disk):
 - **Test mpya** `style_urls_na_key_hakuna_panic`: LAN style 3, cloud
   style 2, key bila env → None (hakuna panic), defaults za LAN
   (:11434/qwen2.5vl:3b). **Jumla 140/140** (fundi-deploy).
+
+## H24 ✅ — UHALISIA (LIVE SERVER) + CHAT YA PROMPT KAMA RETOOL
+
+Swali la mmiliki: "sehemu ya kuandika prompt inafanya kazi kama Retool chat?
+je kila kitu kipo kama kilivyopangwa na kinafanya kazi kwenye uhalisia?"
+— NILIJIBU NA SERVER HALISI ILIYOWAKA (binary ya release, SQLite halisi):
+
+**Tests ya LIVE (curl, server inaendesha):**
+- `GET /health` → status ok, huduma 9 (pxe/tftp/http/smb/ai/wol/backup/
+  multicast/cloud), cloud_outbox:0.
+- `POST /api/chat` (prompt ya kuchora halisi, "Printer haiandiki…",
+  length=medium, username=mteja1) → **jibu lililojibu**: source
+  `brain_offline`, confidence **0.2**, language sw, jawabu 373 chars
+  (maelezo marefu ya offline; LLM ya LAN ndiyo itaongeza conf hadi 0.7–0.9
+  ikianza). Prompt ya mtumiaji inaingia + inaandika kwa kiswahili.
+- `GET /api/bundles` → **bundles 33, dev-r ipo v4.4.1** (R-Language Core)
+  — H18b inathibitishwa LIVE.
+- `POST /api/bundles/distribute` (dev-r, lab_user_001, live-test) →
+  **billing gate inafanya kazi halisi**: `hakuna subscription na salio
+  halitoshi: app_install TZS 1500, salio TZS 0` — kanuni ya mmiliki:
+  kazi haitianzi bila malipo/HITL.
+- `POST /api/toolkit/run` (system-discover) pia imezuiliwa na billing
+  (health_check TZS 2,000) — gate sawa, HITL ni neno, hakuna free-run.
+- `GET /api/billing/statement/mteja1` → ok, balance 0 (ledger halisi).
+- `GET /jobs` + `GET /api/fleet/agents` → [] (hakuna agents bado — ok,
+  hakuna uongo).
+- `GET /api/toolkit/catalog` → tools 34, cats 8, **haizui binary yoyote**
+  (white-label imebaki).
+
+**Kosa limerekebishwa kwenye binary/DB**: kwanza nilipima na DB ya zamani —
+bundles 32 bila dev-r (kwa sababu kila catalog ni Rust, dev-r ipo). Kisha
+nilimpa binary nyefu fresh DB → **33 + dev-r** v4.4.1 live.
+
+**UI: Chat ya prompt kama Retool** (kadi SOLUTIONS):
+- **Bubbles**: ujumbe wako (Wewe) unapanda kulia bubble ya buluu;
+  jibu la AI (AI Agent) kushoto bubble nyeusi, border laini;
+  **pili ya source+confidence** (mf. "brain_offline · 20%") kwenye kila
+  jibu; auto-scroll kwa kila jibu.
+- swali linatumwa na **username=account** (H19 auto-translate linatumika) —
+  live-test imethibitisha.
+- node --check 2/2; anchor-target zote zinapatana.
+
+**Kwa mmiliki**: kwenye server yako halisi, ongeza `FUNDI_AI_KEY` env au
+wacha Ollama LAN; chat itaenda LLM kiotomatiki na conf itapanda kwenye
+kadi. Tests: 140/140 (H23) — hii H24 ni kaza ya live-verification, hakuna
+mabadiliko ya Rust (build iliyokaa imetumiwa kutumia binary).

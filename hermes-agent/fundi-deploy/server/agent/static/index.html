@@ -31,6 +31,16 @@ main{max-width:1100px;margin:0 auto;padding:16px 20px 60px}
 .card:hover{border-color:#00e5ff66}
 card:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #00e5ff88;outline-offset:2px}
 input:focus-visible,select:focus-visible{border-color:#00e5ff88}
+/* ── CHAT ya AI (Retool-style): bubbles kulia/kushoto + confidence pill ── */
+#sol_chat{display:flex;flex-direction:column;gap:6px;padding:10px}
+.chat-row{display:flex}
+.chat-row.me{justify-content:flex-end}
+.chat-row.bot{justify-content:flex-start}
+.chat-bubble{max-width:88%;border-radius:12px;padding:8px 11px;font-size:12px;line-height:1.45}
+.chat-bubble.me{background:#14507a;color:#e0f7fa;border:1px solid #00e5ff44;border-bottom-right-radius:4px}
+.chat-bubble.bot{background:#0b1220;color:var(--text);border:1px solid #1e2b45;border-bottom-left-radius:4px}
+.chat-bubble b{color:var(--cyan)}
+.chat-conf{float:right;font-size:10px;color:#9fb3d1;border:1px solid #1e2b45;border-radius:999px;padding:1px 7px;background:#081420}
 /* ── PULSE (Retool analytics-style): stat tiles + bar chart SVG ── */
 .pulse-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
 .stat-tile{background:linear-gradient(180deg,#0f1a2e,#0b1424);border:1px solid #1e2b45;border-radius:12px;padding:12px 14px;transition:border-color .18s ease, transform .18s ease}
@@ -1567,14 +1577,18 @@ async function solSend(){
   if (!msg) return;
   const acc = document.getElementById('sol_account').value || 'mteja1';
   const chat = document.getElementById('sol_chat');
-  chat.innerHTML += `<div><b>Admin</b>: ${escHtml(msg)}</div>`;
+  const pills = (d) => d ? `<span class="chat-conf">${escHtml(d.source||'')} · ${Math.round((d.confidence||0)*100)}%</span>` : '';
+  // Retool-style chat: bubbles user (kulia) + agent (kushoto) + confidence pill
+  chat.innerHTML += `<div class="chat-row me"><div class="chat-bubble me"><b>Wewe</b><br/>${escHtml(msg)}</div></div>`;
   document.getElementById('sol_msg').value = '';
-  const d = await (await fetch(API+'/api/chat', {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({question: msg, length: 'medium'})})).json().catch(()=>null);
-  const a = d && d.reply ? (d.reply.answer_sw || d.reply) : 'AI haipatikani kwa sasa.';
-  chat.innerHTML += `<div><b>AI Agent</b>: ${escHtml(typeof a === 'string' ? a : JSON.stringify(a))}</div>`;
   chat.scrollTop = chat.scrollHeight;
-  document.getElementById('sol_console').innerHTML += `&gt; [INFO] Dhati: ${escHtml(msg.slice(0,40))}…`;
+  const d = await (await fetch(API+'/api/chat', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({question: msg, length: 'medium', username: acc})})).json().catch(()=>null);
+  const r = d && d.reply ? d.reply : null;
+  const a = r ? (r.answer_sw || r.answer || '') : 'AI haipatikani kwa sasa (LLM ya LAN au cloud imewaka?).';
+  chat.innerHTML += `<div class="chat-row bot"><div class="chat-bubble bot"><b>AI Agent</b> ${pills(r)}<br/>${escHtml(a)}</div></div>`;
+  chat.scrollTop = chat.scrollHeight;
+  document.getElementById('sol_console').innerHTML += `&gt; [INFO] Swali: ${escHtml(msg.slice(0,40))}… (${(r&&r.source)||'hakuna-jibu'}${r&&r.confidence!=null? ' · conf '+Math.round(r.confidence*100)+'%':''})<br/>`;
 
 }
 function solAsk(q){ document.getElementById('sol_msg').value = q; solSend(); }
