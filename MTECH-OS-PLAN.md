@@ -581,3 +581,31 @@ zote zimeunganishwa na zinafanya kazi?" — JIBU LINAPIGWA NA TEST SI MANENO:
   - `hsInit()` inaitwa kwenye `window.load` (baada ya flLoad).
 - **Kagua hali**: node --check 2/2; hakuna Rust iliyoguswa (tests ziko
   139+70 kutoka H20 — hazirepeatishwi kwa info lost).
+
+## H22 ✅ — PULSE (ANALYTICS KAMA RETOOL) + UKAGUZI WA DOCKERFILE
+
+- **Maswali yote ya mmiliki yanajibiwa**:
+  1. **Dockerfile ya server iko tayari na kamili** — `hermes-agent/fundi-deploy/server/agent/Dockerfile`
+     ina `COPY static ./static` (Docker inanakili folda NZIMA pamoja na
+     `img/rep/` — SVG 33 zote pamoja na index.html wanakaa kwenye image;
+    NDANI YA binary `fundi-deploy` + huduma 8080). Compose pia ina kali-tools dnsmasq samba ollama llamacpp suricata wazuh (SERVER-SETUP.md inaeleza).
+     Dashboard lint ya CI (zero-dependency: title/charset/script-balance/
+     node --check/duplicate id/reference integrity) kila PR.
+  2. **Retool hero-slider** — kwenye main (H21), inajicharaza kila 6s
+     (dots + badges + CTA mbili kila slide, anchors zote 24 zinapatana
+     na kadi halisi).
+  3. **Chati/Analytics kama Retool** — **PULSE** mpya (H22): kadi yenye
+     **stat tiles 3** (Kazi zinazoendesha + jumla; Agents online/working;
+     Salio BILI wa mteja1 kutoka ledger) + **bar chart ya SVG** (kazi 6
+     zilizopita, mafupi kwa jina + % ya progress, rangi kwa hali: done
+     green, working cyan, awaiting amber, failed red) — data halisi kutoka
+     `/jobs`, `/api/fleet/agents`, `/api/billing/statement/mteja1`, refesh
+     kila 5s. Chini ya 700px bado sawa (tiles 3 mlalo).
+  4. **Kitufe 📊 PULSE** kwenye nav (kabla ya REPO).
+- **Kagua wa ziada**: lint ya dashboard (script iza zote + ref integrity)
+  — kosa pekee ni la KALE (href ya WG conf yenye encodeURIComponent,
+  template-literal lint huipa false positive; route halisi ipo main.rs
+  `/api/vpn/peers/:name/conf`) — SI la mabadiliko ya H22; CI ya web-lint
+  inalinda web-r/www/index.html pekee (fundi-deploy dashboard ina node
+  --check ya blocks zote 2 kwenye hali halisi).
+- **Tests**: hakuna Rust iliyoguswa (139+70 kama H20); node --check 2/2.
