@@ -355,6 +355,13 @@ details p{font-size:13px;color:#b2ebf2}
 
   <h3 style="margin-top:16px">💬 CHAT YA AGENT — uliza tatizo, agent anajibu</h3>
   <div class="row">
+    <select id="chat_lang" title="Mfumo utatafsiri jibu kwa AI kiatomatiki" style="max-width:150px">
+      <option value="sw" selected>Kiswahili (sw)</option>
+      <option value="en">English (en)</option>
+      <option value="fr">Français (fr)</option>
+      <option value="ar">العربية (ar)</option>
+    </select>
+    <input id="chat_user" placeholder="Account" value="mteja1" style="max-width:120px"/>
     <input id="chat_q" placeholder="Swali/tatizo: wi-fi haifanyi kazi" style="flex:1;min-width:200px"/>
     <button onclick="sendChat()">💬 Tuma</button>
   </div>
@@ -1063,9 +1070,15 @@ async function grantDaily(){
 }
 async function sendChat(){
   const q = v('chat_q'); if(!q){ alert('Andika swali/tatizo'); return; }
-  const d = await (await fetch(API+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})})).json();
+  const user = (v('chat_user') || 'mteja1').trim();
+  const lang = document.getElementById('chat_lang').value;
+  // Mfumo wenyewe unatafsiri: hifadhi lugha (H19), jibu linakuja tayari kwa lugha hiyo
+  await (await fetch(API+'/api/language', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({username:user, language:lang})})).json();
+  const d = await (await fetch(API+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q, username:user})})).json();
   const r = d.reply;
-  document.getElementById('chat_result').innerHTML = `💬 <b>Agent (${r.source}, conf ${(r.confidence*100).toFixed(0)}%):</b><br/>${r.answer_sw}` + (r.references.length?`<br/><small>📚 refs: ${r.references.length} kutoka agents wenzake</small>`:'');
+  const shown = (r.language && r.language !== 'sw') ? (r.answer || r.answer_sw) : (r.answer && r.answer_sw ? r.answer_sw : (r.answer_sw || r.answer));
+  document.getElementById('chat_result').innerHTML = `💬 <b>Agent (${r.source}, conf ${(r.confidence*100).toFixed(0)}%, ${escHtml(r.language||'sw')}):</b><br/>${shown}` + (r.references.length?`<br/><small>📚 refs: ${r.references.length} kutoka agents wenzake</small>`:'');
 }
 
 // ---------- KAMPUNI (matawi + wg0) ----------
