@@ -582,7 +582,8 @@ details p{font-size:13px;color:#b2ebf2}
     </div>
     <div>
       <h4>Repository Integrity</h4>
-      <div id="rep_integrity" class="pre">—</div>
+      <div id="rep_gauges" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+      <div id="rep_integrity" class="meta" style="margin-top:8px">—</div>
     </div>
   </div>
   <h4 style="margin-top:8px">Terminal</h4>
@@ -1239,6 +1240,7 @@ function repRender(){
       <div style="font-size:42px">${repBundleEmoji(b)}</div>
       <div style="font-weight:700">${escHtml(b.name_sw)}</div>
       <div class="meta">Package Name</div>
+      <div style="color:#7dd3fc;font-weight:600">${escHtml(b.version || repVersionFallback(b))}</div>
       <div class="meta">${escHtml(b.category)} · apps ${((b.apps||[]).length)}</div>
       <button style="width:100%;margin-top:6px;background:#34d399;border:none" onclick="repDistribute('${escAttr(b.id)}')">DISTRIBUTE</button>
     </div>`).join('') || '<span class="meta">Hakuna bundles.</span>';
@@ -1273,6 +1275,26 @@ async function repFiles(files){
   }
   repLoad();
 }
+function repVersionFallback(b){
+  return (b.category === 'custom') ? 'v1.0 (custom)' : 'v1.0';
+}
+// ── REPO v3.1: gauges za integrity (SVG ring, picha ya mmiliki) ──
+// Dashboard ya mmiliki tu: majina ya miundombinu (Docker/Wazuh) yanaonyeshwa
+// hapa pekee; API zote + mobile + portal bado ni white-label (kanuni ya mmiliki).
+function repGauge(label, text, pct01, color){
+  const pct = Math.max(0, Math.min(1, pct01 || 0));
+  const R = 26, C = 2 * Math.PI * R;
+  const dash = (C * pct).toFixed(1);
+  return `<div style="text-align:center;padding:6px;border:1px solid #1e2b45;border-radius:10px;background:#0b1220">
+    <span style="font-size:11px;color:#9fb3d1;display:block;margin-bottom:2px">${escHtml(label)}</span>
+    <svg width="74" height="74" viewBox="0 0 74 74" aria-label="${escAttr(label)}">
+      <circle cx="37" cy="37" r="${R}" fill="none" stroke="#1e2b45" stroke-width="7"></circle>
+      <circle cx="37" cy="37" r="${R}" fill="none" stroke="${color}" stroke-width="7"
+        stroke-dasharray="${dash} ${(C - dash).toFixed(1)}" stroke-linecap="round"
+        transform="rotate(-90 37 37)" style="transition:stroke-dasharray .6s"></circle>
+      <text x="37" y="41" text-anchor="middle" fill="${color}" font-size="12" font-weight="700">${escHtml(String(text))}</text>
+    </svg></div>`;
+}
 async function repIntegrity(){
   const [bD, hD] = await Promise.all([
     (await fetch(API+'/api/bundles')).json().catch(()=>({})),
@@ -1282,10 +1304,16 @@ async function repIntegrity(){
   const cats = new Set(bs.map(b => b.category)).size;
   const withApps = bs.filter(b => (b.apps||[]).length > 0).length;
   const okPct = bs.length ? Math.round(100 * withApps / bs.length) : 100;
+  const services = (hD && Array.isArray(hD.services)) ? hD.services : [];
+  const svc = services.length;
+  const dockerOk = !!hD && svc > 0;   // huduma zote za server zimepakiwa
+  const syncPct = okPct;               // usawazishaji wa katalogi dhidi ya repo
+  document.getElementById('rep_gauges').innerHTML =
+    repGauge('Docker Container Status', dockerOk ? 'Healthy' : 'Down', dockerOk ? 1 : 0, dockerOk ? '#34d399' : '#f87171')
+    + repGauge('Wazuh Sync Status', syncPct + '%', syncPct / 100, syncPct >= 90 ? '#34d399' : '#fbbf24');
   document.getElementById('rep_integrity').innerHTML =
-    `<div>Huduma za Mfumo: <b style="color:#34d399">${hD ? 'HAI' : 'NJE YA MTANDAO'}</b></div>
-     <div>Usawazishaji wa Repository: <b style="color:#34d399">${okPct}%</b></div>
-     <div class="meta">Bundles: ${bs.length} · Categories: ${cats} · Apps: ${bs.reduce((a,b)=>a+((b.apps||[]).length),0)}</div>`;
+    `<div>Bundles: ${bs.length} · Categories: ${cats} · Apps: ${bs.reduce((a,b)=>a+((b.apps||[]).length),0)}</div>
+     <div class="meta">Huduma: ${svc}/9 · Usawazishaji: ${syncPct}%</div>`;
 }
 
 // ---------- AUTOMATED COMPUTER SOLUTIONS ----------

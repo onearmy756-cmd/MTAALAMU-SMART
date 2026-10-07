@@ -431,3 +431,26 @@ billing.rs na tools.rs):
   (account anaona ZAKE pekee — test inaithibitisha mteja9 haoni za mteja1).
 - **Tests 5 mpya** (checksum, order ref, checkout bila env, webhook
   idempotent+topup, PIN login+access control) — jumla **134/134**.
+
+## H18 ✅ — REPO DASHBOARD v3.1 (versions + gauges za integrity, picha ya mmiliki)
+
+- **Version metadata (bundles.rs)**: `version_of(id)` — Ramani ya toleo la
+  bundles zote 32 ya katalogi (mf. `dev-vscode`→v1.93, `util-vlc`→v3.0.21,
+  `gfx-gimp`→v2.10, browser-chrome→v130.0) + fallback `v1.0 (custom)` kwa
+  custom bundles (drag & drop). `GET /api/bundles` kwa sasa inajibu
+  `version` ya kila bundle (main.rs) — sio tena "Package Name" pekee.
+- **UI REPO v3.1 (static/index.html)**:
+  - Kadi (repRender) zinaonyesha **Version vX** (bluu) chini ya Package Name —
+    kama picha ya mmiliki.
+  - **Gauges 2 za SVG** (ring, katikati ya duara): **Docker Container
+    Status** (Healthy/Nje ya Mtandao — kutoka /health huduma zimepakiwa) na
+    **Wazuh Sync Status** (~100% — usawazishaji wa katalogi: % ya bundles
+    zenye apps). Iliyotangulia hapo ilikuwa `rep_integrity` maandishi tu;
+    sasa gauges + ripoti ndogo (Bundles/Categories/Apps/Huduma x/9).
+    Majina ya gauges ni kwa **dashboard ya mmiliki pekee** — chapisho la API
+    (JSON) zote bado ni white-label; mobile/portal hazibadiliki.
+  - Kagua tena majaribio ya white-label: catalog test (toolkit) na pdf test
+    (reports) zote 2 zinaendelea kupita.
+- **Tests 1 mpya**: `versions_zote_wa_catalog` (kila bundle ina vX; v1.0
+  (custom) kwa custom; v1.93 kwa vscode). **Jumla 135/135**.
+- **UI check**: node --check 2/2 (script blocks zote 2 za index.html).
