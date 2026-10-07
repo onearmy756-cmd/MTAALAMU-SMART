@@ -241,6 +241,56 @@ pub fn bundles_count() -> usize {
     catalog().len()
 }
 
+// ---------- VERSION METADATA (REPO v3.1 — kadi zinaonyesha Version vX) ----------
+
+/// Toleo la kila bundle ya catalog (Rust ndiyo kanuni; custom bundles → fallback).
+pub fn version_of(id: &str) -> &'static str {
+    match id {
+        // OFFICE
+        "office-ms" => "v2408",
+        "office-libre" => "v24.2",
+        "office-wps" => "v12.2",
+        // BROWSERS
+        "browser-chrome" => "v130.0",
+        "browser-firefox" => "v131.0",
+        "browser-edge" => "v130.0",
+        "browser-brave" => "v1.71",
+        // DEVELOPMENT
+        "dev-vscode" => "v1.93",
+        "dev-cpp" => "v17.10",
+        "dev-python" => "v3.12.7",
+        "dev-git" => "v2.46",
+        "dev-node" => "v22.9",
+        "dev-docker" => "v27.3",
+        // COMMUNICATION
+        "comms-zoom" => "v6.2",
+        "comms-teams" => "v24.2",
+        "comms-slack" => "v4.41",
+        "comms-whatsapp" => "v2.24",
+        // UTILITIES
+        "util-7zip" => "v24.08",
+        "util-winrar" => "v7.10",
+        "util-vlc" => "v3.0.21",
+        "util-notepad" => "v8.6",
+        "util-anydesk" => "v9.0",
+        // SECURITY
+        "sec-antivirus" => "v10.0",
+        "sec-malwarebytes" => "v5.7",
+        // GRAPHICS
+        "gfx-gimp" => "v2.10",
+        "gfx-inkscape" => "v1.3.1",
+        "gfx-paintnet" => "v11.1",
+        // DRIVERS
+        "drv-dell" => "v4.9",
+        "drv-hp" => "v13.0",
+        "drv-lenovo" => "v9.1",
+        "drv-acer" => "v4.5",
+        "drv-asus" => "v3.6",
+        // custom bundles (drag & drop) — hakuna toleo la juu
+        _ => "v1.0 (custom)",
+    }
+}
+
 pub fn find_bundle(id: &str) -> Option<Bundle> {
     catalog().into_iter().find(|b| b.id == id)
 }
@@ -439,6 +489,20 @@ mod tests {
         assert_eq!(plan[1].display_name, "hr 1");
         assert_eq!(plan[0].install_commands().len(), 2);
         assert!(plan[0].install_commands()[0].starts_with("winget install"));
+    }
+
+    #[test]
+    fn versions_zote_wa_catalog() {
+        let custom = version_of("custom-");
+        assert_eq!(custom, "v1.0 (custom)");
+        for b in catalog() {
+            let v = version_of(&b.id);
+            assert!(v.starts_with('v') && !v.contains("custom"), "{} → {}", b.id, v);
+        }
+        // kadi ya VS Code kwenye REPO inaonyesha toleo halisi
+        assert_eq!(version_of("dev-vscode"), "v1.93");
+        assert_eq!(version_of("util-vlc"), "v3.0.21");
+        assert_eq!(version_of("gfx-gimp"), "v2.10");
     }
 
     #[test]

@@ -776,7 +776,7 @@ async fn bundles_list(State(s): State<AppState>) -> Json<serde_json::Value> {
         "categories": bundles::Category::all().iter().map(|c| json!({
             "id": c.id(), "name_sw": c.name_sw(), "icon": c.icon(),
             "bundles": cat.iter().filter(|b| b.category == *c).map(|b| json!({
-                "id": b.id, "name_sw": b.name_sw, "description": b.description,
+                "id": b.id, "name_sw": b.name_sw, "description": b.description, "version": bundles::version_of(&b.id),
                 "apps": b.apps.iter().map(|ap| json!({ "id": ap.id, "name": ap.name, "critical": ap.critical }))
                     .collect::<Vec<_>>(),
             })).collect::<Vec<_>>(),
