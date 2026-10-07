@@ -31,6 +31,17 @@ main{max-width:1100px;margin:0 auto;padding:16px 20px 60px}
 .card:hover{border-color:#00e5ff66}
 card:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #00e5ff88;outline-offset:2px}
 input:focus-visible,select:focus-visible{border-color:#00e5ff88}
+/* ── PULSE (Retool analytics-style): stat tiles + bar chart SVG ── */
+.pulse-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.stat-tile{background:linear-gradient(180deg,#0f1a2e,#0b1424);border:1px solid #1e2b45;border-radius:12px;padding:12px 14px;transition:border-color .18s ease, transform .18s ease}
+.stat-tile:hover{border-color:#00e5ff80;transform:translateY(-2px)}
+.stat-tile .st-l{font-size:11px;color:var(--dim);letter-spacing:.5px;text-transform:uppercase}
+.stat-tile .st-v{font-size:24px;font-weight:800;color:var(--cyan)}
+.stat-tile .st-d{font-size:11px;color:var(--dim)}
+.pulse-chart{background:#0b1220;border:1px solid #1e2b45;border-radius:12px;padding:12px}
+.pulse-chart .pc-title{font-size:12px;color:var(--dim);margin-bottom:6px}
+.pulse-bar{transition:height .4s ease}
+@media(max-width:700px){.pulse-grid{grid-template-columns:repeat(3,1fr)}}
 /* ── Retool-style HERO SLIDER (mwonekano wa retool.com: hero kubwa + slides zinazojiendesha + CTA rahisi; rangi + brand ni zletu tu) ── */
 .hero-slider{background:linear-gradient(135deg,#0d2137 0%,#050d18 60%);border:1px solid var(--line);border-radius:16px;padding:22px;margin:14px 0 18px;position:relative;overflow:hidden}
 .hero-slider::before{content:'';position:absolute;inset:0;background:radial-gradient(600px 220px at 85% -10%, rgba(0,229,255,.12), transparent 60%);pointer-events:none}
@@ -118,6 +129,7 @@ details p{font-size:13px;color:#b2ebf2}
   <button onclick="location.hash='#ai_card'">🧠 AI</button>
   <button onclick="location.hash='#solutions_card'">🖥️ SOLUTIONS</button>
   <button onclick="location.hash='#bili_card'">💰 BILI</button>
+  <button onclick="location.hash='#pulse_card'">📊 PULSE</button>
   <button onclick="location.hash='#repo_card'">📦 REPO</button><div id="toast" class="toast"></div>
   <button onclick="location.hash='#sec_card'">🛡️ CYBER</button>
   <button onclick="location.hash='#tools_card'">🧰 TOOLS</button>
@@ -168,6 +180,21 @@ details p{font-size:13px;color:#b2ebf2}
     </div>
   </div>
   <div class="hs-dots" id="hs_dots"></div>
+</div>
+
+<!-- 📊 PULSE — analytics kama dashboard ya Retool (stat tiles + bar chart) -->
+<div class="card" id="pulse_card">
+  <h3>📊 PULSE — MJIOMO WA MTECH OS</h3>
+  <p class="hint">Takwimu za wakati moja: kazi (jobs), agents, na salio la BILI — kama analytics za Retool, kwa picha halisi kutoka API za mfumo.</p>
+  <div class="pulse-grid">
+    <div class="stat-tile"><div class="st-l">Kazi zinazoendesha</div><div class="st-v" id="pul_active">—</div><div class="st-d" id="pul_active_d">—</div></div>
+    <div class="stat-tile"><div class="st-l">Agents online</div><div class="st-v" id="pul_agents">—</div><div class="st-d" id="pul_agents_d">—</div></div>
+    <div class="stat-tile"><div class="st-l">Salio BILI (mteja1)</div><div class="st-v" id="pul_bal">—</div><div class="st-d">TZS · kutoka ledger</div></div>
+  </div>
+  <div class="pulse-chart">
+    <div class="pc-title">Kazi kwa hali (6 zilizopita) — bar chart halisi kutoka /jobs</div>
+    <div id="pul_chart"></div>
+  </div>
 </div>
 
 <!-- ⭐ MWANZO HAPA -->
@@ -1312,6 +1339,48 @@ async function mxBalance(){
 }
 
 // ---------- BUNDLE & ASSET REPOSITORY ----------
+// ── PULSE (Retool analytics): stat tiles + bar chart kutoka API halisi ──
+async function pulseRefresh(){
+  try {
+    const jobs = await (await fetch(API+'/jobs')).json().catch(()=>[]);
+    const list = Array.isArray(jobs) ? jobs : (jobs.jobs || []);
+    const active = list.filter(j => ['approved','working','deploying','queued','needs_approval','awaiting_approval'].includes((j.status||'').toLowerCase())).length;
+    document.getElementById('pul_active').textContent = active;
+    document.getElementById('pul_active_d').textContent = `${list.length} jumla · sehemu ya mwisho`;
+    // bar chart ya 6 zilizopita (SVG halisi, inachorwa upya kila refresh)
+    const last6 = list.slice(0,6).reverse();
+    const colors = { done:'#00e676', approved:'#00e5ff', working:'#00e5ff', failed:'#ff5252', cancelled:'#78909c', 'awaiting_approval':'#ffc107', needs_approval:'#ffc107' };
+    const max = 100;
+    const W = Math.max(420, Math.min(900, (document.getElementById('pul_chart').clientWidth || 600) - 8));
+    const H = 130, n = Math.max(1, last6.length);
+    const bw = Math.max(24, Math.floor(W / n) - 14);
+    let bars = '';
+    last6.forEach((j, i) => {
+      const pct = Math.max(4, Math.round(j.progress || 0));
+      const h = Math.round((pct / max) * (H - 40));
+      const x = 12 + i * (bw + 14);
+      const c = colors[(j.status||'').toLowerCase()] || '#00e5ff';
+      bars += `<rect class="pulse-bar" x="${x}" y="${H - 26 - h}" width="${bw}" height="${h}" rx="5" fill="${c}" opacity="0.92"></rect>`
+        + `<text x="${x + bw/2}" y="${H - 8}" text-anchor="middle" font-size="9" fill="#78909c">${escHtml((j.device_name||j.id||'').slice(0,9))}</text>`
+        + `<text x="${x + bw/2}" y="${H - 30 - h}" text-anchor="middle" font-size="10" fill="#e0f7fa">${pct}%</text>`;
+    });
+    document.getElementById('pul_chart').innerHTML =
+      `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Kazi kwa hali">${bars}</svg>`
+      + (last6.length ? '' : '<div class="meta">Bado hakuna kazi — anzisha kutoka MATRIX.</div>');
+  } catch(e) {}
+  try {
+    const ag = await (await fetch(API+'/api/fleet/agents')).json().catch(()=>null);
+    if (ag) {
+      document.getElementById('pul_agents').textContent = `${ag.online||0}/${ag.total||0}`;
+      document.getElementById('pul_agents_d').textContent = `${ag.working||0} wanafanya kazi`;
+    }
+  } catch(e) {}
+  try {
+    const st = await (await fetch(API+'/api/billing/statement/mteja1')).json().catch(()=>null);
+    if (st && st.ok) document.getElementById('pul_bal').textContent = Number(st.balance_tzs||0).toLocaleString();
+  } catch(e) {}
+}
+window.addEventListener('load', ()=>{ pulseRefresh(); setInterval(pulseRefresh, 5000); });
 // ── HERO SLIDER (Retool-tundo): dots + autoplay 6s, inasimama mtumiaji anapogusa ──
 const HS = { i: 0, n: 3, timer: null, inited: false };
 function hsShow(k){
