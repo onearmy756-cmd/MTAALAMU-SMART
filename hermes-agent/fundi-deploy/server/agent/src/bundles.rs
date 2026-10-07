@@ -247,7 +247,11 @@ pub fn bundles_count() -> usize {
 
 // ---------- VERSION METADATA (REPO v3.1 — kadi zinaonyesha Version vX) ----------
 
-/// Toleo la kila bundle ya catalog (Rust ndiyo kanuni; custom bundles → fallback).
+/// Category inayokubaliwa: 8 za katalogi au 'custom' (drag & drop).
+pub fn category_is_known(c: &str) -> bool {
+    c == "custom" || Category::from_id(c).is_some()
+}
+
 pub fn version_of(id: &str) -> &'static str {
     match id {
         // OFFICE
@@ -349,8 +353,8 @@ pub async fn add_custom_bundle(
     if id.trim().is_empty() || name_sw.trim().is_empty() {
         return Err("id na name_sw ni lazima".into());
     }
-    if Category::from_id(category).is_none() {
-        return Err(format!("Category '{category}' haijulikani (office|browsers|development|communication|utilities|security|graphics|drivers)"));
+    if !category_is_known(category) {
+        return Err(format!("Category '{category}' haijulikani (office|browsers|development|communication|utilities|security|graphics|drivers|custom)"));
     }
     for app_id in &app_ids {
         if find_app(app_id).is_none() {
@@ -513,6 +517,14 @@ mod tests {
         let r = find_bundle("dev-r").expect("dev-r ipo");
         assert_eq!(r.category, Category::Development);
         assert!(find_app("rlang").is_some() && find_app("rstudio").is_some());
+    }
+
+    #[test]
+    fn custom_category_ipokelewa_catalog_inakatalia() {
+        // custom → DB logic (integration); hapa: catalog ids 8 + 'custom'ipelewe
+        assert!(category_is_known("custom"));
+        assert!(category_is_known("office"));
+        assert!(!category_is_known("haijulikani"));
     }
 
     #[test]
