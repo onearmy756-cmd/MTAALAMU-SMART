@@ -336,6 +336,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/language", post(lang_set))
         .route("/api/language/:username", get(lang_get))
         .route("/api/translate", post(translate_post))
+        .route("/api/portal/language", post(portal_language))
         .route("/api/remote/pc/:name", get(remote_pc))
         .route("/api/remote/fleet", post(remote_fleet))
         // COMPANY (kampuni/matawi kupitia wg0)
@@ -1083,6 +1084,9 @@ struct ChatReq {
     /// urefu wa jawabu: "short" | "medium" | "long" — default medium
     #[serde(default)]
     length: String,
+    /// mtumiaji (-account) — jawabu linatafsiriwa kwa lugha yake kiatomatiki (H19)
+    #[serde(default)]
+    username: String,
 }
 
 async fn chat_ask(State(s): State<AppState>, Json(r): Json<ChatReq>) -> Json<serde_json::Value> {
@@ -1092,7 +1096,11 @@ async fn chat_ask(State(s): State<AppState>, Json(r): Json<ChatReq>) -> Json<ser
         "long" => chat::Length::Long,
         _ => chat::Length::Medium,
     };
-    let reply = chat::ask(&s.brain, &r.question, online, len).await;
+    let reply = if r.username.trim().is_empty() {
+        chat::ask(&s.brain, &r.question, online, len).await
+    } else {
+        chat::ask_username(&s.db, &s.brain, r.username.trim(), &r.question, online, len).await
+    };
     Json(json!({ "ok": true, "reply": reply }))
 }
 
@@ -1148,6 +1156,20 @@ struct TranslateReq { username: String, text: String }
 async fn translate_post(State(s): State<AppState>, Json(r): Json<TranslateReq>) -> Json<serde_json::Value> {
     let (translated, lang) = language::auto_translate(&s.db, &r.username, &r.text).await;
     Json(json!({ "ok": true, "language": lang, "translated": translated }))
+}
+
+// H19: mteja wa PORTAL anachagua lugha yake — mfumo unaitafsiri kwa AI kiatomatiki!
+#[derive(serde::Deserialize)]
+struct PortalLangReq { token: String, language: String }
+
+async fn portal_language(State(s): State<AppState>, Json(r): Json<PortalLangReq>) -> Json<serde_json::Value> {
+    let Some(account) = portal::auth(&s.db, &r.token).await else {
+        return Json(json!({ "ok": false, "error": "token si sahihi" }));
+    };
+    match language::set_language(&s.db, &account, &r.language).await {
+        Ok(()) => Json(json!({ "ok": true, "account": account, "language": r.language })),
+        Err(e) => Json(json!({ "ok": false, "error": e })),
+    }
 }
 
 // ---------- Real Remoting (full view ya kila PC) ----------

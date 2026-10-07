@@ -247,6 +247,15 @@ pub fn bundles_count() -> usize {
 
 // ---------- VERSION METADATA (REPO v3.1 — kadi zinaonyesha Version vX) ----------
 
+/// Kanuni ya mmiliki: MTECH OS inaendeshwa na RUST PEKEE — hakuna runtime
+/// nyingine ya programu (python/node/npm/java/go) kwenye catalog; hizo ni APPS
+/// za wateja kwenye kadi (REPO), sio sehemu ya mfumo wa server. Logos za REPO
+/// ni SVG (svg=Rust inahudumia ServeDir; hakuna CDN/nje).
+/// Logo ya kila bundle: `img/rep/{id}.svg` (static, Rust ServeDir).
+pub fn logo_path(id: &str) -> String {
+    format!("/img/rep/{id}.svg")
+}
+
 /// Category inayokubaliwa: 8 za katalogi au 'custom' (drag & drop).
 pub fn category_is_known(c: &str) -> bool {
     c == "custom" || Category::from_id(c).is_some()
@@ -517,6 +526,31 @@ mod tests {
         let r = find_bundle("dev-r").expect("dev-r ipo");
         assert_eq!(r.category, Category::Development);
         assert!(find_app("rlang").is_some() && find_app("rstudio").is_some());
+    }
+
+    #[test]
+    fn mfumo_rust_pekee_catalog_haina_runtime_za_nje() {
+        // Kanuni ya mmiliki: SERVER (Rust) haikusudiyya kutekeleza runtime za nje.
+        // Katalogi ina apps za WATEJA kwenye kadi (REPO) — hii ni orodha ya
+        // vitu vya kusakinisha kwenye PC za wateja, si components za mfumo.
+        // Test hii inadai: hakuna package ya runtime inayopaswa kwisha kwenye
+        // server ya rust pekee — yaani hakuna 'runtime-critical' dependencies za
+        // runtime nje ya winget/apt (wa PC za wateja).
+        let runtime_ids = ["python", "node"];
+        for rid in runtime_ids {
+            // zipw/zipo kwenye REPO kama APPS za wateja tu — zina winget/apt au
+            // critical=false zisiwahi zilazimishwe kwenye server.
+            if let Some(app) = find_app(rid) {
+                assert!(app.winget.is_some() || app.apt.is_some(), "{rid} ni app ya wateja");
+            }
+        }
+        // Logos: kila bundle ina logo path halisi (SVG iliyofanywa static)
+        for b in catalog() {
+            let p = logo_path(&b.id);
+            assert!(p.starts_with("/img/rep/") && p.ends_with(".svg"), "{} → {}", b.id, p);
+            let f = format!("static{}.svg", p.trim_end_matches(".svg"));
+            assert!(std::path::Path::new(&f).exists(), "logo haipo: {f}");
+        }
     }
 
     #[test]

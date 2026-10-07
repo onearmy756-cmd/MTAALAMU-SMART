@@ -59,6 +59,20 @@ a{color:#00e5ff}
   </div>
 
   <div class="card">
+    <h2>🌐 LUGHA YAKO</h2>
+    <div class="row">
+      <select id="p_lang" style="max-width:160px">
+        <option value="sw" selected>Kiswahili (sw)</option>
+        <option value="en">English (en)</option>
+        <option value="fr">Français (fr)</option>
+        <option value="ar">العربية (ar)</option>
+      </select>
+      <button onclick="pLang()">HIFADHI</button>
+    </div>
+    <div id="p_lang_out" class="meta">Mfumo utatafsiri majibu yote kwa AI kiatomatiki (oti yako) — hii ni uwezo wa mfumo, si kazi yako.</div>
+  </div>
+
+  <div class="card">
     <div class="row"><button class="sec" onclick="pLogout()">🚪 TOKA</button>
     <button class="sec" onclick="pLoad()">🔄 Onyesha</button></div>
   </div>
@@ -84,6 +98,11 @@ async function pLogin(){
   }
 }
 function pLogout(){ localStorage.removeItem('mtech_portal'); location.reload(); }
+async function pLang(){
+  const lang = document.getElementById('p_lang').value;
+  const d = await (await fetch(API+'/api/portal/language',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:PT, language:lang})})).json();
+  document.getElementById('p_lang_out').innerHTML = d.ok ? `✅ Lugha imehifadhiwa (${esc(lang)}) — mfumo utatafsiri kwa AI kiatomatiki.` : ('❌ ' + esc(d.error||''));
+}
 async function pLoad(){
   if (!PT) return;
   const d = await (await fetch(API+'/api/portal/overview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:PT})})).json();

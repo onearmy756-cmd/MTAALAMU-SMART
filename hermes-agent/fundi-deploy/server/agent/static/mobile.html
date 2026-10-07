@@ -32,7 +32,15 @@ h2{font-size:16px;margin:4px 0 8px}
   <h2>INGIA (Fundi / Admin)</h2>
   <div class="row"><input id="m_user" placeholder="Username" value="fundi"/></div>
   <div class="row"><input id="m_pass" type="password" placeholder="Password"/></div>
-  <div class="row"><button onclick="mLogin()">INGIA</button></div>
+  <div class="row">
+    <select id="m_lang" title="Mfumo utatafsiri majibu ya AI kwa lugha hii">
+      <option value="sw" selected>Kiswahili</option>
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="ar">العربية</option>
+    </select>
+    <button onclick="mLogin()">INGIA</button>
+  </div>
   <div id="m_login_out" class="meta">Kazi za kuidhinisha na agents — kwa mbali.</div>
 </div>
 
@@ -62,6 +70,9 @@ async function mLogin(){
   if (d.ok) {
     SESS = d.session;
     localStorage.setItem('mtech_sess', JSON.stringify(SESS));
+    // Mfumo wenyewe unahifadhi lugha ya fundi (AI auto-translate ya H19)
+    try { await (await fetch(API+'/api/language', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username:u, language: document.getElementById('m_lang').value})})).json(); } catch(e) {}
     document.getElementById('who').textContent = SESS.role_name + ' · ' + SESS.username;
     document.getElementById('login_card').style.display = 'none';
     document.getElementById('m_main').style.display = '';

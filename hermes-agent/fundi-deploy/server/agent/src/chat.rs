@@ -13,6 +13,9 @@ use serde::Serialize;
 pub struct ChatReply {
     pub question: String,
     pub answer_sw: String,
+    #[serde(rename = "answer")]
+    pub answer_translated: String, // AI auto-translate kwa lugha ya mtumiaji
+    pub language: String,          // sw | en | fr | …
     pub source: String,   // brain | llm | offline_rules
     pub confidence: f64,  // 0.0–1.0
     pub references: Vec<String>, // solutions za agents wenzake
@@ -67,6 +70,16 @@ async fn llm_ask(db: &sqlx::SqlitePool, question: &str, context: &str, len: Leng
 }
 
 /// Chat: andika tatizo/swali → jawabu (offline = brain + rules; online = LLM + brain).
+pub async fn ask_username(db: &sqlx::SqlitePool, brain: &crate::brain::Brain, username: &str, question: &str, online: bool, len: Length) -> ChatReply {
+    let mut r = ask(brain, question, online, len).await;
+    // AI auto-translate (maelezo ya mmiliki): lugha ya mtumiaji kutoka DB;
+    // LLM haipatikani → jibu la asili (Kiswahili) — hakuna uongo.
+    let (translated, lang) = crate::language::auto_translate(db, username, &r.answer_sw).await;
+    r.answer_translated = crate::tools::sanitize_output(&translated);
+    r.language = lang;
+    r
+}
+
 pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool, len: Length) -> ChatReply {
     // 1. Neuralis Brain daima (offline + online context)
     let refs = crate::brain::recall(brain, question, 3).await;
@@ -83,6 +96,8 @@ pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool, len:
         return ChatReply {
             question: question.into(),
             answer_sw: crate::tools::sanitize_output(answer.trim()),
+            answer_translated: String::new(), // ask_username huitafsiri baadaye
+            language: "sw".into(),
             source: if online { "llm".into() } else { "llm_offline_lan".into() },
             confidence: if refs.is_empty() { 0.7 } else { 0.9 },
             references: refs.iter().map(|(m, _)| crate::tools::sanitize_output(&m.solution)).collect(),
@@ -132,6 +147,8 @@ pub async fn ask(brain: &crate::brain::Brain, question: &str, online: bool, len:
     ChatReply {
         question: question.into(),
         answer_sw,
+        answer_translated: String::new(), // ask_username huitafsiri baadaye
+        language: "sw".into(),
         source: "brain_offline".into(),
         confidence: conf,
         references,
@@ -203,5 +220,21 @@ mod tests {
         // sandbox: LLM haipatikani → fallback; hii inathibitisha hakuna panic na
         // source iko halisi (llm_offline_lan / brain_offline)
         assert!(r.source == "llm_offline_lan" || r.source == "brain_offline");
+    }
+
+    #[tokio::test]
+    async fn ask_username_inatafsiri_kwa_lugha_ya_mtumiaji() {
+        let db = sqlx::SqlitePool::connect("sqlite::memory:").await.unwrap();
+        crate::brain::init_tables(&db).await;
+        crate::language::init_tables(&db).await;
+        let dir = std::env::temp_dir().join(format!("mtech-ctest-{}", uuid::Uuid::new_v4()));
+        let brain = crate::brain::Brain::new(db.clone(), dir.to_str().unwrap());
+        crate::language::set_language(&db, "mteja1", "sw").await.unwrap();
+        let r = ask_username(&db, &brain, "mteja1", "kompyuta inaenda polepole", false, Length::Medium).await;
+        // Sandbox haina LLM ya translate → jibu la asili (Kiswahili) + language ya DB
+        assert_eq!(r.language, "sw");
+        assert!(!r.answer_translated.is_empty(), "jibu la asili liko kwa digit moja");
+        // hakuna majina ya zana kwenye jibu lililotafsiriwa (white-label)
+        assert!(!r.answer_translated.contains("nmap"));
     }
 }

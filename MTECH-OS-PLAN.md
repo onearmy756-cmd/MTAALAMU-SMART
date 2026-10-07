@@ -479,3 +479,58 @@ billing.rs na tools.rs):
     scroll inafuata mwisho; kosa linaonekana pia ([ERROR] + reason).
   - Kurekebisha kosa la JS mfululizo wa mabano (node --check twofold).
 - ** verifies**: cargo test 136/136 (exit 0), node --check 2/2.
+
+## H19 ✅ — AI AUTO-TRANSLATE: MFUMO UNATAFSIRI UKICHOAGUA LUGHA (biashara ya lugha)
+
+- **Kanuni ya mmiliki**: "Mfumo ndo ufanye hivyo sio wewe" — mteja anachagua
+  lugha, na **AI ya server** inatafsiri majibu YOTE kiatomatiki. (Mimi/[AI
+  assistant] si mtafsiri wa laatste; mfumo wenyewe unafanya.)
+- **chat.rs**:
+  - `ChatReply` mpya: `answer` (translated, serde rename; haijaanguka kwenye
+    mobile/portal), `language` (code ya DB).
+  - `ask_username(db, brain, username, ...)` — inaita `ask` kama kawaida,
+    kisha **`language::auto_translate`** (ai_config::translate_db; LLM ya LAN
+    haipatikani → jibu la asili, hakuna uongo). Majibu yote yanapita
+    `tools::sanitize_output` (white-label inabaki).
+  - Test mpya `ask_username_inatafsiri_kwa_lugha_ya_mtumiaji`.
+- **main.rs**:
+  - `POST /api/chat` inakubali `username` (opisinale: chini, bila
+    username → ask ya kawaida).
+  - Route mpya **`POST /api/portal/language`** — token ya portal + language;
+    portal::auth kwanza, kisha `language::set_language(account)`.
+- **index.html (CHAT)**: select ya lugha (sw/en/fr/ar) + Account; sendChat
+  inahifadhi lugha (`/api/language`) kwanza, kisha jibu linaonyesha
+  `answer` (processed) + badge ya lugha.
+- **portal.html**: kadi mpya **🌐 LUGHA YAKO** — select + HIFADHI →
+  `/api/portal/language`; mfumo unaeleza utatafsiri kiatomatiki.
+- **mobile.html**: fundi anachagua lugha kwenye INGIA (localStorage-free;
+  mfumo unaihifadhi kwenye DB kwa username yake).
+- **16/16 tests za language + chat** (137 jumla): lugha ya kila mtumiaji
+  inahifadhiwa na kubadilishwa; code mbaya inakataliwa; auto_translate
+  haipanuki bila LLM (jibu la asili).
+- **137/137 tests** (136 + 1 mpya), node --check: index 2/2, portal 1/1,
+  mobile 1/1.
+
+## H19 ✅ — RUST PEKEE + REPO LOGO HALISI + UI YA KISASA
+
+- **Rust pekee (kanuni ya mmiliki)**: mfumo wote unakaa Rust: axum+sqlx+reqwest
+  (LLM/ClickPesa/tftp helpers) — hakuna python/node/java/go kwenye server
+  (Cargo.toml haianza runtime nyingine). Test mpya ya bundles: kila app ya
+  katalogi (mf. python/node) ni kwa **PC za wateja** (winget/apt REPO) — sio
+  dependency ya server; logos zote 33 zina SVG iko static/img/rep/
+  (test inathibitisha file.zipopo kwa kila bundle —kukosa 404).
+- **REPO logos halisi (static/img/rep/)**: SVG 33 — kila bundle ina picha halisi
+  (chupa/circle/monogram/cartoon zilizokufupisha branding: VS Code blue,
+  R circle, Docker whale, GIMP wilber simplified, Slack, Teams, Zoom, VLC
+  cone, 7z, WinRAR, Dell/HP/Lenovo/Acer/ASUS plates…). Kadi (repRender) sasa
+  ina **<img src="img/rep/{id}.svg">** na **fallback emoji** kama faili
+  halipatikani (custom bundles). test ya bundles inasema logo kila bundle.
+- **UI ya kisasa (mwonekano muhimu umebaki — rangi/brand zilezile)**:
+  - `.rep-card`: gradient lesi ya kisasa, hover inapanda (translateY(-3px)),
+    border inamulika #00e5ff, shadow laini, transition .18s, active-press.
+  - `.toast` kwenye chini → badala ya `alert()` kwenye REPO DISTRIBUTE
+    (alerti za sehemu nyingine zimebaki — hazikuguswa).
+  - `:focus-visible` outline kwa keyboard-navigation (weusi wa kupita).
+  - repDistribute error ina `needs_billing` hint kwenye terminal (imebaki).
+- **Tests 2 mpya** (`mfumo_rust_pekee_catalog_haina_runtime_za_nje`,
+  `logo_path` check) — **jumla 138/138**; node --check 2/2 (kabla ya commit).
