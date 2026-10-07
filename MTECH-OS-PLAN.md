@@ -561,3 +561,23 @@ zote zimeunganishwa na zinafanya kazi?" — JIBU LINAPIGWA NA TEST SI MANENO:
   yenye пакет husika; toolkit inarudisha ujumbe mzuri ("zana ya ndani
   haipatikani kwenye server hii") kama binary haipo — hakuna kufilisika.
 - **Jumla tests**: 139 (fundi) + 70 (engine) = **209/209**.
+
+## H21 ✅ — HERO SLIDER (RETOOL-STYLE) JUU YA DASHBOARD
+
+- **Kusoma retool.com**: mwonekano = hero kubwa na slides zinazojiendesha
+  (badges "NEW", mada kubwa, CTA mbili: kuu + secondary), dots za
+  uelekezaji, na visual za kuchora upande wa kulia. Rangi + brand ni
+  zetu (teal/cyan/mwanga wa bluu) — muundo tu ni wa Retool.
+- **index.html**:
+  - `.hero-slider` juu ya kadi ya MWANZO HAPA (`#hs_top`): slides **3**
+    (1: Mfumo una-fanyaje kazi → MWANZO HAPA/JOBS; 2: REPO programu 33
+    isho na picha halisi → REPO/TOOLS; 3: BILI + LIPA SIMU → BILI/CYBER).
+  - `.hs-badge` ("NEW · …"), CTA zote zina `location.hash` → sehemu
+    husika ya dashboard; visual za upande wa kulia zimechorwa kwa
+    mistari midogo ya taarifa halisi (si lorem).
+  - **Dots** (`#hs_dots`) na **autoplay 6s**; mtumiaji anapobonyeza dot,
+    autoplay inasimama (kutokwenda kinyume na matumizi yake).
+  - Responsive: picha inashuka chini ya screen ndogo (max-width 800px).
+  - `hsInit()` inaitwa kwenye `window.load` (baada ya flLoad).
+- **Kagua hali**: node --check 2/2; hakuna Rust iliyoguswa (tests ziko
+  139+70 kutoka H20 — hazirepeatishwi kwa info lost).

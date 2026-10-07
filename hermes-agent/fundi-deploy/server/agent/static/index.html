@@ -31,6 +31,23 @@ main{max-width:1100px;margin:0 auto;padding:16px 20px 60px}
 .card:hover{border-color:#00e5ff66}
 card:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #00e5ff88;outline-offset:2px}
 input:focus-visible,select:focus-visible{border-color:#00e5ff88}
+/* ── Retool-style HERO SLIDER (mwonekano wa retool.com: hero kubwa + slides zinazojiendesha + CTA rahisi; rangi + brand ni zletu tu) ── */
+.hero-slider{background:linear-gradient(135deg,#0d2137 0%,#050d18 60%);border:1px solid var(--line);border-radius:16px;padding:22px;margin:14px 0 18px;position:relative;overflow:hidden}
+.hero-slider::before{content:'';position:absolute;inset:0;background:radial-gradient(600px 220px at 85% -10%, rgba(0,229,255,.12), transparent 60%);pointer-events:none}
+.hero-slides{display:grid}
+.hero-slide{grid-area:1/1;opacity:0;transform:translateY(8px);transition:opacity .5s ease, transform .5s ease;pointer-events:none;display:grid;grid-template-columns:1.3fr .7fr;gap:18px;align-items:center}
+.hero-slide.on{opacity:1;transform:none;pointer-events:auto}
+.hero-slide h2{color:var(--cyan);font-size:26px;line-height:1.15;margin:0 0 8px}
+.hero-slide p{color:#b2ebf2;font-size:14px;margin:0 0 14px;max-width:520px}
+.hero-slide .hs-cta{display:flex;gap:10px;flex-wrap:wrap}
+.hero-slide .hs-visual{background:linear-gradient(180deg,#0f1a2e,#0b1424);border:1px solid #1e2b45;border-radius:12px;padding:14px;font-size:12px;color:var(--dim);min-height:150px}
+.hs-badge{display:inline-block;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.35);color:var(--cyan);border-radius:999px;font-size:11px;font-weight:700;padding:3px 10px;margin-bottom:10px}
+.hs-cta button{background:var(--cyan);color:#042;border:none;border-radius:9px;padding:10px 18px;font-weight:800}
+.hero-slide .hs-cta button.sec{background:#283593;color:#e0f7fa}
+.hs-dots{display:flex;gap:6px;margin-top:12px}
+.hs-dots button{width:22px;height:6px;border-radius:999px;background:#1e2b45;border:none;padding:0;transition:background .3s}
+.hs-dots button.on{background:var(--cyan)}
+@media(max-width:800px){.hero-slide{grid-template-columns:1fr}.hero-slides .hs-visual{min-height:100px}}
 /* REPO v3.2 — logos halisi + kadi za kisasa */
 .rep-card{background:linear-gradient(180deg,#0f1a2e 0%,#0b1424 100%);border:1px solid #1e2b45;border-radius:14px;padding:14px 12px;text-align:center;transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;position:relative}
 .rep-card:hover{transform:translateY(-3px);border-color:#00e5ff80;box-shadow:0 10px 26px rgba(0,229,255,.10)}
@@ -109,6 +126,49 @@ details p{font-size:13px;color:#b2ebf2}
 </nav>
 
 <main>
+
+<!-- ⭐ HERO SLIDER (Retool-style) → slides 3 zinazojiendesha kila 6s -->
+<div class="hero-slider" id="hs_top">
+  <div class="hero-slides" id="hs_slides">
+    <div class="hero-slide on">
+      <div>
+        <span class="hs-badge">NEW · ONBOARDING KWA DAKIKA 2</span>
+        <h2>Mfumo unafanyaje kazi — wewe, mteja, na agent</h2>
+        <p>Agent AI inafanya kazi nzito; wewe unaidhinisha (HITL). Mteja anapewa code ya kufuatilia. Kila hatua inaandikwa.</p>
+        <div class="hs-cta">
+          <button onclick="location.hash='#start'">Anza MWANZO HAPA</button>
+          <button class="sec" onclick="location.hash='#matrix_card'">Tazama JOBS</button>
+        </div>
+      </div>
+      <div class="hs-visual">🤖 Agent Live · feed ya kila hatua<br/>✅ Kazi zinazosubiri RUHUSU<br/>📄 Ripoti PDF zilizobuniwa</div>
+    </div>
+    <div class="hero-slide">
+      <div>
+        <span class="hs-badge">REPO · PROGRAMU 33 KWA MBOGYO MOJA</span>
+        <h2>Bundles zote + picha halisi — DISTRIBUTE kwa kompyuta ulizochagua</h2>
+        <p>Kangozi ya categories, tafuta, kabisha setup yako (drag & drop), na sambaza kwa network nzima — offline kwenye server yako.</p>
+        <div class="hs-cta">
+          <button onclick="location.hash='#repo_card'">Fungua REPO</button>
+          <button class="sec" onclick="location.hash='#tools_card'">Tazama TOOLS</button>
+        </div>
+      </div>
+      <div class="hs-visual">📦 VS Code · Python · R (v4.4.1) · GIMP · VLC<br/>🛠️ Category: DEVELOPMENT TOOLS<br/>🟢 Docker/Wazuh gauges ziko tayari</div>
+    </div>
+    <div class="hero-slide">
+      <div>
+        <span class="hs-badge">BILI · MALIPO YA M-PESA/TIGO/AIRTEL</span>
+        <h2>Salio la BILI + subscription + malipo ya simu (ClickPesa)</h2>
+        <p>Mteja analipa kwa simu (LIPA SIMU), salio inaongeza kiatomatiki; kazda inatoa kama imefaulu.</p>
+        <div class="hs-cta">
+          <button onclick="location.hash='#bili_card'">Fungua BILI</button>
+          <button class="sec" onclick="location.hash='#sec_card'">Pima Usalama</button>
+        </div>
+      </div>
+      <div class="hs-visual">💰 Sub: TZS 6,500–8,000/kifaa/mwezi<br/>⚡ Pay-per-use: scan 2,000 · OS 5,000<br/>📱 ClickPesa webhook idempotent</div>
+    </div>
+  </div>
+  <div class="hs-dots" id="hs_dots"></div>
+</div>
 
 <!-- ⭐ MWANZO HAPA -->
 <div class="hero" id="start">
@@ -1252,6 +1312,28 @@ async function mxBalance(){
 }
 
 // ---------- BUNDLE & ASSET REPOSITORY ----------
+// ── HERO SLIDER (Retool-tundo): dots + autoplay 6s, inasimama mtumiaji anapogusa ──
+const HS = { i: 0, n: 3, timer: null, inited: false };
+function hsShow(k){
+  HS.i = (k + HS.n) % HS.n;
+  document.querySelectorAll('#hs_slides .hero-slide').forEach((el, j) => el.classList.toggle('on', j === HS.i));
+  document.querySelectorAll('#hs_dots button').forEach((b, j) => b.classList.toggle('on', j === HS.i));
+}
+function hsNext(){ hsShow(HS.i + 1); }
+function hsInit(){
+  if (HS.inited) return;
+  HS.inited = true;
+  const dots = document.getElementById('hs_dots');
+  for (let j = 0; j < HS.n; j++) {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', 'Slide ' + (j + 1));
+    b.onclick = () => { hsShow(j); hsStop(); };    // bonyeza = acha autoplay
+    dots.appendChild(b);
+  }
+  hsShow(0);
+  HS.timer = setInterval(hsNext, 6000);
+}
+function hsStop(){ clearInterval(HS.timer); HS.timer = null; }
 const REP = { bundles: [], cats: [] };
 const CDROP = { cat: 'development' };
 const REP_DROP_LABEL = { development:'DEVELOPMENT TOOLS', office:'OFFICE', browsers:'BROWSERS', communication:'MAWASILIANO', utilities:'UTILITIES', security:'USALAMA', graphics:'GRAPHICS', drivers:'DRIVERS', custom:'CUSTOM' };
@@ -1775,7 +1857,7 @@ function flDownload(fname){
   window.open(API + '/' + fname, '_blank');
 }
 setInterval(flLoad, 5000);
-window.addEventListener('load', ()=>{ flLoad(); });
+window.addEventListener('load', ()=>{ flLoad(); hsInit(); });
 </script>
 <script>
 /* MTECH OS — ULINZI WA SOURCE: huduma za ndani zisioneswe kwa mtumiaji wa kawaida */
