@@ -51,22 +51,46 @@ impl Length {
 async fn llm_ask(db: &sqlx::SqlitePool, question: &str, context: &str, len: Length) -> Option<String> {
     // CUSTOM MODEL/API: config kutoka DB (mteja ameweka yake) au default ya server kuu
     let cfg = crate::ai_config::load_with_db(db).await;
-    let url = format!("{}/api/generate", cfg.url.trim_end_matches('/'));
-    let body = serde_json::json!({
-        "model": cfg.model,
-        "prompt": format!("Wewe ni fundi wa kompyuta wa MTECH OS. {}\n\n{LLM_SECRECY_RULE}\n\nMuktadha (suluhisho za agents wenzake):\n{context}\n\nSwali: {question}\n\nJibu:", len.instruction_sw()),
-        "stream": false,
-    });
+    let base = cfg.url.trim_end_matches('/');
+    let sys = format!("Wewe ni fundi wa kompyuta wa MTECH OS. {}\n\n{LLM_SECRECY_RULE}\n\nMuktadha (suluhisho za agents wenzake):\n{context}", len.instruction_sw());
+    let (url, body, bearer) = match crate::ai_config::style_for_url(base) {
+        "openai" => (
+            format!("{base}/chat/completions"),
+            serde_json::json!({
+                "model": cfg.model,
+                "messages": [
+                    {"role": "system", "content": sys},
+                    {"role": "user", "content": question}
+                ],
+                "stream": false,
+            }),
+            crate::ai_config::ai_key(),
+        ),
+        _ => (
+            format!("{base}/api/generate"),
+            serde_json::json!({
+                "model": cfg.model,
+                "prompt": format!("{sys}\n\nSwali: {question}\n\nJibu:"),
+                "stream": false,
+            }),
+            None,
+        ),
+    };
     let client = reqwest::Client::new();
-    let resp = client
-        .post(url)
-        .json(&body)
+    let mut req = client.post(&url).json(&body);
+    if let Some(k) = bearer {
+        req = req.bearer_auth(k);
+    }
+    let resp = req
         .timeout(std::time::Duration::from_secs(60))
         .send()
         .await
         .ok()?;
     let v: serde_json::Value = resp.json().await.ok()?;
-    v["response"].as_str().map(String::from)
+    // OpenAI-compat inajibu choices[0].message.content; Ollama/llama.cpp inajibu response
+    v["response"].as_str()
+        .or_else(|| v["choices"][0]["message"]["content"].as_str())
+        .map(String::from)
 }
 
 /// Chat: andika tatizo/swali → jawabu (offline = brain + rules; online = LLM + brain).
