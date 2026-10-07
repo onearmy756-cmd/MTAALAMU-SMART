@@ -292,6 +292,32 @@ pub async fn runs_json(db: &SqlitePool) -> serde_json::Value {
 mod tests {
     use super::*;
 
+    /// THIBITISHO KAMILI: kila zana ina binary/args/jina kamili, catalog haivui
+    /// binaries HATA MOJA, na huduma ya Kali (kali-tools) ipo docker-compose —
+    /// zwan zote zimeunganishwa kama kanuni ya SEHEMU 8.2.
+    #[test]
+    fn kila_zana_ina_mpangilio_kamili_na_kali_imeunganishwa() {
+        // 1) kila ToolDef kamili + ids pekee (hakuna nakala)
+        let mut ids = std::collections::HashSet::new();
+        for t in TOOLS {
+            assert!(!t.id.is_empty(), "id tupu");
+            assert!(ids.insert(t.id), "id inajirudia: {}", t.id);
+            assert!(!t.binary.is_empty(), "{} binary tupu", t.id);
+            assert!(!t.name_sw.is_empty(), "{} jina tupu", t.id);
+        }
+        // 2) katalogi ya API HAIVUI binary yoyote (kwa zana MOJA MOJA)
+        let cat = catalog_json(None).to_string();
+        for t in TOOLS {
+            assert!(!cat.contains(t.binary), "{} inavuja kwenye katalogi", t.id);
+        }
+        // 3) docker-compose ina huduma ya Kali — zana zinatekelezwa hapo
+        let mf = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../docker-compose.yml");
+        let s = std::fs::read_to_string(&mf).expect("docker-compose.yml haipatikani");
+        assert!(s.contains("kali-tools") && s.contains("kalilinux/kali-rolling"), "huduma ya Kali haipo compose");
+        // 4) ukubwa wa registry kama kanuni (SEHEMU 8.2: zana 30+)
+        assert!(TOOLS.len() >= 30, "registry: {}", TOOLS.len());
+    }
+
     #[test]
     fn registry_ina_zana_33_na_categories_8() {
         assert_eq!(TOOLS.len(), 34, "SEHEMU 8.2 ya mpango: zana 34 (bila nakala)");

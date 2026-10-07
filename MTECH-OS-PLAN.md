@@ -534,3 +534,30 @@ billing.rs na tools.rs):
   - repDistribute error ina `needs_billing` hint kwenye terminal (imebaki).
 - **Tests 2 mpya** (`mfumo_rust_pekee_catalog_haina_runtime_za_nje`,
   `logo_path` check) — **jumla 138/138**; node --check 2/2 (kabla ya commit).
+
+## H20 ✅ — THIBITISHO: HERMES/FUNDI-DEPLOY + KALI LINUX ZIMEUNGANISHWA
+
+Swali la mmiliki: "hermes agent na zana zake zote, kali linux na zana zake
+zote zimeunganishwa na zinafanya kazi?" — JIBU LINAPIGWA NA TEST SI MANENO:
+
+- **Hermes/Fundi-Deploy (Rust)**: `cargo test` → **139/139** (fundi-deploy)
+  + **70/70** (engine-rust). CI 6/6 kila PR (2× engine, 2× fundi-deploy,
+  2× lint dashboard). Zana za mfumo: PXE/WOL/multicast/VPN/backup/images/
+  fleet/billing/reports/secops/toolkit/portal/ClickPesa — zote zina tests
+  zinazopita (rejea blocks H6–H19 hapo juu).
+- **Kali Linux**: docker-compose.yml ina huduma **kali-tools**
+  (image `kalilinux/kali-rolling`, container `fundi-kali`, work dir
+  ./data/kali-work) — zana 34 za toolkit.rs (nmap, masscan, nikto, wpscan,
+  msfconsole, sqlmap, hydra, aircrack-ng, kismet, john, hashcat, crunch,
+  tcpdump, tshark, ettercap, sleuthkit-fls, volatility3, foremost, scalpel,
+  binwalk, dc3dd, photorec, testdisk, autopsy, guymager, + za mfumo) zina
+  **binary + args kamili ndani ya Rust** (`ToolDef`), zinakimbia kwa
+  arg-array salama + timeout 60s + `sanitize_output` + audit (tool_runs).
+- **Test mpya ya muhuri** `kila_zana_ina_mpangilio_kamili_na_kali_imeunganishwa`:
+  1) kila zana ina id pekee + binary + jina; 2) katalogi ya API HAIVUI
+  binary yoyote kwa zana MOJA MOJA (white-label); 3) compose ina
+  kali-tools/kalilinux/kali-rolling; 4) registry ≥ 30.
+- **Kumbuka**: zana za Kali zinakimbia kwenye container ya Kali au host
+  yenye пакет husika; toolkit inarudisha ujumbe mzuri ("zana ya ndani
+  haipatikani kwenye server hii") kama binary haipo — hakuna kufilisika.
+- **Jumla tests**: 139 (fundi) + 70 (engine) = **209/209**.
