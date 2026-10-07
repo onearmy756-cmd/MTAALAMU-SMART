@@ -461,3 +461,21 @@ billing.rs na tools.rs):
   (winget `RProject.R` / apt `r-base`) + RStudio Desktop (winget `Posit.RStudio`);
   `version_of()` → `v4.4.1`; test ya versions imethibitisha pamoja na
   find_bundle/find_app. Jumla bundles sasa **33**. Tests **135/135**.
+
+### H18c — DRAG & DROP category + terminal ya mistari zaidi
+- **bundles.rs**: `category_is_known('custom')=true` — custom setup inaruhusu
+  category yoyote ya kadi (mf. "DEVELOPMENT TOOLS"), si 'custom' pekee; test
+  mpya `custom_category_ipokelewa_catalog_inakatalia`. **136/136**.
+- **index.html (REPO card)**:
+  - DRAG & DROP sasa ina **select ya Category** na
+    **"DEVELOPMENT TOOLS" ikichaguliwa kuanzia** (kama picha ya mmiliki) —
+    pamoja na 8 za katalogi + CUSTOM (generiki).
+  - repFiles inatuma category hiyo kwenye POST /api/bundles; majina ya
+    label (DEVELOPMENT TOOLS/MAWASILIANO/USALAMA…) kutoka `REP_DROP_LABEL`.
+  - Kadi zinaonyesha **`Category: DEVELOPMENT TOOLS · apps N`** (uppercase
+    kama picha), na custom id inaonyesha `CUSTOM`.
+  - Terminal (rep_term) inapata **mistari zaidi ya kila faili** kama picha
+    ("[OK] Setup: {jina} — Category: {LABEL} (faili 1/1) imeandikishwa..."),
+    scroll inafuata mwisho; kosa linaonekana pia ([ERROR] + reason).
+  - Kurekebisha kosa la JS mfululizo wa mabano (node --check twofold).
+- ** verifies**: cargo test 136/136 (exit 0), node --check 2/2.

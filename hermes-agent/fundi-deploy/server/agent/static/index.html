@@ -569,7 +569,20 @@ details p{font-size:13px;color:#b2ebf2}
   </div>
   <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:8px" class="repo-grid">
     <div>
-      <h4>DRAG & DROP CUSTOM SETUP</h4>
+      <div class="row" style="align-items:center">
+        <h4 style="margin:0">DRAG & DROP CUSTOM SETUP</h4>
+        <select id="rep_drop_cat" onchange="repDropCat(this.value)" title="Category ya custom setup" style="max-width:190px">
+          <option value="development" selected>DEVELOPMENT TOOLS</option>
+          <option value="office">OFFICE</option>
+          <option value="browsers">BROWSERS</option>
+          <option value="communication">MAWASILIANO</option>
+          <option value="utilities">UTILITIES</option>
+          <option value="security">USALAMA</option>
+          <option value="graphics">GRAPHICS</option>
+          <option value="drivers">DRIVERS</option>
+          <option value="custom">CUSTOM (generiki)</option>
+        </select>
+      </div>
       <div id="rep_drop" style="border:2px dashed #00e5ff55;border-radius:12px;padding:26px;text-align:center;color:var(--dim)"
         ondragover="event.preventDefault();this.style.background='#00e5ff11'"
         ondragleave="this.style.background=''"
@@ -1213,6 +1226,10 @@ async function mxBalance(){
 
 // ---------- BUNDLE & ASSET REPOSITORY ----------
 const REP = { bundles: [], cats: [] };
+const CDROP = { cat: 'development' };
+const REP_DROP_LABEL = { development:'DEVELOPMENT TOOLS', office:'OFFICE', browsers:'BROWSERS', communication:'MAWASILIANO', utilities:'UTILITIES', security:'USALAMA', graphics:'GRAPHICS', drivers:'DRIVERS', custom:'CUSTOM' };
+let rep_files_done = 0, rep_files_total = 0;
+function repDropCat(c){ CDROP.cat = c || ''; }
 const REP_ICONS = { office:"📄", browsers:"🌐", development:"💻", communication:"💬", utilities:"🧰", security:"🛡️", graphics:"🎨", drivers:"🖨️", custom:"📁" };
 const REP_EMOJI = { "vscode":"🧩", "chrome":"🌍", "firefox":"🦊", "gimp":"🎨", "vlc":"🎬", "7zip":"🗜️", "libreoffice":"📄", "python":"🐍", "git":"🌿", "notepad++":"📝", "zoom":"📹", "teams":"👥", "anydesk":"🖥️" };
 async function repLoad(){
@@ -1241,7 +1258,7 @@ function repRender(){
       <div style="font-weight:700">${escHtml(b.name_sw)}</div>
       <div class="meta">Package Name</div>
       <div style="color:#7dd3fc;font-weight:600">${escHtml(b.version || repVersionFallback(b))}</div>
-      <div class="meta">${escHtml(b.category)} · apps ${((b.apps||[]).length)}</div>
+      <div class="meta">Category: ${escHtml((b.category||'').toUpperCase())} · apps ${((b.apps||[]).length)}</div>
       <button style="width:100%;margin-top:6px;background:#34d399;border:none" onclick="repDistribute('${escAttr(b.id)}')">DISTRIBUTE</button>
     </div>`).join('') || '<span class="meta">Hakuna bundles.</span>';
 }
@@ -1266,13 +1283,25 @@ function repDrop(ev){
 function repFile(files){ repFiles([...(files||[])]); }
 async function repFiles(files){
   const out = document.getElementById('rep_drop_out');
-  for (const f of files) {
+  const term = document.getElementById('rep_term');
+  rep_files_done = 0; rep_files_total = (files||[]).length;
+  for (const f of (files||[])) {
     const name = f.name.replace(/\.(exe|msi|zip|deb|tar\.gz)$/i, '');
+    const cat = CDROP.cat || 'custom';
+    const label = REP_DROP_LABEL[cat] || cat.toUpperCase();
+    const desc = (cat === 'custom') ? ('Custom setup: ' + f.name) : ('Setup ya ' + cat + ': ' + f.name);
     const d = await (await fetch(API+'/api/bundles', {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({id: 'custom-'+Date.now(), name_sw: name, description: 'Custom setup: '+f.name+' ('+Math.round(f.size/1024)+' KB) — weka faili kwenye install share', category: 'custom', app_ids: [], created_by: 'admin (dashboard)'})})).json();
-    out.innerHTML = d.ok ? `✅ ${escHtml(name)} imeandikishwa kwenye repository (custom).` : ('❌ '+(d.error||''));
-    if (d.ok) { document.getElementById('rep_term').innerHTML += `&gt; [OK] Custom setup: ${escHtml(f.name)} imeandikishwa (weka faili kwenye install share)<br/>&gt; `; }
+      body: JSON.stringify({id: 'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,8), name_sw: name, description: desc+' ('+Math.round(f.size/1024)+' KB) — weka faili kwenye install share', category: cat, app_ids: [], created_by: 'admin (dashboard)'})})).json();
+    rep_files_done++;
+    if (d.ok) {
+      out.innerHTML = `\u2705 ${escHtml(name)} imeandikishwa (Category: ${escHtml(label)}) faili ${rep_files_done}/${rep_files_total}`;
+      term.innerHTML += `&gt; [OK] Setup: ${escHtml(f.name)} — Category: ${escHtml(label)} (faili ${rep_files_done}/${rep_files_total}) imeandikishwa (weka faili kwenye install share)<br/>`;
+    } else {
+      out.innerHTML = '\u274c '+(d.error||'');
+      term.innerHTML += `&gt; [ERROR] ${escHtml(f.name)} — ${escHtml(d.error||'')}<br/>`;
+    }
   }
+  if (rep_files_total) { term.innerHTML += '&gt; '; term.scrollTop = term.scrollHeight; }
   repLoad();
 }
 function repVersionFallback(b){
