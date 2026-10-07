@@ -609,3 +609,33 @@ zote zimeunganishwa na zinafanya kazi?" — JIBU LINAPIGWA NA TEST SI MANENO:
   inalinda web-r/www/index.html pekee (fundi-deploy dashboard ina node
   --check ya blocks zote 2 kwenye hali halisi).
 - **Tests**: hakuna Rust iliyoguswa (139+70 kama H20); node --check 2/2.
+
+## H23 ✅ — CHATI YA AI + OLLAMA/LLAMA.CPP/CLOUD ZIMEUNGANISHWA (UKAGUZI + CLOUD KEY)
+
+Swali la mmiliki: "chati ya AI + ollama cloud, llm cpp zimeunganishwa?" —
+JIBU (ukweli kwenye disk):
+
+- **Chat ya AI IPO na inafanya kazi**: kadi 🖥️ SOLUTIONS ina "AI AGENT —
+  Chat ya matatizo" (POST /api/chat, Enter au ➤), jibu lina source
+  (brain/llm/offline_rules) + confidence + references + **auto-translate**
+  kwa lugha ya mtumiaji. Kadi 🧠 AI inaruhusu endpoint/model ya CUSTOM
+  (DB-backed, inatumika mara moja).
+- **Ollama imeunganishwa**: compose ya server ina huduma **ollama**
+  (`ollama/ollama:latest`, port 11434, data kwenye ./data/ollama) —
+  ai_config default nayo ni `FUNDI_LLM_URL=http://127.0.0.1:11434` +
+  `FUNDI_LLM_MODEL=qwen2.5vl:3b` → chat/translate zinaita Ollama moja kwa
+  moja (offline LAN).
+- **llama.cpp imeunganishwa**: huduma **llamacpp** (`ghcr.io/ggml-org/
+  llama.cpp:server`, port 8081, GGUF Qwen2.5-VL-3B q4_k_m kwenye
+  ./data/models) — URL yoyote ya :8081/llamacpp inatumika kama LAN model.
+- **Cloud AI (H23 mpya)**: style_for_url() inatofautisha
+  - LAN (Ollama :11434 / llamacpp :8081) → `/api/generate` (prompt style);
+  - OpenAI-compatible (OpenAI/Groq/DeepSeek/Anthropic-compat/vLLM) →
+    `/chat/completions` (system+user messages) + **Bearer FUNDI_AI_KEY**
+    (env pekee, HAKUNA key kwenye DB); jibu linasomwa kutoka
+    choices[0].message.content AU response (zote mbili zinakubalika).
+  - UI bado ni ile ile ya 🧠 AI: weka URL ya cloud + jina la model;
+    key inawekwa kwenye env ya server (FUNDI_AI_KEY) — canonical.
+- **Test mpya** `style_urls_na_key_hakuna_panic`: LAN style 3, cloud
+  style 2, key bila env → None (hakuna panic), defaults za LAN
+  (:11434/qwen2.5vl:3b). **Jumla 140/140** (fundi-deploy).

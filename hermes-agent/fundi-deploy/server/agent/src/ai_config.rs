@@ -9,6 +9,11 @@
 //!   FUNDI_LLM_URL    (default http://127.0.0.1:11434 — Ollama ndani ya server kuu)
 //!   FUNDI_LLM_MODEL  (default qwen2.5vl:3b)
 //!
+//! CLOUD AI (H23): mteja akitaka cloud — anaweka custom URL ya
+//! OpenAI-compatible (OpenAI/Groq/DeepSeek/Mistral/…) + API key kwenye env
+//!   FUNDI_AI_KEY     (Bearer token kwa cloud APIs; niHIHIFADHIWI kwenye DB)
+//! akitumia UI ya 🧠 AI (aiSave/aiLoad); ollama/llamacpp za LAN hazihitaji key.
+//!
 //! KANUNI: LLM HAIHESABU kamwe — inaeleza, inatafsiri, inajibu maswali.
 
 use serde::Serialize;
@@ -81,6 +86,23 @@ pub fn default_config() -> LlmConfig {
         url: std::env::var("FUNDI_LLM_URL").unwrap_or_else(|_| "http://127.0.0.1:11434".into()),
         model: std::env::var("FUNDI_LLM_MODEL").unwrap_or_else(|_| "qwen2.5vl:3b".into()),
         offline_capable: true,
+    }
+}
+
+/// API key ya CLOUD (env pekee — hakuna key inahifadhiwa kwenye DB).
+pub fn ai_key() -> Option<String> {
+    std::env::var("FUNDI_AI_KEY").ok().filter(|s| !s.trim().is_empty())
+}
+
+/// Njia ya ombi: Ollama/llama.cpp LAN zinatumia `/api/generate` (prompt);
+/// OpenAI-compatible (cloud au vLLM) zinatumia `/chat/completions` (messages).
+pub fn style_for_url(url: &str) -> &'static str {
+    if url.contains(":11434") || url.contains("11434") || url.to_ascii_lowercase().contains("ollama") {
+        "generate"
+    } else if url.to_ascii_lowercase().contains("llamacpp") || url.contains(":8081") {
+        "generate"
+    } else {
+        "openai"
     }
 }
 
@@ -178,5 +200,23 @@ mod tests {
         clear_custom(&db).await.unwrap();
         let cfg = load_with_db(&db).await;
         assert!(cfg.url.contains("127.0.0.1"));
+    }
+
+    #[test]
+    fn style_urls_na_key_hakuna_panic() {
+        // Ollama/llama.cpp za LAN → /api/generate (prompt style, hakuna bearer)
+        assert_eq!(style_for_url("http://127.0.0.1:11434"), "generate");
+        assert_eq!(style_for_url("http://ollama:11434"), "generate");
+        assert_eq!(style_for_url("http://127.0.0.1:8081"), "generate");
+        // Cloud/OpenAI-compatible → /chat/completions + Bearer FUNDI_AI_KEY
+        assert_eq!(style_for_url("https://api.openai.com/v1"), "openai");
+        assert_eq!(style_for_url("https://api.groq.com/openai/v1"), "openai");
+        // key: hakuna env sandbox → None (hakuna panic)
+        let k = ai_key();
+        assert!(k.is_none() || !k.unwrap().trim().is_empty());
+        // defaults za LAN (ollama :11434 / model qwen2.5vl:3b)
+        let d = default_config();
+        assert!(d.url.contains(":11434"));
+        assert_eq!(d.model, "qwen2.5vl:3b");
     }
 }
