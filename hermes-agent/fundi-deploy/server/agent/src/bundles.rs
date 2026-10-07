@@ -172,6 +172,10 @@ pub fn catalog() -> Vec<Bundle> {
         Bundle { id: "dev-docker".into(), name_sw: "Docker Desktop".into(), description: "Containers".into(), category: Category::Development, apps: vec![
             a("docker", "Docker Desktop", Some("Docker.DockerDesktop"), Some("docker.io"), false),
         ]},
+        Bundle { id: "dev-r".into(), name_sw: "R-Language Core".into(), description: "Lugha ya takwimu + RStudio (winget/apt)".into(), category: Category::Development, apps: vec![
+            a("rlang", "R Language", Some("RProject.R"), Some("r-base"), false),
+            a("rstudio", "RStudio Desktop", Some("Posit.RStudio"), None, false),
+        ]},
         // ===== COMMUNICATION =====
         Bundle { id: "comms-zoom".into(), name_sw: "Zoom".into(), description: "Mikutano ya video".into(), category: Category::Communication, apps: vec![
             a("zoom", "Zoom", Some("Zoom.Zoom"), Some("zoom"), false),
@@ -262,6 +266,7 @@ pub fn version_of(id: &str) -> &'static str {
         "dev-git" => "v2.46",
         "dev-node" => "v22.9",
         "dev-docker" => "v27.3",
+        "dev-r" => "v4.4.1",
         // COMMUNICATION
         "comms-zoom" => "v6.2",
         "comms-teams" => "v24.2",
@@ -503,6 +508,11 @@ mod tests {
         assert_eq!(version_of("dev-vscode"), "v1.93");
         assert_eq!(version_of("util-vlc"), "v3.0.21");
         assert_eq!(version_of("gfx-gimp"), "v2.10");
+        // R-Language Core (REPO v3.1 screenshot) — v4.4.1
+        assert_eq!(version_of("dev-r"), "v4.4.1");
+        let r = find_bundle("dev-r").expect("dev-r ipo");
+        assert_eq!(r.category, Category::Development);
+        assert!(find_app("rlang").is_some() && find_app("rstudio").is_some());
     }
 
     #[test]

@@ -454,3 +454,10 @@ billing.rs na tools.rs):
 - **Tests 1 mpya**: `versions_zote_wa_catalog` (kila bundle ina vX; v1.0
   (custom) kwa custom; v1.93 kwa vscode). **Jumla 135/135**.
 - **UI check**: node --check 2/2 (script blocks zote 2 za index.html).
+
+### H18b (kuendelea na picha) — Bundle ya R-Language Core
+- **bundles.rs**: bundle mpya **dev-r "R-Language Core"** (category
+  Development, toleo **v4.4.1** kama picha ya mmiliki) — apps: R Language
+  (winget `RProject.R` / apt `r-base`) + RStudio Desktop (winget `Posit.RStudio`);
+  `version_of()` → `v4.4.1`; test ya versions imethibitisha pamoja na
+  find_bundle/find_app. Jumla bundles sasa **33**. Tests **135/135**.
