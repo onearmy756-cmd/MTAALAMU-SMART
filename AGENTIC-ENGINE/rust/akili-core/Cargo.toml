@@ -1,0 +1,15 @@
+[package]
+name = "akili-core"
+version = "0.1.0"
+edition = "2021"
+description = "MBILINYI AKILI - Qwen2.5-VL BF16 inference engine (Rust)"
+
+[dependencies]
+anyhow = "1"
+candle-core = "0.10.2"
+candle-nn = "0.10.2"
+half = "2"
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp", "bmp"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokenizers = "0.21"
