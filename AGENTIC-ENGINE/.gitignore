@@ -1,0 +1,37 @@
+# Modeli: faili KUBWA (safetensors) hazimo git — ziko GitHub Releases.
+# Faili ndogo (config, tokenizer, template) zinahifadhiwa.
+models/**/*.safetensors
+models/**/*.bin
+models/**/*.gguf
+models/**/*.pt
+models/**/*.pth
+
+# Rust
+rust/target/
+target/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Rejeleo la majaribio (huzalishwa)
+tests/ref/*.bin
+tests/ref/*.npy
+tests/ref/*.png
+
+# Kumbukumbu ya akilid (huzalishwa)
+data/kumbukumbu.jsonl
+*.log
+
+# Zana za kienyeji
+.openhands/
+.agent_tmp/
+# Rust
+rust/target/
+target/
+.rustup/
+.cargo/
+
+# Kifurushi cha kuhamisha (bundle)
+*.bundle

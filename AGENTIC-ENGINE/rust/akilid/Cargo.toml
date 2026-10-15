@@ -1,0 +1,22 @@
+[package]
+name = "akilid"
+version = "0.1.0"
+edition = "2021"
+description = "MBILINYI AKILI daemon - JSON-lines model server"
+
+[lib]
+name = "akilid"
+path = "src/lib.rs"
+
+[[bin]]
+name = "akilid"
+path = "src/main.rs"
+
+[dependencies]
+akili-core = { path = "../akili-core" }
+anyhow = "1"
+candle-core = "0.10.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+clap = { version = "4", features = ["derive", "env"] }
+base64 = "0.22"
