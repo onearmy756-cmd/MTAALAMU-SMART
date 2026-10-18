@@ -105,6 +105,7 @@
       <button type="button" id="btnHazards" class="sec">⚠️ Hatari</button>
       <button type="button" id="btnLive" class="sec">🚶 Live</button>
       <button type="button" id="btnFeats" class="sec" title="Features 40+ za Navigation+Voice">✨40</button>
+      <button type="button" id="btnHier" class="sec" title="Onyesha ngazi za utawala: mkoa→wilaya→tarafa→kata→kijiji→kitongoji→mtaa→barabara">🏘️ Ngazi</button>
       <button type="button" id="btnStop" class="danger" style="display:none">⏹ Simamisha</button>
     </div>
   </header>
@@ -320,12 +321,50 @@ searchEl.addEventListener("input",()=>{
 /* HIERARKIA kamili (mikoa→wilaya→tarafa→kata→vijiji→vitongoji→mtaa→barabara)
  * inapakiwa kutoka geo_hierarchy_index.json — inaongezwa kwenye PLACES punde
  * itakapofika, hivyo search inapata sehemu zote (data-driven JSON). */
-let HIER_PLACES=[];
+let HIER_PLACES=[], HIER_RAW=[];
+let hierLayer=null, hierOn=false;
+const HIER_STYLE={
+  mkoa:{color:"#ff3b3b",r:7}, wilaya:{color:"#ff9100",r:6}, tarafa:{color:"#ffd54f",r:5},
+  kata:{color:"#00e676",r:5}, kijiji:{color:"#00e5ff",r:4}, vitongoji:{color:"#40c4ff",r:4},
+  mtaa:{color:"#b388ff",r:4}, barabara:{color:"#ff5252",r:0}
+};
+function hierPopupNav(p){
+  return "<b>"+(LEVEL_SW[p.level]||p.level)+": "+p.name_sw+"</b>"+
+    (p.name_en&&p.name_en!==p.name_sw?"<br/><span style='opacity:.7'>"+p.name_en+"</span>":"")+
+    (p.region?"<br/>Mkoa: "+p.region:"")+(p.parent?"<br/>Ndani ya: "+p.parent:"")+
+    (p.road_type?"<br/>Aina: "+p.road_type:"");
+}
+function hierApplyNav(on){
+  hierOn=on;
+  const btn=document.getElementById("btnHier");
+  if(btn)btn.classList.toggle("on",on);
+  if(hierLayer){map.removeLayer(hierLayer);hierLayer=null;}
+  if(!on)return;
+  if(!HIER_PLACES.length){setInstruction("Ngazi hazipatikani (data haijapakiwa).");return;}
+  const g=L.layerGroup();
+  HIER_PLACES.forEach(p=>{
+    if(p.level==="barabara"){
+      const f=HIER_RAW.find(x=>x.properties.id===p.id);
+      if(f&&f.geometry&&f.geometry.type==="LineString"){
+        L.polyline(f.geometry.coordinates.map(c=>[c[1],c[0]]),
+          {color:HIER_STYLE.barabara.color,weight:2.5,opacity:.75}).bindPopup(hierPopupNav(p)).addTo(g);
+      }
+    } else {
+      const st=HIER_STYLE[p.level]||{color:"#00e5ff",r:4};
+      L.circleMarker([p.lat,p.lng],{radius:st.r,color:st.color,fillColor:st.color,fillOpacity:.8,weight:1.5})
+        .bindPopup(hierPopupNav(p)).addTo(g);
+    }
+  });
+  hierLayer=g.addTo(map);
+  const counts={};HIER_PLACES.forEach(p=>{counts[p.level]=(counts[p.level]||0)+1;});
+  setInstruction("🏘️ Ngazi za utawala: "+HIER_PLACES.length+" (mkoa "+(counts.mkoa||0)+" · wilaya "+(counts.wilaya||0)+" · tarafa "+(counts.tarafa||0)+" · kata "+(counts.kata||0)+" · kijiji "+(counts.kijiji||0)+" · vitongoji "+(counts.vitongoji||0)+" · mtaa "+(counts.mtaa||0)+" · barabara "+(counts.barabara||0)+").");
+}
 (async()=>{try{
   const h=await fetch("../data/geo_hierarchy_index.json");
   if(h.ok){
     const d=await h.json();
-    HIER_PLACES=(d.features||[]).map(f=>{const p=f.properties;return{
+    HIER_RAW=(d.features||[]);
+    HIER_PLACES=HIER_RAW.map(f=>{const p=f.properties;return{
       id:p.id,name:p.name_sw,level:p.level,lat:p.lat,lng:p.lng,
       region:p.region,parent:p.parent||""
     };});
@@ -688,6 +727,16 @@ const MTX_FEATS=[
   document.getElementById("featsClose").onclick=()=>{ov.style.display="none";};
   ov.onclick=(e)=>{if(e.target===ov)ov.style.display="none";};
 })();
+
+/* ---------- 🏘️ NGAZI ZA UTAWALA ---------- */
+document.getElementById("btnHier").onclick=()=>{hierApplyNav(!hierOn);};
+
+/* ---------- UKUBWA WA RAMANI (kuepuka "imebabana") ---------- */
+function fitNav(){try{map.invalidateSize();}catch(e){}}
+if(typeof ResizeObserver!=="undefined"){new ResizeObserver(fitNav).observe(document.getElementById("map"));}
+window.addEventListener("resize",fitNav);
+window.addEventListener("orientationchange",fitNav);
+setTimeout(fitNav,200);setTimeout(fitNav,800);
 
 setTimeout(()=>speak(VOICE_PROMPTS.welcome),600);
 </script>

@@ -357,6 +357,31 @@ const map = new maplibregl.Map({
 map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-left");
 map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
 
+/* ---------- KUWA TAYARI (load) BILA RACE ---------- */
+function whenMapReady(cb) {
+  let done = false;
+  const run = () => { if (done) return; done = true; cb(); };
+  const ready = () => (map.isStyleLoaded ? map.isStyleLoaded() : true);
+  if (ready()) { run(); return; }
+  map.once("load", run);
+  map.once("idle", run);
+  const iv = setInterval(() => {
+    if (done) { clearInterval(iv); return; }
+    if (ready()) { clearInterval(iv); run(); }
+  }, 250);
+}
+
+/* ---------- UKUBWA WA RAMANI (kuepuka "imebabana") ---------- */
+function fitMap() { try { map.resize(); } catch (e) { /* bado haijaload */ } }
+if (typeof ResizeObserver !== "undefined") {
+  new ResizeObserver(fitMap).observe(document.getElementById("map"));
+}
+window.addEventListener("resize", fitMap);
+window.addEventListener("orientationchange", fitMap);
+setTimeout(fitMap, 200);
+setTimeout(fitMap, 800);
+
+
 /* ---------- MILIMA 3D (AWS Terrain DEM) ---------- */
 let terrainOn = true;
 function setTerrain(on) {
@@ -548,7 +573,7 @@ function speakOnce(t) { if (!_gpsSaid) { speak(t); _gpsSaid = true; } }
     const h = await fetch("../data/geo_hierarchy_index.json");
     if (h.ok) window.MT_HIER = await h.json();
   } catch (e) { /* 404 au offline — OK */ }
-  map.on("load", () => {
+  whenMapReady(() => {
     setTimeout(() => {
       if ((window.MT_GEO_3D && window.MT_GEO_3D.hazards || []).length) {
         const b = document.getElementById("btnHazards");
@@ -759,7 +784,7 @@ const trailCoords = [];
 window.MT3D = {
   /* HIERARKIA: zoom kwenda feature + drill-down kwenda watoto wake */
   hierZoom: function (id) {
-    const f = ((HIER_GEO && HIER_GEO.features) || []).find((x) => x.properties.id === id);
+    const f = ((hierGeo() && hierGeo().features) || []).find((x) => x.properties.id === id);
     if (!f) return;
     const p = f.properties;
     const lv = HIER_LEVELS.find((l) => l.id === p.level);
@@ -769,12 +794,12 @@ window.MT3D = {
     speak(p.name_sw + ". Mkoa wa " + p.region + ".");
   },
   hierUp: function (id) {
-    const f = ((HIER_GEO && HIER_GEO.features) || []).find((x) => x.properties.id === id);
+    const f = ((hierGeo() && hierGeo().features) || []).find((x) => x.properties.id === id);
     if (!f) return;
     const p = f.properties;
     const parentId = p.parent_id || p.region_id;
-    const pf = ((HIER_GEO && HIER_GEO.features) || []).find((x) => x.properties.id === parentId && x.properties.level !== "barabara")
-      || ((HIER_GEO && HIER_GEO.features) || []).find((x) => x.properties.id === p.region_id);
+    const pf = ((hierGeo() && hierGeo().features) || []).find((x) => x.properties.id === parentId && x.properties.level !== "barabara")
+      || ((hierGeo() && hierGeo().features) || []).find((x) => x.properties.id === p.region_id);
     if (!pf) return;
     const q = pf.properties;
     MT3D.hierZoom(q.id);
@@ -948,9 +973,10 @@ const HIER_LEVELS = [
   { id: "mtaa",      sw: "Mtaa",     color: "#ffd54f", minzoom: 11, size: 6 },
   { id: "barabara",  sw: "Barabara", color: "#ff5252", minzoom: 9,  size: 7 }
 ];
-let hierOn = false, HIER_GEO = null;
+let hierOn = false;
+function hierGeo() { return window.MT_HIER || null; }
 function hierCount(level) {
-  return (HIER_GEO && HIER_GEO.features || []).filter((f) => f.properties.level === level).length;
+  return ((hierGeo() || {}).features || []).filter((f) => f.properties.level === level).length;
 }
 function hierPopupHtml(p) {
   const lv = HIER_LEVELS.find((l) => l.id === p.level) || { sw: p.level, color: "#00e5ff" };
@@ -971,7 +997,7 @@ function hierPopupHtml(p) {
   return html;
 }
 function hierApply(on) {
-  const feats = (HIER_GEO && HIER_GEO.features) || [];
+  const feats = (hierGeo() && hierGeo().features) || [];
   if (!on || !feats.length) {
     HIER_LEVELS.forEach((l) => {
       ["hier-" + l.id, "hier-label-" + l.id].forEach((id) => { if (map.getLayer(id)) map.removeLayer(id); });
@@ -983,7 +1009,7 @@ function hierApply(on) {
     return;
   }
   if (!map.getSource("hier")) {
-    map.addSource("hier", { type: "geojson", data: HIER_GEO });
+    map.addSource("hier", { type: "geojson", data: hierGeo() });
     HIER_LEVELS.forEach((l) => {
       const filter = l.id === "barabara"
         ? ["all", ["==", ["get", "level"], "barabara"]]
