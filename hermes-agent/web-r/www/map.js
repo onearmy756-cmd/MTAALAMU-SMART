@@ -843,6 +843,19 @@
 
     setTimeout(function () { if (MT.map) MT.map.invalidateSize(); }, 120);
 
+    /* Kuepuka "imebabana": Leaflet hufanya invalidateSize kwa window.resize
+       pekee. Kwenye iframe (Canvas) au paneli inayobadilika, ramani hubaki na
+       ukubwa wa awali. Hiki huhakikisha inajaa chombo chake. */
+    if (typeof ResizeObserver !== "undefined" && !host.__mtRO) {
+      host.__mtRO = new ResizeObserver(function () { resize(); });
+      host.__mtRO.observe(host);
+    }
+    if (!window.__mtResizeBound) {
+      window.__mtResizeBound = true;
+      window.addEventListener("resize", resize);
+      window.addEventListener("orientationchange", resize);
+    }
+
     /* AUTO-LOCATE: mara moja baada ya ramani kuwa tayari (GPS binafsi, kwa ruhusa ya browser) */
     setTimeout(autoLocate, 800);
   }
